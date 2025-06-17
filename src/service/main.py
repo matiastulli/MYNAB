@@ -6,10 +6,10 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.middleware.cors import CORSMiddleware
 
-from src.logging import log_middleware
-from src.exceptions import BadRequest, PermissionDenied, NotAuthenticated
-from src.config import app_configs, settings
-from src.auth_user.router import router as auth_user_router
+from src.service.logging import log_middleware
+from src.service.exceptions import BadRequest, PermissionDenied, NotAuthenticated
+from src.service.config import app_configs, settings
+from src.service.auth_user.router import router as auth_user_router
 
 load_dotenv()
 

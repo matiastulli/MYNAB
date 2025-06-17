@@ -1,0 +1,9 @@
+// filepath: c:\Users\jmati\Documents\Developments\MYNAB\src\client\jsconfig.json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}

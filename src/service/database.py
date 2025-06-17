@@ -24,8 +24,8 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.asyncio import create_async_engine
 
-from src.config import settings
-from src.constants import DB_NAMING_CONVENTION
+from src.service.config import settings
+from src.service.constants import DB_NAMING_CONVENTION
 
 DATABASE_URL = str(settings.ENV_DATABASE_URL)
 

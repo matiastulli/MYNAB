@@ -3,10 +3,10 @@ from typing import Callable, Awaitable, Any, Optional
 from fastapi import Request, Response
 
 from starlette.types import Message
-from src.auth_user.exceptions import InvalidToken
-from src.database import execute, auth_user_activity_log
-from src.auth_user.jwt import parse_jwt_user_data_optional
-from src.auth_user.schemas import JWTData
+from src.service.auth_user.exceptions import InvalidToken
+from src.service.database import execute, auth_user_activity_log
+from src.service.auth_user.jwt import parse_jwt_user_data_optional
+from src.service.auth_user.schemas import JWTData
 
 
 async def log_user_activity(request: Request, id_user: Optional[int], action: str, details: dict[str, Any]):

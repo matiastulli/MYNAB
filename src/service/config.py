@@ -2,7 +2,7 @@ import os
 from typing import Any, ClassVar
 from pydantic import PostgresDsn
 from pydantic_settings import BaseSettings
-from src.constants import Environment
+from src.service.constants import Environment
 from dotenv import load_dotenv
 from pathlib import Path
 

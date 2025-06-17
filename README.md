@@ -37,4 +37,4 @@
 
 **How to wake up the project?**
 
-    uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+    uvicorn src.service.main:app --host 0.0.0.0 --port 8000 --reload

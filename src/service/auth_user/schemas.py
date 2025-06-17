@@ -4,7 +4,7 @@ from datetime import datetime
 
 from pydantic import EmailStr, Field, field_validator, validator
 
-from src.models import CustomModel, convert_datetime_to_date
+from src.service.models import CustomModel, convert_datetime_to_date
 
 STRONG_PASSWORD_PATTERN = re.compile(
     r"^(?=.*[\d])(?=.*[!@#$%^&*])[\w!@#$%^&*]{6,128}$")

@@ -6,9 +6,9 @@ from fastapi.security import OAuth2PasswordBearer
 import jwt
 from jwt import PyJWTError
 
-from src.auth_user.config import auth_config
-from src.auth_user.exceptions import AuthRequired, InvalidToken
-from src.auth_user.schemas import JWTData
+from src.service.auth_user.config import auth_config
+from src.service.auth_user.exceptions import AuthRequired, InvalidToken
+from src.service.auth_user.schemas import JWTData
 
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="/auth/users/tokens", auto_error=False)

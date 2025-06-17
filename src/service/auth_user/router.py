@@ -2,12 +2,12 @@ from typing import Any
 from fastapi import APIRouter, Depends, Response, HTTPException, status
 from fastapi.responses import JSONResponse
 
-from src.auth_user import jwt, service, utils, schemas, dependencies
+from src.service.auth_user import jwt, service, utils, schemas, dependencies
 
 # imports to check user role
-from src.auth_user.dependencies import require_role
-from src.auth_user.schemas import JWTData
-from src.constants import ROLES
+from src.service.auth_user.dependencies import require_role
+from src.service.auth_user.schemas import JWTData
+from src.service.constants import ROLES
 
 router = APIRouter()
 

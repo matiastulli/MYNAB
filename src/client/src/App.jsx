@@ -1,161 +1,283 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowDownIcon, ArrowUpIcon, CalendarIcon, PlusIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+"use client"
+
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  CalendarIcon,
+  PlusIcon,
+  TrendingDownIcon,
+  TrendingUpIcon,
+  WalletIcon,
+} from "lucide-react"
+import { useEffect, useState } from "react"
 
 export default function App() {
-  const [summary, setSummary] = useState({ income: 0, outcome: 0 });
-  const [entries, setEntries] = useState([]);
-  const [form, setForm] = useState({ amount: '', type: 'income', description: '', date: '' });
+  const [summary, setSummary] = useState({ income: 0, outcome: 0 })
+  const [entries, setEntries] = useState([])
+  const [form, setForm] = useState({ amount: "", type: "income", description: "", date: "" })
 
   const fetchSummary = async () => {
-    const res = await fetch('/budget/summary');
-    const data = await res.json();
-    setSummary(data);
-  };
+    const res = await fetch("/budget/summary")
+    const data = await res.json()
+    setSummary(data)
+  }
 
   const fetchDetails = async () => {
-    const res = await fetch('/budget/details');
-    const data = await res.json();
-    setEntries(data);
-  };
+    const res = await fetch("/budget/details")
+    const data = await res.json()
+    setEntries(data)
+  }
 
   useEffect(() => {
-    fetchSummary();
-    fetchDetails();
-  }, []);
+    fetchSummary()
+    fetchDetails()
+  }, [])
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    await fetch('/budget/entry', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    e.preventDefault()
+    await fetch("/budget/entry", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
-    });
-    setForm({ amount: '', type: 'income', description: '', date: '' });
-    fetchSummary();
-    fetchDetails();
-  };
+    })
+    setForm({ amount: "", type: "income", description: "", date: "" })
+    fetchSummary()
+    fetchDetails()
+  }
 
-  const balance = summary.income - summary.outcome;
-  const formattedDate = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  const balance = summary.income - summary.outcome
+  const formattedDate = new Date().toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+  })
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-4 md:p-8">
-      <div className="max-w-3xl mx-auto space-y-6">
+    <div className="min-h-screen bg-neutral-50/50 dark:bg-neutral-950">
+      <div className="max-w-4xl mx-auto px-4 py-8 md:px-6 md:py-12">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-light tracking-tight dark:text-white">MYNAB</h1>
-          <span className="text-slate-500 dark:text-slate-400">{formattedDate}</span>
-        </div>
-
-        {/* Summary Card */}
-        <Card className="overflow-hidden border-0 shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-3">
-            <div className="p-6 border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-800">
-              <div className="text-sm font-medium text-slate-500 dark:text-slate-400">Balance</div>
-              <div className={`text-2xl font-semibold mt-1 ${balance >= 0 ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'}`}>
-                ${Math.abs(balance).toFixed(2)}
-              </div>
+        <header className="mb-12">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100">
+                Budget Overview
+              </h1>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">{formattedDate}</p>
             </div>
-            <div className="p-6 border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-800">
-              <div className="text-sm font-medium text-slate-500 dark:text-slate-400">Income</div>
-              <div className="text-2xl font-semibold mt-1 text-green-600 dark:text-green-500">
-                ${summary.income.toFixed(2)}
-              </div>
-            </div>
-            <div className="p-6">
-              <div className="text-sm font-medium text-slate-500 dark:text-slate-400">Expenses</div>
-              <div className="text-2xl font-semibold mt-1 text-red-600 dark:text-red-500">
-                ${summary.outcome.toFixed(2)}
-              </div>
+            <div className="flex items-center gap-2 text-neutral-400 dark:text-neutral-600">
+              <WalletIcon className="h-5 w-5" />
+              <span className="text-xs font-medium tracking-wider uppercase">MYNAB</span>
             </div>
           </div>
-        </Card>
+        </header>
 
-        {/* Main Content Tabs */}
-        <Tabs defaultValue="entries" className="space-y-6">
-          <TabsList className="grid grid-cols-2 mb-4">
-            <TabsTrigger value="entries">Transactions</TabsTrigger>
-            <TabsTrigger value="new">New Entry</TabsTrigger>
-          </TabsList>
-          
-          {/* Entries List */}
-          <TabsContent value="entries" className="space-y-2">
-            {entries.length === 0 ? (
-              <div className="text-center py-12 text-slate-500 dark:text-slate-400">
-                No transactions found for this month
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          {/* Balance Card */}
+          <Card className="border-0 bg-white/60 dark:bg-neutral-900/60 backdrop-blur-sm">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+                    Balance
+                  </p>
+                  <p
+                    className={`text-2xl font-semibold mt-2 ${
+                      balance >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-500 dark:text-red-400"
+                    }`}
+                  >
+                    ${Math.abs(balance).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                  </p>
+                </div>
+                <div
+                  className={`p-3 rounded-full ${
+                    balance >= 0 ? "bg-emerald-50 dark:bg-emerald-950/50" : "bg-red-50 dark:bg-red-950/50"
+                  }`}
+                >
+                  <WalletIcon
+                    className={`h-5 w-5 ${
+                      balance >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-500 dark:text-red-400"
+                    }`}
+                  />
+                </div>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Income Card */}
+          <Card className="border-0 bg-white/60 dark:bg-neutral-900/60 backdrop-blur-sm">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+                    Income
+                  </p>
+                  <p className="text-2xl font-semibold mt-2 text-emerald-600 dark:text-emerald-400">
+                    ${summary.income.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                  </p>
+                </div>
+                <div className="p-3 rounded-full bg-emerald-50 dark:bg-emerald-950/50">
+                  <TrendingUpIcon className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Expenses Card */}
+          <Card className="border-0 bg-white/60 dark:bg-neutral-900/60 backdrop-blur-sm">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+                    Expenses
+                  </p>
+                  <p className="text-2xl font-semibold mt-2 text-red-500 dark:text-red-400">
+                    ${summary.outcome.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                  </p>
+                </div>
+                <div className="p-3 rounded-full bg-red-50 dark:bg-red-950/50">
+                  <TrendingDownIcon className="h-5 w-5 text-red-500 dark:text-red-400" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Main Content */}
+        <Tabs defaultValue="entries" className="space-y-6">
+          <TabsList className="grid grid-cols-2 w-full max-w-md mx-auto bg-neutral-100 dark:bg-neutral-800 p-1">
+            <TabsTrigger
+              value="entries"
+              className="data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-700 data-[state=active]:shadow-sm"
+            >
+              Transactions
+            </TabsTrigger>
+            <TabsTrigger
+              value="new"
+              className="data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-700 data-[state=active]:shadow-sm"
+            >
+              Add New
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Transactions List */}
+          <TabsContent value="entries" className="space-y-4">
+            {entries.length === 0 ? (
+              <Card className="border-0 bg-white/60 dark:bg-neutral-900/60 backdrop-blur-sm">
+                <CardContent className="p-12 text-center">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="p-4 rounded-full bg-neutral-100 dark:bg-neutral-800">
+                      <WalletIcon className="h-6 w-6 text-neutral-400" />
+                    </div>
+                    <p className="text-neutral-500 dark:text-neutral-400">No transactions this month</p>
+                  </div>
+                </CardContent>
+              </Card>
             ) : (
-              <Card className="border-0 shadow-sm">
-                <CardHeader className="pb-0">
-                  <CardTitle className="text-lg font-medium">Recent Transactions</CardTitle>
+              <Card className="border-0 bg-white/60 dark:bg-neutral-900/60 backdrop-blur-sm">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
+                    Recent Activity
+                  </CardTitle>
                 </CardHeader>
-                <CardContent className="pt-4">
-                  <ul className="divide-y divide-slate-200 dark:divide-slate-800">
-                    {entries.map(entry => (
-                      <li key={entry.id} className="py-3 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className={`p-2 rounded-full ${entry.type === 'income' ? 'bg-green-100 dark:bg-green-900' : 'bg-red-100 dark:bg-red-900'}`}>
-                            {entry.type === 'income' ? 
-                              <ArrowUpIcon className="h-4 w-4 text-green-600 dark:text-green-400" /> : 
-                              <ArrowDownIcon className="h-4 w-4 text-red-600 dark:text-red-400" />
-                            }
+                <CardContent className="p-0">
+                  <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
+                    {entries.map((entry, index) => (
+                      <div
+                        key={entry.id}
+                        className="flex items-center justify-between p-6 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/50 transition-colors"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div
+                            className={`p-2.5 rounded-full ${
+                              entry.type === "income"
+                                ? "bg-emerald-50 dark:bg-emerald-950/50"
+                                : "bg-red-50 dark:bg-red-950/50"
+                            }`}
+                          >
+                            {entry.type === "income" ? (
+                              <ArrowUpIcon className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                            ) : (
+                              <ArrowDownIcon className="h-4 w-4 text-red-500 dark:text-red-400" />
+                            )}
                           </div>
                           <div>
-                            <p className="font-medium">{entry.description || '(No description)'}</p>
-                            <p className="text-xs text-slate-500 dark:text-slate-400">
-                              {new Date(entry.date).toLocaleDateString()}
+                            <p className="font-medium text-neutral-900 dark:text-neutral-100">
+                              {entry.description || "No description"}
+                            </p>
+                            <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                              {new Date(entry.date).toLocaleDateString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                              })}
                             </p>
                           </div>
                         </div>
-                        <span className={`font-medium ${entry.type === 'income' ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'}`}>
-                          {entry.type === 'income' ? '+' : '-'}${entry.amount}
-                        </span>
-                      </li>
+                        <div className="text-right">
+                          <p
+                            className={`font-semibold ${
+                              entry.type === "income"
+                                ? "text-emerald-600 dark:text-emerald-400"
+                                : "text-red-500 dark:text-red-400"
+                            }`}
+                          >
+                            {entry.type === "income" ? "+" : "-"}$
+                            {Number.parseFloat(entry.amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                          </p>
+                        </div>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 </CardContent>
               </Card>
             )}
           </TabsContent>
-          
-          {/* New Entry Form */}
+
+          {/* Add New Transaction */}
           <TabsContent value="new">
-            <Card className="border-0 shadow-sm">
+            <Card className="border-0 bg-white/60 dark:bg-neutral-900/60 backdrop-blur-sm max-w-2xl mx-auto">
               <CardHeader>
-                <CardTitle className="text-lg font-medium">Add Transaction</CardTitle>
+                <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
+                  Add Transaction
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label htmlFor="amount" className="text-sm">Amount</Label>
+                      <Label htmlFor="amount" className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                        Amount
+                      </Label>
                       <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">$</span>
-                        <Input 
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 text-sm">$</span>
+                        <Input
                           id="amount"
-                          type="number" 
-                          value={form.amount} 
-                          onChange={(e) => setForm({ ...form, amount: e.target.value })} 
-                          className="pl-7" 
+                          type="number"
+                          step="0.01"
+                          value={form.amount}
+                          onChange={(e) => setForm({ ...form, amount: e.target.value })}
+                          className="pl-7 border-0 bg-neutral-100 dark:bg-neutral-800 focus:bg-white dark:focus:bg-neutral-700 transition-colors"
                           placeholder="0.00"
-                          required 
+                          required
                         />
                       </div>
                     </div>
-                    
+
                     <div className="space-y-2">
-                      <Label htmlFor="type" className="text-sm">Type</Label>
-                      <Select 
-                        value={form.type} 
-                        onValueChange={(value) => setForm({ ...form, type: value })}
-                      >
-                        <SelectTrigger id="type">
+                      <Label htmlFor="type" className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                        Type
+                      </Label>
+                      <Select value={form.type} onValueChange={(value) => setForm({ ...form, type: value })}>
+                        <SelectTrigger
+                          id="type"
+                          className="border-0 bg-neutral-100 dark:bg-neutral-800 focus:bg-white dark:focus:bg-neutral-700"
+                        >
                           <SelectValue placeholder="Select type" />
                         </SelectTrigger>
                         <SelectContent>
@@ -164,34 +286,43 @@ export default function App() {
                         </SelectContent>
                       </Select>
                     </div>
-                    
-                    <div className="space-y-2 md:col-span-2">
-                      <Label htmlFor="description" className="text-sm">Description</Label>
-                      <Input 
-                        id="description"
-                        value={form.description} 
-                        onChange={(e) => setForm({ ...form, description: e.target.value })}
-                        placeholder="What's this transaction for?"
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="description" className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                      Description
+                    </Label>
+                    <Input
+                      id="description"
+                      value={form.description}
+                      onChange={(e) => setForm({ ...form, description: e.target.value })}
+                      className="border-0 bg-neutral-100 dark:bg-neutral-800 focus:bg-white dark:focus:bg-neutral-700 transition-colors"
+                      placeholder="What's this transaction for?"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="date" className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                      Date
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="date"
+                        type="date"
+                        value={form.date}
+                        onChange={(e) => setForm({ ...form, date: e.target.value })}
+                        className="border-0 bg-neutral-100 dark:bg-neutral-800 focus:bg-white dark:focus:bg-neutral-700 transition-colors"
+                        required
                       />
-                    </div>
-                    
-                    <div className="space-y-2 md:col-span-2">
-                      <Label htmlFor="date" className="text-sm">Date</Label>
-                      <div className="relative">
-                        <Input 
-                          id="date"
-                          type="date" 
-                          value={form.date} 
-                          onChange={(e) => setForm({ ...form, date: e.target.value })} 
-                          required 
-                        />
-                        <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
-                      </div>
+                      <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400 pointer-events-none" />
                     </div>
                   </div>
-                  
-                  <Button type="submit" className="w-full mt-2 flex gap-2 items-center">
-                    <PlusIcon className="h-4 w-4" />
+
+                  <Button
+                    type="submit"
+                    className="w-full bg-neutral-900 hover:bg-neutral-800 dark:bg-neutral-100 dark:hover:bg-neutral-200 dark:text-neutral-900 transition-colors"
+                  >
+                    <PlusIcon className="h-4 w-4 mr-2" />
                     Add Transaction
                   </Button>
                 </form>
@@ -201,5 +332,5 @@ export default function App() {
         </Tabs>
       </div>
     </div>
-  );
+  )
 }

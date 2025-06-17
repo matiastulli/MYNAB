@@ -1,0 +1,282 @@
+{
+	"info": {
+		"_postman_id": "564ddc0f-1827-4cbd-9279-4e70a57179e0",
+		"name": "mynab-service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31611509",
+		"_collection_link": "https://dark-crater-100090.postman.co/workspace/Pampas-Tech~7b79e9ea-6cd7-4dfa-8eb4-44f7b0d93e65/collection/31611509-564ddc0f-1827-4cbd-9279-4e70a57179e0?action=share&source=collection_link&creator=31611509"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "sign up",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Juan Matias\",\r\n    \"last_name\": \"Tulli\",\r\n    \"email\": \"jtulli@gmail.com\",\r\n    \"password\": \"Admin2020*\",\r\n    \"id_role\": 1\r\n}"
+						},
+						"url": {
+							"raw": "{{ENV_URL}}/auth/register",
+							"host": [
+								"{{ENV_URL}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "my_profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ENV_URL}}/auth/profile",
+							"host": [
+								"{{ENV_URL}}"
+							],
+							"path": [
+								"auth",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "my_profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Gregorio\",\r\n    \"last_name\": \"Lopez\",\r\n    \"id_default_tenant\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ENV_URL}}/auth/profile",
+							"host": [
+								"{{ENV_URL}}"
+							],
+							"path": [
+								"auth",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sign in",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"TOKEN\", jsonData[\"access_token\"]);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"jtulli@gmail.com\",\r\n    \"password\": \"Admin2020*\"\r\n}"
+						},
+						"url": {
+							"raw": "{{ENV_URL}}/auth/signin",
+							"host": [
+								"{{ENV_URL}}"
+							],
+							"path": [
+								"auth",
+								"signin"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "budget",
+			"item": [
+				{
+					"name": "entry",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0IiwiZXhwIjoxNzA0MzQ5NTYyLCJyb2xlIjoib3duZXIiLCJpZF9yb2xlIjoyfQ.EFwXlzr_XUaNTUsrWlbJ-ncHj0BaSAdnXHCJr8jJ3mM"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"amount\": \"230\",\r\n    \"type\": \"income\",\r\n    \"description\": \"expensas\",\r\n    \"date\": \"2025-06-03\"\r\n}"
+						},
+						"url": {
+							"raw": "{{ENV_URL}}/budget/entry",
+							"host": [
+								"{{ENV_URL}}"
+							],
+							"path": [
+								"budget",
+								"entry"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "summary",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0IiwiZXhwIjoxNzA0MzQ5NTYyLCJyb2xlIjoib3duZXIiLCJpZF9yb2xlIjoyfQ.EFwXlzr_XUaNTUsrWlbJ-ncHj0BaSAdnXHCJr8jJ3mM"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENV_URL}}/budget/summary",
+							"host": [
+								"{{ENV_URL}}"
+							],
+							"path": [
+								"budget",
+								"summary"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "summary",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0IiwiZXhwIjoxNzA0MzQ5NTYyLCJyb2xlIjoib3duZXIiLCJpZF9yb2xlIjoyfQ.EFwXlzr_XUaNTUsrWlbJ-ncHj0BaSAdnXHCJr8jJ3mM"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENV_URL}}/budget/summary",
+							"host": [
+								"{{ENV_URL}}"
+							],
+							"path": [
+								"budget",
+								"summary"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

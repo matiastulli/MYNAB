@@ -10,6 +10,7 @@ from src.service.logging import log_middleware
 from src.service.exceptions import BadRequest, PermissionDenied, NotAuthenticated
 from src.service.config import app_configs, settings
 from src.service.auth_user.router import router as auth_user_router
+from src.service.budget.router import router as budget_router
 
 load_dotenv()
 
@@ -91,5 +92,5 @@ async def not_authenticated_exception_handler(request: Request, exc: NotAuthenti
 async def healthcheck():
     return JSONResponse(status_code=200, content={"status": "ok"})
 
-
 app.include_router(auth_user_router, prefix="/auth", tags=["Auth"])
+app.include_router(budget_router, prefix="/budget", tags=["Budget"])

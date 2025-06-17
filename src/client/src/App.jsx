@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { api } from "@/services/api"
 import {
   ArrowDownIcon,
   ArrowUpIcon,
@@ -23,14 +24,12 @@ export default function App() {
   const [form, setForm] = useState({ amount: "", type: "income", description: "", date: "" })
 
   const fetchSummary = async () => {
-    const res = await fetch("/budget/summary")
-    const data = await res.json()
+    const data = await api.get("/budget/summary")
     setSummary(data)
   }
 
   const fetchDetails = async () => {
-    const res = await fetch("/budget/details")
-    const data = await res.json()
+    const data = await api.get("/budget/details")
     setEntries(data)
   }
 
@@ -39,13 +38,9 @@ export default function App() {
     fetchDetails()
   }, [])
 
-  const handleSubmit = async (e) => {
+ const handleSubmit = async (e) => {
     e.preventDefault()
-    await fetch("/budget/entry", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    })
+    await api.post("/budget/entry", form)
     setForm({ amount: "", type: "income", description: "", date: "" })
     fetchSummary()
     fetchDetails()

@@ -4,11 +4,11 @@ from datetime import date, datetime
 from sqlalchemy import select, insert, func
 from decimal import Decimal
 
-from database import fetch_all, fetch_one, execute, budget_entry
+from src.service.database import fetch_all, fetch_one, execute, budget_entry
 from src.service.auth_user.dependencies import require_role
 from src.service.auth_user.schemas import JWTData
 
-router = APIRouter(prefix="/budget", tags=["budget"])
+router = APIRouter()
 
 
 @router.post("/entry")

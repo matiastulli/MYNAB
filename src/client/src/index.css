@@ -30,24 +30,24 @@
 
 .dark {
   --background: 220 10% 10%;
-  --foreground: 210 20% 98%;
+  --foreground: 210 20% 98%; /* Brighter white text in dark mode */
   --card: 224 10% 13%;
-  --card-foreground: 210 20% 98%;
+  --card-foreground: 0 0% 100%; /* Pure white for card text */
   --popover: 220 10% 10%;
-  --popover-foreground: 210 20% 98%;
+  --popover-foreground: 0 0% 100%; /* Pure white for popover text */
   --primary: 210 20% 98%;
   --primary-foreground: 220 10% 10%;
   --secondary: 215 10% 22%;
-  --secondary-foreground: 210 20% 98%;
+  --secondary-foreground: 0 0% 100%; /* Pure white for secondary elements */
   --muted: 215 10% 22%;
-  --muted-foreground: 217 10% 80%;
+  --muted-foreground: 210 20% 90%; /* Much brighter muted text */
   --accent: 215 10% 22%;
-  --accent-foreground: 210 20% 98%;
+  --accent-foreground: 0 0% 100%; /* Pure white for accent elements */
   --destructive: 0 70% 50%;
-  --destructive-foreground: 210 20% 98%;
+  --destructive-foreground: 0 0% 100%; /* Pure white for destructive elements */
   --border: 215 10% 28%;
   --input: 215 10% 22%;
-  --ring: 216 12% 84%;
+  --ring: 216 12% 92%; /* Brighter ring color */
   --chart-1: 210 100% 75%;
   --chart-2: 160 80% 65%;
   --chart-3: 30 95% 70%;
@@ -62,4 +62,10 @@
 body {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
+}
+
+/* Add this new class to ensure input text is visible in dark mode */
+.dark input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+
 }

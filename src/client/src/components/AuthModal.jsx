@@ -25,14 +25,14 @@ export default function AuthModal({ onAuthenticated }) {
         </div>
 
         {isLoginView ? (
-          <LoginForm 
-            onLogin={handleLogin} 
-            onSwitchToSignup={() => setIsLoginView(false)} 
+          <LoginForm
+            onLogin={handleLogin}
+            onSwitchToSignup={() => setIsLoginView(false)}
           />
         ) : (
-          <SignupForm 
-            onSignUp={handleSignUp} 
-            onSwitchToLogin={() => setIsLoginView(true)} 
+          <SignupForm
+            onSignUp={handleSignUp}
+            onSwitchToLogin={() => setIsLoginView(true)}
           />
         )}
       </div>

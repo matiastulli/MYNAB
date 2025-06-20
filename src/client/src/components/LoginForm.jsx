@@ -58,20 +58,20 @@ export default function LoginForm({ onLogin, onSwitchToSignup }) {
   return (
     <Card className="max-w-md mx-auto border-0 bg-white/60 dark:bg-[#1a1e24]/90 backdrop-blur-sm">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-medium">Welcome back</CardTitle>
-        <CardDescription>Enter your credentials to access your account</CardDescription>
+        <CardTitle className="text-2xl font-medium text-gray-900 dark:text-white">Welcome back</CardTitle>
+        <CardDescription className="text-gray-600 dark:text-gray-300">Enter your credentials to access your account</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="text-gray-700 dark:text-white">Email</Label>
             <div className="relative">
-              <AtSignIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
+              <AtSignIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-300" />
               <Input 
                 id="email" 
                 type="email" 
                 placeholder="john.doe@example.com" 
-                className="pl-10 border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47]"
+                className="pl-10 border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] text-gray-900 dark:text-white"
                 value={form.email}
                 onChange={handleChange}
               />
@@ -80,21 +80,21 @@ export default function LoginForm({ onLogin, onSwitchToSignup }) {
           
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-gray-700 dark:text-white">Password</Label>
               <button 
                 type="button" 
-                className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                className="text-sm text-blue-600 dark:text-blue-300 hover:underline"
               >
                 Forgot password?
               </button>
             </div>
             <div className="relative">
-              <KeyIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
+              <KeyIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-300" />
               <Input 
                 id="password" 
                 type="password" 
                 placeholder="••••••••" 
-                className="pl-10 border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47]"
+                className="pl-10 border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] text-gray-900 dark:text-white"
                 value={form.password}
                 onChange={handleChange}
               />
@@ -102,14 +102,14 @@ export default function LoginForm({ onLogin, onSwitchToSignup }) {
           </div>
           
           {error && (
-            <div className="p-3 rounded-md bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm">
+            <div className="p-3 rounded-md bg-red-50 dark:bg-red-900/40 text-red-600 dark:text-red-300 text-sm">
               {error}
             </div>
           )}
           
           <Button 
             type="submit" 
-            className="w-full bg-neutral-900 hover:bg-neutral-800 dark:bg-blue-600 dark:hover:bg-blue-700"
+            className="w-full bg-neutral-900 hover:bg-neutral-800 dark:bg-blue-600 dark:hover:bg-blue-700 text-white"
             disabled={isLoading}
           >
             {isLoading ? (
@@ -126,12 +126,12 @@ export default function LoginForm({ onLogin, onSwitchToSignup }) {
           </Button>
           
           <div className="text-center mt-4">
-            <p className="text-sm text-neutral-500 dark:text-neutral-400">
+            <p className="text-sm text-gray-500 dark:text-gray-300">
               Don't have an account?{" "}
               <button 
                 type="button"
                 onClick={onSwitchToSignup}
-                className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                className="text-blue-600 dark:text-blue-300 hover:underline font-medium"
               >
                 Sign up
               </button>

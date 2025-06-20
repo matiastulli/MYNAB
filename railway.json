@@ -1,0 +1,11 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "${RAILWAY_SERVICE_TYPE == 'client' ? './Dockerfile.client' : './Dockerfile.service'}"
+  },
+  "deploy": {
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  }
+}

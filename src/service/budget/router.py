@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from fastapi.responses import JSONResponse
-from datetime import date, datetime
-from sqlalchemy import select, insert, func
+from datetime import date, datetime, timedelta
+from sqlalchemy import select, insert, func, and_
 from decimal import Decimal
+from typing import Optional
 
 from src.service.database import fetch_all, fetch_one, execute, budget_entry
 from src.service.auth_user.dependencies import require_role
@@ -34,18 +35,25 @@ async def add_entry(
 
 @router.get("/summary")
 async def get_monthly_summary(
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
     jwt_data: JWTData = Depends(require_role([]))
 ):
     today = date.today()
-    first_day = today.replace(day=1)
-
+    
+    # Default to current month if no dates provided
+    if not start_date:
+        start_date = today.replace(day=1)
+    if not end_date:
+        end_date = today
+        
     stmt = select(
         budget_entry.c.type,
         func.sum(budget_entry.c.amount).label("total")
     ).where(
         budget_entry.c.user_id == jwt_data.id_user,
-        budget_entry.c.date >= first_day,
-        budget_entry.c.date <= today
+        budget_entry.c.date >= start_date,
+        budget_entry.c.date <= end_date
     ).group_by(budget_entry.c.type)
 
     result = await fetch_all(stmt)
@@ -58,16 +66,49 @@ async def get_monthly_summary(
 
 @router.get("/details")
 async def get_entries(
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+    limit: int = Query(50, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    type_filter: Optional[str] = None,
     jwt_data: JWTData = Depends(require_role([]))
 ):
     today = date.today()
-    first_day = today.replace(day=1)
-
-    stmt = select(budget_entry).where(
+    
+    # Default to current month if no dates provided
+    if not start_date:
+        start_date = today.replace(day=1)
+    if not end_date:
+        end_date = today
+    
+    # Build filter conditions
+    conditions = [
         budget_entry.c.user_id == jwt_data.id_user,
-        budget_entry.c.date >= first_day,
-        budget_entry.c.date <= today
-    ).order_by(budget_entry.c.date.desc())
+        budget_entry.c.date >= start_date,
+        budget_entry.c.date <= end_date
+    ]
+    
+    # Add type filter if provided
+    if type_filter and type_filter in ["income", "outcome"]:
+        conditions.append(budget_entry.c.type == type_filter)
+    
+    # Count total entries for pagination info
+    count_stmt = select(func.count()).select_from(budget_entry).where(and_(*conditions))
+    total_count = await fetch_one(count_stmt)
+    total_count = total_count[0] if total_count else 0
+    
+    # Get paginated entries
+    stmt = select(budget_entry).where(and_(*conditions)) \
+        .order_by(budget_entry.c.date.desc()) \
+        .limit(limit).offset(offset)
 
     entries = await fetch_all(stmt)
-    return entries
+    
+    return {
+        "data": entries,
+        "pagination": {
+            "total": total_count,
+            "limit": limit,
+            "offset": offset
+        }
+    }

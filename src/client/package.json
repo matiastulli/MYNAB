@@ -20,7 +20,10 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "tailwind-merge": "^3.3.1",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "vite-plugin-pwa": "^1.0.0",
+    "workbox-webpack-plugin": "^7.3.0",
+    "workbox-window": "^7.3.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",

@@ -35,6 +35,24 @@
 
     alembic upgrade head
 
+**How to configure React project?**
+
+    1- Navigate to the client directory:
+
+        ```bash
+        cd client
+        ```
+
+    2- Install Node.js (recommended version 16.x or higher)
+
+    3- Install dependencies:
+
+        ```bash
+        npm install
+        ```
+
 **How to wake up the project?**
 
-    uvicorn src.service.main:app --host 0.0.0.0 --port 8000 --reload
+    service: uvicorn src.service.main:app --host 0.0.0.0 --port 8000 --reload
+
+    client: npm run dev

@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.VITE_API_URL;
+const API_BASE_URL = process.env.VITE_API_URL || '';
 
 // Get JWT token from localStorage
 const getToken = () => localStorage.getItem('token');
@@ -20,7 +20,10 @@ const getHeaders = () => {
 export const api = {
   get: async (endpoint) => {
     try {
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      // Ensure endpoint starts with a slash if it doesn't already
+      const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+      
+      const response = await fetch(`${API_BASE_URL}${normalizedEndpoint}`, {
         headers: getHeaders()
       });
       
@@ -45,7 +48,10 @@ export const api = {
   
   post: async (endpoint, data) => {
     try {
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      // Ensure endpoint starts with a slash if it doesn't already
+      const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+      
+      const response = await fetch(`${API_BASE_URL}${normalizedEndpoint}`, {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify(data),
@@ -66,6 +72,17 @@ export const api = {
     } catch (error) {
       console.error('API request failed:', error);
       return { error: error.message || 'Network error' };
+    }
+  },
+  
+  // Authentication specific methods
+  auth: {
+    signin: async (credentials) => {
+      return api.post('auth/signin', credentials);
+    },
+    
+    signup: async (userData) => {
+      return api.post('auth/signup', userData);
     }
   },
   

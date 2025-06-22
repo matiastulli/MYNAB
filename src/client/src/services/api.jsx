@@ -1,4 +1,6 @@
-const API_BASE_URL = process.env.VITE_API_URL || '';
+// const API_BASE_URL = process.env.API_BASE_URL || '';
+
+const API_BASE_URL = 'https://mynab-service.up.railway.app';
 
 // Get JWT token from localStorage
 const getToken = () => localStorage.getItem('token');

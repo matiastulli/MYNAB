@@ -26,13 +26,13 @@ async def get_monthly_summary(
     jwt_data: JWTData = Depends(require_role([]))
 ):
     today = date.today()
-    
+
     # Default to current month if no dates provided
     if not start_date:
         start_date = today.replace(day=1)
     if not end_date:
         end_date = today
-        
+
     summary = await get_budget_summary(jwt_data.id_user, start_date, end_date)
     return summary
 
@@ -47,22 +47,22 @@ async def get_budget_details(
     jwt_data: JWTData = Depends(require_role([]))
 ):
     today = date.today()
-    
+
     # Default to current month if no dates provided
     if not start_date:
         start_date = today.replace(day=1)
     if not end_date:
         end_date = today
-    
+
     entries, total_count = await get_budget_entries(
-        jwt_data.id_user, 
-        start_date, 
-        end_date, 
-        limit, 
-        offset, 
+        jwt_data.id_user,
+        start_date,
+        end_date,
+        limit,
+        offset,
         type_filter
     )
-    
+
     return {
         "data": entries,
         "pagination": {

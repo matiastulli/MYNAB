@@ -56,8 +56,19 @@ async def get_budget_entries(
     
     # Count total entries for pagination info
     count_stmt = select(func.count()).select_from(budget_entry).where(and_(*conditions))
-    total_count = await fetch_one(count_stmt)
-    total_count = total_count[0] if total_count else 0
+    total_count_result = await fetch_one(count_stmt)
+    
+    # Fix for the error - handle different possible return formats
+    if total_count_result is None:
+        total_count = 0
+    elif isinstance(total_count_result, dict) and 'count' in total_count_result:
+        total_count = total_count_result['count']
+    elif isinstance(total_count_result, (list, tuple)) and len(total_count_result) > 0:
+        total_count = total_count_result[0]
+    else:
+        # If we can't determine the format, convert to string and log for debugging
+        total_count = 0
+        print(f"Unexpected count result format: {type(total_count_result)} - {total_count_result}")
     
     # Get paginated entries
     stmt = select(budget_entry).where(and_(*conditions)) \

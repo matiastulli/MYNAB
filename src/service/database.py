@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 from sqlalchemy import (
     Column,
     DateTime,
@@ -8,7 +8,6 @@ from sqlalchemy import (
     LargeBinary,
     MetaData,
     String,
-    Text,
     DECIMAL,
     CursorResult,
     Select,
@@ -17,7 +16,6 @@ from sqlalchemy import (
     TextClause,
     Table,
     func,
-    UniqueConstraint,
     JSON,
     text,
 )

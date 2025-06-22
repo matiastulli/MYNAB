@@ -32,7 +32,8 @@ export default function LoginForm({ onLogin, onSwitchToSignup }) {
     }
 
     try {
-      const response = await api.post("/auth/signin", {
+      // Use the api.auth.signin method instead of api.post
+      const response = await api.auth.signin({
         email: form.email,
         password: form.password
       })

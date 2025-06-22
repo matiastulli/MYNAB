@@ -66,42 +66,58 @@ export default function App() {
   };
 
   const fetchSummary = async () => {
-    let url = "/budget/summary";
-    const params = new URLSearchParams();
-    
-    if (filters.startDate) params.append("start_date", filters.startDate);
-    if (filters.endDate) params.append("end_date", filters.endDate);
-    
-    if (params.toString()) {
-      url += `?${params.toString()}`;
-    }
-    
-    const data = await api.get(url);
-    if (!data.error) {
-      setSummary(data);
+    try {
+      let url = "/budget/summary";
+      const params = new URLSearchParams();
+      
+      if (filters.startDate) params.append("start_date", filters.startDate);
+      if (filters.endDate) params.append("end_date", filters.endDate);
+      
+      if (params.toString()) {
+        url += `?${params.toString()}`;
+      }
+      
+      const data = await api.get(url);
+      if (!data.error) {
+        setSummary(data);
+      } else {
+        console.error("Error fetching summary:", data.error);
+      }
+    } catch (error) {
+      console.error("Failed to fetch summary:", error);
+      // Set default summary to avoid blank UI
+      setSummary({ income: 0, outcome: 0 });
     }
   };
 
   const fetchDetails = async () => {
-    let url = "/budget/details";
-    const params = new URLSearchParams();
-    
-    if (filters.startDate) params.append("start_date", filters.startDate);
-    if (filters.endDate) params.append("end_date", filters.endDate);
-    if (filters.type) params.append("type_filter", filters.type);
-    
-    params.append("limit", pagination.limit);
-    params.append("offset", pagination.offset);
-    
-    url += `?${params.toString()}`;
-    
-    const data = await api.get(url);
-    if (!data.error) {
-      setEntries(data.data);
-      setPagination({
-        ...pagination,
-        total: data.pagination.total
-      });
+    try {
+      let url = "/budget/details";
+      const params = new URLSearchParams();
+      
+      if (filters.startDate) params.append("start_date", filters.startDate);
+      if (filters.endDate) params.append("end_date", filters.endDate);
+      if (filters.type) params.append("type_filter", filters.type);
+      
+      params.append("limit", pagination.limit);
+      params.append("offset", pagination.offset);
+      
+      url += `?${params.toString()}`;
+      
+      const data = await api.get(url);
+      if (!data.error) {
+        setEntries(data.data || []);
+        setPagination({
+          ...pagination,
+          total: data.pagination?.total || 0
+        });
+      } else {
+        console.error("Error fetching details:", data.error);
+        setEntries([]);
+      }
+    } catch (error) {
+      console.error("Failed to fetch details:", error);
+      setEntries([]);
     }
   };
 
@@ -137,16 +153,20 @@ export default function App() {
     fetchDetails();
   };
 
-  const handleApplyFilters = (newFilters) => {
+  const handleApplyFilters = async (newFilters) => {
     setFilters(newFilters);
     setPagination({
       ...pagination,
       offset: 0 // Reset to first page when filters change
     });
     
-    // Refetch data with new filters
-    fetchSummary();
-    fetchDetails();
+    try {
+      // Use await to ensure these complete properly before rendering
+      await fetchSummary();
+      await fetchDetails();
+    } catch (error) {
+      console.error("Error applying filters:", error);
+    }
   };
 
   const balance = summary.income - summary.outcome;

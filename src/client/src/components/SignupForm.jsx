@@ -172,7 +172,7 @@ export default function SignupForm({ onSignUp, onSwitchToLogin }) {
           
           <Button 
             type="submit" 
-            className="w-full bg-neutral-900 hover:bg-neutral-800 dark:bg-blue-600 dark:hover:bg-blue-700 text-white"
+            className="w-full bg-neutral-900 hover:bg-neutral-800 dark:bg-emerald-800/80 dark:hover:bg-emerald-700/90 text-white"
             disabled={isLoading}
           >
             {isLoading ? (
@@ -194,7 +194,7 @@ export default function SignupForm({ onSignUp, onSwitchToLogin }) {
               <button 
                 type="button"
                 onClick={onSwitchToLogin}
-                className="text-blue-600 dark:text-blue-300 hover:underline font-medium"
+                className="text-emerald-600 dark:text-emerald-400 hover:underline font-medium"
               >
                 Sign in
               </button>

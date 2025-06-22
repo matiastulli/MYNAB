@@ -40,7 +40,7 @@ export default function ActivityList({
             <p className="text-neutral-500 dark:text-neutral-300">Please sign in to view your transactions</p>
             <Button 
               onClick={onSignInClick}
-              className="mt-2 bg-neutral-900 hover:bg-neutral-800 dark:bg-blue-600 dark:hover:bg-blue-700"
+              className="mt-2 bg-neutral-900 hover:bg-neutral-800 dark:bg-emerald-800/80 dark:hover:bg-emerald-700/90"
             >
               Sign In
             </Button>

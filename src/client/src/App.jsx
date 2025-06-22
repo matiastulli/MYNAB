@@ -337,7 +337,7 @@ export default function App() {
                             step="0.01"
                             value={form.amount}
                             onChange={(e) => setForm({ ...form, amount: e.target.value })}
-                            className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors placeholder:text-neutral-500 dark:placeholder:text-neutral-400"
+                            className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors placeholder:text-neutral-500 dark:placeholder:text-white"
                             placeholder="0.00"
                             required
                           />
@@ -353,7 +353,7 @@ export default function App() {
                             id="type"
                             className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47]"
                           >
-                            <SelectValue placeholder="Select type" className="text-neutral-500 dark:text-neutral-300" />
+                            <SelectValue placeholder="Select type" className="text-neutral-500 dark:text-white" />
                           </SelectTrigger>
                           <SelectContent className="dark:bg-[#1e232a] dark:border-neutral-700">
                             <SelectItem value="outcome" className="dark:text-neutral-100">Expense</SelectItem>
@@ -371,7 +371,7 @@ export default function App() {
                         id="description"
                         value={form.description}
                         onChange={(e) => setForm({ ...form, description: e.target.value })}
-                        className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors placeholder:text-neutral-500 dark:placeholder:text-neutral-400"
+                        className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors placeholder:text-neutral-500 dark:placeholder:text-white"
                         placeholder="What's this transaction for?"
                       />
                     </div>
@@ -386,7 +386,7 @@ export default function App() {
                           type="date"
                           value={form.date}
                           onChange={(e) => setForm({ ...form, date: e.target.value })}
-                          className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors placeholder:text-neutral-500 dark:placeholder:text-neutral-400"
+                          className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors placeholder:text-neutral-500 dark:placeholder:text-white"
                           required
                         />
                         <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400 dark:text-neutral-300 pointer-events-none" />

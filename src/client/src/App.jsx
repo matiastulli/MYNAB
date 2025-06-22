@@ -356,9 +356,9 @@ export default function App() {
                             id="type"
                             className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47]"
                           >
-                            <SelectValue placeholder="Select type" className="text-neutral-500 dark:text-white" />
+                            <SelectValue placeholder="Select type" className="text-neutral-900 dark:text-white" />
                           </SelectTrigger>
-                          <SelectContent className="dark:bg-[#ffffff] dark:border-neutral-700">
+                          <SelectContent className="dark:bg-[#1e232a] dark:border-neutral-700">
                             <SelectItem value="outcome" className="text-neutral-900 dark:text-white">Expense</SelectItem>
                             <SelectItem value="income" className="text-neutral-900 dark:text-white">Income</SelectItem>
 

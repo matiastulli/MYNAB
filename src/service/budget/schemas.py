@@ -1,5 +1,5 @@
-from pydantic import BaseModel, validator
-from datetime import date
+from pydantic import BaseModel, Field, validator
+from datetime import date, datetime
 from decimal import Decimal
 from typing import Optional, List
 
@@ -18,9 +18,17 @@ class BudgetEntryCreate(BaseModel):
 class BudgetEntry(BudgetEntryCreate):
     id: int
     user_id: int
-    created_at: date
-    updated_at: date
+    created_at: datetime
+    updated_at: datetime
     
+    @property
+    def created_date(self) -> date:
+        return self.created_at.date()
+        
+    @property
+    def updated_date(self) -> date:
+        return self.updated_at.date()
+
 class BudgetSummary(BaseModel):
     income: float = 0.0
     outcome: float = 0.0

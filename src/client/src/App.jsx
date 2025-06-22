@@ -23,7 +23,7 @@ import { useEffect, useState } from "react"
 export default function App() {
   const [summary, setSummary] = useState({ income: 0, outcome: 0 })
   const [entries, setEntries] = useState([])
-  const [form, setForm] = useState({ amount: "", type: "income", description: "", date: "" })
+  const [form, setForm] = useState({ amount: "", type: "outcome", description: "", date: "" })
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [userData, setUserData] = useState(null)
@@ -32,13 +32,13 @@ export default function App() {
     offset: 0,
     total: 0
   });
-  
+
   // Check authentication status on load
   useEffect(() => {
     const checkAuth = () => {
       const isAuth = api.isAuthenticated();
       setIsAuthenticated(isAuth);
-      
+
       if (isAuth) {
         // Fetch user profile
         fetchUserProfile();
@@ -47,10 +47,10 @@ export default function App() {
         fetchDetails();
       }
     };
-    
+
     checkAuth();
   }, []);
-  
+
   const fetchUserProfile = async () => {
     const profile = await api.get("/auth/profile");
     if (!profile.error) {
@@ -66,7 +66,7 @@ export default function App() {
       if (params.toString()) {
         url += `?${params.toString()}`;
       }
-      
+
       const data = await api.get(url);
       if (!data.error) {
         setSummary(data);
@@ -84,12 +84,12 @@ export default function App() {
     try {
       let url = "/budget/details";
       const params = new URLSearchParams();
-      
+
       params.append("limit", pagination.limit);
       params.append("offset", pagination.offset);
-      
+
       url += `?${params.toString()}`;
-      
+
       const data = await api.get(url);
       if (!data.error) {
         setEntries(data.data || []);
@@ -109,12 +109,12 @@ export default function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!isAuthenticated) {
       setShowAuthModal(true);
       return;
     }
-    
+
     const response = await api.post("/budget/entry", form);
     if (!response.error) {
       setForm({ amount: "", type: "income", description: "", date: "" });
@@ -122,7 +122,7 @@ export default function App() {
       fetchDetails();
     }
   };
-  
+
   const handleLogout = () => {
     api.logout();
     setIsAuthenticated(false);
@@ -130,7 +130,7 @@ export default function App() {
     setSummary({ income: 0, outcome: 0 });
     setEntries([]);
   };
-  
+
   const handleAuthentication = (authData) => {
     setShowAuthModal(false);
     setIsAuthenticated(true);
@@ -148,7 +148,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-neutral-50/50 dark:bg-[#121418]">
       {showAuthModal && <AuthModal onAuthenticated={handleAuthentication} />}
-      
+
       <div className="max-w-4xl mx-auto px-4 py-8 md:px-6 md:py-12">
         {/* Header */}
         <header className="mb-12">
@@ -164,7 +164,7 @@ export default function App() {
                 <WalletIcon className="h-5 w-5" />
                 <span className="text-xs font-medium tracking-wider uppercase">MYNAB</span>
               </div>
-              
+
               {isAuthenticated && (
                 <div className="flex items-center gap-3">
                   {userData && (
@@ -177,10 +177,10 @@ export default function App() {
                       </span>
                     </div>
                   )}
-                  
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={handleLogout}
                     className="text-neutral-600 dark:text-neutral-300"
                   >
@@ -261,7 +261,7 @@ export default function App() {
             </CardContent>
           </Card>
         </div>
-        
+
         {/* Main Content */}
         <Tabs defaultValue="entries" className="space-y-6">
           <TabsList className="grid grid-cols-2 w-full max-w-md mx-auto bg-neutral-100 dark:bg-[#1e232a] p-1">
@@ -281,10 +281,10 @@ export default function App() {
 
           {/* Transactions List */}
           <TabsContent value="entries" className="space-y-4">
-            <ActivityList 
-              isAuthenticated={isAuthenticated} 
-              entries={entries} 
-              onSignInClick={() => setShowAuthModal(true)} 
+            <ActivityList
+              isAuthenticated={isAuthenticated}
+              entries={entries}
+              onSignInClick={() => setShowAuthModal(true)}
               onTransactionDeleted={() => {
                 fetchSummary();
                 fetchDetails();
@@ -314,9 +314,9 @@ export default function App() {
                         You need to be signed in to add and track your transactions in MYNAB.
                       </p>
                     </div>
-                    <Button 
+                    <Button
                       onClick={() => setShowAuthModal(true)}
-                      className="mt-2 bg-neutral-900 hover:bg-neutral-800 dark:bg-blue-600 dark:hover:bg-blue-700"
+                      className="mt-2 bg-neutral-900 hover:bg-neutral-800 dark:bg-emerald-800/80 dark:hover:bg-emerald-700/90"
                       size="lg"
                     >
                       Sign In
@@ -337,7 +337,7 @@ export default function App() {
                             step="0.01"
                             value={form.amount}
                             onChange={(e) => setForm({ ...form, amount: e.target.value })}
-                            className="pl-7 border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors"
+                            className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors placeholder:text-neutral-500 dark:placeholder:text-neutral-400"
                             placeholder="0.00"
                             required
                           />
@@ -353,7 +353,7 @@ export default function App() {
                             id="type"
                             className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47]"
                           >
-                            <SelectValue placeholder="Select type" />
+                            <SelectValue placeholder="Select type" className="text-neutral-500 dark:text-neutral-300" />
                           </SelectTrigger>
                           <SelectContent className="dark:bg-[#1e232a] dark:border-neutral-700">
                             <SelectItem value="outcome" className="dark:text-neutral-100">Expense</SelectItem>
@@ -371,7 +371,7 @@ export default function App() {
                         id="description"
                         value={form.description}
                         onChange={(e) => setForm({ ...form, description: e.target.value })}
-                        className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors"
+                        className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors placeholder:text-neutral-500 dark:placeholder:text-neutral-400"
                         placeholder="What's this transaction for?"
                       />
                     </div>
@@ -386,7 +386,7 @@ export default function App() {
                           type="date"
                           value={form.date}
                           onChange={(e) => setForm({ ...form, date: e.target.value })}
-                          className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors"
+                          className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors placeholder:text-neutral-500 dark:placeholder:text-neutral-400"
                           required
                         />
                         <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400 dark:text-neutral-300 pointer-events-none" />
@@ -395,7 +395,7 @@ export default function App() {
 
                     <Button
                       type="submit"
-                      className="w-full bg-neutral-900 hover:bg-neutral-800 dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white transition-colors"
+                      className="w-full bg-neutral-900 hover:bg-neutral-800 dark:bg-emerald-800/80 dark:hover:bg-emerald-700/90 dark:text-white transition-colors"
                     >
                       <PlusIcon className="h-4 w-4 mr-2" />
                       Add Transaction

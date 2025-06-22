@@ -324,25 +324,28 @@ export default function App() {
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="amount" className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
-                          Amount
-                        </Label>
-                        <div className="relative">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 dark:text-neutral-300 text-sm">$</span>
-                          <Input
-                            id="amount"
-                            type="number"
-                            step="0.01"
-                            value={form.amount}
-                            onChange={(e) => setForm({ ...form, amount: e.target.value })}
-                            className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors placeholder:text-neutral-500 dark:placeholder:text-white"
-                            placeholder="0.00"
-                            required
-                          />
-                        </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6"><div className="space-y-2">
+                      <Label
+                        htmlFor="amount"
+                        className="text-sm font-medium text-neutral-700 dark:text-neutral-200"
+                      >
+                        Amount
+                      </Label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white text-sm">$</span>
+                        <Input
+                          id="amount"
+                          type="number"
+                          step="0.01"
+                          value={form.amount}
+                          onChange={(e) => setForm({ ...form, amount: e.target.value })}
+                          className="pl-7 border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors placeholder:text-white dark:placeholder:text-white dark:text-white"
+                          placeholder="0.00"
+                          required
+                        />
                       </div>
+                    </div>
+
 
                       <div className="space-y-2">
                         <Label htmlFor="type" className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
@@ -355,9 +358,10 @@ export default function App() {
                           >
                             <SelectValue placeholder="Select type" className="text-neutral-500 dark:text-white" />
                           </SelectTrigger>
-                          <SelectContent className="dark:bg-[#1e232a] dark:border-neutral-700">
-                            <SelectItem value="outcome" className="dark:text-neutral-100">Expense</SelectItem>
-                            <SelectItem value="income" className="dark:text-neutral-100">Income</SelectItem>
+                          <SelectContent className="dark:bg-[#ffffff] dark:border-neutral-700">
+                            <SelectItem value="outcome" className="text-neutral-900 dark:text-white">Expense</SelectItem>
+                            <SelectItem value="income" className="text-neutral-900 dark:text-white">Income</SelectItem>
+
                           </SelectContent>
                         </Select>
                       </div>
@@ -374,10 +378,11 @@ export default function App() {
                         className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors placeholder:text-neutral-500 dark:placeholder:text-white"
                         placeholder="What's this transaction for?"
                       />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="date" className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
+                    </div><div className="space-y-2">
+                      <Label
+                        htmlFor="date"
+                        className="text-sm font-medium text-neutral-700 dark:text-neutral-200"
+                      >
                         Date
                       </Label>
                       <div className="relative">
@@ -386,12 +391,13 @@ export default function App() {
                           type="date"
                           value={form.date}
                           onChange={(e) => setForm({ ...form, date: e.target.value })}
-                          className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors placeholder:text-neutral-500 dark:placeholder:text-white"
+                          className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors placeholder:text-white dark:placeholder:text-white dark:text-white"
                           required
                         />
                         <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400 dark:text-neutral-300 pointer-events-none" />
                       </div>
                     </div>
+
 
                     <Button
                       type="submit"

@@ -64,8 +64,15 @@ body {
   color: hsl(var(--foreground));
 }
 
-/* Add this new class to ensure input text is visible in dark mode */
 .dark input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+  color: #ffffff; 
+  opacity: 1;     
+}
 
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  width: 100%;
+  cursor: pointer;
 }

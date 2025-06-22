@@ -1,7 +1,6 @@
 "use client"
 
 import AuthModal from "@/components/AuthModal"
-import FilterControls from "@/components/FilterControls"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -29,11 +28,6 @@ export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [userData, setUserData] = useState(null)
-  const [filters, setFilters] = useState({
-    startDate: "",
-    endDate: "",
-    type: ""
-  });
   const [pagination, setPagination] = useState({
     limit: 50,
     offset: 0,
@@ -69,10 +63,7 @@ export default function App() {
     try {
       let url = "/budget/summary";
       const params = new URLSearchParams();
-      
-      if (filters.startDate) params.append("start_date", filters.startDate);
-      if (filters.endDate) params.append("end_date", filters.endDate);
-      
+
       if (params.toString()) {
         url += `?${params.toString()}`;
       }
@@ -94,10 +85,6 @@ export default function App() {
     try {
       let url = "/budget/details";
       const params = new URLSearchParams();
-      
-      if (filters.startDate) params.append("start_date", filters.startDate);
-      if (filters.endDate) params.append("end_date", filters.endDate);
-      if (filters.type) params.append("type_filter", filters.type);
       
       params.append("limit", pagination.limit);
       params.append("offset", pagination.offset);
@@ -151,22 +138,6 @@ export default function App() {
     fetchUserProfile();
     fetchSummary();
     fetchDetails();
-  };
-
-  const handleApplyFilters = async (newFilters) => {
-    setFilters(newFilters);
-    setPagination({
-      ...pagination,
-      offset: 0 // Reset to first page when filters change
-    });
-    
-    try {
-      // Use await to ensure these complete properly before rendering
-      await fetchSummary();
-      await fetchDetails();
-    } catch (error) {
-      console.error("Error applying filters:", error);
-    }
   };
 
   const balance = summary.income - summary.outcome;
@@ -311,9 +282,6 @@ export default function App() {
 
           {/* Transactions List */}
           <TabsContent value="entries" className="space-y-4">
-            {isAuthenticated && (
-              <FilterControls onApplyFilters={handleApplyFilters} />
-            )}
             
             {!isAuthenticated ? (
               <Card className="border-0 bg-white/60 dark:bg-[#1a1e24]/90 backdrop-blur-sm">

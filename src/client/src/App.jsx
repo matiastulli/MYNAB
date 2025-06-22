@@ -1,5 +1,6 @@
 "use client"
 
+import ActivityList from "@/components/ActivityList"
 import AuthModal from "@/components/AuthModal"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,15 +10,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { api } from "@/services/api"
 import {
-  ArrowDownIcon,
-  ArrowUpIcon,
   CalendarIcon,
   LogOutIcon,
   PlusIcon,
   TrendingDownIcon,
   TrendingUpIcon,
   UserIcon,
-  WalletIcon,
+  WalletIcon
 } from "lucide-react"
 import { useEffect, useState } from "react"
 
@@ -282,92 +281,15 @@ export default function App() {
 
           {/* Transactions List */}
           <TabsContent value="entries" className="space-y-4">
-            
-            {!isAuthenticated ? (
-              <Card className="border-0 bg-white/60 dark:bg-[#1a1e24]/90 backdrop-blur-sm">
-                <CardContent className="p-12 text-center">
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="p-4 rounded-full bg-neutral-100 dark:bg-[#2a303a]">
-                      <UserIcon className="h-6 w-6 text-neutral-400 dark:text-neutral-300" />
-                    </div>
-                    <p className="text-neutral-500 dark:text-neutral-300">Please sign in to view your transactions</p>
-                    <Button 
-                      onClick={() => setShowAuthModal(true)}
-                      className="mt-2 bg-neutral-900 hover:bg-neutral-800 dark:bg-blue-600 dark:hover:bg-blue-700"
-                    >
-                      Sign In
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ) : entries.length === 0 ? (
-              <Card className="border-0 bg-white/60 dark:bg-[#1a1e24]/90 backdrop-blur-sm">
-                <CardContent className="p-12 text-center">
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="p-4 rounded-full bg-neutral-100 dark:bg-[#2a303a]">
-                      <WalletIcon className="h-6 w-6 text-neutral-400 dark:text-neutral-300" />
-                    </div>
-                    <p className="text-neutral-500 dark:text-neutral-300">No transactions this month</p>
-                  </div>
-                </CardContent>
-              </Card>
-            ) : (
-              <Card className="border-0 bg-white/60 dark:bg-[#1a1e24]/90 backdrop-blur-sm">
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
-                    Recent Activity
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                    {entries.map((entry) => (
-                      <div
-                        key={entry.id}
-                        className="flex items-center justify-between p-6 hover:bg-neutral-50/50 dark:hover:bg-[#2a303a]/70 transition-colors"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div
-                            className={`p-2.5 rounded-full ${entry.type === "income"
-                                ? "bg-emerald-50 dark:bg-emerald-900/70"
-                                : "bg-red-50 dark:bg-red-900/70"
-                              }`}
-                          >
-                            {entry.type === "income" ? (
-                              <ArrowUpIcon className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                            ) : (
-                              <ArrowDownIcon className="h-4 w-4 text-red-500 dark:text-red-400" />
-                            )}
-                          </div>
-                          <div>
-                            <p className="font-medium text-neutral-900 dark:text-neutral-100">
-                              {entry.description || "No description"}
-                            </p>
-                            <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                              {new Date(entry.date).toLocaleDateString("en-US", {
-                                month: "short",
-                                day: "numeric",
-                                year: "numeric",
-                              })}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p
-                            className={`font-semibold ${entry.type === "income"
-                                ? "text-emerald-600 dark:text-emerald-400"
-                                : "text-red-500 dark:text-red-400"
-                              }`}
-                          >
-                            {entry.type === "income" ? "+" : "-"}$
-                            {Number.parseFloat(entry.amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+            <ActivityList 
+              isAuthenticated={isAuthenticated} 
+              entries={entries} 
+              onSignInClick={() => setShowAuthModal(true)} 
+              onTransactionDeleted={() => {
+                fetchSummary();
+                fetchDetails();
+              }}
+            />
           </TabsContent>
 
           {/* Add New Transaction */}
@@ -434,8 +356,8 @@ export default function App() {
                             <SelectValue placeholder="Select type" />
                           </SelectTrigger>
                           <SelectContent className="dark:bg-[#1e232a] dark:border-neutral-700">
-                            <SelectItem value="income" className="dark:text-neutral-100">Income</SelectItem>
                             <SelectItem value="outcome" className="dark:text-neutral-100">Expense</SelectItem>
+                            <SelectItem value="income" className="dark:text-neutral-100">Income</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>

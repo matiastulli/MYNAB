@@ -77,6 +77,35 @@ export const api = {
     }
   },
   
+  delete: async (endpoint) => {
+    try {
+      const token = localStorage.getItem("token");
+      const headers = {
+        "Content-Type": "application/json"
+      };
+      
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+      
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method: "DELETE",
+        headers
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        return { error: errorData.detail || "Request failed" };
+      }
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("API delete error:", error);
+      return { error: "Failed to process your request" };
+    }
+  },
+  
   // Authentication specific methods
   auth: {
     signin: async (credentials) => {

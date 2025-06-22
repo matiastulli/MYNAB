@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends, status, Query
+from fastapi import APIRouter, Depends, status, Query, HTTPException
 from datetime import date
 from typing import Optional
 
 from src.service.auth_user.dependencies import require_role
 from src.service.auth_user.schemas import JWTData
 from src.service.budget.schemas import BudgetEntryCreate, BudgetSummary, BudgetEntriesResponse
-from src.service.budget.service import create_budget_entry, get_budget_summary, get_budget_entries
+from src.service.budget.service import create_budget_entry, get_budget_summary, get_budget_entries, delete_budget_entry
 
 router = APIRouter()
 
@@ -71,3 +71,19 @@ async def get_budget_details(
             "offset": offset
         }
     }
+
+
+@router.delete("/entry/{entry_id}", status_code=status.HTTP_200_OK)
+async def remove_entry(
+    entry_id: int,
+    jwt_data: JWTData = Depends(require_role([]))
+):
+    deleted = await delete_budget_entry(jwt_data.id_user, entry_id)
+    
+    if not deleted:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Entry not found or not authorized to delete this entry"
+        )
+    
+    return {"message": "Entry deleted successfully"}

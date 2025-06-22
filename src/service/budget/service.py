@@ -1,10 +1,9 @@
-from sqlalchemy import select, insert, func, and_
+from sqlalchemy import select, insert, func, and_, delete
 from datetime import date, datetime
-from decimal import Decimal
 from typing import Optional, Dict, Any, List
 
 from src.service.database import fetch_all, fetch_one, execute, budget_entry
-from src.service.budget.schemas import BudgetEntryCreate, BudgetSummary
+from src.service.budget.schemas import BudgetEntryCreate
 
 async def create_budget_entry(user_id: int, entry: BudgetEntryCreate) -> None:
     stmt = insert(budget_entry).values(
@@ -78,3 +77,32 @@ async def get_budget_entries(
     entries = await fetch_all(stmt)
     
     return entries, total_count
+
+async def delete_budget_entry(user_id: int, entry_id: int) -> bool:
+    """Delete a budget entry if it belongs to the user
+    
+    Args:
+        user_id: ID of the user making the request
+        entry_id: ID of the entry to delete
+        
+    Returns:
+        bool: True if successful, False if entry not found or not owned by user
+    """
+    
+    # First check if the entry exists and belongs to the user
+    check_stmt = select(budget_entry.c.id).where(
+        and_(budget_entry.c.id == entry_id, budget_entry.c.user_id == user_id)
+    )
+    
+    entry = await fetch_one(check_stmt)
+    
+    if not entry:
+        return False
+    
+    # Entry exists and belongs to the user, proceed with deletion
+    delete_stmt = delete(budget_entry).where(
+        and_(budget_entry.c.id == entry_id, budget_entry.c.user_id == user_id)
+    )
+    
+    await execute(delete_stmt)
+    return True

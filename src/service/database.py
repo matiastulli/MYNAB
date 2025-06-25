@@ -12,6 +12,7 @@ from sqlalchemy import (
     CursorResult,
     Select,
     Insert,
+    Text,
     Update,
     TextClause,
     Table,
@@ -92,27 +93,21 @@ budget_entry = Table(
     Column("type", String(10), nullable=False),  # 'income' or 'outcome'
     Column("description", String(255), nullable=True),
     Column("date", Date, nullable=False),
+    Column("file_id", Integer, ForeignKey("mynab.files.id"), nullable=True),
     Column("created_at", DateTime, server_default=func.now(), nullable=False),
     Column("updated_at", DateTime, server_default=func.now(), onupdate=func.now()),
     schema="mynab",
 )
 
-# Optional: categories to classify entries
-budget_category = Table(
-    "budget_category",
+files = Table(
+    "files",
     metadata,
     Column("id", Integer, primary_key=True, autoincrement=True),
-    Column("name", String(100), nullable=False),
     Column("user_id", Integer, ForeignKey("mynab.auth_user.id"), nullable=False),
-    schema="mynab",
-)
-
-# Linking entries to categories
-budget_entry_category = Table(
-    "budget_entry_category",
-    metadata,
-    Column("entry_id", Integer, ForeignKey("mynab.budget_entry.id"), primary_key=True),
-    Column("category_id", Integer, ForeignKey("mynab.budget_category.id"), primary_key=True),
+    Column("file_name", String(255), nullable=True),
+    Column("file_base64", Text, nullable=True),
+    Column("created_at", DateTime, server_default=func.now(), nullable=False),
+    Column("updated_at", DateTime, server_default=func.now(), onupdate=func.now()),
     schema="mynab",
 )
 

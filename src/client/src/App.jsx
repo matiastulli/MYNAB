@@ -257,7 +257,7 @@ export default function App() {
 
         {/* Main Content */}
         <Tabs defaultValue="entries" className="space-y-6">
-          <TabsList className="grid grid-cols-3 w-full max-w-md mx-auto bg-neutral-100 dark:bg-[#1e232a] p-1">
+          <TabsList className="grid grid-cols-3 w-full max-w-md mx-auto bg-neutral-100 dark:bg-[#1e232a] p-1 gap-x-1">
             <TabsTrigger
               value="entries"
               className="text-neutral-700 dark:text-neutral-300 data-[state=active]:text-neutral-900 dark:data-[state=active]:text-white data-[state=active]:bg-white dark:data-[state=active]:bg-[#2a303a] data-[state=active]:shadow-sm"

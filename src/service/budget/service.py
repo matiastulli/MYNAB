@@ -7,7 +7,7 @@ import base64
 
 from src.service.auth_user.service import get_user_by_id
 from src.service.budget.utils import extract_pdf_to_dataframe
-from src.service.database import fetch_all, fetch_one, execute, budget_entry
+from src.service.database import fetch_all, fetch_one, execute, budget_entry, files
 from src.service.budget.schemas import BudgetEntryCreate
 
 
@@ -120,6 +120,36 @@ async def delete_budget_entry(user_id: int, entry_id: int) -> bool:
     await execute(delete_stmt)
     return True
 
+
+async def list_files(user_id:int, limit: int, offset: int) -> dict[str, Any]:
+
+    select_query = select(
+        files.c.id.label('id'),
+        files.c.id_user.label('id_user'),
+        files.c.file_name.label('file_name'),
+        files.c.created_at.label('created_at'),
+        files.c.updated_at.label('updated_at'),
+    ).select_from(files).where(files.c.id_user == user_id)
+
+    # Count query to get total records
+    count_query = select(func.count()).select_from(select_query.alias())
+    total_count_result = await fetch_one(count_query)
+    total_count = total_count_result['count_1'] if total_count_result else 0
+
+    # Apply limit and offset for pagination
+    paginated_query = select_query.limit(limit).offset(offset)
+
+    # Fetch data
+    data = await fetch_all(paginated_query)
+
+    return {
+        "data": data,
+        "metadata": {
+            "total_count": total_count,
+            "limit": limit,
+            "offset": offset
+        }
+    }
 
 async def process_bank_statement(user_id: int, bank_name: str, file_content: str) -> int:
     """

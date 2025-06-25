@@ -1,16 +1,19 @@
 from fastapi import APIRouter, Depends, status, Query, Body, HTTPException
 from datetime import date
-from typing import Optional
+from typing import List, Optional
+
+from fastapi.responses import JSONResponse
 
 from src.service.auth_user.dependencies import require_role
 from src.service.auth_user.schemas import JWTData
-from src.service.budget.schemas import BudgetEntryCreate, BudgetSummary, BudgetEntriesResponse
+from src.service.budget.schemas import BudgetEntryCreate, BudgetSummary, BudgetEntriesResponse, FilesResponseWithMeta, FilesResponse
 from src.service.budget.service import (
     create_budget_entry,
     get_budget_summary,
     get_budget_entries,
     delete_budget_entry,
-    process_bank_statement
+    process_bank_statement,
+    list_files
 )
 
 router = APIRouter()
@@ -66,6 +69,33 @@ async def import_file(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error processing file: {str(e)}"
         ) from e
+
+
+@router.get("/files", response_model=List[FilesResponseWithMeta])
+async def read_files(
+    jwt_data: JWTData = Depends(require_role([])),
+    limit: Optional[int] = Query(
+        default=100, description="Number of items to return per page"),
+    offset: Optional[int] = Query(
+        default=0, description="Offset from the beginning of the result set"),
+) -> JSONResponse:
+    result = await list_files(user_id=jwt_data.id_user, limit=limit, offset=offset)
+
+    files_data = result["data"]
+    metadata = result["metadata"]
+
+    if not files_data:
+        return JSONResponse(status_code=status.HTTP_200_OK, content={"data": files_data, "metadata": metadata})
+
+    files_response = [
+        FilesResponse(**file_data) for file_data in files_data
+    ]
+
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={"data": [file.model_dump()
+                          for file in files_response], "metadata": metadata}
+    )
 
 
 @router.get("/summary", response_model=BudgetSummary)

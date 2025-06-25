@@ -365,7 +365,7 @@ def _process_icbc_format(df: pd.DataFrame) -> List[BudgetEntryCreate]:
     """Process ICBC bank statement CSV file into BudgetEntryCreate list"""
     entries: List[BudgetEntryCreate] = []
     # Rename columns for clarity
-    df.columns = ["Fecha", "Descripcion", "Credito", "Debito", "Saldo"]
+    df.columns = ["Fecha", "Descripcion", "Debito", "Credito", "Saldo"]
 
     for _, row in df.iterrows():
         try:

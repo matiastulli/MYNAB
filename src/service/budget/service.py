@@ -138,6 +138,12 @@ async def process_bank_statement(user_id: int, bank_name: str, file_content: str
         df = extract_pdf_to_dataframe(file_bytes)
 
         entries = _process_mercado_pago_format(df)
+        
+    elif bank_name.lower() == "icbc":
+        # Load into pandas DataFrame
+        df = pd.read_csv(io.BytesIO(file_bytes), encoding='utf-8')
+
+        entries = _process_icbc_format(df)
 
     # Filter out unwanted transactions
     ignored_descriptions = [
@@ -349,5 +355,39 @@ def _process_mercado_pago_format(df: pd.DataFrame) -> List[BudgetEntryCreate]:
 
     except Exception as e:
         return []
+
+    return entries
+
+
+def _process_icbc_format(df: pd.DataFrame) -> List[BudgetEntryCreate]:
+    """Process ICBC bank statement CSV file into BudgetEntryCreate list"""
+    entries: List[BudgetEntryCreate] = []
+    # Rename columns for clarity
+    df.columns = ["Fecha", "Descripcion", "Credito", "Debito", "Saldo"]
+
+    for _, row in df.iterrows():
+        try:
+            # Parse date
+            date_val = datetime.strptime(str(row["Fecha"]), "%m/%d/%y").date()
+            description = str(row["Descripcion"]).strip() or "Transacción sin descripción"
+            credito = pd.to_numeric(row.get("Credito"), errors="coerce") or 0.0
+            debito = pd.to_numeric(row.get("Debito"), errors="coerce") or 0.0
+
+            # Determine amount and type
+            if credito > 0:
+                amount = credito
+                entry_type = "income"
+            else:
+                amount = debito
+                entry_type = "outcome"
+
+            entries.append(BudgetEntryCreate(
+                date=date_val,
+                amount=abs(amount),
+                description=description,
+                type=entry_type
+            ))
+        except Exception:
+            continue
 
     return entries

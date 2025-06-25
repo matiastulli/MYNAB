@@ -2,7 +2,7 @@
 
 import ActivityList from "@/components/ActivityList"
 import AuthModal from "@/components/AuthModal"
-import ImportExcel from "@/components/ImportExcel"
+import ImportFile from "@/components/ImportFile"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -433,7 +433,7 @@ export default function App() {
                         Sign in to import transactions
                       </h3>
                       <p className="text-neutral-500 dark:text-neutral-400 max-w-sm mx-auto">
-                        You need to be signed in to import your transactions from Excel or CSV files.
+                        You need to be signed in to import your transactions from Excel or CSV or PDF files.
                       </p>
                     </div>
                     <Button
@@ -447,7 +447,7 @@ export default function App() {
                 </CardContent>
               </Card>
             ) : (
-              <ImportExcel
+              <ImportFile
                 onImportSuccess={() => {
                   fetchSummary();
                   fetchDetails();

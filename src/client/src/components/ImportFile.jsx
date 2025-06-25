@@ -8,7 +8,7 @@ import { api } from "@/services/api";
 import { CheckCircleIcon, UploadIcon, XCircleIcon } from "lucide-react";
 import { useState } from "react";
 
-export default function ImportExcel({ onImportComplete }) {
+export default function ImportFile({ onImportComplete }) {
   const [file, setFile] = useState(null);
   const [bankName, setBankName] = useState("");
   const [isUploading, setIsUploading] = useState(false);
@@ -51,9 +51,11 @@ export default function ImportExcel({ onImportComplete }) {
     try {
       // Convert file to Base64
       const base64File = await convertFileToBase64(file);
+
+      console.log("Base64 File Content:", base64File); // Debugging line
       
       // Send the file as base64 string using the regular post method
-      const response = await api.post("/budget/import-excel", {
+      const response = await api.post("/budget/import-file", {
         bank_name: bankName,
         file_content: base64File,
         file_name: file.name
@@ -108,14 +110,14 @@ export default function ImportExcel({ onImportComplete }) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="excelFile" className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
-              Excel Statement
+            <Label htmlFor="importFile" className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
+              File Statement
             </Label>
             <div className="flex items-center gap-3">
               <Input
-                id="excelFile"
+                id="importFile"
                 type="file"
-                accept=".xlsx,.xls"
+                accept=".xlsx,.xls,.pdf"
                 onChange={handleFileChange}
                 className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] file:mr-4 file:py-2 file:px-4
                 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-neutral-200 dark:file:bg-[#353b47] file:text-neutral-700 dark:file:text-white
@@ -124,7 +126,7 @@ export default function ImportExcel({ onImportComplete }) {
               {file && <p className="text-sm text-neutral-500 dark:text-neutral-400">{file.name}</p>}
             </div>
             <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-              Only .xlsx and .xls files are supported
+              Only .xlsx and .xls and .pdf files are supported
             </p>
           </div>
 

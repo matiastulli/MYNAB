@@ -1,9 +1,6 @@
 from fastapi import APIRouter, Depends, status, Query, Body, HTTPException
 from datetime import date
 from typing import Optional
-import pandas as pd
-import io
-import base64
 
 from src.service.auth_user.dependencies import require_role
 from src.service.auth_user.schemas import JWTData
@@ -28,24 +25,24 @@ async def add_entry(
     return {"message": "Entry added successfully"}
 
 
-@router.post("/import-excel", status_code=status.HTTP_200_OK)
-async def import_excel(
+@router.post("/import-file", status_code=status.HTTP_200_OK)
+async def import_file(
     bank_name: str = Body(...),
     file_content: str = Body(...),  # Base64 encoded file content
     file_name: str = Body(...),
     jwt_data: JWTData = Depends(require_role([]))
 ) -> dict[str, str | int]:
     """
-    Import transactions from an Excel file (Base64 encoded) based on the bank format.
+    Import transactions from file (Base64 encoded) based on the bank format.
     Supported banks: santander_rio, ICBC, mercado_pago
     """
     # Validate file type
-    if not file_name.endswith(('.xlsx', '.xls')):
+    if not file_name.endswith(('.xlsx', '.xls', '.pdf')):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="File must be an Excel file (.xlsx or .xls)"
+            detail="File must be an Excel or PDF file (.xlsx, .xls, .pdf)"
         )
-    
+
     # Validate bank name
     supported_banks = ["santander_rio", "ICBC", "mercado_pago"]
     if bank_name.lower() not in map(str.lower, supported_banks):
@@ -53,27 +50,22 @@ async def import_excel(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Unsupported bank. Supported banks: {', '.join(supported_banks)}"
         )
-    
+
     try:
-        # Decode Base64 file content
-        file_bytes = base64.b64decode(file_content)
-        
-        # Load into pandas DataFrame
-        df = pd.read_excel(io.BytesIO(file_bytes))
-        
+
         # Process bank statement in the service layer
-        entry_count = await process_bank_statement(jwt_data.id_user, bank_name, df)
-        
+        entry_count = await process_bank_statement(jwt_data.id_user, bank_name, file_content)
+
         return {
             "message": f"Successfully imported {entry_count} transactions from {bank_name}",
             "imported_count": entry_count
         }
-    
+
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error processing file: {str(e)}"
-        )
+        ) from e
 
 
 @router.get("/summary", response_model=BudgetSummary)

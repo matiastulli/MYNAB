@@ -2,7 +2,10 @@ from sqlalchemy import select, insert, func, and_, delete
 from datetime import date, datetime
 from typing import Optional, Dict, Any, List
 import pandas as pd
+import io
+import base64
 
+from src.service.budget.utils import extract_pdf_to_dataframe
 from src.service.database import fetch_all, fetch_one, execute, budget_entry
 from src.service.budget.schemas import BudgetEntryCreate
 
@@ -115,7 +118,7 @@ async def delete_budget_entry(user_id: int, entry_id: int) -> bool:
     return True
 
 
-async def process_bank_statement(user_id: int, bank_name: str, df: pd.DataFrame) -> int:
+async def process_bank_statement(user_id: int, bank_name: str, file_content: str) -> int:
     """
     Process bank statements from different banks and add entries to the database
     Returns the number of entries imported
@@ -123,8 +126,18 @@ async def process_bank_statement(user_id: int, bank_name: str, df: pd.DataFrame)
     # Process based on bank format
     entries = []
 
+    # Decode Base64 file content
+    file_bytes = base64.b64decode(file_content)
+
     if bank_name.lower() == "santander_rio":
+        # Load into pandas DataFrame
+        df = pd.read_excel(io.BytesIO(file_bytes))
+
         entries = _process_santander_rio_format(df)
+    elif bank_name.lower() == "mercado_pago":
+        df = extract_pdf_to_dataframe(file_bytes)
+
+        entries = _process_mercado_pago_format(df)
 
     # Save entries to database
     entry_count = 0
@@ -133,6 +146,7 @@ async def process_bank_statement(user_id: int, bank_name: str, df: pd.DataFrame)
         entry_count += 1
 
     return entry_count
+
 
 def _process_santander_rio_format(df: pd.DataFrame) -> List[BudgetEntryCreate]:
     """Process Santander Rio bank statement format"""
@@ -156,11 +170,15 @@ def _process_santander_rio_format(df: pd.DataFrame) -> List[BudgetEntryCreate]:
 
         for _, row in df.iterrows():
             try:
-                date_raw = pd.to_datetime(row["Fecha"], dayfirst=True, errors="coerce")
-                description = str(row["Descripcion"]).strip() or "Transacción sin descripción"
-                amount = pd.to_numeric(row.get("Caja_de_Ahorro"), errors="coerce")
+                date_raw = pd.to_datetime(
+                    row["Fecha"], dayfirst=True, errors="coerce")
+                description = str(row["Descripcion"]).strip(
+                ) or "Transacción sin descripción"
+                amount = pd.to_numeric(
+                    row.get("Caja_de_Ahorro"), errors="coerce")
                 if pd.isna(amount):
-                    amount = pd.to_numeric(row.get("Cuenta_Corriente"), errors="coerce")
+                    amount = pd.to_numeric(
+                        row.get("Cuenta_Corriente"), errors="coerce")
 
                 if pd.isna(amount):
                     continue
@@ -176,4 +194,141 @@ def _process_santander_rio_format(df: pd.DataFrame) -> List[BudgetEntryCreate]:
                 continue
     except Exception as e:
         return []
+    return entries
+
+
+def _process_mercado_pago_format(df: pd.DataFrame) -> List[BudgetEntryCreate]:
+    """Process MercadoPago bank statement format"""
+    entries: List[BudgetEntryCreate] = []
+
+    try:
+        # MercadoPago statements typically have columns: Fecha, Descripción, ID de la operación, Valor, Saldo
+        # Clean up the dataframe
+        df = df.dropna(how="all")
+
+        # Find the header row that contains "Fecha" and "Descripción"
+        header_row_idx = None
+        for idx, row in df.iterrows():
+            if any("Fecha" in str(cell) and "Descripción" in str(cell) for cell in row if pd.notna(cell)):
+                header_row_idx = idx
+                break
+
+        if header_row_idx is None:
+            # Try to find individual column headers
+            for idx, row in df.iterrows():
+                row_str = ' '.join([str(cell)
+                                   for cell in row if pd.notna(cell)])
+                if "Fecha" in row_str and "Descripción" in row_str:
+                    header_row_idx = idx
+                    break
+
+        if header_row_idx is not None:
+            # Set the header and clean the dataframe
+            df = df.iloc[header_row_idx + 1:].copy()
+
+        # Expected columns: Fecha, Descripción, ID de la operación, Valor, Saldo
+        # Rename columns to standard names
+        expected_columns = ["Fecha", "Descripcion",
+                            "ID_operacion", "Valor", "Saldo"]
+
+        # If we have the right number of columns, rename them
+        if len(df.columns) >= 4:
+            # Take only the first 5 columns or as many as we have
+            cols_to_use = min(5, len(df.columns))
+            df = df.iloc[:, :cols_to_use]
+
+            # Rename columns
+            column_names = expected_columns[:cols_to_use]
+            df.columns = column_names
+        else:
+            # If columns don't match expected format, try to identify them
+            df.columns = [f"Col_{i}" for i in range(len(df.columns))]
+
+        # Remove empty rows
+        df = df.dropna(how="all")
+
+        # Process each row
+        for _, row in df.iterrows():
+            try:
+                # Skip rows that don't contain transaction data
+                if pd.isna(row.iloc[0]) or str(row.iloc[0]).strip() == "":
+                    continue
+
+                # Extract date (first column)
+                date_str = str(row.iloc[0]).strip()
+
+                # Skip if it's not a date-like string
+                if not any(char.isdigit() for char in date_str):
+                    continue
+
+                # Parse date - MercadoPago uses DD-MM-YYYY format
+                try:
+                    date_raw = pd.to_datetime(
+                        date_str, format="%d-%m-%Y", errors="coerce")
+                    if pd.isna(date_raw):
+                        date_raw = pd.to_datetime(
+                            date_str, dayfirst=True, errors="coerce")
+                except:
+                    continue
+
+                if pd.isna(date_raw):
+                    continue
+
+                # Extract description (second column)
+                description = str(row.iloc[1]).strip() if len(row) > 1 and pd.notna(
+                    row.iloc[1]) else "Transacción MercadoPago"
+
+                # Extract amount - look for the "Valor" column (usually 4th column, index 3)
+                amount = None
+
+                # Try to find amount in the expected position (index 3 for "Valor")
+                if len(row) > 3:
+                    amount_str = str(row.iloc[3]).strip()
+                    # Remove currency symbols and clean the string
+                    amount_str = amount_str.replace(
+                        "$", "").replace(",", "").strip()
+
+                    try:
+                        amount = float(amount_str)
+                    except:
+                        amount = None
+
+                # If amount not found in expected position, try other columns
+                if amount is None:
+                    for col_idx in range(2, len(row)):
+                        try:
+                            col_val = str(row.iloc[col_idx]).strip()
+                            if "$" in col_val or any(char.isdigit() for char in col_val):
+                                col_val = col_val.replace(
+                                    "$", "").replace(",", "").strip()
+                                # Handle negative values
+                                if col_val.startswith("-"):
+                                    amount = -float(col_val[1:])
+                                else:
+                                    amount = float(col_val)
+                                break
+                        except:
+                            continue
+
+                if amount is None or amount == 0:
+                    continue
+
+                # Determine entry type
+                entry_type = "income" if amount > 0 else "outcome"
+
+                # Create entry
+                entries.append(BudgetEntryCreate(
+                    date=date_raw,
+                    amount=abs(amount),
+                    description=description,
+                    type=entry_type,
+                ))
+
+            except Exception as e:
+                # Skip problematic rows
+                continue
+
+    except Exception as e:
+        return []
+
     return entries

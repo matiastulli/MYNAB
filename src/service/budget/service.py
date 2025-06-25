@@ -139,9 +139,28 @@ async def process_bank_statement(user_id: int, bank_name: str, file_content: str
 
         entries = _process_mercado_pago_format(df)
 
-    # Save entries to database
-    entry_count = 0
+    # Filter out unwanted transactions
+    ignored_descriptions = [
+        "Ingreso de dinero Cuenta ICBC",
+        "2041542604"
+    ]
+
+    # Filter out entries with large amounts that would exceed database limits
+    filtered_entries = []
     for entry in entries:
+        # Skip entries with descriptions in the ignore list
+        if any(desc.lower() in entry.description.lower() for desc in ignored_descriptions):
+            continue
+
+        # Skip entries with amounts that would exceed database limits
+        if entry.amount >= 100000000:  # NUMERIC(10,2) limit
+            continue
+
+        filtered_entries.append(entry)
+
+    # Save filtered entries to database
+    entry_count = 0
+    for entry in filtered_entries:
         await create_budget_entry(user_id, entry)
         entry_count += 1
 

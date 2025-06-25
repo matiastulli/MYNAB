@@ -90,7 +90,7 @@ async def get_monthly_summary(
 async def get_budget_details(
     start_date: Optional[date] = None,
     end_date: Optional[date] = None,
-    limit: int = Query(50, ge=1, le=100),
+    limit: int = Query(100, ge=1, le=400),
     offset: int = Query(0, ge=0),
     type_filter: Optional[str] = None,
     jwt_data: JWTData = Depends(require_role([]))

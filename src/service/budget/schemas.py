@@ -1,10 +1,12 @@
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, validator
 from datetime import date, datetime
 from decimal import Decimal
 from typing import Optional, List
 
 class BudgetEntryCreate(BaseModel):
     amount: Decimal
+    currency: str
+    source: Optional[str] = None  # e.g., 'icbc', 'mercado_pago', 'manual'
     type: str
     description: Optional[str] = None
     date: date

@@ -16,6 +16,8 @@ async def create_budget_entry(user_id: int, entry: BudgetEntryCreate) -> None:
         user_id=user_id,
         amount=entry.amount,
         type=entry.type,
+        currency=entry.currency,
+        source=entry.source,
         description=entry.description,
         date=entry.date,
         created_at=datetime.utcnow(),
@@ -134,17 +136,17 @@ async def process_bank_statement(user_id: int, bank_name: str, file_content: str
         # Load into pandas DataFrame
         df = pd.read_excel(io.BytesIO(file_bytes))
 
-        entries = _process_santander_rio_format(df)
+        entries = _process_santander_rio_format(df, bank_name)
     elif bank_name.lower() == "mercado_pago":
         df = extract_pdf_to_dataframe(file_bytes)
 
-        entries = _process_mercado_pago_format(df)
+        entries = _process_mercado_pago_format(df, bank_name)
 
     elif bank_name.lower() == "icbc":
         # Load into pandas DataFrame
         df = pd.read_csv(io.BytesIO(file_bytes), encoding='utf-8')
 
-        entries = _process_icbc_format(df)
+        entries = _process_icbc_format(df, bank_name)
 
     user_data = await get_user_by_id(user_id)
 
@@ -175,7 +177,7 @@ async def process_bank_statement(user_id: int, bank_name: str, file_content: str
     return entry_count
 
 
-def _process_santander_rio_format(df: pd.DataFrame) -> List[BudgetEntryCreate]:
+def _process_santander_rio_format(df: pd.DataFrame, bank_name: str) -> List[BudgetEntryCreate]:
     """Process Santander Rio bank statement format"""
     entries: List[BudgetEntryCreate] = []
     try:
@@ -214,6 +216,8 @@ def _process_santander_rio_format(df: pd.DataFrame) -> List[BudgetEntryCreate]:
                 entries.append(BudgetEntryCreate(
                     date=date_raw,
                     amount=abs(amount),
+                    currency="ARS",  # Assuming Argentine Peso
+                    source=bank_name,
                     description=description,
                     type=entry_type,
                 ))
@@ -224,7 +228,7 @@ def _process_santander_rio_format(df: pd.DataFrame) -> List[BudgetEntryCreate]:
     return entries
 
 
-def _process_mercado_pago_format(df: pd.DataFrame) -> List[BudgetEntryCreate]:
+def _process_mercado_pago_format(df: pd.DataFrame, bank_name: str) -> List[BudgetEntryCreate]:
     """Process MercadoPago bank statement format"""
     entries: List[BudgetEntryCreate] = []
 
@@ -347,6 +351,8 @@ def _process_mercado_pago_format(df: pd.DataFrame) -> List[BudgetEntryCreate]:
                 entries.append(BudgetEntryCreate(
                     date=date_raw,
                     amount=abs(amount),
+                    currency="ARS",  # Assuming Argentine Peso
+                    source=bank_name,
                     description=description,
                     type=entry_type,
                 ))
@@ -361,7 +367,7 @@ def _process_mercado_pago_format(df: pd.DataFrame) -> List[BudgetEntryCreate]:
     return entries
 
 
-def _process_icbc_format(df: pd.DataFrame) -> List[BudgetEntryCreate]:
+def _process_icbc_format(df: pd.DataFrame, bank_name: str) -> List[BudgetEntryCreate]:
     """Process ICBC bank statement CSV file into BudgetEntryCreate list"""
     entries: List[BudgetEntryCreate] = []
     # Rename columns for clarity
@@ -387,6 +393,8 @@ def _process_icbc_format(df: pd.DataFrame) -> List[BudgetEntryCreate]:
             entries.append(BudgetEntryCreate(
                 date=date_val,
                 amount=abs(amount),
+                currency="ARS",  # Assuming Argentine Peso
+                source=bank_name,
                 description=description,
                 type=entry_type
             ))

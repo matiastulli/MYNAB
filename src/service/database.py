@@ -87,6 +87,8 @@ budget_entry = Table(
     Column("id", Integer, primary_key=True, autoincrement=True),
     Column("user_id", Integer, ForeignKey("mynab.auth_user.id"), nullable=False),
     Column("amount", DECIMAL(38, 12), nullable=False),
+    Column("currency", String(3), nullable=True, default="ARS"),
+    Column("source", String(50), nullable=True),  # e.g., 'icbc', 'mercado_pago', 'manual'
     Column("type", String(10), nullable=False),  # 'income' or 'outcome'
     Column("description", String(255), nullable=True),
     Column("date", Date, nullable=False),

@@ -124,7 +124,7 @@ export default function App() {
 
     const response = await api.post("/budget/entry", form);
     if (!response.error) {
-      setForm({ amount: "", type: "income", description: "", date: "" });
+      setForm({ amount: "", type: "income", description: "", date: "", source: "manual" });
       fetchSummary();
       fetchDetails();
     }

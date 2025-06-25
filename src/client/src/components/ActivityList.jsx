@@ -4,11 +4,11 @@ import { api } from "@/services/api";
 import { ArrowDownIcon, ArrowUpIcon, TrashIcon, UserIcon, WalletIcon } from "lucide-react";
 import { useState } from "react";
 
-export default function ActivityList({ 
-  isAuthenticated, 
-  entries = [], 
+export default function ActivityList({
+  isAuthenticated,
+  entries = [],
   onSignInClick,
-  onTransactionDeleted 
+  onTransactionDeleted
 }) {
   const [deletingId, setDeletingId] = useState(null);
 
@@ -38,7 +38,7 @@ export default function ActivityList({
               <UserIcon className="h-6 w-6 text-neutral-400 dark:text-neutral-300" />
             </div>
             <p className="text-neutral-500 dark:text-neutral-300">Please sign in to view your transactions</p>
-            <Button 
+            <Button
               onClick={onSignInClick}
               className="mt-2 bg-neutral-900 hover:bg-neutral-800 dark:bg-emerald-800/80 dark:hover:bg-emerald-700/90"
             >
@@ -82,8 +82,8 @@ export default function ActivityList({
               <div className="flex items-center gap-4">
                 <div
                   className={`p-2.5 rounded-full ${entry.type === "income"
-                      ? "bg-emerald-50 dark:bg-emerald-900/70"
-                      : "bg-red-50 dark:bg-red-900/70"
+                    ? "bg-emerald-50 dark:bg-emerald-900/70"
+                    : "bg-red-50 dark:bg-red-900/70"
                     }`}
                 >
                   {entry.type === "income" ? (
@@ -96,28 +96,45 @@ export default function ActivityList({
                   <p className="font-medium text-neutral-900 dark:text-neutral-100">
                     {entry.description || "No description"}
                   </p>
-                  <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                    {new Date(entry.date).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
-                  </p>
+                  <div className="flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400">
+                    <span>
+                      {new Date(entry.date).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </span>
+                    {entry.source && (
+                      <>
+                        <span>•</span>
+                        <span className="capitalize">{entry.source.replace('_', ' ')}</span>
+                      </>
+                    )}
+                    {entry.currency && entry.currency !== 'ARS' && (
+                      <>
+                        <span>•</span>
+                        <span>{entry.currency}</span>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center gap-4">
-                <p
-                  className={`font-semibold ${entry.type === "income"
-                      ? "text-emerald-600 dark:text-emerald-400"
-                      : "text-red-500 dark:text-red-400"
-                    }`}
-                >
-                  {entry.type === "income" ? "+" : "-"}$
-                  {Number.parseFloat(entry.amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}
-                </p>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+              <div className="flex items-center gap-4">                <p
+                className={`font-semibold ${entry.type === "income"
+                  ? "text-emerald-600 dark:text-emerald-400"
+                  : "text-red-500 dark:text-red-400"
+                  }`}
+              >
+                {entry.type === "income" ? "+" : "-"}
+                {entry.currency === 'USD' ? '$' : entry.currency === 'EUR' ? '€' : '$'}
+                {Number.parseFloat(entry.amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                {entry.currency && entry.currency !== 'USD' && entry.currency !== 'EUR' && entry.currency !== 'ARS' && (
+                  <span className="text-xs ml-1 opacity-75">{entry.currency}</span>
+                )}
+              </p>
+                <Button
+                  variant="ghost"
+                  size="icon"
                   className="text-neutral-400 hover:text-red-500 dark:text-neutral-500 dark:hover:text-red-400"
                   onClick={() => handleDelete(entry.id)}
                   disabled={deletingId === entry.id}

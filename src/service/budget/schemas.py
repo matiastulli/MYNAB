@@ -6,6 +6,7 @@ from typing import Optional, List
 
 
 class BudgetEntryCreate(CustomModel):
+    reference_id: str
     amount: Decimal
     currency: str
     source: Optional[str] = None  # e.g., 'icbc', 'mercado_pago', 'manual'

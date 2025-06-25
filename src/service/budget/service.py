@@ -14,6 +14,7 @@ from src.service.budget.schemas import BudgetEntryCreate
 async def create_budget_entry(user_id: int, entry: BudgetEntryCreate) -> None:
     stmt = insert(budget_entry).values(
         user_id=user_id,
+        reference_id=entry.reference_id,
         amount=entry.amount,
         type=entry.type,
         currency=entry.currency,
@@ -121,7 +122,7 @@ async def delete_budget_entry(user_id: int, entry_id: int) -> bool:
     return True
 
 
-async def list_files(user_id:int, limit: int, offset: int) -> dict[str, Any]:
+async def list_files(user_id: int, limit: int, offset: int) -> dict[str, Any]:
 
     select_query = select(
         files.c.id.label('id'),
@@ -150,6 +151,7 @@ async def list_files(user_id:int, limit: int, offset: int) -> dict[str, Any]:
             "offset": offset
         }
     }
+
 
 async def process_bank_statement(user_id: int, bank_name: str, file_content: str) -> int:
     """
@@ -229,6 +231,7 @@ def _process_santander_rio_format(df: pd.DataFrame, bank_name: str) -> List[Budg
 
         for _, row in df.iterrows():
             try:
+                reference_id = str(row["Referencia"]).strip() or None
                 date_raw = pd.to_datetime(
                     row["Fecha"], dayfirst=True, errors="coerce")
                 description = str(row["Descripcion"]).strip(
@@ -244,6 +247,7 @@ def _process_santander_rio_format(df: pd.DataFrame, bank_name: str) -> List[Budg
 
                 entry_type = "income" if amount > 0 else "outcome"
                 entries.append(BudgetEntryCreate(
+                    reference_id=reference_id,
                     date=date_raw,
                     amount=abs(amount),
                     currency="ARS",  # Assuming Argentine Peso
@@ -334,6 +338,10 @@ def _process_mercado_pago_format(df: pd.DataFrame, bank_name: str) -> List[Budge
 
                 if pd.isna(date_raw):
                     continue
+                
+                # Extract reference ID (third column)
+                reference_id = str(row.iloc[2]).strip() if len(row) > 2 and pd.notna(
+                    row.iloc[2]) else None
 
                 # Extract description (second column)
                 description = str(row.iloc[1]).strip() if len(row) > 1 and pd.notna(
@@ -379,6 +387,7 @@ def _process_mercado_pago_format(df: pd.DataFrame, bank_name: str) -> List[Budge
 
                 # Create entry
                 entries.append(BudgetEntryCreate(
+                    reference_id=reference_id,
                     date=date_raw,
                     amount=abs(amount),
                     currency="ARS",  # Assuming Argentine Peso
@@ -401,10 +410,11 @@ def _process_icbc_format(df: pd.DataFrame, bank_name: str) -> List[BudgetEntryCr
     """Process ICBC bank statement CSV file into BudgetEntryCreate list"""
     entries: List[BudgetEntryCreate] = []
     # Rename columns for clarity
-    df.columns = ["Fecha", "Descripcion", "Debito", "Credito", "Saldo"]
+    df.columns = ["Fecha", "Descripcion", "Debito", "Credito", "Referencia"]
 
     for _, row in df.iterrows():
         try:
+            reference_id = str(row["Referencia"]).strip() or None
             # Parse date
             date_val = datetime.strptime(str(row["Fecha"]), "%m/%d/%y").date()
             description = str(row["Descripcion"]).strip(
@@ -421,6 +431,7 @@ def _process_icbc_format(df: pd.DataFrame, bank_name: str) -> List[BudgetEntryCr
                 entry_type = "outcome"
 
             entries.append(BudgetEntryCreate(
+                reference_id=reference_id,
                 date=date_val,
                 amount=abs(amount),
                 currency="ARS",  # Assuming Argentine Peso

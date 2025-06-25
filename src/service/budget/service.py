@@ -124,7 +124,7 @@ async def process_bank_statement(user_id: int, bank_name: str, df: pd.DataFrame)
     entries = []
 
     if bank_name.lower() == "santander_rio":
-        entries = _process_santander_format(df)
+        entries = _process_santander_rio_format(df)
 
     # Save entries to database
     entry_count = 0
@@ -134,8 +134,8 @@ async def process_bank_statement(user_id: int, bank_name: str, df: pd.DataFrame)
 
     return entry_count
 
-def _process_santander_format(df: pd.DataFrame) -> List[BudgetEntryCreate]:
-    """Process Santander bank statement format"""
+def _process_santander_rio_format(df: pd.DataFrame) -> List[BudgetEntryCreate]:
+    """Process Santander Rio bank statement format"""
     entries: List[BudgetEntryCreate] = []
     try:
         df = df.iloc[12:].copy()

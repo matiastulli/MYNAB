@@ -51,8 +51,6 @@ export default function ImportExcel({ onImportComplete }) {
     try {
       // Convert file to Base64
       const base64File = await convertFileToBase64(file);
-
-      console.log("Base64 File Content:", base64File); // Debugging line
       
       // Send the file as base64 string using the regular post method
       const response = await api.post("/budget/import-excel", {
@@ -161,7 +159,7 @@ export default function ImportExcel({ onImportComplete }) {
             ) : (
               <>
                 <UploadIcon className="h-4 w-4 mr-2" />
-                Import Transactions
+                Upload File
               </>
             )}
           </Button>

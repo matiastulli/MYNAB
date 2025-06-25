@@ -77,6 +77,35 @@ export const api = {
     }
   },
   
+  put: async (endpoint, data) => {
+    try {
+      // Ensure endpoint starts with a slash if it doesn't already
+      const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+      
+      const response = await fetch(`${API_BASE_URL}${normalizedEndpoint}`, {
+        method: 'PUT',
+        headers: getHeaders(),
+        body: JSON.stringify(data),
+      });
+      
+      if (!response.ok) {
+        // Handle unauthorized or other errors
+        if (response.status === 401) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('userId');
+        }
+        const error = await response.json();
+        return { error: error.error || 'API request failed' };
+      }
+      
+      return response.json();
+    } catch (error) {
+      console.error('API request failed:', error);
+      return { error: error.message || 'Network error' };
+    }
+  },
+  
   delete: async (endpoint) => {
     try {
       const token = localStorage.getItem("token");

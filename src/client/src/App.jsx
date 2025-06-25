@@ -3,9 +3,9 @@
 import ActivityList from "@/components/ActivityList"
 import AuthModal from "@/components/AuthModal"
 import ImportFile from "@/components/ImportFile"
+import ProfileUpdateDialog from "@/components/ProfileUpdateDialog"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -14,7 +14,6 @@ import { api } from "@/services/api"
 import {
   AlertTriangleIcon,
   CalendarIcon,
-  CheckCircleIcon,
   LogOutIcon,
   PlusIcon,
   TrendingDownIcon,
@@ -23,7 +22,6 @@ import {
   WalletIcon
 } from "lucide-react"
 import { useEffect, useState } from "react"
-import { toast } from "sonner"
 
 export default function App() {
   const [summary, setSummary] = useState({ income: 0, outcome: 0 })
@@ -38,9 +36,6 @@ export default function App() {
     total: 0
   });
   const [showProfileModal, setShowProfileModal] = useState(false);
-  const [profileForm, setProfileForm] = useState({ name: "", last_name: "", national_id: "" });
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [updateSuccess, setUpdateSuccess] = useState(false);
 
   // Check authentication status on load
   useEffect(() => {
@@ -67,12 +62,6 @@ export default function App() {
 
     if (!profile.error) {
       setUserData(profile);
-      // Pre-populate the profile form when we get user data
-      setProfileForm({
-        name: profile.name || "",
-        last_name: profile.last_name || "",
-        national_id: profile.national_id || ""
-      });
     }
   };
 
@@ -157,30 +146,6 @@ export default function App() {
     fetchDetails();
   };
 
-  const handleProfileUpdate = async (e) => {
-    e.preventDefault();
-    setIsUpdating(true);
-    
-    try {
-      const response = await api.post("/auth/profile", profileForm);
-      if (!response.error) {
-        setUpdateSuccess(true);
-        fetchUserProfile();
-        setTimeout(() => {
-          setShowProfileModal(false);
-          setUpdateSuccess(false);
-        }, 1500);
-      } else {
-        toast.error("Failed to update profile");
-      }
-    } catch (error) {
-      toast.error("Something went wrong");
-      console.error(error);
-    } finally {
-      setIsUpdating(false);
-    }
-  };
-
   const balance = summary.income - summary.outcome;
   const formattedDate = new Date().toLocaleDateString("en-US", {
     month: "long",
@@ -221,7 +186,7 @@ export default function App() {
                         {userData.name}
                       </span>
                       {(!userData.national_id || userData.national_id === "") && (
-                        <div className="flex items-center" title="Missing national ID - required for transaction filtering">
+                        <div className="flex items-center" title="Missing CUIT - required for transaction filtering">
                           <AlertTriangleIcon className="h-4 w-4 text-amber-500" />
                         </div>
                       )}
@@ -508,117 +473,12 @@ export default function App() {
         </Tabs>
 
         {/* Profile Update Dialog */}
-        <Dialog open={showProfileModal} onOpenChange={setShowProfileModal}>
-          <DialogContent className="bg-white dark:bg-[#1a1e24] border-0 shadow-lg">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-medium dark:text-white">Update Your Profile</DialogTitle>
-              <DialogDescription className="text-neutral-500 dark:text-neutral-400">
-                {(!userData?.national_id || userData?.national_id === "") ? (
-                  <div className="flex items-start gap-2 mt-2 p-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800/30 rounded-md">
-                    <AlertTriangleIcon className="h-5 w-5 text-amber-500 mt-0.5" />
-                    <div>
-                      <p className="font-medium text-amber-700 dark:text-amber-400">National ID Required</p>
-                      <p className="text-sm text-amber-600 dark:text-amber-500">
-                        Adding your national ID helps filter out personal transactions that shouldn't be counted in your budget.
-                      </p>
-                    </div>
-                  </div>
-                ) : (
-                  "Update your personal information below."
-                )}
-              </DialogDescription>
-            </DialogHeader>
-            
-            {updateSuccess ? (
-              <div className="flex flex-col items-center py-8 gap-3">
-                <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-full">
-                  <CheckCircleIcon className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
-                </div>
-                <p className="text-lg font-medium text-neutral-900 dark:text-neutral-100">Profile Updated</p>
-              </div>
-            ) : (
-              <form onSubmit={handleProfileUpdate} className="space-y-4">
-                <div className="space-y-2">
-                  <Label 
-                    htmlFor="name" 
-                    className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
-                  >
-                    First Name
-                  </Label>
-                  <Input 
-                    id="name" 
-                    value={profileForm.name}
-                    onChange={(e) => setProfileForm({...profileForm, name: e.target.value})}
-                    className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47]"
-                    required
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label 
-                    htmlFor="last_name" 
-                    className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
-                  >
-                    Last Name
-                  </Label>
-                  <Input 
-                    id="last_name" 
-                    value={profileForm.last_name}
-                    onChange={(e) => setProfileForm({...profileForm, last_name: e.target.value})}
-                    className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47]"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label 
-                    htmlFor="national_id" 
-                    className="text-sm font-medium text-neutral-700 dark:text-neutral-300 flex items-center gap-1"
-                  >
-                    National ID
-                    {(!userData?.national_id || userData?.national_id === "") && (
-                      <AlertTriangleIcon className="h-4 w-4 text-amber-500" />
-                    )}
-                  </Label>
-                  <Input 
-                    id="national_id" 
-                    value={profileForm.national_id}
-                    onChange={(e) => setProfileForm({...profileForm, national_id: e.target.value})}
-                    className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47]"
-                    placeholder="e.g. 12345678"
-                  />
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                    Used to automatically filter out personal transactions.
-                  </p>
-                </div>
-                
-                <DialogFooter>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setShowProfileModal(false)}
-                    className="border-neutral-200 dark:border-neutral-700 dark:bg-[#2a303a] dark:hover:bg-[#353b47] dark:text-neutral-200"
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    type="submit"
-                    disabled={isUpdating}
-                    className="bg-neutral-900 hover:bg-neutral-800 dark:bg-emerald-800/80 dark:hover:bg-emerald-700/90"
-                  >
-                    {isUpdating ? (
-                      <div className="flex items-center gap-2">
-                        <div className="h-4 w-4 border-2 border-t-transparent rounded-full animate-spin"></div>
-                        <span>Saving...</span>
-                      </div>
-                    ) : (
-                      "Save Changes"
-                    )}
-                  </Button>
-                </DialogFooter>
-              </form>
-            )}
-          </DialogContent>
-        </Dialog>
+        <ProfileUpdateDialog 
+          open={showProfileModal}
+          onOpenChange={setShowProfileModal}
+          userData={userData}
+          onProfileUpdated={fetchUserProfile}
+        />
       </div>
     </div>
   );

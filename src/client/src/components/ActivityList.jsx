@@ -116,6 +116,12 @@ export default function ActivityList({
                         <span>{entry.currency}</span>
                       </>
                     )}
+                    {entry.reference_id && (
+                      <>
+                        <span>•</span>
+                        <span className="italic text-xs opacity-80">ref: {entry.reference_id}</span>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>

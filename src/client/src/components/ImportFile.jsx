@@ -117,7 +117,7 @@ export default function ImportFile({ onImportComplete }) {
               <Input
                 id="importFile"
                 type="file"
-                accept=".xlsx,.xls,.pdf"
+                accept=".xlsx,.xls,.csv,.pdf"
                 onChange={handleFileChange}
                 className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] file:mr-4 file:py-2 file:px-4
                 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-neutral-200 dark:file:bg-[#353b47] file:text-neutral-700 dark:file:text-white
@@ -126,7 +126,7 @@ export default function ImportFile({ onImportComplete }) {
               {file && <p className="text-sm text-neutral-500 dark:text-neutral-400">{file.name}</p>}
             </div>
             <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-              Only .xlsx and .xls and .pdf files are supported
+              Only .xlsx and .xls and .csv and .pdf files are supported
             </p>
           </div>
 

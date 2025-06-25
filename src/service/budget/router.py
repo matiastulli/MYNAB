@@ -37,10 +37,10 @@ async def import_file(
     Supported banks: santander_rio, ICBC, mercado_pago
     """
     # Validate file type
-    if not file_name.endswith(('.xlsx', '.xls', '.pdf')):
+    if not file_name.endswith(('.xlsx', '.xls', '.csv', '.pdf')):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="File must be an Excel or PDF file (.xlsx, .xls, .pdf)"
+            detail="File must be an Excel or PDF file (.xlsx, .xls, .csv, .pdf)"
         )
 
     # Validate bank name

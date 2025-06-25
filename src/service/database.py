@@ -45,6 +45,7 @@ auth_user = Table(
     Column("id", Integer, primary_key=True, autoincrement=True),
     Column("name", String(100), nullable=False),
     Column("last_name", String(100), nullable=False),
+    Column("national_id", String(20), nullable=True, unique=True),
     Column("email", String, nullable=False, unique=True),
     Column("password", LargeBinary, nullable=False),
     Column("id_role", Integer, ForeignKey(

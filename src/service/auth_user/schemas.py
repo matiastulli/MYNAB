@@ -38,6 +38,7 @@ class RegisterUser(UserBase):
 class UpdateUser(CustomModel):
     name: str = Field(min_length=2, max_length=100)
     last_name: str = Field(min_length=2, max_length=100)
+    national_id: Optional[str] = Field(min_length=6, max_length=20)
 
 
 class SignInUser(UserBase):
@@ -59,6 +60,7 @@ class UserResponse(CustomModel):
     id: int
     name: str
     last_name: str
+    national_id: Optional[str] = None
     email: EmailStr
     id_role: int
     created_at: str

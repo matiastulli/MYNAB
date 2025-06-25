@@ -56,7 +56,8 @@ async def update_user(id_user: int, user: UpdateUser) -> dict[str, Any] | None:
         .values(
             {
                 "name": user.name,
-                "last_name": user.last_name
+                "last_name": user.last_name,
+                "national_id": user.national_id,
             }
         )
         .returning(auth_user)
@@ -70,6 +71,7 @@ async def get_user_by_id(id_user: int) -> dict[str, Any] | None:
         auth_user.c.id,
         auth_user.c.name,
         auth_user.c.last_name,
+        auth_user.c.national_id,
         auth_user.c.email,
         auth_user.c.id_role,
         auth_user.c.created_at,
@@ -159,7 +161,7 @@ async def get_user_roles(user_id: int) -> dict[str, Any]:
     select_query = select(
         auth_user_role.c.name.label('role')
     ).select_from(join_1).where(
-        (auth_user.c.id_user == user_id)
+        (auth_user.c.id == user_id)
     )
 
     result: dict[str, Any] = await fetch_one(select_query)

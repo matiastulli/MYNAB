@@ -4,7 +4,9 @@ import pdfplumber
 import re
 
 def extract_pdf_to_dataframe(file_bytes: bytes) -> pd.DataFrame:
-    """Extrae los movimientos del PDF MercadoPago y retorna un DataFrame limpio."""
+    """
+    Extract data from a PDF file and return it as a DataFrame.
+    """
 
     # Leer el texto completo del PDF
     with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:

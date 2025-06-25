@@ -5,6 +5,7 @@ import pandas as pd
 import io
 import base64
 
+from src.service.auth_user.service import get_user_by_id
 from src.service.budget.utils import extract_pdf_to_dataframe
 from src.service.database import fetch_all, fetch_one, execute, budget_entry
 from src.service.budget.schemas import BudgetEntryCreate
@@ -138,18 +139,24 @@ async def process_bank_statement(user_id: int, bank_name: str, file_content: str
         df = extract_pdf_to_dataframe(file_bytes)
 
         entries = _process_mercado_pago_format(df)
-        
+
     elif bank_name.lower() == "icbc":
         # Load into pandas DataFrame
         df = pd.read_csv(io.BytesIO(file_bytes), encoding='utf-8')
 
         entries = _process_icbc_format(df)
 
+    user_data = await get_user_by_id(user_id)
+
     # Filter out unwanted transactions
     ignored_descriptions = [
         "Ingreso de dinero Cuenta ICBC",
         "2041542604"
     ]
+
+    # Add the user's national_id to ignored descriptions if available
+    if user_data and user_data.get("national_id"):
+        ignored_descriptions.append(user_data["national_id"])
 
     # Filter out entries with large amounts that would exceed database limits
     filtered_entries = []
@@ -369,7 +376,8 @@ def _process_icbc_format(df: pd.DataFrame) -> List[BudgetEntryCreate]:
         try:
             # Parse date
             date_val = datetime.strptime(str(row["Fecha"]), "%m/%d/%y").date()
-            description = str(row["Descripcion"]).strip() or "Transacción sin descripción"
+            description = str(row["Descripcion"]).strip(
+            ) or "Transacción sin descripción"
             credito = pd.to_numeric(row.get("Credito"), errors="coerce") or 0.0
             debito = pd.to_numeric(row.get("Debito"), errors="coerce") or 0.0
 

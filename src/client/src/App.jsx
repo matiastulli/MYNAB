@@ -2,6 +2,7 @@
 
 import ActivityList from "@/components/ActivityList"
 import AuthModal from "@/components/AuthModal"
+import ImportExcel from "@/components/ImportExcel"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -264,7 +265,7 @@ export default function App() {
 
         {/* Main Content */}
         <Tabs defaultValue="entries" className="space-y-6">
-          <TabsList className="grid grid-cols-2 w-full max-w-md mx-auto bg-neutral-100 dark:bg-[#1e232a] p-1">
+          <TabsList className="grid grid-cols-3 w-full max-w-md mx-auto bg-neutral-100 dark:bg-[#1e232a] p-1">
             <TabsTrigger
               value="entries"
               className="text-neutral-700 dark:text-neutral-300 data-[state=active]:text-neutral-900 dark:data-[state=active]:text-white data-[state=active]:bg-white dark:data-[state=active]:bg-[#2a303a] data-[state=active]:shadow-sm"
@@ -275,7 +276,13 @@ export default function App() {
               value="new"
               className="text-neutral-700 dark:text-neutral-300 data-[state=active]:text-neutral-900 dark:data-[state=active]:text-white data-[state=active]:bg-white dark:data-[state=active]:bg-[#2a303a] data-[state=active]:shadow-sm"
             >
-              Add New
+              Manual Entry
+            </TabsTrigger>
+            <TabsTrigger
+              value="import"
+              className="text-neutral-700 dark:text-neutral-300 data-[state=active]:text-neutral-900 dark:data-[state=active]:text-white data-[state=active]:bg-white dark:data-[state=active]:bg-[#2a303a] data-[state=active]:shadow-sm"
+            >
+              File Entry
             </TabsTrigger>
           </TabsList>
 
@@ -410,6 +417,44 @@ export default function App() {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Import Transactions */}
+          <TabsContent value="import">
+            {!isAuthenticated ? (
+              <Card className="border-0 bg-white/60 dark:bg-[#1a1e24]/90 backdrop-blur-sm max-w-2xl mx-auto">
+                <CardContent>
+                  <div className="flex flex-col items-center gap-4 py-6">
+                    <div className="p-4 rounded-full bg-neutral-100 dark:bg-[#2a303a]">
+                      <UserIcon className="h-6 w-6 text-neutral-400 dark:text-neutral-300" />
+                    </div>
+                    <div className="text-center space-y-2">
+                      <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
+                        Sign in to import transactions
+                      </h3>
+                      <p className="text-neutral-500 dark:text-neutral-400 max-w-sm mx-auto">
+                        You need to be signed in to import your transactions from Excel or CSV files.
+                      </p>
+                    </div>
+                    <Button
+                      onClick={() => setShowAuthModal(true)}
+                      className="mt-2 bg-neutral-900 hover:bg-neutral-800 dark:bg-emerald-800/80 dark:hover:bg-emerald-700/90"
+                      size="lg"
+                    >
+                      Sign In
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <ImportExcel
+                onImportSuccess={() => {
+                  fetchSummary();
+                  fetchDetails();
+                }}
+                className="max-w-2xl mx-auto"
+              />
+            )}
           </TabsContent>
         </Tabs>
       </div>

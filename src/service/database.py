@@ -86,7 +86,7 @@ budget_entry = Table(
     metadata,
     Column("id", Integer, primary_key=True, autoincrement=True),
     Column("user_id", Integer, ForeignKey("mynab.auth_user.id"), nullable=False),
-    Column("amount", DECIMAL(10, 2), nullable=False),  # positive for income, negative for outcome
+    Column("amount", DECIMAL(38, 12), nullable=False),
     Column("type", String(10), nullable=False),  # 'income' or 'outcome'
     Column("description", String(255), nullable=True),
     Column("date", Date, nullable=False),

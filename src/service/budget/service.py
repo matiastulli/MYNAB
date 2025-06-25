@@ -150,8 +150,7 @@ async def process_bank_statement(user_id: int, bank_name: str, file_content: str
 
     # Filter out unwanted transactions
     ignored_descriptions = [
-        "Ingreso de dinero Cuenta ICBC",
-        "2041542604"
+        "Ingreso de dinero Cuenta ICBC"
     ]
 
     # Add the user's national_id to ignored descriptions if available
@@ -163,10 +162,6 @@ async def process_bank_statement(user_id: int, bank_name: str, file_content: str
     for entry in entries:
         # Skip entries with descriptions in the ignore list
         if any(desc.lower() in entry.description.lower() for desc in ignored_descriptions):
-            continue
-
-        # Skip entries with amounts that would exceed database limits
-        if entry.amount >= 100000000:  # NUMERIC(10,2) limit
             continue
 
         filtered_entries.append(entry)

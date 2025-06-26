@@ -32,6 +32,7 @@ export default function App() {
     total: 0
   });
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [activeTab, setActiveTab] = useState("entries");
 
   // Check authentication status on load
   useEffect(() => {
@@ -154,6 +155,20 @@ export default function App() {
     fetchSummary();
     fetchDetails();
     fetchFiles();
+  };
+
+  // Handle successful import - refresh data and switch to entries tab
+  const handleImportSuccess = (result) => {
+    // Refresh data
+    fetchSummary();
+    fetchDetails();
+    fetchFiles();
+    
+    // Switch to entries tab to show the imported transactions
+    setActiveTab("entries");
+    
+    // Optional: Show toast notification with import results
+    console.log(`Successfully imported ${result.count} transactions`);
   };
 
   const balance = summary.income - summary.outcome;
@@ -284,7 +299,7 @@ export default function App() {
         </div>
 
         {/* Main Content */}
-        <Tabs defaultValue="entries" className="space-y-8">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
           <div className="flex justify-center">
             <TabsList className="inline-flex bg-white/80 dark:bg-[#1a1e24]/80 p-1.5 gap-x-1.5 rounded-xl shadow-sm">
               <TabsTrigger
@@ -368,10 +383,11 @@ export default function App() {
               </Card>
             ) : (
               <ImportFile
-                onImportSuccess={() => {
+                onImportComplete={() => {
                   fetchSummary();
                   fetchDetails();
                 }}
+                onImportSuccess={handleImportSuccess}
                 className="max-w-2xl mx-auto"
               />
             )}

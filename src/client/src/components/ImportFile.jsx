@@ -8,7 +8,7 @@ import { api } from "@/services/api";
 import { CheckCircleIcon, FileIcon, UploadCloudIcon, UploadIcon, XCircleIcon } from "lucide-react";
 import { useState } from "react";
 
-export default function ImportFile({ onImportComplete }) {
+export default function ImportFile({ onImportComplete, onImportSuccess }) {
   const [file, setFile] = useState(null);
   const [bankName, setBankName] = useState("");
   const [isUploading, setIsUploading] = useState(false);
@@ -87,15 +87,31 @@ export default function ImportFile({ onImportComplete }) {
         throw new Error(response.error || "Failed to import file");
       }
 
-      setResult({
+      const resultData = {
         message: response.message || "Import successful",
         count: response.imported_count || 0,
-      });
+      };
+
+      setResult(resultData);
       
-      // Call the callback to refresh data if needed
-      if (onImportComplete) {
-        onImportComplete();
-      }
+      // Show success message before redirecting
+      setTimeout(() => {
+        // Reset form state
+        setFile(null);
+        setBankName("");
+        setResult(null);
+        
+        // Call the callback to refresh data and redirect
+        if (onImportComplete) {
+          onImportComplete();
+        }
+        
+        // Redirect to main entries view
+        if (onImportSuccess) {
+          onImportSuccess(resultData);
+        }
+      }, 1500); // Show success message for 1.5 seconds before redirecting
+      
     } catch (err) {
       setError(err.message || "An error occurred during import");
     } finally {

@@ -144,6 +144,13 @@ async def delete_file(file_id: int, user_id: int) -> bool:
     if not file:
         return False
 
+    # First delete all budget entries that reference this file
+    delete_entries_stmt = delete(budget_entry).where(
+        and_(budget_entry.c.file_id == file_id, budget_entry.c.user_id == user_id)
+    )
+    
+    await execute(delete_entries_stmt)
+
     # File exists and belongs to the user, proceed with deletion
     delete_stmt = delete(files).where(
         and_(files.c.id == file_id, files.c.user_id == user_id)

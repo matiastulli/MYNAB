@@ -23,11 +23,7 @@ class BudgetEntryCreate(CustomModel):
     source: Optional[str] = None  # e.g., 'icbc', 'mercado_pago', 'manual'
     type: str
     description: Optional[str] = None
-    date: str
-
-    @validator('date', pre=True, allow_reuse=True)
-    def format_datetime(cls, value):
-        return Validators.format_datetime(value)
+    date: date
 
     @validator('type')
     def validate_type(cls, v):

@@ -375,6 +375,8 @@ export default function App() {
             <ActivityList
               isAuthenticated={isAuthenticated}
               entries={entries}
+              dateRange={dateRange}
+              dateRangeFormatted={dateRangeFormatted}
               onSignInClick={() => setShowAuthModal(true)}
               onTransactionDeleted={() => {
                 fetchSummary();

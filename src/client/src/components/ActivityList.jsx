@@ -12,6 +12,8 @@ import { useEffect, useState } from "react";
 export default function ActivityList({
   isAuthenticated,
   entries = [],
+  dateRange,
+  dateRangeFormatted,
   onSignInClick,
   onTransactionDeleted
 }) {
@@ -80,7 +82,9 @@ export default function ActivityList({
               <WalletIcon className="h-6 w-6 text-emerald-500 dark:text-emerald-400" />
             </div>
             <div className="max-w-sm">
-              <h3 className="text-lg font-medium mb-2 text-neutral-900 dark:text-white">No transactions yet</h3>
+              <h3 className="text-lg font-medium mb-2 text-neutral-900 dark:text-white">
+                No transactions for {dateRangeFormatted}
+              </h3>
               <p className="text-neutral-500 dark:text-neutral-300">Add your first transaction or import from your bank statements</p>
             </div>
           </div>
@@ -92,9 +96,15 @@ export default function ActivityList({
   return (
     <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm">
       <CardHeader className="pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
-          Activity
-        </CardTitle>
+        <div className="flex items-center gap-2">
+          <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
+            Recent Activity
+          </CardTitle>
+          <span className="text-xs font-medium py-1 px-2 bg-neutral-100 dark:bg-[#252a34] text-neutral-500 dark:text-neutral-400 rounded-md flex items-center gap-1">
+            <CalendarIcon className="h-3 w-3" />
+            {dateRangeFormatted}
+          </span>
+        </div>
         
         <div className="relative w-full sm:w-auto sm:min-w-[240px]">
           <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />

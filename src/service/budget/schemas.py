@@ -1,13 +1,12 @@
 from pydantic import validator
 from src.service.models import CustomModel, convert_datetime_to_date
 from datetime import date, datetime
-from decimal import Decimal
 from typing import Optional, List
 
 
 class BudgetEntryCreate(CustomModel):
     reference_id: str
-    amount: Decimal
+    amount: float
     currency: str
     source: Optional[str] = None  # e.g., 'icbc', 'mercado_pago', 'manual'
     type: str
@@ -47,9 +46,15 @@ class PaginationInfo(CustomModel):
     offset: int
 
 
-class BudgetEntriesResponse(CustomModel):
+class Metadata(CustomModel):
+    total_count: int
+    limit: int
+    offset: int
+
+
+class BudgetResponseWithMeta(CustomModel):
     data: List[BudgetEntry]
-    pagination: PaginationInfo
+    metadata: Metadata
 
 
 class FilesResponse(CustomModel):
@@ -64,12 +69,6 @@ class FilesResponse(CustomModel):
         if isinstance(value, datetime):
             return convert_datetime_to_date(value)
         return value
-
-
-class Metadata(CustomModel):
-    total_count: int
-    limit: int
-    offset: int
 
 
 class FilesResponseWithMeta(CustomModel):

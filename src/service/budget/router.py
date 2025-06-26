@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 
 from src.service.auth_user.dependencies import require_role
 from src.service.auth_user.schemas import JWTData
-from src.service.budget.schemas import BudgetEntryCreate, BudgetSummary, BudgetEntriesResponse, FilesResponseWithMeta, FilesResponse
+from src.service.budget.schemas import BudgetEntryCreate, BudgetSummary, BudgetResponseWithMeta, BudgetEntry, FilesResponseWithMeta, FilesResponse
 from src.service.budget.service import (
     create_budget_entry,
     get_budget_summary,
@@ -98,6 +98,49 @@ async def read_files(
     )
 
 
+@router.get("/details", response_model=List[BudgetResponseWithMeta])
+async def get_budget_details(
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+    limit: int = Query(100, ge=1, le=400),
+    offset: int = Query(0, ge=0),
+    type_filter: Optional[str] = None,
+    jwt_data: JWTData = Depends(require_role([]))
+) -> JSONResponse:
+    today = date.today()
+
+    # Default to current month if no dates provided
+    if not start_date:
+        start_date = today.replace(day=1)
+    if not end_date:
+        end_date = today
+
+    result = await get_budget_entries(
+        jwt_data.id_user,
+        start_date,
+        end_date,
+        limit,
+        offset,
+        type_filter
+    )
+
+    budgets_data = result["data"]
+    metadata = result["metadata"]
+
+    if not budgets_data:
+        return JSONResponse(status_code=status.HTTP_200_OK, content={"data": budgets_data, "metadata": metadata})
+
+    budget_response = [
+        BudgetEntry(**budget_data) for budget_data in budgets_data
+    ]
+
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={"data": [budget.model_dump()
+                          for budget in budget_response], "metadata": metadata}
+    )
+
+
 @router.get("/summary", response_model=BudgetSummary)
 async def get_monthly_summary(
     start_date: Optional[date] = None,
@@ -115,41 +158,6 @@ async def get_monthly_summary(
     summary = await get_budget_summary(jwt_data.id_user, start_date, end_date)
     return summary
 
-
-@router.get("/details", response_model=BudgetEntriesResponse)
-async def get_budget_details(
-    start_date: Optional[date] = None,
-    end_date: Optional[date] = None,
-    limit: int = Query(100, ge=1, le=400),
-    offset: int = Query(0, ge=0),
-    type_filter: Optional[str] = None,
-    jwt_data: JWTData = Depends(require_role([]))
-):
-    today = date.today()
-
-    # Default to current month if no dates provided
-    if not start_date:
-        start_date = today.replace(day=1)
-    if not end_date:
-        end_date = today
-
-    entries, total_count = await get_budget_entries(
-        jwt_data.id_user,
-        start_date,
-        end_date,
-        limit,
-        offset,
-        type_filter
-    )
-
-    return {
-        "data": entries,
-        "pagination": {
-            "total": total_count,
-            "limit": limit,
-            "offset": offset
-        }
-    }
 
 
 @router.delete("/entry/{entry_id}", status_code=status.HTTP_200_OK)

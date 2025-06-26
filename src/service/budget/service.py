@@ -52,7 +52,7 @@ async def get_budget_entries(
     limit: int,
     offset: int,
     type_filter: Optional[str]
-) -> tuple[List[Dict[str, Any]], int]:
+) -> dict[str, Any]:
     # Build filter conditions
     conditions = [
         budget_entry.c.user_id == user_id,
@@ -64,23 +64,10 @@ async def get_budget_entries(
     if type_filter and type_filter in ["income", "outcome"]:
         conditions.append(budget_entry.c.type == type_filter)
 
-    # Count total entries for pagination info
-    count_stmt = select(func.count()).select_from(
-        budget_entry).where(and_(*conditions))
-    total_count_result = await fetch_one(count_stmt)
-
-    # Fix for the error - handle different possible return formats
-    if total_count_result is None:
-        total_count = 0
-    elif isinstance(total_count_result, dict) and 'count' in total_count_result:
-        total_count = total_count_result['count']
-    elif isinstance(total_count_result, (list, tuple)) and len(total_count_result) > 0:
-        total_count = total_count_result[0]
-    else:
-        # If we can't determine the format, convert to string and log for debugging
-        total_count = 0
-        print(
-            f"Unexpected count result format: {type(total_count_result)} - {total_count_result}")
+    # Count query to get total records
+    count_query = select(func.count()).select_from(budget_entry)
+    total_count_result = await fetch_one(count_query)
+    total_count = total_count_result['count_1'] if total_count_result else 0
 
     # Get paginated entries
     stmt = select(budget_entry).where(and_(*conditions)) \
@@ -89,7 +76,14 @@ async def get_budget_entries(
 
     entries = await fetch_all(stmt)
 
-    return entries, total_count
+    return {
+        "data": entries,
+        "metadata": {
+            "total_count": total_count,
+            "limit": limit,
+            "offset": offset
+        }
+    }
 
 
 async def delete_budget_entry(user_id: int, entry_id: int) -> bool:
@@ -338,7 +332,7 @@ def _process_mercado_pago_format(df: pd.DataFrame, bank_name: str) -> List[Budge
 
                 if pd.isna(date_raw):
                     continue
-                
+
                 # Extract reference ID (third column)
                 reference_id = str(row.iloc[2]).strip() if len(row) > 2 and pd.notna(
                     row.iloc[2]) else None

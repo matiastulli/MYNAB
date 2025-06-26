@@ -18,7 +18,8 @@ export default function ManualTransactionForm({
     description: "", 
     date: "",
     currency: "ARS",
-    source: "manual"
+    source: "manual",
+    reference_id: ""
   });
 
   const handleSubmit = async (e) => {
@@ -37,7 +38,8 @@ export default function ManualTransactionForm({
         description: "", 
         date: "",
         currency: "ARS",
-        source: "manual"
+        source: "manual",
+        reference_id: ""
       });
       onTransactionAdded();
     }
@@ -183,6 +185,19 @@ export default function ManualTransactionForm({
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="reference_id" className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
+              Reference ID
+            </Label>
+            <Input
+              id="reference_id"
+              value={form.reference_id}
+              onChange={(e) => setForm({ ...form, reference_id: e.target.value })}
+              className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors placeholder:text-neutral-500 dark:placeholder:text-neutral-400"
+              placeholder="Enter file reference ID if any"
+            />
           </div>
 
           <Button

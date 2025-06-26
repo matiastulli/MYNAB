@@ -68,7 +68,7 @@ export default function FilesList({
     if (!confirm("Are you sure you want to delete this file?")) return;
 
     try {
-      const response = await api.delete(`/budget/files/${fileId}`);
+      const response = await api.delete(`/budget/file/${fileId}`);
       
       if (!response.error) {
         fetchFiles();

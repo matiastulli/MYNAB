@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { api } from "@/services/api";
-import { CalendarIcon, CheckIcon, PlusIcon } from "lucide-react";
+import { CalendarIcon, CheckIcon, CircleDollarSignIcon, PlusIcon } from "lucide-react";
 import { useState } from "react";
 
 export default function ManualTransactionForm({ 
@@ -77,7 +77,8 @@ export default function ManualTransactionForm({
   return (
     <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
+        <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+          <CircleDollarSignIcon className="h-5 w-5 text-emerald-500" />
           Add Transaction
         </CardTitle>
       </CardHeader>

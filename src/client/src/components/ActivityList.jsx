@@ -5,11 +5,6 @@ import { api } from "@/services/api";
 import { CalendarIcon, CircleDollarSignIcon, SearchIcon, TrashIcon, WalletIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
-// Add xs breakpoint to Tailwind if it doesn't exist
-// This is used for small mobile screens
-// You can add this to your tailwind.config.js screens section if not already there
-// screens: { xs: '480px', ...defaultTheme.screens }
-
 export default function ActivityList({
   isAuthenticated,
   entries = [],
@@ -83,8 +78,9 @@ export default function ActivityList({
     <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm">
       <CardHeader className="pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-2">
-          <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
-            Recent Activity
+          <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+            <WalletIcon className="h-5 w-5 text-emerald-500" />
+            Activity
           </CardTitle>
           <span className="text-xs font-medium py-1 px-2 bg-neutral-100 dark:bg-[#252a34] text-neutral-500 dark:text-neutral-400 rounded-md flex items-center gap-1">
             <CalendarIcon className="h-3 w-3" />

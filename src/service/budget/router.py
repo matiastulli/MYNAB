@@ -106,11 +106,11 @@ async def read_files(
     )
 
 
-@router.post("/details", response_model=List[BudgetResponseWithMeta])
+@router.get("/details", response_model=List[BudgetResponseWithMeta])
 async def get_budget_details(
     jwt_data: JWTData = Depends(require_role([])),
-    start_date: Optional[date] = None,
-    end_date: Optional[date] = None,
+    start_date: Optional[date] = Query(None),
+    end_date: Optional[date] = Query(None),
     limit: Optional[int] = Query(
         default=100, description="Number of items to return per page"),
     offset: Optional[int] = Query(
@@ -149,11 +149,11 @@ async def get_budget_details(
     )
 
 
-@router.post("/summary", response_model=BudgetSummary)
+@router.get("/summary", response_model=BudgetSummary)
 async def get_monthly_summary(
     jwt_data: JWTData = Depends(require_role([])),
-    start_date: Optional[date] = None,
-    end_date: Optional[date] = None
+    start_date: Optional[date] = Query(None),
+    end_date: Optional[date] = Query(None),
 ):
     today = date.today()
 

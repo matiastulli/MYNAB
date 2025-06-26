@@ -80,17 +80,18 @@ export default function App() {
 
   const fetchSummary = async () => {
     try {
-      const url = "/budget/summary";
-
       // Format dates for API
       const startDateStr = format(dateRange.startDate, 'yyyy-MM-dd');
       const endDateStr = format(dateRange.endDate, 'yyyy-MM-dd');
       
-      // Send date parameters in the request body
-      const data = await api.post(url, {
-        start_date: startDateStr,
-        end_date: endDateStr
-      });
+      // Use URL parameters for GET request
+      const params = new URLSearchParams();
+      params.append('start_date', startDateStr);
+      params.append('end_date', endDateStr);
+      
+      const url = `/budget/summary?${params.toString()}`;
+      
+      const data = await api.get(url);
       
       if (!data.error) {
         setSummary(data);
@@ -106,19 +107,20 @@ export default function App() {
 
   const fetchDetails = async () => {
     try {
-      const url = "/budget/details";
-      
       // Format dates for API
       const startDateStr = format(dateRange.startDate, 'yyyy-MM-dd');
       const endDateStr = format(dateRange.endDate, 'yyyy-MM-dd');
       
-      // Send pagination parameters and date range in the request body
-      const data = await api.post(url, {
-        limit: pagination.limit,
-        offset: pagination.offset,
-        start_date: startDateStr,
-        end_date: endDateStr
-      });
+      // Use URL parameters for GET request
+      const params = new URLSearchParams();
+      params.append('start_date', startDateStr);
+      params.append('end_date', endDateStr);
+      params.append('limit', pagination.limit);
+      params.append('offset', pagination.offset);
+      
+      const url = `/budget/details?${params.toString()}`;
+      
+      const data = await api.get(url);
       
       if (!data.error) {
         setEntries(data.data || []);

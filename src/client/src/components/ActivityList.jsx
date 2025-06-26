@@ -2,7 +2,7 @@ import SignInPrompt from "@/components/SignInPrompt";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { api } from "@/services/api";
-import { CalendarIcon, CircleDollarSignIcon, SearchIcon, TrashIcon, WalletIcon } from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon, CalendarIcon, CircleDollarSignIcon, SearchIcon, TrashIcon, WalletIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function ActivityList({
@@ -16,16 +16,38 @@ export default function ActivityList({
   const [deletingId, setDeletingId] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredEntries, setFilteredEntries] = useState(entries);
+  const [sortDirection, setSortDirection] = useState(null); // null, 'asc', or 'desc'
 
   useEffect(() => {
+    // Apply filtering and sorting
+    let result = [...entries];
+    
+    // Apply search filter
     if (searchTerm) {
-      setFilteredEntries(entries.filter(entry => 
+      result = result.filter(entry => 
         entry.description?.toLowerCase().includes(searchTerm.toLowerCase())
-      ));
-    } else {
-      setFilteredEntries(entries);
+      );
     }
-  }, [entries, searchTerm]);
+    
+    // Apply sorting by amount if direction is set
+    if (sortDirection === 'asc') {
+      result = [...result].sort((a, b) => a.amount - b.amount);
+    } else if (sortDirection === 'desc') {
+      result = [...result].sort((a, b) => b.amount - a.amount);
+    }
+    
+    setFilteredEntries(result);
+  }, [entries, searchTerm, sortDirection]);
+
+  const toggleSortDirection = () => {
+    if (sortDirection === null) {
+      setSortDirection('desc'); // Start with highest amount first
+    } else if (sortDirection === 'desc') {
+      setSortDirection('asc'); // Toggle to lowest first
+    } else {
+      setSortDirection(null); // Toggle back to default order
+    }
+  };
 
   const handleDelete = async (id) => {
     setDeletingId(id);
@@ -88,15 +110,40 @@ export default function ActivityList({
           </span>
         </div>
         
-        <div className="relative w-full sm:w-auto sm:min-w-[240px]">
-          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
-          <input 
-            type="search" 
-            placeholder="Search transactions..." 
-            className="w-full h-9 py-2 pl-9 pr-4 rounded-lg text-sm bg-neutral-100 dark:bg-[#252a34] border-0 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="relative flex-1 sm:min-w-[240px]">
+            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+            <input 
+              type="search" 
+              placeholder="Search transactions..." 
+              className="w-full h-9 py-2 pl-9 pr-4 rounded-lg text-sm bg-neutral-100 dark:bg-[#252a34] border-0 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleSortDirection}
+            title={
+              sortDirection === 'asc' ? "Sorting: Low to High" : 
+              sortDirection === 'desc' ? "Sorting: High to Low" : 
+              "Sort by Amount"
+            }
+            className={`h-9 px-3 rounded-lg ${
+              sortDirection ? 'bg-neutral-100 dark:bg-[#252a34] text-emerald-600 dark:text-emerald-400' : 
+              'text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-[#252a34]'
+            }`}
+          >
+            {sortDirection === 'asc' ? (
+              <ArrowUpIcon className="h-4 w-4" />
+            ) : sortDirection === 'desc' ? (
+              <ArrowDownIcon className="h-4 w-4" />
+            ) : (
+              <span className="text-xs">Sort</span>
+            )}
+          </Button>
         </div>
       </CardHeader>
       <CardContent className="p-0">

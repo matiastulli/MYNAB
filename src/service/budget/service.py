@@ -454,7 +454,7 @@ def _process_icbc_format(df: pd.DataFrame, file_id: int, bank_name: str) -> List
 
     for _, row in df.iterrows():
         try:
-            reference_id = str(row["Referencia"]).strip() or None
+            reference_id = str(row["Referencia"]).replace(".","").strip() or None
             # Parse date
             date_val = datetime.strptime(str(row["Fecha"]), "%m/%d/%y").date()
             description = str(row["Descripcion"]).strip(

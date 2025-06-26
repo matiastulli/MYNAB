@@ -21,8 +21,6 @@ export const api = {
   get: async (endpoint) => {
     try {
 
-      console.log("aaa" + import.meta.env.VITE_API_BASE_URL);
-
       // Ensure endpoint starts with a slash if it doesn't already
       const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
       

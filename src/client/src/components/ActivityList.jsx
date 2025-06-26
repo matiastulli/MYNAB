@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { api } from "@/services/api";
-import { ArrowDownIcon, ArrowUpIcon, CalendarIcon, CircleDollarSignIcon, SearchIcon, TrashIcon, UserIcon, WalletIcon } from "lucide-react";
+import { CalendarIcon, CircleDollarSignIcon, SearchIcon, TrashIcon, UserIcon, WalletIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 // Add xs breakpoint to Tailwind if it doesn't exist

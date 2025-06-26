@@ -4,6 +4,18 @@ from datetime import date, datetime
 from typing import Optional, List
 
 
+class Validators:
+    @classmethod
+    def format_datetime(cls, value):
+        if value is None:
+            return value
+        if isinstance(value, date):
+            return value.strftime("%Y-%m-%d")
+        if isinstance(value, datetime):
+            return convert_datetime_to_date(value)
+        return value
+
+
 class BudgetEntryCreate(CustomModel):
     reference_id: str
     amount: float
@@ -11,7 +23,11 @@ class BudgetEntryCreate(CustomModel):
     source: Optional[str] = None  # e.g., 'icbc', 'mercado_pago', 'manual'
     type: str
     description: Optional[str] = None
-    date: date
+    date: str
+
+    @validator('date', pre=True, allow_reuse=True)
+    def format_datetime(cls, value):
+        return Validators.format_datetime(value)
 
     @validator('type')
     def validate_type(cls, v):
@@ -20,30 +36,20 @@ class BudgetEntryCreate(CustomModel):
         return v
 
 
-class BudgetEntry(BudgetEntryCreate):
+class BudgetResponse(BudgetEntryCreate):
     id: int
     user_id: int
-    created_at: datetime
-    updated_at: datetime
+    created_at: str
+    updated_at: str
 
-    @property
-    def created_date(self) -> date:
-        return self.created_at.date()
-
-    @property
-    def updated_date(self) -> date:
-        return self.updated_at.date()
+    @validator('created_at', 'updated_at', 'date', pre=True, allow_reuse=True)
+    def format_datetime(cls, value):
+        return Validators.format_datetime(value)
 
 
 class BudgetSummary(CustomModel):
     income: float = 0.0
     outcome: float = 0.0
-
-
-class PaginationInfo(CustomModel):
-    total: int
-    limit: int
-    offset: int
 
 
 class Metadata(CustomModel):
@@ -53,7 +59,7 @@ class Metadata(CustomModel):
 
 
 class BudgetResponseWithMeta(CustomModel):
-    data: List[BudgetEntry]
+    data: List[BudgetResponse]
     metadata: Metadata
 
 
@@ -64,11 +70,9 @@ class FilesResponse(CustomModel):
     created_at: str
     updated_at: str
 
-    @validator('created_at', 'updated_at', pre=True)
+    @validator('created_at', 'updated_at', pre=True, allow_reuse=True)
     def format_datetime(cls, value):
-        if isinstance(value, datetime):
-            return convert_datetime_to_date(value)
-        return value
+        return Validators.format_datetime(value)
 
 
 class FilesResponseWithMeta(CustomModel):

@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 
 from src.service.auth_user.dependencies import require_role
 from src.service.auth_user.schemas import JWTData
-from src.service.budget.schemas import BudgetEntryCreate, BudgetSummary, BudgetResponseWithMeta, BudgetEntry, FilesResponseWithMeta, FilesResponse
+from src.service.budget.schemas import BudgetEntryCreate, BudgetSummary, BudgetResponseWithMeta, BudgetResponse, FilesResponseWithMeta, FilesResponse
 from src.service.budget.service import (
     create_budget_entry,
     get_budget_summary,
@@ -131,7 +131,7 @@ async def get_budget_details(
         return JSONResponse(status_code=status.HTTP_200_OK, content={"data": budgets_data, "metadata": metadata})
 
     budget_response = [
-        BudgetEntry(**budget_data) for budget_data in budgets_data
+        BudgetResponse(**budget_data) for budget_data in budgets_data
     ]
 
     return JSONResponse(
@@ -157,7 +157,6 @@ async def get_monthly_summary(
 
     summary = await get_budget_summary(jwt_data.id_user, start_date, end_date)
     return summary
-
 
 
 @router.delete("/entry/{entry_id}", status_code=status.HTTP_200_OK)

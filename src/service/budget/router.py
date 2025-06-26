@@ -79,7 +79,7 @@ async def import_file(
         ) from e
 
 
-@router.get("/files", response_model=List[FilesResponseWithMeta])
+@router.post("/files", response_model=List[FilesResponseWithMeta])
 async def read_files(
     jwt_data: JWTData = Depends(require_role([])),
     limit: Optional[int] = Query(
@@ -106,14 +106,16 @@ async def read_files(
     )
 
 
-@router.get("/details", response_model=List[BudgetResponseWithMeta])
+@router.post("/details", response_model=List[BudgetResponseWithMeta])
 async def get_budget_details(
+    jwt_data: JWTData = Depends(require_role([])),
     start_date: Optional[date] = None,
     end_date: Optional[date] = None,
-    limit: int = Query(100, ge=1, le=400),
-    offset: int = Query(0, ge=0),
     type_filter: Optional[str] = None,
-    jwt_data: JWTData = Depends(require_role([]))
+    limit: Optional[int] = Query(
+        default=100, description="Number of items to return per page"),
+    offset: Optional[int] = Query(
+        default=0, description="Offset from the beginning of the result set"),
 ) -> JSONResponse:
     today = date.today()
 

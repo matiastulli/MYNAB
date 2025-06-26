@@ -20,15 +20,13 @@ const getHeaders = () => {
 };
 
 export const api = {
-  get: async (endpoint, data) => {
+  get: async (endpoint) => {
     try {
       // Ensure endpoint starts with a slash if it doesn't already
       const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
       
       const response = await fetch(`${API_BASE_URL}${normalizedEndpoint}`, {
         headers: getHeaders(),
-        headers: getHeaders(),
-        body: JSON.stringify(data),
       });
       
       if (!response.ok) {

@@ -41,7 +41,7 @@ export default function FilesList({
       const url = "/budget/files";
       
       // Send limit and offset in the request body instead of URL parameters
-      const response = await api.get(url, {
+      const response = await api.post(url, {
         limit: pagination.limit,
         offset: pagination.offset
       });

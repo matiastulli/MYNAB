@@ -85,15 +85,14 @@ export default function App() {
 
   const fetchDetails = async () => {
     try {
-      let url = "/budget/details";
-      const params = new URLSearchParams();
-
-      params.append("limit", pagination.limit);
-      params.append("offset", pagination.offset);
-
-      url += `?${params.toString()}`;
-
-      const data = await api.get(url);
+      const url = "/budget/details";
+      
+      // Send pagination parameters in the request body
+      const data = await api.post(url, {
+        limit: pagination.limit,
+        offset: pagination.offset
+      });
+      
       if (!data.error) {
         setEntries(data.data || []);
         setPagination({
@@ -112,15 +111,14 @@ export default function App() {
 
   const fetchFiles = async () => {
     try {
-      let url = "/files";
-      const params = new URLSearchParams();
-
-      params.append("limit", pagination.limit);
-      params.append("offset", pagination.offset);
-
-      url += `?${params.toString()}`;
-
-      const data = await api.get(url);
+      const url = "/files";
+      
+      // Send pagination parameters in the request body
+      const data = await api.post(url, {
+        limit: pagination.limit,
+        offset: pagination.offset
+      });
+      
       if (!data.error) {
         setFiles(data.data || []);
         setPagination({

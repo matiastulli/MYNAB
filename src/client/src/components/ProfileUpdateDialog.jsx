@@ -3,14 +3,15 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api } from "@/services/api";
-import { AlertTriangleIcon, CheckCircleIcon } from "lucide-react";
+import { AlertTriangleIcon, CheckCircleIcon, LogOutIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function ProfileUpdateDialog({ 
   open, 
   onOpenChange, 
   userData, 
-  onProfileUpdated 
+  onProfileUpdated,
+  onLogout
 }) {
   const [profileForm, setProfileForm] = useState({
     name: userData?.name || "",
@@ -56,11 +57,18 @@ export default function ProfileUpdateDialog({
     }
   };
 
+  const handleLogout = () => {
+    onOpenChange(false);
+    setTimeout(() => {
+      onLogout();
+    }, 300); // Small delay to allow the dialog to close smoothly
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-white dark:bg-[#1a1e24] border-0 shadow-lg">
         <DialogHeader>
-          <DialogTitle className="text-xl font-medium dark:text-white">Update Your Profile</DialogTitle>
+          <DialogTitle className="text-xl font-medium dark:text-white">Your Profile</DialogTitle>
           <DialogDescription className="text-neutral-500 dark:text-neutral-400">
             {(!userData?.national_id || userData?.national_id === "") ? (
               <div className="flex items-start gap-2 mt-2 p-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800/30 rounded-md">
@@ -147,19 +155,19 @@ export default function ProfileUpdateDialog({
               </p>
             </div>
             
-            <DialogFooter>
+            <DialogFooter className="flex flex-col sm:flex-row gap-2 pt-2 mt-2 border-t border-neutral-100 dark:border-neutral-800">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
-                className="border-neutral-200 dark:border-neutral-700 dark:bg-[#2a303a] dark:hover:bg-[#353b47] dark:text-neutral-200"
+                className="w-full sm:w-auto border-neutral-200 dark:border-neutral-700 dark:bg-[#2a303a] dark:hover:bg-[#353b47] dark:text-neutral-200"
               >
                 Cancel
               </Button>
               <Button 
                 type="submit"
                 disabled={isUpdating}
-                className="bg-neutral-900 hover:bg-neutral-800 dark:bg-emerald-800/80 dark:hover:bg-emerald-700/90"
+                className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white"
               >
                 {isUpdating ? (
                   <div className="flex items-center gap-2">
@@ -173,6 +181,18 @@ export default function ProfileUpdateDialog({
             </DialogFooter>
           </form>
         )}
+        
+        <div className="pt-4 mt-6 border-t border-neutral-200 dark:border-neutral-700">
+          <Button
+            type="button"
+            variant="ghost" 
+            onClick={handleLogout}
+            className="w-full text-red-500 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 flex items-center justify-center gap-2"
+          >
+            <LogOutIcon className="h-4 w-4" />
+            Sign Out
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

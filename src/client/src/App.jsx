@@ -12,7 +12,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { api } from "@/services/api"
 import {
   AlertTriangleIcon,
-  LogOutIcon,
   TrendingDownIcon,
   TrendingUpIcon,
   UserIcon,
@@ -172,10 +171,6 @@ export default function App() {
         <header className="mb-8 md:mb-12">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 p-2 bg-white/80 dark:bg-[#1a1e24]/80 shadow-sm rounded-lg">
-                <WalletIcon className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                <span className="text-sm font-medium tracking-wider uppercase text-neutral-800 dark:text-neutral-200">MYNAB</span>
-              </div>
               <div>
                 <h1 className="text-2xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100">
                   Budget Overview
@@ -195,7 +190,7 @@ export default function App() {
                       <UserIcon className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                     </div>
                     <span className="text-sm font-medium text-neutral-800 dark:text-neutral-200">
-                      {userData.name}
+                      {userData.name} {userData.last_name}
                     </span>
                     {(!userData.national_id || userData.national_id === "") && (
                       <div className="flex items-center" title="Missing CUIT - required for transaction filtering">
@@ -204,16 +199,6 @@ export default function App() {
                     )}
                   </div>
                 )}
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleLogout}
-                  className="text-neutral-600 dark:text-neutral-300 bg-white/80 dark:bg-[#1a1e24]/80 hover:bg-white/90 dark:hover:bg-[#1e232a] shadow-sm border-0"
-                >
-                  <LogOutIcon className="h-4 w-4" />
-                  <span className="ml-1.5">Logout</span>
-                </Button>
               </div>
             )}
           </div>
@@ -411,6 +396,7 @@ export default function App() {
           onOpenChange={setShowProfileModal}
           userData={userData}
           onProfileUpdated={fetchUserProfile}
+          onLogout={handleLogout}
         />
       </div>
     </div>

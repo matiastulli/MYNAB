@@ -7,7 +7,6 @@ import FilesList from "@/components/FilesList"
 import ImportFile from "@/components/ImportFile"
 import ManualTransactionForm from "@/components/ManualTransactionForm"
 import ProfileUpdateDialog from "@/components/ProfileUpdateDialog"
-import SignInPrompt from "@/components/SignInPrompt"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { api } from "@/services/api"
@@ -399,22 +398,16 @@ export default function App() {
           
           {/* Import Transactions */}
           <TabsContent value="import" className="mt-6 focus-visible:outline-none">
-            {!isAuthenticated ? (
-              <SignInPrompt
-                title="Sign in to import transactions"
-                description="You need to be signed in to import your transactions from Excel or CSV or PDF files."
-                onSignInClick={() => setShowAuthModal(true)}
-              />
-            ) : (
-              <ImportFile
-                onImportComplete={() => {
-                  fetchSummary();
-                  fetchDetails();
-                }}
-                onImportSuccess={handleImportSuccess}
-                className="max-w-2xl mx-auto"
-              />
-            )}
+            <ImportFile
+              isAuthenticated={isAuthenticated}
+              onSignInClick={() => setShowAuthModal(true)}
+              onImportComplete={() => {
+                fetchSummary();
+                fetchDetails();
+              }}
+              onImportSuccess={handleImportSuccess}
+              className="max-w-2xl mx-auto"
+            />
           </TabsContent>
 
           {/* Files List */}

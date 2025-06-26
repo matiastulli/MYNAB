@@ -40,7 +40,7 @@
     1- Navigate to the client directory:
 
         ```bash
-        cd client
+        cd src/client
         ```
 
     2- Install Node.js (recommended version 16.x or higher)

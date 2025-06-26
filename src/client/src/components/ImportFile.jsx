@@ -1,3 +1,4 @@
+import SignInPrompt from "@/components/SignInPrompt"; // Import the reusable component
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,7 +9,7 @@ import { api } from "@/services/api";
 import { CheckCircleIcon, FileIcon, UploadCloudIcon, UploadIcon, XCircleIcon } from "lucide-react";
 import { useState } from "react";
 
-export default function ImportFile({ onImportComplete, onImportSuccess }) {
+export default function ImportFile({ onImportComplete, onImportSuccess, isAuthenticated, onSignInClick }) {
   const [file, setFile] = useState(null);
   const [bankName, setBankName] = useState("");
   const [isUploading, setIsUploading] = useState(false);
@@ -119,15 +120,27 @@ export default function ImportFile({ onImportComplete, onImportSuccess }) {
     }
   };
 
+  // Use the SignInPrompt component for unauthenticated users
+  if (!isAuthenticated) {
+    return (
+      <SignInPrompt
+        title="Sign in to import transactions"
+        description="You need to be signed in to import your transactions from Excel or CSV or PDF files."
+        onSignInClick={onSignInClick}
+        icon={<UploadIcon className="h-6 w-6 text-neutral-400 dark:text-neutral-300" />}
+      />
+    );
+  }
+
   return (
-    <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm max-w-2xl mx-auto">
-      <CardHeader>
+    <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm">
+      <CardHeader className="pb-2">
         <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
           <UploadIcon className="h-5 w-5 text-emerald-500" />
           Import Bank Statement
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="bank" className="text-sm font-medium text-neutral-700 dark:text-neutral-200">

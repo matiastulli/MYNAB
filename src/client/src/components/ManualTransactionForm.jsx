@@ -1,10 +1,11 @@
+import SignInPrompt from "@/components/SignInPrompt";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { api } from "@/services/api";
-import { CalendarIcon, CheckIcon, PlusIcon, UserIcon } from "lucide-react";
+import { CalendarIcon, CheckIcon, PlusIcon } from "lucide-react";
 import { useState } from "react";
 
 export default function ManualTransactionForm({ 
@@ -65,46 +66,22 @@ export default function ManualTransactionForm({
 
   if (!isAuthenticated) {
     return (
-      <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm max-w-2xl mx-auto">
-        <CardHeader>
-          <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
-            Add Transaction
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col items-center gap-4 py-8">
-            <div className="p-4 rounded-full bg-neutral-100 dark:bg-[#2a303a]">
-              <UserIcon className="h-6 w-6 text-neutral-400 dark:text-neutral-300" />
-            </div>
-            <div className="text-center space-y-2 max-w-sm">
-              <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
-                Sign in to add transactions
-              </h3>
-              <p className="text-neutral-500 dark:text-neutral-400">
-                You need to be signed in to add and track your transactions in MYNAB.
-              </p>
-            </div>
-            <Button
-              onClick={onSignInClick}
-              className="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white"
-              size="lg"
-            >
-              Sign In
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <SignInPrompt
+        title="Sign in to add transactions"
+        description="You need to be signed in to add and track your transactions in MYNAB."
+        onSignInClick={onSignInClick}
+      />
     );
   }
 
   return (
-    <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm max-w-2xl mx-auto">
-      <CardHeader>
+    <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm">
+      <CardHeader className="pb-2">
         <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
           Add Transaction
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-6">
         {success ? (
           <div className="flex flex-col items-center py-8 gap-4">
             <div className="p-3 rounded-full bg-emerald-100 dark:bg-emerald-900/30">

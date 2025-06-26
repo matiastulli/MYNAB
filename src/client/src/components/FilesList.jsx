@@ -1,6 +1,6 @@
+import SignInPrompt from "@/components/SignInPrompt";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import SignInPrompt from "@/components/SignInPrompt";
 import {
   Table,
   TableBody,
@@ -14,8 +14,8 @@ import { format } from "date-fns";
 import { FileIcon, FolderIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export default function FilesList({ 
-  isAuthenticated, 
+export default function FilesList({
+  isAuthenticated,
   onSignInClick,
   onFileDeleted
 }) {
@@ -40,7 +40,7 @@ export default function FilesList({
 
     try {
       const url = "/budget/files";
-      
+
       // Send limit and offset in the request body instead of URL parameters
       const response = await api.post(url, {
         limit: pagination.limit,
@@ -70,7 +70,7 @@ export default function FilesList({
 
     try {
       const response = await api.delete(`/budget/file/${fileId}`);
-      
+
       if (!response.error) {
         fetchFiles();
         if (onFileDeleted) onFileDeleted();
@@ -159,9 +159,9 @@ export default function FilesList({
                       </TableCell>
                       <TableCell className="text-neutral-600 dark:text-neutral-400 text-sm">{formatDate(file.created_at)}</TableCell>
                       <TableCell className="text-right">
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => handleDeleteFile(file.id)}
                           className="text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:text-neutral-500 dark:hover:text-red-400 dark:hover:bg-red-900/20"
                         >
@@ -193,24 +193,6 @@ export default function FilesList({
                 Showing {pagination.offset + 1} to {Math.min(pagination.offset + pagination.limit, pagination.total)} of {pagination.total} files
               </span>
               <Button
-                variant="outline"
-                size="sm"
-                disabled={pagination.offset + pagination.limit >= pagination.total}
-                onClick={() => setPagination({
-                  ...pagination,
-                  offset: pagination.offset + pagination.limit
-                })}
-                className="border-0 bg-white dark:bg-[#252b36] shadow-sm"
-              >
-                Next
-              </Button>
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
                 variant="outline"
                 size="sm"
                 disabled={pagination.offset + pagination.limit >= pagination.total}

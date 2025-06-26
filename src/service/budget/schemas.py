@@ -64,7 +64,7 @@ class BudgetResponseWithMeta(CustomModel):
 class FilesResponse(CustomModel):
     id: int
     file_name: str
-    id_user: int
+    user_id: int
     created_at: str
     updated_at: str
 

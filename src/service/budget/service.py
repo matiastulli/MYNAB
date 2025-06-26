@@ -162,11 +162,11 @@ async def list_files(user_id: int, limit: int, offset: int) -> dict[str, Any]:
 
     select_query = select(
         files.c.id.label('id'),
-        files.c.id_user.label('id_user'),
+        files.c.user_id.label('user_id'),
         files.c.file_name.label('file_name'),
         files.c.created_at.label('created_at'),
         files.c.updated_at.label('updated_at'),
-    ).select_from(files).where(files.c.id_user == user_id)
+    ).select_from(files).where(files.c.user_id == user_id)
 
     # Count query to get total records
     count_query = select(func.count()).select_from(select_query.alias())

@@ -2,6 +2,7 @@
 
 import ActivityList from "@/components/ActivityList"
 import AuthModal from "@/components/AuthModal"
+import FilesList from "@/components/FilesList"
 import ImportFile from "@/components/ImportFile"
 import ManualTransactionForm from "@/components/ManualTransactionForm"
 import ProfileUpdateDialog from "@/components/ProfileUpdateDialog"
@@ -22,6 +23,7 @@ import { useEffect, useState } from "react"
 export default function App() {
   const [summary, setSummary] = useState({ income: 0, outcome: 0 })
   const [entries, setEntries] = useState([])
+  const [files, setFiles] = useState([])
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [userData, setUserData] = useState(null)
@@ -44,6 +46,7 @@ export default function App() {
         // Fetch budget data
         fetchSummary();
         fetchDetails();
+        fetchFiles();
       }
     };
 
@@ -108,12 +111,41 @@ export default function App() {
       setEntries([]);
     }
   };
+
+  const fetchFiles = async () => {
+    try {
+      let url = "/files";
+      const params = new URLSearchParams();
+
+      params.append("limit", pagination.limit);
+      params.append("offset", pagination.offset);
+
+      url += `?${params.toString()}`;
+
+      const data = await api.get(url);
+      if (!data.error) {
+        setFiles(data.data || []);
+        setPagination({
+          ...pagination,
+          total: data.pagination?.total || 0
+        });
+      } else {
+        console.error("Error fetching files:", data.error);
+        setFiles([]);
+      }
+    } catch (error) {
+      console.error("Failed to fetch files:", error);
+      setFiles([]);
+    }
+  };
+
   const handleLogout = () => {
     api.logout();
     setIsAuthenticated(false);
     setUserData(null);
     setSummary({ income: 0, outcome: 0 });
     setEntries([]);
+    setFiles([]);
   };
 
   const handleAuthentication = (authData) => {
@@ -122,6 +154,7 @@ export default function App() {
     fetchUserProfile();
     fetchSummary();
     fetchDetails();
+    fetchFiles();
   };
 
   const balance = summary.income - summary.outcome;
@@ -256,8 +289,7 @@ export default function App() {
         </div>
 
         {/* Main Content */}
-        <Tabs defaultValue="entries" className="space-y-6">
-          <TabsList className="grid grid-cols-3 w-full max-w-md mx-auto bg-neutral-100 dark:bg-[#1e232a] p-1 gap-x-1">
+        <Tabs defaultValue="entries" className="space-y-6">          <TabsList className="grid grid-cols-4 w-full max-w-xl mx-auto bg-neutral-100 dark:bg-[#1e232a] p-1 gap-x-1">
             <TabsTrigger
               value="entries"
               className="text-neutral-700 dark:text-neutral-300 data-[state=active]:text-neutral-900 dark:data-[state=active]:text-white data-[state=active]:bg-white dark:data-[state=active]:bg-[#2a303a] data-[state=active]:shadow-sm"
@@ -275,6 +307,12 @@ export default function App() {
               className="text-neutral-700 dark:text-neutral-300 data-[state=active]:text-neutral-900 dark:data-[state=active]:text-white data-[state=active]:bg-white dark:data-[state=active]:bg-[#2a303a] data-[state=active]:shadow-sm"
             >
               File Entry
+            </TabsTrigger>
+            <TabsTrigger
+              value="files"
+              className="text-neutral-700 dark:text-neutral-300 data-[state=active]:text-neutral-900 dark:data-[state=active]:text-white data-[state=active]:bg-white dark:data-[state=active]:bg-[#2a303a] data-[state=active]:shadow-sm"
+            >
+              Files List
             </TabsTrigger>
           </TabsList>
 
@@ -301,9 +339,7 @@ export default function App() {
                 fetchDetails();
               }}
             />
-          </TabsContent>
-
-          {/* Import Transactions */}
+          </TabsContent>          {/* Import Transactions */}
           <TabsContent value="import">
             {!isAuthenticated ? (
               <Card className="border-0 bg-white/60 dark:bg-[#1a1e24]/90 backdrop-blur-sm max-w-2xl mx-auto">
@@ -339,6 +375,18 @@ export default function App() {
                 className="max-w-2xl mx-auto"
               />
             )}
+          </TabsContent>
+
+          {/* Files List */}
+          <TabsContent value="files">
+            <FilesList
+              isAuthenticated={isAuthenticated}
+              onSignInClick={() => setShowAuthModal(true)}
+              onFileDeleted={() => {
+                fetchSummary();
+                fetchDetails();
+              }}
+            />
           </TabsContent>
         </Tabs>
 

@@ -1,6 +1,4 @@
-// const API_BASE_URL = process.env.API_BASE_URL || '';
-
-const API_BASE_URL = 'https://mynab-service.up.railway.app';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://mynab-service.up.railway.app';
 
 // Get JWT token from localStorage
 const getToken = () => localStorage.getItem('token');
@@ -22,6 +20,9 @@ const getHeaders = () => {
 export const api = {
   get: async (endpoint) => {
     try {
+
+      console.log("aaa" + import.meta.env.VITE_API_BASE_URL);
+
       // Ensure endpoint starts with a slash if it doesn't already
       const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
       

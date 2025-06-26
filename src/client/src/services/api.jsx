@@ -108,18 +108,12 @@ export const api = {
   
   delete: async (endpoint) => {
     try {
-      const token = localStorage.getItem("token");
-      const headers = {
-        "Content-Type": "application/json"
-      };
+      // Ensure endpoint starts with a slash if it doesn't already
+      const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
       
-      if (token) {
-        headers["Authorization"] = `Bearer ${token}`;
-      }
-      
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      const response = await fetch(`${API_BASE_URL}${normalizedEndpoint}`, {
         method: "DELETE",
-        headers
+        headers: getHeaders(),
       });
       
       if (!response.ok) {

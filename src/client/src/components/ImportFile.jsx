@@ -74,8 +74,6 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
     try {
       // Convert file to Base64
       const base64File = await convertFileToBase64(file);
-
-      console.log("Base64 File Content:", base64File); // Debugging line
       
       // Send the file as base64 string using the regular post method
       const response = await api.post("/budget/import-file", {

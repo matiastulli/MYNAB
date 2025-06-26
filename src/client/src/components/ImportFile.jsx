@@ -172,6 +172,12 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
                 </SelectItem>
               </SelectContent>
             </Select>
+            <p className="text-xs text-amber-600 dark:text-amber-400 mt-2 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Tip: When naming your file, include the bank name and date (e.g., "santander_rio_202404") to easily identify it later.
+            </p>
           </div>
 
           <div className="space-y-2">

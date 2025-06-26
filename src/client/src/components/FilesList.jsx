@@ -161,14 +161,13 @@ export default function FilesList({
                 </TableHeader>
                 <TableBody>
                   {files.map((file) => (
-                    <TableRow key={file.id}>
-                      <TableCell className="font-medium">
+                    <TableRow key={file.id}>                      <TableCell className="font-medium">
                         <div className="flex items-center gap-2">
                           <FileIcon className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
-                          {file.file_name}
+                          <span className="text-white">{file.file_name}</span>
                         </div>
                       </TableCell>
-                      <TableCell>{formatDate(file.created_at)}</TableCell>
+                      <TableCell className="text-white">{formatDate(file.created_at)}</TableCell>
                       <TableCell className="text-right">
                         <Button 
                           variant="ghost" 

@@ -196,7 +196,7 @@ export default function ManualTransactionForm({
               value={form.reference_id}
               onChange={(e) => setForm({ ...form, reference_id: e.target.value })}
               className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors placeholder:text-neutral-500 dark:placeholder:text-neutral-400"
-              placeholder="Enter file reference ID if any"
+              placeholder="Enter file reference ID"
             />
           </div>
 

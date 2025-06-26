@@ -45,9 +45,17 @@ class Metadata(CustomModel):
     offset: int
 
 
-class BudgetResponse(BudgetEntryCreate):
+class BudgetResponse(CustomModel):
     id: int
     user_id: int
+    reference_id: str
+    amount: float
+    currency: str
+    source: Optional[str] = None  # e.g., 'icbc', 'mercado_pago', 'manual'
+    type: str
+    description: Optional[str] = None
+    file_id: Optional[int] = None
+    date: str
     created_at: str
     updated_at: str
 

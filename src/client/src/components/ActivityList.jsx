@@ -4,6 +4,11 @@ import { api } from "@/services/api";
 import { ArrowDownIcon, ArrowUpIcon, TrashIcon, UserIcon, WalletIcon } from "lucide-react";
 import { useState } from "react";
 
+// Add xs breakpoint to Tailwind if it doesn't exist
+// This is used for small mobile screens
+// You can add this to your tailwind.config.js screens section if not already there
+// screens: { xs: '480px', ...defaultTheme.screens }
+
 export default function ActivityList({
   isAuthenticated,
   entries = [],
@@ -73,15 +78,14 @@ export default function ActivityList({
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
-        <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
-          {entries.map((entry) => (
+        <div className="divide-y divide-neutral-100 dark:divide-neutral-800">          {entries.map((entry) => (
             <div
               key={entry.id}
-              className="flex items-center justify-between p-6 hover:bg-neutral-50/50 dark:hover:bg-[#2a303a]/70 transition-colors"
+              className="flex flex-col md:flex-row md:items-center justify-between p-4 sm:p-6 hover:bg-neutral-50/50 dark:hover:bg-[#2a303a]/70 transition-colors"
             >
-              <div className="flex items-center gap-4">
+              <div className="flex items-start sm:items-center gap-3 sm:gap-4 w-full mb-3 md:mb-0">
                 <div
-                  className={`p-2.5 rounded-full ${entry.type === "income"
+                  className={`p-2 sm:p-2.5 rounded-full flex-shrink-0 ${entry.type === "income"
                     ? "bg-emerald-50 dark:bg-emerald-900/70"
                     : "bg-red-50 dark:bg-red-900/70"
                     }`}
@@ -92,11 +96,26 @@ export default function ActivityList({
                     <ArrowDownIcon className="h-4 w-4 text-red-500 dark:text-red-400" />
                   )}
                 </div>
-                <div>
-                  <p className="font-medium text-neutral-900 dark:text-neutral-100">
-                    {entry.description || "No description"}
-                  </p>
-                  <div className="flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center justify-between md:justify-start gap-2 md:gap-0">
+                    <p className="font-medium text-neutral-900 dark:text-neutral-100 mr-auto">
+                      {entry.description || "No description"}
+                    </p>
+                    <p
+                      className={`md:hidden font-semibold text-base ${entry.type === "income"
+                        ? "text-emerald-600 dark:text-emerald-400"
+                        : "text-red-500 dark:text-red-400"
+                        }`}
+                    >
+                      {entry.type === "income" ? "+" : "-"}
+                      {entry.currency === 'USD' ? '$' : entry.currency === 'EUR' ? '€' : '$'}
+                      {Number.parseFloat(entry.amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                      {entry.currency && entry.currency !== 'USD' && entry.currency !== 'EUR' && entry.currency !== 'ARS' && (
+                        <span className="text-xs ml-1 opacity-75">{entry.currency}</span>
+                      )}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-neutral-500 dark:text-neutral-400 mt-1">
                     <span>
                       {new Date(entry.date).toLocaleDateString("en-US", {
                         month: "short",
@@ -106,42 +125,46 @@ export default function ActivityList({
                     </span>
                     {entry.source && (
                       <>
-                        <span>•</span>
+                        <span className="hidden xs:inline">•</span>
                         <span className="capitalize">{entry.source.replace('_', ' ')}</span>
                       </>
                     )}
                     {entry.currency && entry.currency !== 'ARS' && (
                       <>
-                        <span>•</span>
+                        <span className="hidden xs:inline">•</span>
                         <span>{entry.currency}</span>
                       </>
                     )}
                     {entry.reference_id && (
                       <>
-                        <span>•</span>
-                        <span className="italic text-xs opacity-80">ref: {entry.reference_id}</span>
+                        <span className="hidden xs:inline">•</span>
+                        <span className="italic text-xs opacity-80 break-all">
+                          ref: {entry.reference_id.substring(0, 12)}
+                          {entry.reference_id.length > 12 ? '...' : ''}
+                        </span>
                       </>
                     )}
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-4">                <p
-                className={`font-semibold ${entry.type === "income"
-                  ? "text-emerald-600 dark:text-emerald-400"
-                  : "text-red-500 dark:text-red-400"
-                  }`}
-              >
-                {entry.type === "income" ? "+" : "-"}
-                {entry.currency === 'USD' ? '$' : entry.currency === 'EUR' ? '€' : '$'}
-                {Number.parseFloat(entry.amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}
-                {entry.currency && entry.currency !== 'USD' && entry.currency !== 'EUR' && entry.currency !== 'ARS' && (
-                  <span className="text-xs ml-1 opacity-75">{entry.currency}</span>
-                )}
-              </p>
+              <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto">
+                <p
+                  className={`hidden md:block font-semibold ${entry.type === "income"
+                    ? "text-emerald-600 dark:text-emerald-400"
+                    : "text-red-500 dark:text-red-400"
+                    }`}
+                >
+                  {entry.type === "income" ? "+" : "-"}
+                  {entry.currency === 'USD' ? '$' : entry.currency === 'EUR' ? '€' : '$'}
+                  {Number.parseFloat(entry.amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                  {entry.currency && entry.currency !== 'USD' && entry.currency !== 'EUR' && entry.currency !== 'ARS' && (
+                    <span className="text-xs ml-1 opacity-75">{entry.currency}</span>
+                  )}
+                </p>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-neutral-400 hover:text-red-500 dark:text-neutral-500 dark:hover:text-red-400"
+                  className="ml-auto md:ml-0 text-neutral-400 hover:text-red-500 dark:text-neutral-500 dark:hover:text-red-400"
                   onClick={() => handleDelete(entry.id)}
                   disabled={deletingId === entry.id}
                 >

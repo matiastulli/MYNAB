@@ -180,3 +180,19 @@ async def remove_entry(
         )
 
     return {"message": "Entry deleted successfully"}
+
+
+@router.delete("/file/{file_id}", status_code=status.HTTP_200_OK)
+async def remove_file(
+    file_id: int,
+    jwt_data: JWTData = Depends(require_role([]))
+):
+    deleted = await delete_budget_entry(jwt_data.id_user, file_id)
+
+    if not deleted:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="File not found or not authorized to delete this file"
+        )
+
+    return {"message": "File deleted successfully"}

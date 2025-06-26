@@ -51,8 +51,7 @@ async def get_budget_entries(
     start_date: date,
     end_date: date,
     limit: int,
-    offset: int,
-    type_filter: Optional[str]
+    offset: int
 ) -> dict[str, Any]:
     # Build filter conditions
     conditions = [
@@ -60,10 +59,6 @@ async def get_budget_entries(
         budget_entry.c.date >= start_date,
         budget_entry.c.date <= end_date
     ]
-
-    # Add type filter if provided
-    if type_filter and type_filter in ["income", "outcome"]:
-        conditions.append(budget_entry.c.type == type_filter)
 
     # Count query to get total records
     count_query = select(func.count()).select_from(budget_entry)

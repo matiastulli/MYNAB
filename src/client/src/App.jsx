@@ -2,6 +2,7 @@
 
 import ActivityList from "@/components/ActivityList"
 import AuthModal from "@/components/AuthModal"
+import DateRangeFilter from "@/components/DateRangeFilter"
 import FilesList from "@/components/FilesList"
 import ImportFile from "@/components/ImportFile"
 import ManualTransactionForm from "@/components/ManualTransactionForm"
@@ -10,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { api } from "@/services/api"
+import { endOfMonth, format, startOfMonth } from 'date-fns'
 import {
   AlertTriangleIcon,
   TrendingDownIcon,
@@ -20,6 +22,7 @@ import {
 import { useEffect, useState } from "react"
 
 export default function App() {
+  // Existing state variables
   const [summary, setSummary] = useState({ income: 0, outcome: 0 })
   const [entries, setEntries] = useState([])
   const [files, setFiles] = useState([])
@@ -33,6 +36,13 @@ export default function App() {
   });
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [activeTab, setActiveTab] = useState("entries");
+  
+  // New date filter state
+  const [dateRange, setDateRange] = useState({
+    startDate: startOfMonth(new Date()),
+    endDate: endOfMonth(new Date()),
+    preset: 'current-month' // Options: 'current-month', 'last-month', 'last-3-months', 'custom'
+  });
 
   // Check authentication status on load
   useEffect(() => {
@@ -53,6 +63,14 @@ export default function App() {
     checkAuth();
   }, []);
 
+  // Add effect to reload data when date range changes
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchSummary();
+      fetchDetails();
+    }
+  }, [dateRange.startDate, dateRange.endDate]);
+
   const fetchUserProfile = async () => {
     const profile = await api.get("/auth/profile");
 
@@ -63,14 +81,18 @@ export default function App() {
 
   const fetchSummary = async () => {
     try {
-      let url = "/budget/summary";
-      const params = new URLSearchParams();
+      const url = "/budget/summary";
 
-      if (params.toString()) {
-        url += `?${params.toString()}`;
-      }
-
-      const data = await api.get(url);
+      // Format dates for API
+      const startDateStr = format(dateRange.startDate, 'yyyy-MM-dd');
+      const endDateStr = format(dateRange.endDate, 'yyyy-MM-dd');
+      
+      // Send date parameters in the request body
+      const data = await api.post(url, {
+        start_date: startDateStr,
+        end_date: endDateStr
+      });
+      
       if (!data.error) {
         setSummary(data);
       } else {
@@ -87,10 +109,16 @@ export default function App() {
     try {
       const url = "/budget/details";
       
-      // Send pagination parameters in the request body
+      // Format dates for API
+      const startDateStr = format(dateRange.startDate, 'yyyy-MM-dd');
+      const endDateStr = format(dateRange.endDate, 'yyyy-MM-dd');
+      
+      // Send pagination parameters and date range in the request body
       const data = await api.post(url, {
         limit: pagination.limit,
-        offset: pagination.offset
+        offset: pagination.offset,
+        start_date: startDateStr,
+        end_date: endDateStr
       });
       
       if (!data.error) {
@@ -167,11 +195,24 @@ export default function App() {
     console.log(`Successfully imported ${result.count} transactions`);
   };
 
+  // Handle date range change from filter component
+  const handleDateRangeChange = (newRange) => {
+    setDateRange(newRange);
+    // Reset pagination when changing date range
+    setPagination({...pagination, offset: 0});
+  };
+
   const balance = summary.income - summary.outcome;
-  const formattedDate = new Date().toLocaleDateString("en-US", {
-    month: "long",
-    year: "numeric",
-  });
+  
+  // Get formatted date range for display
+  let dateRangeFormatted;
+  if (dateRange.preset === 'current-month') {
+    dateRangeFormatted = format(new Date(), 'MMMM yyyy');
+  } else if (dateRange.preset === 'custom') {
+    dateRangeFormatted = `${format(dateRange.startDate, 'MMM dd')} - ${format(dateRange.endDate, 'MMM dd, yyyy')}`;
+  } else {
+    dateRangeFormatted = `${format(dateRange.startDate, 'MMMM yyyy')}`;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-[#121418] dark:to-[#191c22]">
@@ -185,7 +226,17 @@ export default function App() {
               <h1 className="text-xl sm:text-2xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100">
                 Budget Overview
               </h1>
-              <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 mt-1">{formattedDate}</p>
+              <div className="flex items-center gap-2 mt-1">
+                <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
+                  {dateRangeFormatted}
+                </p>
+                {isAuthenticated && (
+                  <DateRangeFilter 
+                    dateRange={dateRange} 
+                    onDateRangeChange={handleDateRangeChange} 
+                  />
+                )}
+              </div>
             </div>
 
             {isAuthenticated && userData && (
@@ -257,7 +308,7 @@ export default function App() {
               </div>
               <div className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-800">
                 <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                  Total income for {new Date().toLocaleDateString("en-US", { month: "long" })}
+                  Total income for {dateRangeFormatted}
                 </p>
               </div>
             </CardContent>
@@ -281,7 +332,7 @@ export default function App() {
               </div>
               <div className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-800">
                 <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                  Total expenses for {new Date().toLocaleDateString("en-US", { month: "long" })}
+                  Total expenses for {dateRangeFormatted}
                 </p>
               </div>
             </CardContent>

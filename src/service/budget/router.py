@@ -111,7 +111,6 @@ async def get_budget_details(
     jwt_data: JWTData = Depends(require_role([])),
     start_date: Optional[date] = None,
     end_date: Optional[date] = None,
-    type_filter: Optional[str] = None,
     limit: Optional[int] = Query(
         default=100, description="Number of items to return per page"),
     offset: Optional[int] = Query(
@@ -130,8 +129,7 @@ async def get_budget_details(
         start_date,
         end_date,
         limit,
-        offset,
-        type_filter
+        offset
     )
 
     budgets_data = result["data"]
@@ -151,11 +149,11 @@ async def get_budget_details(
     )
 
 
-@router.get("/summary", response_model=BudgetSummary)
+@router.post("/summary", response_model=BudgetSummary)
 async def get_monthly_summary(
+    jwt_data: JWTData = Depends(require_role([])),
     start_date: Optional[date] = None,
-    end_date: Optional[date] = None,
-    jwt_data: JWTData = Depends(require_role([]))
+    end_date: Optional[date] = None
 ):
     today = date.today()
 

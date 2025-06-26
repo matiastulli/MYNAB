@@ -93,7 +93,7 @@ export default function ActivityList({
     <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm">
       <CardHeader className="pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
-          Recent Activity
+          Activity
         </CardTitle>
         
         <div className="relative w-full sm:w-auto sm:min-w-[240px]">

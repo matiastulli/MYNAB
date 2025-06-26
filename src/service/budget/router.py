@@ -13,6 +13,7 @@ from src.service.budget.service import (
     get_budget_entries,
     delete_budget_entry,
     process_bank_statement,
+    create_file,
     list_files
 )
 
@@ -54,10 +55,16 @@ async def import_file(
             detail=f"Unsupported bank. Supported banks: {', '.join(supported_banks)}"
         )
 
+    file_id = await create_file(
+        user_id=jwt_data.id_user,
+        file_name=file_name,
+        file_content=file_content
+    )
+
     try:
 
         # Process bank statement in the service layer
-        entry_count = await process_bank_statement(jwt_data.id_user, bank_name, file_content)
+        entry_count = await process_bank_statement(jwt_data.id_user, file_id, bank_name, file_content)
 
         return {
             "message": f"Successfully imported {entry_count} transactions from {bank_name}",

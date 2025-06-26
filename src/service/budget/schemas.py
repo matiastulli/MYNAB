@@ -1,7 +1,8 @@
-from pydantic import validator
-from src.service.models import CustomModel, convert_datetime_to_date
 from datetime import date, datetime
 from typing import Optional, List
+
+from pydantic import validator
+from src.service.models import CustomModel, convert_datetime_to_date
 
 
 class Validators:
@@ -23,6 +24,7 @@ class BudgetEntryCreate(CustomModel):
     source: Optional[str] = None  # e.g., 'icbc', 'mercado_pago', 'manual'
     type: str
     description: Optional[str] = None
+    file_id: Optional[int] = None
     date: date
 
     @validator('type')
@@ -30,17 +32,6 @@ class BudgetEntryCreate(CustomModel):
         if v not in ["income", "outcome"]:
             raise ValueError("Type must be either 'income' or 'outcome'")
         return v
-
-
-class BudgetResponse(BudgetEntryCreate):
-    id: int
-    user_id: int
-    created_at: str
-    updated_at: str
-
-    @validator('created_at', 'updated_at', 'date', pre=True, allow_reuse=True)
-    def format_datetime(cls, value):
-        return Validators.format_datetime(value)
 
 
 class BudgetSummary(CustomModel):
@@ -52,6 +43,17 @@ class Metadata(CustomModel):
     total_count: int
     limit: int
     offset: int
+
+
+class BudgetResponse(BudgetEntryCreate):
+    id: int
+    user_id: int
+    created_at: str
+    updated_at: str
+
+    @validator('created_at', 'updated_at', 'date', pre=True, allow_reuse=True)
+    def format_datetime(cls, value):
+        return Validators.format_datetime(value)
 
 
 class BudgetResponseWithMeta(CustomModel):

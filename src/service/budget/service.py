@@ -21,6 +21,7 @@ async def create_budget_entry(user_id: int, entry: BudgetEntryCreate) -> None:
         source=entry.source,
         description=entry.description,
         date=entry.date,
+        file_id=entry.file_id if entry.file_id else None,
         created_at=datetime.utcnow(),
         updated_at=datetime.utcnow(),
     )
@@ -116,6 +117,47 @@ async def delete_budget_entry(user_id: int, entry_id: int) -> bool:
     return True
 
 
+async def create_file(user_id: int, file_name: str, file_content: str) -> int:
+    """
+    Create a new file entry in the database.
+    Returns the ID of the created file.
+    """
+    stmt = insert(files).values(
+        user_id=user_id,
+        file_name=file_name,
+        file_base64=file_content,
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow()
+    ).returning(files.c.id)
+
+    result = await fetch_one(stmt)
+    return result['id'] if result else None
+
+
+async def delete_file(file_id: int, user_id: int) -> bool:
+    """
+    Delete a file entry by its ID if it belongs to the user.
+    Returns True if successful, False if file not found or not owned by user.
+    """
+    # Check if the file exists and belongs to the user
+    check_stmt = select(files.c.id).where(
+        and_(files.c.id == file_id, files.c.id_user == user_id)
+    )
+
+    file = await fetch_one(check_stmt)
+
+    if not file:
+        return False
+
+    # File exists and belongs to the user, proceed with deletion
+    delete_stmt = delete(files).where(
+        and_(files.c.id == file_id, files.c.id_user == user_id)
+    )
+
+    await execute(delete_stmt)
+    return True
+
+
 async def list_files(user_id: int, limit: int, offset: int) -> dict[str, Any]:
 
     select_query = select(
@@ -147,7 +189,7 @@ async def list_files(user_id: int, limit: int, offset: int) -> dict[str, Any]:
     }
 
 
-async def process_bank_statement(user_id: int, bank_name: str, file_content: str) -> int:
+async def process_bank_statement(user_id: int, file_id: int, bank_name: str, file_content: str) -> int:
     """
     Process bank statements from different banks and add entries to the database
     Returns the number of entries imported
@@ -162,17 +204,17 @@ async def process_bank_statement(user_id: int, bank_name: str, file_content: str
         # Load into pandas DataFrame
         df = pd.read_excel(io.BytesIO(file_bytes))
 
-        entries = _process_santander_rio_format(df, bank_name)
+        entries = _process_santander_rio_format(df, file_id, bank_name)
     elif bank_name.lower() == "mercado_pago":
         df = extract_pdf_to_dataframe(file_bytes)
 
-        entries = _process_mercado_pago_format(df, bank_name)
+        entries = _process_mercado_pago_format(df, file_id, bank_name)
 
     elif bank_name.lower() == "icbc":
         # Load into pandas DataFrame
         df = pd.read_csv(io.BytesIO(file_bytes), encoding='utf-8')
 
-        entries = _process_icbc_format(df, bank_name)
+        entries = _process_icbc_format(df, file_id, bank_name)
 
     user_data = await get_user_by_id(user_id)
 
@@ -203,7 +245,7 @@ async def process_bank_statement(user_id: int, bank_name: str, file_content: str
     return entry_count
 
 
-def _process_santander_rio_format(df: pd.DataFrame, bank_name: str) -> List[BudgetEntryCreate]:
+def _process_santander_rio_format(df: pd.DataFrame, file_id: int, bank_name: str) -> List[BudgetEntryCreate]:
     """Process Santander Rio bank statement format"""
     entries: List[BudgetEntryCreate] = []
     try:
@@ -248,6 +290,7 @@ def _process_santander_rio_format(df: pd.DataFrame, bank_name: str) -> List[Budg
                     source=bank_name,
                     description=description,
                     type=entry_type,
+                    file_id=file_id
                 ))
             except Exception:
                 continue
@@ -256,7 +299,7 @@ def _process_santander_rio_format(df: pd.DataFrame, bank_name: str) -> List[Budg
     return entries
 
 
-def _process_mercado_pago_format(df: pd.DataFrame, bank_name: str) -> List[BudgetEntryCreate]:
+def _process_mercado_pago_format(df: pd.DataFrame, file_id: int, bank_name: str) -> List[BudgetEntryCreate]:
     """Process MercadoPago bank statement format"""
     entries: List[BudgetEntryCreate] = []
 
@@ -388,6 +431,7 @@ def _process_mercado_pago_format(df: pd.DataFrame, bank_name: str) -> List[Budge
                     source=bank_name,
                     description=description,
                     type=entry_type,
+                    file_id=file_id
                 ))
 
             except Exception as e:
@@ -400,7 +444,7 @@ def _process_mercado_pago_format(df: pd.DataFrame, bank_name: str) -> List[Budge
     return entries
 
 
-def _process_icbc_format(df: pd.DataFrame, bank_name: str) -> List[BudgetEntryCreate]:
+def _process_icbc_format(df: pd.DataFrame, file_id: int, bank_name: str) -> List[BudgetEntryCreate]:
     """Process ICBC bank statement CSV file into BudgetEntryCreate list"""
     entries: List[BudgetEntryCreate] = []
     # Rename columns for clarity
@@ -431,7 +475,8 @@ def _process_icbc_format(df: pd.DataFrame, bank_name: str) -> List[BudgetEntryCr
                 currency="ARS",  # Assuming Argentine Peso
                 source=bank_name,
                 description=description,
-                type=entry_type
+                type=entry_type,
+                file_id=file_id
             ))
         except Exception:
             continue

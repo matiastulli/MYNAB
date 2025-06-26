@@ -141,7 +141,7 @@ async def delete_file(file_id: int, user_id: int) -> bool:
     """
     # Check if the file exists and belongs to the user
     check_stmt = select(files.c.id).where(
-        and_(files.c.id == file_id, files.c.id_user == user_id)
+        and_(files.c.id == file_id, files.c.user_id == user_id)
     )
 
     file = await fetch_one(check_stmt)
@@ -151,7 +151,7 @@ async def delete_file(file_id: int, user_id: int) -> bool:
 
     # File exists and belongs to the user, proceed with deletion
     delete_stmt = delete(files).where(
-        and_(files.c.id == file_id, files.c.id_user == user_id)
+        and_(files.c.id == file_id, files.c.user_id == user_id)
     )
 
     await execute(delete_stmt)

@@ -12,6 +12,7 @@ from src.service.budget.service import (
     get_budget_summary,
     get_budget_entries,
     delete_budget_entry,
+    delete_file,
     process_bank_statement,
     create_file,
     list_files
@@ -187,7 +188,7 @@ async def remove_file(
     file_id: int,
     jwt_data: JWTData = Depends(require_role([]))
 ):
-    deleted = await delete_budget_entry(jwt_data.id_user, file_id)
+    deleted = await delete_file(file_id, jwt_data.id_user)
 
     if not deleted:
         raise HTTPException(

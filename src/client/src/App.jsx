@@ -164,93 +164,93 @@ export default function App() {
   });
 
   return (
-    <div className="min-h-screen bg-neutral-50/50 dark:bg-[#121418]">
+    <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-[#121418] dark:to-[#191c22]">
       {showAuthModal && <AuthModal onAuthenticated={handleAuthentication} />}
 
-      <div className="max-w-4xl mx-auto px-4 py-8 md:px-6 md:py-12">
+      <div className="max-w-5xl mx-auto px-4 py-8 md:px-6 md:py-12">
         {/* Header */}
-        <header className="mb-12">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100">
-                Budget Overview
-              </h1>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">{formattedDate}</p>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-neutral-400 dark:text-neutral-300">
-                <WalletIcon className="h-5 w-5" />
-                <span className="text-xs font-medium tracking-wider uppercase">MYNAB</span>
+        <header className="mb-8 md:mb-12">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 p-2 bg-white/80 dark:bg-[#1a1e24]/80 shadow-sm rounded-lg">
+                <WalletIcon className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                <span className="text-sm font-medium tracking-wider uppercase text-neutral-800 dark:text-neutral-200">MYNAB</span>
               </div>
-
-              {isAuthenticated && (
-                <div className="flex items-center gap-3">
-                  {userData && (
-                    <div
-                      className="hidden md:flex items-center gap-2 cursor-pointer hover:bg-neutral-100 dark:hover:bg-[#1e232a] rounded-md px-2 py-1 transition-colors"
-                      onClick={() => setShowProfileModal(true)}
-                    >
-                      <div className="bg-neutral-200 dark:bg-[#2a303a] rounded-full p-1">
-                        <UserIcon className="h-4 w-4 text-neutral-600 dark:text-neutral-300" />
-                      </div>
-                      <span className="text-sm font-medium text-neutral-800 dark:text-neutral-200">
-                        {userData.name}
-                      </span>
-                      {(!userData.national_id || userData.national_id === "") && (
-                        <div className="flex items-center" title="Missing CUIT - required for transaction filtering">
-                          <AlertTriangleIcon className="h-4 w-4 text-amber-500" />
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleLogout}
-                    className="text-neutral-600 dark:text-neutral-300"
-                  >
-                    <LogOutIcon className="h-4 w-4" />
-                    <span className="hidden md:inline ml-1">Logout</span>
-                  </Button>
-                </div>
-              )}
+              <div>
+                <h1 className="text-2xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100">
+                  Budget Overview
+                </h1>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">{formattedDate}</p>
+              </div>
             </div>
+
+            {isAuthenticated && (
+              <div className="flex items-center gap-3 ml-auto">
+                {userData && (
+                  <div
+                    className="flex items-center gap-2 cursor-pointer bg-white/80 dark:bg-[#1a1e24]/80 hover:bg-white dark:hover:bg-[#1e232a] rounded-lg px-3 py-2 transition-colors shadow-sm"
+                    onClick={() => setShowProfileModal(true)}
+                  >
+                    <div className="bg-emerald-100 dark:bg-emerald-900/30 rounded-full p-1.5">
+                      <UserIcon className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                    </div>
+                    <span className="text-sm font-medium text-neutral-800 dark:text-neutral-200">
+                      {userData.name}
+                    </span>
+                    {(!userData.national_id || userData.national_id === "") && (
+                      <div className="flex items-center" title="Missing CUIT - required for transaction filtering">
+                        <AlertTriangleIcon className="h-4 w-4 text-amber-500" />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleLogout}
+                  className="text-neutral-600 dark:text-neutral-300 bg-white/80 dark:bg-[#1a1e24]/80 hover:bg-white/90 dark:hover:bg-[#1e232a] shadow-sm border-0"
+                >
+                  <LogOutIcon className="h-4 w-4" />
+                  <span className="ml-1.5">Logout</span>
+                </Button>
+              </div>
+            )}
           </div>
         </header>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           {/* Balance Card */}
-          <Card className="border-0 bg-white/60 dark:bg-[#1a1e24]/90 backdrop-blur-sm">
+          <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
-                    Balance
+                    Current Balance
                   </p>
-                  <p
-                    className={`text-2xl font-semibold mt-2 ${balance >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-500 dark:text-red-400"
-                      }`}
-                  >
+                  <p className={`text-2xl font-semibold mt-2 ${balance >= 0 
+                      ? "text-emerald-600 dark:text-emerald-400" 
+                      : "text-red-500 dark:text-red-400"}`}>
                     ${Math.abs(balance).toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </p>
                 </div>
-                <div
-                  className={`p-3 rounded-full ${balance >= 0 ? "bg-emerald-50 dark:bg-emerald-900/60" : "bg-red-50 dark:bg-red-900/70"
-                    }`}
-                >
-                  <WalletIcon
-                    className={`h-5 w-5 ${balance >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-500 dark:text-red-400"
-                      }`}
-                  />
+                <div className={`p-3 rounded-full ${balance >= 0 
+                    ? "bg-emerald-50 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400" 
+                    : "bg-red-50 dark:bg-red-900/70 text-red-500 dark:text-red-400"}`}>
+                  <WalletIcon className="h-6 w-6" />
                 </div>
+              </div>
+              <div className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-800">
+                <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                  {balance >= 0 ? "You're in good standing" : "Your expenses exceed income"}
+                </p>
               </div>
             </CardContent>
           </Card>
 
           {/* Income Card */}
-          <Card className="border-0 bg-white/60 dark:bg-[#1a1e24]/90 backdrop-blur-sm">
+          <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -261,15 +261,20 @@ export default function App() {
                     ${summary.income.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </p>
                 </div>
-                <div className="p-3 rounded-full bg-emerald-50 dark:bg-emerald-900/70">
-                  <TrendingUpIcon className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                <div className="p-3 rounded-full bg-emerald-50 dark:bg-emerald-900/70 text-emerald-600 dark:text-emerald-400">
+                  <TrendingUpIcon className="h-6 w-6" />
                 </div>
+              </div>
+              <div className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-800">
+                <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                  Total income for {new Date().toLocaleDateString("en-US", { month: "long" })}
+                </p>
               </div>
             </CardContent>
           </Card>
 
           {/* Expenses Card */}
-          <Card className="border-0 bg-white/60 dark:bg-[#1a1e24]/90 backdrop-blur-sm">
+          <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -280,44 +285,52 @@ export default function App() {
                     ${summary.outcome.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </p>
                 </div>
-                <div className="p-3 rounded-full bg-red-50 dark:bg-red-900/70">
-                  <TrendingDownIcon className="h-5 w-5 text-red-500 dark:text-red-400" />
+                <div className="p-3 rounded-full bg-red-50 dark:bg-red-900/70 text-red-500 dark:text-red-400">
+                  <TrendingDownIcon className="h-6 w-6" />
                 </div>
+              </div>
+              <div className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-800">
+                <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                  Total expenses for {new Date().toLocaleDateString("en-US", { month: "long" })}
+                </p>
               </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Main Content */}
-        <Tabs defaultValue="entries" className="space-y-6">          <TabsList className="grid grid-cols-4 w-full max-w-xl mx-auto bg-neutral-100 dark:bg-[#1e232a] p-1 gap-x-1">
-            <TabsTrigger
-              value="entries"
-              className="text-neutral-700 dark:text-neutral-300 data-[state=active]:text-neutral-900 dark:data-[state=active]:text-white data-[state=active]:bg-white dark:data-[state=active]:bg-[#2a303a] data-[state=active]:shadow-sm"
-            >
-              Transactions
-            </TabsTrigger>
-            <TabsTrigger
-              value="new"
-              className="text-neutral-700 dark:text-neutral-300 data-[state=active]:text-neutral-900 dark:data-[state=active]:text-white data-[state=active]:bg-white dark:data-[state=active]:bg-[#2a303a] data-[state=active]:shadow-sm"
-            >
-              Manual Entry
-            </TabsTrigger>
-            <TabsTrigger
-              value="import"
-              className="text-neutral-700 dark:text-neutral-300 data-[state=active]:text-neutral-900 dark:data-[state=active]:text-white data-[state=active]:bg-white dark:data-[state=active]:bg-[#2a303a] data-[state=active]:shadow-sm"
-            >
-              File Entry
-            </TabsTrigger>
-            <TabsTrigger
-              value="files"
-              className="text-neutral-700 dark:text-neutral-300 data-[state=active]:text-neutral-900 dark:data-[state=active]:text-white data-[state=active]:bg-white dark:data-[state=active]:bg-[#2a303a] data-[state=active]:shadow-sm"
-            >
-              Files List
-            </TabsTrigger>
-          </TabsList>
+        <Tabs defaultValue="entries" className="space-y-8">
+          <div className="flex justify-center">
+            <TabsList className="inline-flex bg-white/80 dark:bg-[#1a1e24]/80 p-1.5 gap-x-1.5 rounded-xl shadow-sm">
+              <TabsTrigger
+                value="entries"
+                className="text-neutral-700 dark:text-neutral-300 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-4"
+              >
+                Transactions
+              </TabsTrigger>
+              <TabsTrigger
+                value="new"
+                className="text-neutral-700 dark:text-neutral-300 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-4"
+              >
+                Add Manual
+              </TabsTrigger>
+              <TabsTrigger
+                value="import"
+                className="text-neutral-700 dark:text-neutral-300 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-4"
+              >
+                Import
+              </TabsTrigger>
+              <TabsTrigger
+                value="files"
+                className="text-neutral-700 dark:text-neutral-300 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-4"
+              >
+                Files
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Transactions List */}
-          <TabsContent value="entries" className="space-y-4">
+          <TabsContent value="entries" className="space-y-4 mt-6 focus-visible:outline-none">
             <ActivityList
               isAuthenticated={isAuthenticated}
               entries={entries}
@@ -330,7 +343,7 @@ export default function App() {
           </TabsContent>          
           
           {/* Add New Transaction */}
-          <TabsContent value="new">
+          <TabsContent value="new" className="mt-6 focus-visible:outline-none">
             <ManualTransactionForm
               isAuthenticated={isAuthenticated}
               onSignInClick={() => setShowAuthModal(true)}
@@ -339,8 +352,10 @@ export default function App() {
                 fetchDetails();
               }}
             />
-          </TabsContent>          {/* Import Transactions */}
-          <TabsContent value="import">
+          </TabsContent>
+          
+          {/* Import Transactions */}
+          <TabsContent value="import" className="mt-6 focus-visible:outline-none">
             {!isAuthenticated ? (
               <Card className="border-0 bg-white/60 dark:bg-[#1a1e24]/90 backdrop-blur-sm max-w-2xl mx-auto">
                 <CardContent>
@@ -378,7 +393,7 @@ export default function App() {
           </TabsContent>
 
           {/* Files List */}
-          <TabsContent value="files">
+          <TabsContent value="files" className="mt-6 focus-visible:outline-none">
             <FilesList
               isAuthenticated={isAuthenticated}
               onSignInClick={() => setShowAuthModal(true)}

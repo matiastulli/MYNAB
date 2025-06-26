@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { api } from "@/services/api";
-import { ArrowDownIcon, ArrowUpIcon, TrashIcon, UserIcon, WalletIcon } from "lucide-react";
-import { useState } from "react";
+import { ArrowDownIcon, ArrowUpIcon, CalendarIcon, CircleDollarSignIcon, SearchIcon, TrashIcon, UserIcon, WalletIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 
 // Add xs breakpoint to Tailwind if it doesn't exist
 // This is used for small mobile screens
@@ -16,6 +16,18 @@ export default function ActivityList({
   onTransactionDeleted
 }) {
   const [deletingId, setDeletingId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredEntries, setFilteredEntries] = useState(entries);
+
+  useEffect(() => {
+    if (searchTerm) {
+      setFilteredEntries(entries.filter(entry => 
+        entry.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      ));
+    } else {
+      setFilteredEntries(entries);
+    }
+  }, [entries, searchTerm]);
 
   const handleDelete = async (id) => {
     setDeletingId(id);
@@ -36,16 +48,20 @@ export default function ActivityList({
 
   if (!isAuthenticated) {
     return (
-      <Card className="border-0 bg-white/60 dark:bg-[#1a1e24]/90 backdrop-blur-sm">
+      <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm">
         <CardContent className="p-12 text-center">
-          <div className="flex flex-col items-center gap-3">
+          <div className="flex flex-col items-center gap-4">
             <div className="p-4 rounded-full bg-neutral-100 dark:bg-[#2a303a]">
               <UserIcon className="h-6 w-6 text-neutral-400 dark:text-neutral-300" />
             </div>
-            <p className="text-neutral-500 dark:text-neutral-300">Please sign in to view your transactions</p>
+            <div className="max-w-sm">
+              <h3 className="text-lg font-medium mb-2 text-neutral-900 dark:text-white">Sign in to view transactions</h3>
+              <p className="text-neutral-500 dark:text-neutral-300 mb-4">Track your spending and income by signing in to your account</p>
+            </div>
             <Button
               onClick={onSignInClick}
-              className="mt-2 bg-neutral-900 hover:bg-neutral-800 dark:bg-emerald-800/80 dark:hover:bg-emerald-700/90"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white border-0"
+              size="lg"
             >
               Sign In
             </Button>
@@ -57,13 +73,16 @@ export default function ActivityList({
 
   if (entries.length === 0) {
     return (
-      <Card className="border-0 bg-white/60 dark:bg-[#1a1e24]/90 backdrop-blur-sm">
+      <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm">
         <CardContent className="p-12 text-center">
-          <div className="flex flex-col items-center gap-3">
-            <div className="p-4 rounded-full bg-neutral-100 dark:bg-[#2a303a]">
-              <WalletIcon className="h-6 w-6 text-neutral-400 dark:text-neutral-300" />
+          <div className="flex flex-col items-center gap-4">
+            <div className="p-4 rounded-full bg-emerald-50 dark:bg-emerald-900/30">
+              <WalletIcon className="h-6 w-6 text-emerald-500 dark:text-emerald-400" />
             </div>
-            <p className="text-neutral-500 dark:text-neutral-300">No transactions this month</p>
+            <div className="max-w-sm">
+              <h3 className="text-lg font-medium mb-2 text-neutral-900 dark:text-white">No transactions yet</h3>
+              <p className="text-neutral-500 dark:text-neutral-300">Add your first transaction or import from your bank statements</p>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -71,38 +90,50 @@ export default function ActivityList({
   }
 
   return (
-    <Card className="border-0 bg-white/60 dark:bg-[#1a1e24]/90 backdrop-blur-sm">
-      <CardHeader className="pb-4">
+    <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm">
+      <CardHeader className="pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
           Recent Activity
         </CardTitle>
+        
+        <div className="relative w-full sm:w-auto sm:min-w-[240px]">
+          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+          <input 
+            type="search" 
+            placeholder="Search transactions..." 
+            className="w-full h-9 py-2 pl-9 pr-4 rounded-lg text-sm bg-neutral-100 dark:bg-[#252a34] border-0 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
       </CardHeader>
       <CardContent className="p-0">
-        <div className="divide-y divide-neutral-100 dark:divide-neutral-800">          {entries.map((entry) => (
+        <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
+          {filteredEntries.map((entry) => (
             <div
               key={entry.id}
-              className="flex flex-col md:flex-row md:items-center justify-between p-4 sm:p-6 hover:bg-neutral-50/50 dark:hover:bg-[#2a303a]/70 transition-colors"
+              className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-6 hover:bg-neutral-50 dark:hover:bg-[#212630] transition-colors"
             >
-              <div className="flex items-start sm:items-center gap-3 sm:gap-4 w-full mb-3 md:mb-0">
+              <div className="flex items-start gap-4 w-full sm:w-auto">
                 <div
-                  className={`p-2 sm:p-2.5 rounded-full flex-shrink-0 ${entry.type === "income"
-                    ? "bg-emerald-50 dark:bg-emerald-900/70"
-                    : "bg-red-50 dark:bg-red-900/70"
+                  className={`p-3 rounded-xl flex-shrink-0 ${entry.type === "income"
+                    ? "bg-emerald-50 dark:bg-emerald-900/50"
+                    : "bg-red-50 dark:bg-red-900/50"
                     }`}
                 >
                   {entry.type === "income" ? (
-                    <ArrowUpIcon className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                    <CircleDollarSignIcon className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                   ) : (
-                    <ArrowDownIcon className="h-4 w-4 text-red-500 dark:text-red-400" />
+                    <CircleDollarSignIcon className="h-5 w-5 text-red-500 dark:text-red-400" />
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center justify-between md:justify-start gap-2 md:gap-0">
+                  <div className="flex flex-wrap items-center justify-between sm:justify-start gap-2 sm:gap-1">
                     <p className="font-medium text-neutral-900 dark:text-neutral-100 mr-auto">
                       {entry.description || "No description"}
                     </p>
                     <p
-                      className={`md:hidden font-semibold text-base ${entry.type === "income"
+                      className={`sm:hidden font-semibold text-base ${entry.type === "income"
                         ? "text-emerald-600 dark:text-emerald-400"
                         : "text-red-500 dark:text-red-400"
                         }`}
@@ -116,13 +147,16 @@ export default function ActivityList({
                     </p>
                   </div>
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-neutral-500 dark:text-neutral-400 mt-1">
-                    <span>
-                      {new Date(entry.date).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </span>
+                    <div className="flex items-center gap-1">
+                      <CalendarIcon className="h-3.5 w-3.5 opacity-70" />
+                      <span>
+                        {new Date(entry.date).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </span>
+                    </div>
                     {entry.source && (
                       <>
                         <span className="hidden xs:inline">•</span>
@@ -147,9 +181,9 @@ export default function ActivityList({
                   </div>
                 </div>
               </div>
-              <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto">
+              <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto mt-4 sm:mt-0">
                 <p
-                  className={`hidden md:block font-semibold ${entry.type === "income"
+                  className={`hidden sm:block text-lg font-semibold ${entry.type === "income"
                     ? "text-emerald-600 dark:text-emerald-400"
                     : "text-red-500 dark:text-red-400"
                     }`}
@@ -157,14 +191,11 @@ export default function ActivityList({
                   {entry.type === "income" ? "+" : "-"}
                   {entry.currency === 'USD' ? '$' : entry.currency === 'EUR' ? '€' : '$'}
                   {Number.parseFloat(entry.amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}
-                  {entry.currency && entry.currency !== 'USD' && entry.currency !== 'EUR' && entry.currency !== 'ARS' && (
-                    <span className="text-xs ml-1 opacity-75">{entry.currency}</span>
-                  )}
                 </p>
                 <Button
                   variant="ghost"
-                  size="icon"
-                  className="ml-auto md:ml-0 text-neutral-400 hover:text-red-500 dark:text-neutral-500 dark:hover:text-red-400"
+                  size="sm"
+                  className="ml-auto sm:ml-4 text-neutral-400 hover:text-red-500 dark:text-neutral-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
                   onClick={() => handleDelete(entry.id)}
                   disabled={deletingId === entry.id}
                 >

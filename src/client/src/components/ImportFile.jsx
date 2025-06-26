@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { api } from "@/services/api";
-import { CheckCircleIcon, UploadIcon, XCircleIcon } from "lucide-react";
+import { CheckCircleIcon, FileIcon, UploadCloudIcon, UploadIcon, XCircleIcon } from "lucide-react";
 import { useState } from "react";
 
 export default function ImportFile({ onImportComplete }) {
@@ -14,6 +14,7 @@ export default function ImportFile({ onImportComplete }) {
   const [isUploading, setIsUploading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -35,6 +36,27 @@ export default function ImportFile({ onImportComplete }) {
       };
       reader.onerror = (error) => reject(error);
     });
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const droppedFile = e.dataTransfer.files[0];
+    if (droppedFile) {
+      setFile(droppedFile);
+      setResult(null);
+      setError(null);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -82,9 +104,10 @@ export default function ImportFile({ onImportComplete }) {
   };
 
   return (
-    <Card className="border-0 bg-white/60 dark:bg-[#1a1e24]/90 backdrop-blur-sm">
+    <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
+        <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+          <UploadIcon className="h-5 w-5 text-emerald-500" />
           Import Bank Statement
         </CardTitle>
       </CardHeader>
@@ -97,41 +120,94 @@ export default function ImportFile({ onImportComplete }) {
             <Select value={bankName} onValueChange={setBankName}>
               <SelectTrigger
                 id="bank"
-                className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47]"
+                className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] h-[42px]"
               >
                 <SelectValue placeholder="Select your bank" className="text-neutral-500 dark:text-white" />
               </SelectTrigger>
               <SelectContent className="dark:bg-[#1e232a] dark:border-neutral-700">
-                <SelectItem value="santander_rio" className="text-neutral-900 dark:text-white">Santander Rio</SelectItem>
-                <SelectItem value="ICBC" className="text-neutral-900 dark:text-white">ICBC</SelectItem>
-                <SelectItem value="mercado_pago" className="text-neutral-900 dark:text-white">Mercado Pago</SelectItem>
+                <SelectItem value="santander_rio" className="text-neutral-900 dark:text-white">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                    Santander Rio
+                  </div>
+                </SelectItem>
+                <SelectItem value="ICBC" className="text-neutral-900 dark:text-white">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    ICBC
+                  </div>
+                </SelectItem>
+                <SelectItem value="mercado_pago" className="text-neutral-900 dark:text-white">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                    Mercado Pago
+                  </div>
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="importFile" className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
-              File Statement
+              Statement File
             </Label>
-            <div className="flex items-center gap-3">
-              <Input
-                id="importFile"
-                type="file"
-                accept=".xlsx,.xls,.csv,.pdf"
-                onChange={handleFileChange}
-                className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] file:mr-4 file:py-2 file:px-4
-                file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-neutral-200 dark:file:bg-[#353b47] file:text-neutral-700 dark:file:text-white
-                hover:file:bg-neutral-300 cursor-pointer"
-              />
-              {file && <p className="text-sm text-neutral-500 dark:text-neutral-400">{file.name}</p>}
+            <div 
+              className={`border-2 border-dashed rounded-lg p-6 text-center ${isDragging 
+                ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/10' 
+                : 'border-neutral-200 dark:border-neutral-700 hover:border-emerald-400 dark:hover:border-emerald-700'}`}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+            >
+              {!file ? (
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="p-3 rounded-full bg-neutral-100 dark:bg-[#2a303a]">
+                    <UploadCloudIcon className="h-8 w-8 text-neutral-500 dark:text-neutral-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                      Drag & drop your file here or
+                    </p>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                      Supported formats: .xlsx, .xls, .csv, .pdf
+                    </p>
+                  </div>
+                  <label htmlFor="importFile" className="cursor-pointer bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 font-medium px-4 py-2 rounded-lg text-sm transition-colors inline-block">
+                    Browse Files
+                  </label>
+                  <Input
+                    id="importFile"
+                    type="file"
+                    accept=".xlsx,.xls,.csv,.pdf"
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                </div>
+              ) : (
+                <div className="flex flex-col sm:flex-row items-center gap-4 justify-center">
+                  <div className="p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
+                    <FileIcon className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                  <div className="text-center sm:text-left">
+                    <p className="font-medium text-neutral-900 dark:text-white">{file.name}</p>
+                    <p className="text-xs text-neutral-500 mt-1">{(file.size / 1024).toFixed(2)} KB • {file.type || "unknown type"}</p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setFile(null)}
+                    className="text-neutral-600 dark:text-neutral-400 border-0"
+                  >
+                    Change
+                  </Button>
+                </div>
+              )}
             </div>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-              Only .xlsx and .xls and .csv and .pdf files are supported
-            </p>
           </div>
 
           {error && (
-            <Alert variant="destructive" className="dark:bg-red-900/30 dark:border-red-800 border">
+            <Alert variant="destructive" className="dark:bg-red-900/30 dark:border-red-800 border shadow-sm">
               <XCircleIcon className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
               <AlertDescription>{error}</AlertDescription>
@@ -139,7 +215,7 @@ export default function ImportFile({ onImportComplete }) {
           )}
 
           {result && (
-            <Alert className="dark:bg-emerald-900/30 dark:border-emerald-800 border">
+            <Alert className="dark:bg-emerald-900/30 dark:border-emerald-800 border shadow-sm">
               <CheckCircleIcon className="h-4 w-4" />
               <AlertTitle>Success</AlertTitle>
               <AlertDescription>
@@ -151,17 +227,17 @@ export default function ImportFile({ onImportComplete }) {
           <Button
             type="submit"
             disabled={isUploading || !file || !bankName}
-            className="w-full bg-neutral-900 hover:bg-neutral-800 dark:bg-emerald-800/80 dark:hover:bg-emerald-700/90 dark:text-white transition-colors"
+            className="w-full bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white transition-colors h-12"
           >
             {isUploading ? (
               <div className="flex items-center justify-center gap-2">
                 <div className="h-4 w-4 border-2 border-t-transparent rounded-full animate-spin"></div>
-                <span>Uploading...</span>
+                <span>Processing...</span>
               </div>
             ) : (
               <>
-                <UploadIcon className="h-4 w-4 mr-2" />
-                Upload File
+                <UploadIcon className="h-5 w-5 mr-2" />
+                Import Transactions
               </>
             )}
           </Button>

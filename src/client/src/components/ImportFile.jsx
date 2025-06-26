@@ -149,7 +149,7 @@ export default function ImportFile({ onImportComplete, onImportSuccess }) {
                 </SelectItem>
                 <SelectItem value="ICBC" className="text-neutral-900 dark:text-white">
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <div className="w-2 h-2 bg-white dark:bg-neutral-200 rounded-full"></div>
                     ICBC
                   </div>
                 </SelectItem>

@@ -56,8 +56,6 @@ export default function App() {
   const fetchUserProfile = async () => {
     const profile = await api.get("/auth/profile");
 
-    console.log("Fetched user profile:", profile);
-
     if (!profile.error) {
       setUserData(profile);
     }
@@ -182,36 +180,30 @@ export default function App() {
       {showAuthModal && <AuthModal onAuthenticated={handleAuthentication} />}
 
       <div className="max-w-5xl mx-auto px-4 py-8 md:px-6 md:py-12">
-        {/* Header */}
-        <header className="mb-8 md:mb-12">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div>
-                <h1 className="text-2xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100">
-                  Budget Overview
-                </h1>
-                <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">{formattedDate}</p>
-              </div>
+        {/* Header - Improved for mobile */}
+        <header className="mb-6 md:mb-10">
+          <div className="flex flex-row items-center justify-between gap-2 flex-wrap">
+            <div>
+              <h1 className="text-xl sm:text-2xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100">
+                Budget Overview
+              </h1>
+              <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 mt-1">{formattedDate}</p>
             </div>
 
-            {isAuthenticated && (
-              <div className="flex items-center gap-3 ml-auto">
-                {userData && (
-                  <div
-                    className="flex items-center gap-2 cursor-pointer bg-white/80 dark:bg-[#1a1e24]/80 hover:bg-white dark:hover:bg-[#1e232a] rounded-lg px-3 py-2 transition-colors shadow-sm"
-                    onClick={() => setShowProfileModal(true)}
-                  >
-                    <div className="bg-emerald-100 dark:bg-emerald-900/30 rounded-full p-1.5">
-                      <UserIcon className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                    </div>
-                    <span className="text-sm font-medium text-neutral-800 dark:text-neutral-200">
-                      {userData.name} {userData.last_name}
-                    </span>
-                    {(!userData.national_id || userData.national_id === "") && (
-                      <div className="flex items-center" title="Missing CUIT - required for transaction filtering">
-                        <AlertTriangleIcon className="h-4 w-4 text-amber-500" />
-                      </div>
-                    )}
+            {isAuthenticated && userData && (
+              <div 
+                className="flex items-center gap-2 cursor-pointer bg-white/80 dark:bg-[#1a1e24]/80 hover:bg-white dark:hover:bg-[#1e232a] rounded-lg px-3 py-1.5 transition-colors shadow-sm"
+                onClick={() => setShowProfileModal(true)}
+              >
+                <div className="bg-emerald-100 dark:bg-emerald-900/30 rounded-full p-1">
+                  <UserIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <span className="text-xs sm:text-sm font-medium text-neutral-800 dark:text-neutral-200 truncate max-w-[120px] sm:max-w-full">
+                  {userData.name} {userData.last_name}
+                </span>
+                {(!userData.national_id || userData.national_id === "") && (
+                  <div className="flex items-center" title="Missing CUIT - required for transaction filtering">
+                    <AlertTriangleIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-500" />
                   </div>
                 )}
               </div>

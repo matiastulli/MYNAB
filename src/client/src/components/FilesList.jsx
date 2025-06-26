@@ -38,13 +38,13 @@ export default function FilesList({
     setError(null);
 
     try {
-      let url = "/budget/files";
-      const params = new URLSearchParams();
-      params.append("limit", pagination.limit);
-      params.append("offset", pagination.offset);
-      url += `?${params.toString()}`;
-
-      const response = await api.get(url);
+      const url = "/budget/files";
+      
+      // Send limit and offset in the request body instead of URL parameters
+      const response = await api.post(url, {
+        limit: pagination.limit,
+        offset: pagination.offset
+      });
 
       if (!response.error) {
         setFiles(response.data || []);

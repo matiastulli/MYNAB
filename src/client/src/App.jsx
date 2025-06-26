@@ -7,7 +7,7 @@ import FilesList from "@/components/FilesList"
 import ImportFile from "@/components/ImportFile"
 import ManualTransactionForm from "@/components/ManualTransactionForm"
 import ProfileUpdateDialog from "@/components/ProfileUpdateDialog"
-import { Button } from "@/components/ui/button"
+import SignInPrompt from "@/components/SignInPrompt"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { api } from "@/services/api"
@@ -400,30 +400,11 @@ export default function App() {
           {/* Import Transactions */}
           <TabsContent value="import" className="mt-6 focus-visible:outline-none">
             {!isAuthenticated ? (
-              <Card className="border-0 bg-white/60 dark:bg-[#1a1e24]/90 backdrop-blur-sm max-w-2xl mx-auto">
-                <CardContent>
-                  <div className="flex flex-col items-center gap-4 py-6">
-                    <div className="p-4 rounded-full bg-neutral-100 dark:bg-[#2a303a]">
-                      <UserIcon className="h-6 w-6 text-neutral-400 dark:text-neutral-300" />
-                    </div>
-                    <div className="text-center space-y-2">
-                      <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
-                        Sign in to import transactions
-                      </h3>
-                      <p className="text-neutral-500 dark:text-neutral-400 max-w-sm mx-auto">
-                        You need to be signed in to import your transactions from Excel or CSV or PDF files.
-                      </p>
-                    </div>
-                    <Button
-                      onClick={() => setShowAuthModal(true)}
-                      className="mt-2 bg-neutral-900 hover:bg-neutral-800 dark:bg-emerald-800/80 dark:hover:bg-emerald-700/90"
-                      size="lg"
-                    >
-                      Sign In
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+              <SignInPrompt
+                title="Sign in to import transactions"
+                description="You need to be signed in to import your transactions from Excel or CSV or PDF files."
+                onSignInClick={() => setShowAuthModal(true)}
+              />
             ) : (
               <ImportFile
                 onImportComplete={() => {

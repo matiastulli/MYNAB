@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import SignInPrompt from "@/components/SignInPrompt";
 import {
   Table,
   TableBody,
@@ -10,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { api } from "@/services/api";
 import { format } from "date-fns";
-import { FileIcon, FolderIcon, TrashIcon, UserIcon } from "lucide-react";
+import { FileIcon, FolderIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function FilesList({ 
@@ -92,30 +93,11 @@ export default function FilesList({
 
   if (!isAuthenticated) {
     return (
-      <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm">
-        <CardContent>
-          <div className="flex flex-col items-center gap-4 py-12">
-            <div className="p-4 rounded-full bg-neutral-100 dark:bg-[#2a303a]">
-              <UserIcon className="h-6 w-6 text-neutral-400 dark:text-neutral-300" />
-            </div>
-            <div className="text-center space-y-2 max-w-sm">
-              <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
-                Sign in to view your files
-              </h3>
-              <p className="text-neutral-500 dark:text-neutral-400">
-                You need to be signed in to view the list of your uploaded files.
-              </p>
-            </div>
-            <Button
-              onClick={onSignInClick}
-              className="mt-2 bg-emerald-600 hover:bg-emerald-700 text-white"
-              size="lg"
-            >
-              Sign In
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <SignInPrompt
+        title="Sign in to view your files"
+        description="You need to be signed in to view the list of your uploaded files."
+        onSignInClick={onSignInClick}
+      />
     );
   }
 
@@ -211,6 +193,24 @@ export default function FilesList({
                 Showing {pagination.offset + 1} to {Math.min(pagination.offset + pagination.limit, pagination.total)} of {pagination.total} files
               </span>
               <Button
+                variant="outline"
+                size="sm"
+                disabled={pagination.offset + pagination.limit >= pagination.total}
+                onClick={() => setPagination({
+                  ...pagination,
+                  offset: pagination.offset + pagination.limit
+                })}
+                className="border-0 bg-white dark:bg-[#252b36] shadow-sm"
+              >
+                Next
+              </Button>
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
                 variant="outline"
                 size="sm"
                 disabled={pagination.offset + pagination.limit >= pagination.total}

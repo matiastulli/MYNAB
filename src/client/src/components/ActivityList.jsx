@@ -1,7 +1,8 @@
+import SignInPrompt from "@/components/SignInPrompt";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { api } from "@/services/api";
-import { CalendarIcon, CircleDollarSignIcon, SearchIcon, TrashIcon, UserIcon, WalletIcon } from "lucide-react";
+import { CalendarIcon, CircleDollarSignIcon, SearchIcon, TrashIcon, WalletIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 // Add xs breakpoint to Tailwind if it doesn't exist
@@ -50,26 +51,11 @@ export default function ActivityList({
 
   if (!isAuthenticated) {
     return (
-      <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm">
-        <CardContent className="p-12 text-center">
-          <div className="flex flex-col items-center gap-4">
-            <div className="p-4 rounded-full bg-neutral-100 dark:bg-[#2a303a]">
-              <UserIcon className="h-6 w-6 text-neutral-400 dark:text-neutral-300" />
-            </div>
-            <div className="max-w-sm">
-              <h3 className="text-lg font-medium mb-2 text-neutral-900 dark:text-white">Sign in to view transactions</h3>
-              <p className="text-neutral-500 dark:text-neutral-300 mb-4">Track your spending and income by signing in to your account</p>
-            </div>
-            <Button
-              onClick={onSignInClick}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white border-0"
-              size="lg"
-            >
-              Sign In
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <SignInPrompt
+        title="Sign in to view transactions"
+        description="Track your spending and income by signing in to your account"
+        onSignInClick={onSignInClick}
+      />
     );
   }
 

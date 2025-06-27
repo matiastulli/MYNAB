@@ -1,9 +1,10 @@
 from sqlalchemy import select, insert, func, and_, delete
 from datetime import date, datetime
-from typing import Optional, Dict, Any, List
+from typing import Dict, Any, List
 import pandas as pd
 import io
 import base64
+from loguru import logger
 
 from src.service.auth_user.service import get_user_by_id
 from src.service.budget.utils import extract_pdf_to_dataframe
@@ -150,9 +151,10 @@ async def delete_file(file_id: int, user_id: int) -> bool:
 
     # First delete all budget entries that reference this file
     delete_entries_stmt = delete(budget_entry).where(
-        and_(budget_entry.c.file_id == file_id, budget_entry.c.user_id == user_id)
+        and_(budget_entry.c.file_id == file_id,
+             budget_entry.c.user_id == user_id)
     )
-    
+
     await execute(delete_entries_stmt)
 
     # File exists and belongs to the user, proceed with deletion
@@ -210,11 +212,13 @@ async def process_bank_statement(user_id: int, file_id: int, bank_name: str, cur
         # Load into pandas DataFrame
         df = pd.read_excel(io.BytesIO(file_bytes))
 
-        entries = _process_santander_rio_format(df, file_id, bank_name, currency)
+        entries = _process_santander_rio_format(
+            df, file_id, bank_name, currency)
     elif bank_name.lower() == "mercado_pago":
         df = extract_pdf_to_dataframe(file_bytes)
 
-        entries = _process_mercado_pago_format(df, file_id, bank_name, currency)
+        entries = _process_mercado_pago_format(
+            df, file_id, bank_name, currency)
 
     elif bank_name.lower() == "icbc":
         # Load into pandas DataFrame
@@ -376,7 +380,8 @@ def _process_mercado_pago_format(df: pd.DataFrame, file_id: int, bank_name: str,
                     if pd.isna(date_raw):
                         date_raw = pd.to_datetime(
                             date_str, dayfirst=True, errors="coerce")
-                except:
+                except Exception as ex:
+                    logger.error(f"Error parsing date: {date_str} - {ex}")
                     continue
 
                 if pd.isna(date_raw):
@@ -398,29 +403,17 @@ def _process_mercado_pago_format(df: pd.DataFrame, file_id: int, bank_name: str,
                     amount_str = str(row.iloc[3]).strip()
                     # Remove currency symbols and clean the string
                     amount_str = amount_str.replace(
-                        "$", "").replace(",", "").strip()
+                        "$", "").replace(".", "").strip()
+                        
+                    # Replace comma with period for decimal separator
+                    amount_str = amount_str.replace(",", ".")
 
                     try:
                         amount = float(amount_str)
-                    except:
+                    except Exception as ex:
+                        logger.error(
+                            f"Error parsing amount: {amount_str} - {ex}")
                         amount = None
-
-                # If amount not found in expected position, try other columns
-                if amount is None:
-                    for col_idx in range(2, len(row)):
-                        try:
-                            col_val = str(row.iloc[col_idx]).strip()
-                            if "$" in col_val or any(char.isdigit() for char in col_val):
-                                col_val = col_val.replace(
-                                    "$", "").replace(",", "").strip()
-                                # Handle negative values
-                                if col_val.startswith("-"):
-                                    amount = -float(col_val[1:])
-                                else:
-                                    amount = float(col_val)
-                                break
-                        except:
-                            continue
 
                 if amount is None or amount == 0:
                     continue
@@ -430,7 +423,7 @@ def _process_mercado_pago_format(df: pd.DataFrame, file_id: int, bank_name: str,
 
                 # Create entry
                 entries.append(BudgetEntryCreate(
-                    reference_id=reference_id,
+                    reference_id=reference_id or f"{bank_name}_{description[:30]}_{date_raw.strftime('%Y%m%d')}",
                     date=date_raw,
                     amount=abs(amount),
                     currency=currency,
@@ -442,9 +435,11 @@ def _process_mercado_pago_format(df: pd.DataFrame, file_id: int, bank_name: str,
 
             except Exception as e:
                 # Skip problematic rows
+                logger.error(f"Error processing MercadoPago row: {e}")
                 continue
 
     except Exception as e:
+        logger.error(f"Error processing MercadoPago statement: {e}")
         return []
 
     return entries
@@ -458,7 +453,8 @@ def _process_icbc_format(df: pd.DataFrame, file_id: int, bank_name: str, currenc
 
     for _, row in df.iterrows():
         try:
-            reference_id = str(row["Referencia"]).replace(".","").strip() or None
+            reference_id = str(row["Referencia"]).replace(
+                ".", "").strip() or None
             # Parse date
             date_val = datetime.strptime(str(row["Fecha"]), "%m/%d/%y").date()
             description = str(row["Descripcion"]).strip(
@@ -475,7 +471,7 @@ def _process_icbc_format(df: pd.DataFrame, file_id: int, bank_name: str, currenc
                 entry_type = "outcome"
 
             entries.append(BudgetEntryCreate(
-                reference_id=reference_id,
+                reference_id=reference_id or f"{bank_name}_{description[:30]}_{date_val.strftime('%Y%m%d')}",
                 date=date_val,
                 amount=abs(amount),
                 currency=currency,

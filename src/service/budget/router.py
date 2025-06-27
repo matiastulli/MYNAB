@@ -22,7 +22,7 @@ router = APIRouter()
 
 
 @router.post("/entry", status_code=status.HTTP_201_CREATED)
-async def add_entry(
+async def post_entry(
     entry: BudgetEntryCreate,
     jwt_data: JWTData = Depends(require_role([]))
 ):
@@ -31,7 +31,7 @@ async def add_entry(
 
 
 @router.post("/import-file", status_code=status.HTTP_200_OK)
-async def import_file(
+async def post_file(
     bank_name: str = Body(...),
     file_content: str = Body(...),  # Base64 encoded file content
     file_name: str = Body(...),
@@ -82,7 +82,7 @@ async def import_file(
 
 
 @router.get("/files", response_model=List[FilesResponseWithMeta])
-async def read_files(
+async def get_files(
     jwt_data: JWTData = Depends(require_role([])),
     currency: str = Query(...),
     limit: Optional[int] = Query(

@@ -83,6 +83,7 @@ export default function App() {
     if (isAuthenticated) {
       fetchSummary();
       fetchDetails();
+      fetchFiles();
     }
   }, [currency]);
 

@@ -35,6 +35,7 @@ async def import_file(
     bank_name: str = Body(...),
     file_content: str = Body(...),  # Base64 encoded file content
     file_name: str = Body(...),
+    currency: str = Body(...),  # Currency code, e.g., "USD", "EUR"
     jwt_data: JWTData = Depends(require_role([]))
 ) -> dict[str, str | int]:
     """
@@ -59,13 +60,14 @@ async def import_file(
     file_id = await create_file(
         user_id=jwt_data.id_user,
         file_name=file_name,
-        file_content=file_content
+        file_content=file_content,
+        currency=currency
     )
 
     try:
 
         # Process bank statement in the service layer
-        entry_count = await process_bank_statement(jwt_data.id_user, file_id, bank_name, file_content)
+        entry_count = await process_bank_statement(jwt_data.id_user, file_id, bank_name, currency, file_content)
 
         return {
             "message": f"Successfully imported {entry_count} transactions from {bank_name}",
@@ -79,15 +81,16 @@ async def import_file(
         ) from e
 
 
-@router.post("/files", response_model=List[FilesResponseWithMeta])
+@router.get("/files", response_model=List[FilesResponseWithMeta])
 async def read_files(
     jwt_data: JWTData = Depends(require_role([])),
+    currency: str = Query(...),
     limit: Optional[int] = Query(
         default=100, description="Number of items to return per page"),
     offset: Optional[int] = Query(
         default=0, description="Offset from the beginning of the result set"),
 ) -> JSONResponse:
-    result = await list_files(user_id=jwt_data.id_user, limit=limit, offset=offset)
+    result = await list_files(user_id=jwt_data.id_user, limit=limit, offset=offset, currency=currency)
 
     files_data = result["data"]
     metadata = result["metadata"]
@@ -109,6 +112,7 @@ async def read_files(
 @router.get("/details", response_model=List[BudgetResponseWithMeta])
 async def get_budget_details(
     jwt_data: JWTData = Depends(require_role([])),
+    currency: str = Query(...),
     start_date: Optional[date] = Query(None),
     end_date: Optional[date] = Query(None),
     limit: Optional[int] = Query(
@@ -129,7 +133,8 @@ async def get_budget_details(
         start_date,
         end_date,
         limit,
-        offset
+        offset,
+        currency
     )
 
     budgets_data = result["data"]
@@ -152,6 +157,7 @@ async def get_budget_details(
 @router.get("/summary", response_model=BudgetSummary)
 async def get_monthly_summary(
     jwt_data: JWTData = Depends(require_role([])),
+    currency: str = Query(...),
     start_date: Optional[date] = Query(None),
     end_date: Optional[date] = Query(None),
 ):
@@ -163,7 +169,7 @@ async def get_monthly_summary(
     if not end_date:
         end_date = today
 
-    summary = await get_budget_summary(jwt_data.id_user, start_date, end_date)
+    summary = await get_budget_summary(jwt_data.id_user, start_date, end_date, currency)
     return summary
 
 

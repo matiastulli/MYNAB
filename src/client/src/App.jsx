@@ -2,6 +2,7 @@
 
 import ActivityList from "@/components/ActivityList"
 import AuthModal from "@/components/AuthModal"
+import CurrencyFilter from "@/components/CurrencyFilter"
 import DateRangeFilter from "@/components/DateRangeFilter"
 import FilesList from "@/components/FilesList"
 import ImportFile from "@/components/ImportFile"
@@ -43,6 +44,13 @@ export default function App() {
     preset: 'current-month' // Options: 'current-month', 'last-month', 'last-3-months', 'custom'
   });
 
+  // New currency state
+  const [currency, setCurrency] = useState("ARS");
+  
+  // Add state for files loading and error
+  const [filesLoading, setFilesLoading] = useState(false);
+  const [filesError, setFilesError] = useState(null);
+  
   // Check authentication status on load
   useEffect(() => {
     const checkAuth = () => {
@@ -70,6 +78,14 @@ export default function App() {
     }
   }, [dateRange.startDate, dateRange.endDate]);
 
+  // Add effect to reload data when currency changes
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchSummary();
+      fetchDetails();
+    }
+  }, [currency]);
+
   const fetchUserProfile = async () => {
     const profile = await api.get("/auth/profile");
 
@@ -88,6 +104,7 @@ export default function App() {
       const params = new URLSearchParams();
       params.append('start_date', startDateStr);
       params.append('end_date', endDateStr);
+      params.append('currency', currency);
       
       const url = `/budget/summary?${params.toString()}`;
       
@@ -117,6 +134,7 @@ export default function App() {
       params.append('end_date', endDateStr);
       params.append('limit', pagination.limit);
       params.append('offset', pagination.offset);
+      params.append('currency', currency);
       
       const url = `/budget/details?${params.toString()}`;
       
@@ -139,31 +157,39 @@ export default function App() {
   };
 
   const fetchFiles = async () => {
+    setFilesLoading(true);
+    setFilesError(null);
+
     try {
-      const url = "/files";
+      // Use URL parameters for GET request
+      const params = new URLSearchParams();
       
-      // Send pagination parameters in the request body
-      const data = await api.post(url, {
-        limit: pagination.limit,
-        offset: pagination.offset
-      });
+      params.append('limit', pagination.limit);
+      params.append('offset', pagination.offset);
+      params.append('currency', currency);
       
-      if (!data.error) {
-        setFiles(data.data || []);
+      const url = `/budget/files?${params.toString()}`;
+      
+      const response = await api.get(url);
+
+      if (!response.error) {
+        setFiles(response.data || []);
         setPagination({
           ...pagination,
-          total: data.pagination?.total || 0
+          total: response.metadata?.total_count || 0
         });
       } else {
-        console.error("Error fetching files:", data.error);
+        setFilesError(response.error);
         setFiles([]);
       }
-    } catch (error) {
-      console.error("Failed to fetch files:", error);
-      setFiles([]);
+    } catch (err) {
+      setFilesError("Failed to load files. Please try again.");
+      console.error("Error fetching files:", err);
+    } finally {
+      setFilesLoading(false);
     }
   };
-
+  
   const handleLogout = () => {
     api.logout();
     setIsAuthenticated(false);
@@ -203,6 +229,11 @@ export default function App() {
     setPagination({...pagination, offset: 0});
   };
 
+  const handlePaginationChange = (newPagination) => {
+    setPagination(newPagination);
+    // Files will be fetched by useEffect when pagination changes
+  };
+  
   const balance = summary.income - summary.outcome;
   
   // Get formatted date range for display
@@ -232,10 +263,16 @@ export default function App() {
                   {dateRangeFormatted}
                 </p>
                 {isAuthenticated && (
-                  <DateRangeFilter 
-                    dateRange={dateRange} 
-                    onDateRangeChange={handleDateRangeChange} 
-                  />
+                  <>
+                    <DateRangeFilter 
+                      dateRange={dateRange} 
+                      onDateRangeChange={handleDateRangeChange} 
+                    />
+                    <CurrencyFilter
+                      selectedCurrency={currency}
+                      onCurrencyChange={setCurrency}
+                    />
+                  </>
                 )}
               </div>
             </div>
@@ -274,7 +311,8 @@ export default function App() {
                   <p className={`text-2xl font-semibold mt-2 ${balance >= 0 
                       ? "text-emerald-600 dark:text-emerald-400" 
                       : "text-red-500 dark:text-red-400"}`}>
-                    ${Math.abs(balance).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                    {currency === "EUR" ? "€" : "$"}
+                    {Math.abs(balance).toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </p>
                 </div>
                 <div className={`p-3 rounded-full ${balance >= 0 
@@ -300,7 +338,8 @@ export default function App() {
                     Income
                   </p>
                   <p className="text-2xl font-semibold mt-2 text-emerald-600 dark:text-emerald-400">
-                    ${summary.income.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                    {currency === "EUR" ? "€" : "$"}
+                    {summary.income.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </p>
                 </div>
                 <div className="p-3 rounded-full bg-emerald-50 dark:bg-emerald-900/70 text-emerald-600 dark:text-emerald-400">
@@ -324,7 +363,8 @@ export default function App() {
                     Expenses
                   </p>
                   <p className="text-2xl font-semibold mt-2 text-red-500 dark:text-red-400">
-                    ${summary.outcome.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                    {currency === "EUR" ? "€" : "$"}
+                    {summary.outcome.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </p>
                 </div>
                 <div className="p-3 rounded-full bg-red-50 dark:bg-red-900/70 text-red-500 dark:text-red-400">
@@ -378,6 +418,7 @@ export default function App() {
               entries={entries}
               dateRange={dateRange}
               dateRangeFormatted={dateRangeFormatted}
+              currency={currency}
               onSignInClick={() => setShowAuthModal(true)}
               onTransactionDeleted={() => {
                 fetchSummary();
@@ -390,6 +431,7 @@ export default function App() {
           <TabsContent value="new" className="mt-6 focus-visible:outline-none">
             <ManualTransactionForm
               isAuthenticated={isAuthenticated}
+              defaultCurrency={currency}
               onSignInClick={() => setShowAuthModal(true)}
               onTransactionAdded={() => {
                 fetchSummary();
@@ -409,6 +451,7 @@ export default function App() {
               }}
               onImportSuccess={handleImportSuccess}
               className="max-w-2xl mx-auto"
+              currency={currency}
             />
           </TabsContent>
 
@@ -420,7 +463,13 @@ export default function App() {
               onFileDeleted={() => {
                 fetchSummary();
                 fetchDetails();
+                fetchFiles();
               }}
+              files={files}
+              loading={filesLoading}
+              error={filesError}
+              pagination={pagination}
+              onPaginationChange={handlePaginationChange}
             />
           </TabsContent>
         </Tabs>

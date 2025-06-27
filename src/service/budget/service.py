@@ -28,14 +28,15 @@ async def create_budget_entry(user_id: int, entry: BudgetEntryCreate) -> None:
     await execute(stmt)
 
 
-async def get_budget_summary(user_id: int, start_date: date, end_date: date) -> Dict[str, float]:
+async def get_budget_summary(user_id: int, start_date: date, end_date: date, currency: str) -> Dict[str, float]:
     stmt = select(
         budget_entry.c.type,
         func.sum(budget_entry.c.amount).label("total")
     ).where(
         budget_entry.c.user_id == user_id,
         budget_entry.c.date >= start_date,
-        budget_entry.c.date <= end_date
+        budget_entry.c.date <= end_date,
+        budget_entry.c.currency == currency
     ).group_by(budget_entry.c.type)
 
     result = await fetch_all(stmt)
@@ -51,13 +52,15 @@ async def get_budget_entries(
     start_date: date,
     end_date: date,
     limit: int,
-    offset: int
+    offset: int,
+    currency: str
 ) -> dict[str, Any]:
     # Build filter conditions
     conditions = [
         budget_entry.c.user_id == user_id,
         budget_entry.c.date >= start_date,
-        budget_entry.c.date <= end_date
+        budget_entry.c.date <= end_date,
+        budget_entry.c.currency == currency
     ]
 
     # Count query to get total records
@@ -112,7 +115,7 @@ async def delete_budget_entry(user_id: int, entry_id: int) -> bool:
     return True
 
 
-async def create_file(user_id: int, file_name: str, file_content: str) -> int:
+async def create_file(user_id: int, file_name: str, file_content: str, currency: str) -> int:
     """
     Create a new file entry in the database.
     Returns the ID of the created file.
@@ -121,6 +124,7 @@ async def create_file(user_id: int, file_name: str, file_content: str) -> int:
         user_id=user_id,
         file_name=file_name,
         file_base64=file_content,
+        currency=currency,
         created_at=datetime.utcnow(),
         updated_at=datetime.utcnow()
     ).returning(files.c.id)
@@ -160,7 +164,7 @@ async def delete_file(file_id: int, user_id: int) -> bool:
     return True
 
 
-async def list_files(user_id: int, limit: int, offset: int) -> dict[str, Any]:
+async def list_files(user_id: int, limit: int, offset: int, currency: str) -> dict[str, Any]:
 
     select_query = select(
         files.c.id.label('id'),
@@ -168,7 +172,7 @@ async def list_files(user_id: int, limit: int, offset: int) -> dict[str, Any]:
         files.c.file_name.label('file_name'),
         files.c.created_at.label('created_at'),
         files.c.updated_at.label('updated_at'),
-    ).select_from(files).where(files.c.user_id == user_id)
+    ).select_from(files).where(and_(files.c.user_id == user_id, files.c.currency == currency))
 
     # Count query to get total records
     count_query = select(func.count()).select_from(select_query.alias())
@@ -191,7 +195,7 @@ async def list_files(user_id: int, limit: int, offset: int) -> dict[str, Any]:
     }
 
 
-async def process_bank_statement(user_id: int, file_id: int, bank_name: str, file_content: str) -> int:
+async def process_bank_statement(user_id: int, file_id: int, bank_name: str, currency: str, file_content: str) -> int:
     """
     Process bank statements from different banks and add entries to the database
     Returns the number of entries imported
@@ -206,17 +210,17 @@ async def process_bank_statement(user_id: int, file_id: int, bank_name: str, fil
         # Load into pandas DataFrame
         df = pd.read_excel(io.BytesIO(file_bytes))
 
-        entries = _process_santander_rio_format(df, file_id, bank_name)
+        entries = _process_santander_rio_format(df, file_id, bank_name, currency)
     elif bank_name.lower() == "mercado_pago":
         df = extract_pdf_to_dataframe(file_bytes)
 
-        entries = _process_mercado_pago_format(df, file_id, bank_name)
+        entries = _process_mercado_pago_format(df, file_id, bank_name, currency)
 
     elif bank_name.lower() == "icbc":
         # Load into pandas DataFrame
         df = pd.read_csv(io.BytesIO(file_bytes), encoding='utf-8')
 
-        entries = _process_icbc_format(df, file_id, bank_name)
+        entries = _process_icbc_format(df, file_id, bank_name, currency)
 
     user_data = await get_user_by_id(user_id)
 
@@ -247,7 +251,7 @@ async def process_bank_statement(user_id: int, file_id: int, bank_name: str, fil
     return entry_count
 
 
-def _process_santander_rio_format(df: pd.DataFrame, file_id: int, bank_name: str) -> List[BudgetEntryCreate]:
+def _process_santander_rio_format(df: pd.DataFrame, file_id: int, bank_name: str, currency: str) -> List[BudgetEntryCreate]:
     """Process Santander Rio bank statement format"""
     entries: List[BudgetEntryCreate] = []
     try:
@@ -288,7 +292,7 @@ def _process_santander_rio_format(df: pd.DataFrame, file_id: int, bank_name: str
                     reference_id=reference_id,
                     date=date_raw,
                     amount=abs(amount),
-                    currency="ARS",  # Assuming Argentine Peso
+                    currency=currency,
                     source=bank_name,
                     description=description,
                     type=entry_type,
@@ -301,7 +305,7 @@ def _process_santander_rio_format(df: pd.DataFrame, file_id: int, bank_name: str
     return entries
 
 
-def _process_mercado_pago_format(df: pd.DataFrame, file_id: int, bank_name: str) -> List[BudgetEntryCreate]:
+def _process_mercado_pago_format(df: pd.DataFrame, file_id: int, bank_name: str, currency: str) -> List[BudgetEntryCreate]:
     """Process MercadoPago bank statement format"""
     entries: List[BudgetEntryCreate] = []
 
@@ -429,7 +433,7 @@ def _process_mercado_pago_format(df: pd.DataFrame, file_id: int, bank_name: str)
                     reference_id=reference_id,
                     date=date_raw,
                     amount=abs(amount),
-                    currency="ARS",  # Assuming Argentine Peso
+                    currency=currency,
                     source=bank_name,
                     description=description,
                     type=entry_type,
@@ -446,7 +450,7 @@ def _process_mercado_pago_format(df: pd.DataFrame, file_id: int, bank_name: str)
     return entries
 
 
-def _process_icbc_format(df: pd.DataFrame, file_id: int, bank_name: str) -> List[BudgetEntryCreate]:
+def _process_icbc_format(df: pd.DataFrame, file_id: int, bank_name: str, currency: str) -> List[BudgetEntryCreate]:
     """Process ICBC bank statement CSV file into BudgetEntryCreate list"""
     entries: List[BudgetEntryCreate] = []
     # Rename columns for clarity
@@ -474,7 +478,7 @@ def _process_icbc_format(df: pd.DataFrame, file_id: int, bank_name: str) -> List
                 reference_id=reference_id,
                 date=date_val,
                 amount=abs(amount),
-                currency="ARS",  # Assuming Argentine Peso
+                currency=currency,
                 source=bank_name,
                 description=description,
                 type=entry_type,

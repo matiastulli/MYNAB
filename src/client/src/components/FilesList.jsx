@@ -12,59 +12,17 @@ import {
 import { api } from "@/services/api";
 import { format } from "date-fns";
 import { FileIcon, FolderIcon, TrashIcon } from "lucide-react";
-import { useEffect, useState } from "react";
 
 export default function FilesList({
   isAuthenticated,
   onSignInClick,
-  onFileDeleted
+  onFileDeleted,
+  files = [],
+  loading = false,
+  error = null,
+  pagination = { limit: 50, offset: 0, total: 0 },
+  onPaginationChange
 }) {
-  const [files, setFiles] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [pagination, setPagination] = useState({
-    limit: 50,
-    offset: 0,
-    total: 0
-  });
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchFiles();
-    }
-  }, [isAuthenticated, pagination.offset, pagination.limit]);
-
-  const fetchFiles = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const url = "/budget/files";
-
-      // Send limit and offset in the request body instead of URL parameters
-      const response = await api.post(url, {
-        limit: pagination.limit,
-        offset: pagination.offset
-      });
-
-      if (!response.error) {
-        setFiles(response.data || []);
-        setPagination({
-          ...pagination,
-          total: response.metadata?.total_count || 0
-        });
-      } else {
-        setError(response.error);
-        setFiles([]);
-      }
-    } catch (err) {
-      setError("Failed to load files. Please try again.");
-      console.error("Error fetching files:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleDeleteFile = async (fileId) => {
     if (!confirm("Are you sure you want to delete this file?")) return;
 
@@ -72,13 +30,13 @@ export default function FilesList({
       const response = await api.delete(`/budget/file/${fileId}`);
 
       if (!response.error) {
-        fetchFiles();
+        // Instead of fetching here, notify parent to refresh data
         if (onFileDeleted) onFileDeleted();
       } else {
-        setError(response.error);
+        // Error handling should be done by the parent component
+        console.error("Error deleting file:", response.error);
       }
     } catch (err) {
-      setError("Failed to delete file. Please try again.");
       console.error("Error deleting file:", err);
     }
   };
@@ -181,7 +139,7 @@ export default function FilesList({
                 variant="outline"
                 size="sm"
                 disabled={pagination.offset === 0}
-                onClick={() => setPagination({
+                onClick={() => onPaginationChange({
                   ...pagination,
                   offset: Math.max(0, pagination.offset - pagination.limit)
                 })}
@@ -196,7 +154,7 @@ export default function FilesList({
                 variant="outline"
                 size="sm"
                 disabled={pagination.offset + pagination.limit >= pagination.total}
-                onClick={() => setPagination({
+                onClick={() => onPaginationChange({
                   ...pagination,
                   offset: pagination.offset + pagination.limit
                 })}

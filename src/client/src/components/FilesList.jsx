@@ -1,17 +1,9 @@
 import SignInPrompt from "@/components/SignInPrompt";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { api } from "@/services/api";
 import { format } from "date-fns";
-import { FileIcon, FolderIcon, TrashIcon } from "lucide-react";
+import { CalendarIcon, FileIcon, FolderIcon, TrashIcon } from "lucide-react";
 
 export default function FilesList({
   isAuthenticated,
@@ -95,41 +87,42 @@ export default function FilesList({
           )}
 
           {files.length > 0 && (
-            <div className="bg-white dark:bg-[#212630] rounded-lg overflow-hidden shadow-sm">
-              <Table>
-                <TableHeader>
-                  <TableRow className="hover:bg-transparent border-b border-neutral-200 dark:border-neutral-800">
-                    <TableHead className="font-medium text-neutral-600 dark:text-neutral-300">File</TableHead>
-                    <TableHead className="font-medium text-neutral-600 dark:text-neutral-300">Upload Date</TableHead>
-                    <TableHead className="w-20 text-right font-medium text-neutral-600 dark:text-neutral-300">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {files.map((file) => (
-                    <TableRow key={file.id} className="hover:bg-neutral-50 dark:hover:bg-[#252b36] border-0">
-                      <TableCell className="py-4 font-medium">
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 rounded-md bg-neutral-100 dark:bg-[#2a303a]">
-                            <FileIcon className="h-4 w-4 text-emerald-500 dark:text-emerald-400" />
-                          </div>
-                          <span className="text-neutral-900 dark:text-white text-sm">{file.file_name}</span>
+            <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
+              {files.map((file) => (
+                <div 
+                  key={file.id} 
+                  className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-6 hover:bg-neutral-50 dark:hover:bg-[#212630] transition-colors"
+                >
+                  <div className="flex items-start gap-4 w-full sm:w-auto">
+                    <div className="p-3 rounded-xl flex-shrink-0 bg-neutral-100 dark:bg-[#2a303a]">
+                      <FileIcon className="h-5 w-5 text-emerald-500 dark:text-emerald-400" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-neutral-900 dark:text-neutral-100 mr-auto">
+                        {file.file_name || "Unnamed file"}
+                      </p>
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+                        <div className="flex items-center gap-1">
+                          <CalendarIcon className="h-3.5 w-3.5 opacity-70" />
+                          <span>
+                            {formatDate(file.created_at)}
+                          </span>
                         </div>
-                      </TableCell>
-                      <TableCell className="text-neutral-600 dark:text-neutral-400 text-sm">{formatDate(file.created_at)}</TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteFile(file.id)}
-                          className="text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:text-neutral-500 dark:hover:text-red-400 dark:hover:bg-red-900/20"
-                        >
-                          <TrashIcon className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-end gap-4 w-full sm:w-auto mt-4 sm:mt-0">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="ml-auto sm:ml-4 text-neutral-400 hover:text-red-500 dark:text-neutral-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                      onClick={() => handleDeleteFile(file.id)}
+                    >
+                      <TrashIcon className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
 

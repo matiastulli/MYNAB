@@ -102,14 +102,14 @@ export default function ManualTransactionForm({
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
+              <div className="space-y-2 w-full">
                 <Label
                   htmlFor="amount"
                   className="text-sm font-medium text-neutral-700 dark:text-neutral-200 flex items-center gap-1.5"
                 >
                   Amount
                 </Label>
-                <div className="relative">
+                <div className="relative w-full">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-600 dark:text-neutral-300 text-sm font-medium">
                     {form.currency === 'USD' ? '$' : form.currency === 'EUR' ? '€' : '$'}
                   </span>
@@ -119,25 +119,25 @@ export default function ManualTransactionForm({
                     step="0.01"
                     value={form.amount}
                     onChange={(e) => setForm({ ...form, amount: e.target.value })}
-                    className="pl-7 border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors placeholder:text-neutral-400 dark:placeholder:text-neutral-500 dark:text-white text-lg"
+                    className="w-full pl-7 border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors placeholder:text-neutral-400 dark:placeholder:text-neutral-500 dark:text-white text-lg"
                     placeholder="0.00"
                     required
                   />
                 </div>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 w-full">
                 <Label htmlFor="type" className="text-sm font-medium text-neutral-700 dark:text-neutral-200 flex items-center gap-1.5">
                   Transaction Type
                 </Label>
                 <Select value={form.type} onValueChange={(value) => setForm({ ...form, type: value })}>
                   <SelectTrigger
                     id="type"
-                    className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] h-[42px]"
+                    className="w-full border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] h-[42px]"
                   >
                     <SelectValue placeholder="Select type" className="text-neutral-900 dark:text-white" />
                   </SelectTrigger>
-                  <SelectContent className="dark:bg-[#1e232a] dark:border-neutral-700">
+                  <SelectContent className="w-full dark:bg-[#1e232a] dark:border-neutral-700">
                     <SelectItem value="outcome" className="text-neutral-900 dark:text-white">
                       <div className="flex items-center gap-2">
                         <div className="w-3 h-3 rounded-full bg-red-500"></div>
@@ -155,7 +155,7 @@ export default function ManualTransactionForm({
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 w-full">
               <Label htmlFor="description" className="text-sm font-medium text-neutral-700 dark:text-neutral-200 flex items-center gap-1.5">
                 Description
               </Label>
@@ -163,13 +163,13 @@ export default function ManualTransactionForm({
                 id="description"
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
-                className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors placeholder:text-neutral-400 dark:placeholder:text-neutral-500 h-[42px]"
+                className="w-full border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors placeholder:text-neutral-400 dark:placeholder:text-neutral-500 h-[42px]"
                 placeholder="What's this transaction for?"
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
+              <div className="space-y-2 w-full">
                 <Label
                   htmlFor="date"
                   className="text-sm font-medium text-neutral-700 dark:text-neutral-200 flex items-center gap-1.5"
@@ -182,23 +182,23 @@ export default function ManualTransactionForm({
                   type="date"
                   value={form.date}
                   onChange={(e) => setForm({ ...form, date: e.target.value })}
-                  className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors dark:text-white h-[42px]"
+                  className="w-full border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors dark:text-white h-[42px]"
                   required
                 />
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 w-full">
                 <Label htmlFor="currency" className="text-sm font-medium text-neutral-700 dark:text-neutral-200 flex items-center gap-1.5">
                   Currency
                 </Label>
                 <Select value={form.currency} onValueChange={(value) => setForm({ ...form, currency: value })}>
                   <SelectTrigger
                     id="currency"
-                    className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] h-[42px]"
+                    className="w-full border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] h-[42px]"
                   >
                     <SelectValue placeholder="Select currency" className="text-neutral-900 dark:text-white" />
                   </SelectTrigger>
-                  <SelectContent className="dark:bg-[#1e232a] dark:border-neutral-700">
+                  <SelectContent className="w-full dark:bg-[#1e232a] dark:border-neutral-700">
                     <SelectItem value="ARS" className="text-neutral-900 dark:text-white">ARS - Argentine Peso</SelectItem>
                     <SelectItem value="USD" className="text-neutral-900 dark:text-white">USD - US Dollar</SelectItem>
                     <SelectItem value="EUR" className="text-neutral-900 dark:text-white">EUR - Euro</SelectItem>
@@ -208,7 +208,7 @@ export default function ManualTransactionForm({
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 w-full">
               <Label htmlFor="reference_id" className="text-sm font-medium text-neutral-700 dark:text-neutral-200 flex items-center gap-1.5">
                 Reference ID <span className="text-xs text-neutral-400">(Optional)</span>
               </Label>
@@ -216,20 +216,36 @@ export default function ManualTransactionForm({
                 id="reference_id"
                 value={form.reference_id}
                 onChange={(e) => setForm({ ...form, reference_id: e.target.value })}
-                className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors placeholder:text-neutral-400 dark:placeholder:text-neutral-500 h-[42px]"
+                className="w-full border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors placeholder:text-neutral-400 dark:placeholder:text-neutral-500 h-[42px]"
                 placeholder="Enter file reference ID"
               />
             </div>
 
+            {/* Add tip for setting initial balance */}
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg p-4 text-sm w-full">
+              <h4 className="font-medium text-blue-800 dark:text-blue-300 flex items-center gap-2 mb-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Setting an initial account balance
+              </h4>
+              <p className="text-blue-700 dark:text-blue-200">
+                If you're importing recent transactions but already had money in your account, add your starting balance as an "Income" transaction with the description "Initial Balance".
+              </p>
+              <p className="text-blue-700 dark:text-blue-200 mt-2">
+                This helps ensure your account balances in the app match your real-world accounts since bank statements typically only include recent history (3-6 months).
+              </p>
+            </div>
+
             <Button
               type="submit"
-              className="w-full bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-700 transition-colors h-12 mt-4"
+              className="w-full bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white transition-colors h-12"
               disabled={isSubmitting}
             >
               {isSubmitting ? (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-center gap-2">
                   <div className="h-4 w-4 border-2 border-t-transparent rounded-full animate-spin"></div>
-                  Adding Transaction...
+                  <span>Processing...</span>
                 </div>
               ) : (
                 <>

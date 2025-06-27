@@ -105,10 +105,6 @@ export default function ActivityList({
               <WalletIcon className="h-5 w-5 text-emerald-500" />
               Activity
             </CardTitle>
-            <span className="text-xs font-medium py-1 px-2 bg-neutral-100 dark:bg-[#252a34] text-neutral-500 dark:text-neutral-400 rounded-md flex items-center gap-1">
-              <CalendarIcon className="h-3 w-3" />
-              {dateRangeFormatted}
-            </span>
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto">

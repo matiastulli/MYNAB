@@ -22,7 +22,7 @@ async def create_user(user: RegisterUser) -> dict[str, Any] | None:
                 "last_name": user.last_name,
                 "email": user.email,
                 "password": hash_password(user.password),
-                "id_role": 1  # Assuming default role is 1,
+                "id_role": user.id_role,
             }
         )
         .returning(auth_user)

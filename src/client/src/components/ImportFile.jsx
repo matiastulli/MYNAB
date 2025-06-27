@@ -9,7 +9,7 @@ import { api } from "@/services/api";
 import { CheckCircleIcon, FileIcon, UploadCloudIcon, UploadIcon, XCircleIcon } from "lucide-react";
 import { useState } from "react";
 
-export default function ImportFile({ onImportComplete, onImportSuccess, isAuthenticated, onSignInClick, currency = "ARS" }) {
+export default function ImportFile({ onImportComplete, onImportSuccess, isAuthenticated, onSignInClick, currency }) {
   const [file, setFile] = useState(null);
   const [bankName, setBankName] = useState("");
   const [isUploading, setIsUploading] = useState(false);
@@ -80,7 +80,7 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
         bank_name: bankName,
         file_content: base64File,
         file_name: file.name,
-        currency: currency // Add the currency parameter
+        currency: currency
       });
 
       if (response.error) {

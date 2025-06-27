@@ -2,16 +2,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger
+  Popover,
+  PopoverContent,
+  PopoverTrigger
 } from "@/components/ui/popover";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { endOfMonth, format, startOfMonth, subMonths } from "date-fns";
 import { CalendarIcon, ChevronDownIcon } from "lucide-react";
@@ -49,6 +49,10 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange }) {
         break;
       case 'last-3-months':
         newRange.startDate = startOfMonth(subMonths(new Date(), 2));
+        newRange.endDate = endOfMonth(new Date());
+        break;
+      case 'last-6-months':
+        newRange.startDate = startOfMonth(subMonths(new Date(), 5));
         newRange.endDate = endOfMonth(new Date());
         break;
       case 'custom':
@@ -122,6 +126,7 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange }) {
                 <SelectItem value="current-month">Current Month</SelectItem>
                 <SelectItem value="last-month">Last Month</SelectItem>
                 <SelectItem value="last-3-months">Last 3 Months</SelectItem>
+                <SelectItem value="last-6-months">Last 6 Months</SelectItem>
                 <SelectItem value="custom">Custom Range</SelectItem>
               </SelectContent>
             </Select>

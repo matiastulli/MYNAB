@@ -61,7 +61,7 @@ export default function SignupForm({ onSignUp, onSwitchToLogin }) {
         last_name: form.last_name,
         email: form.email,
         password: form.password,
-        id_role: 2 // Assuming 2 is regular user role
+        id_role: 1
       })
       
       if (response.error) {

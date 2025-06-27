@@ -17,7 +17,7 @@ export default function ManualTransactionForm({
     amount: "",
     type: "outcome",
     description: "",
-    date: new Date().toISOString().split('T')[0], // Default to today
+    date: new Date().toISOString().split('T')[0],
     currency: "ARS",
     source: "manual",
     reference_id: ""

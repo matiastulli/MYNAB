@@ -18,6 +18,8 @@ const updateSW = registerSW({
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <App />
+    <div className="min-w-[320px] w-full">
+      <App />
+    </div>
   </React.StrictMode>,
 )

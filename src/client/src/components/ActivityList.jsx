@@ -2,7 +2,7 @@ import SignInPrompt from "@/components/SignInPrompt";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { api } from "@/services/api";
-import { ArrowDownIcon, ArrowUpIcon, CalendarIcon, CircleDollarSignIcon, SearchIcon, TrashIcon, WalletIcon } from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon, BarChartIcon, CalendarIcon, CircleDollarSignIcon, PlusCircleIcon, SearchIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function ActivityList({
@@ -82,7 +82,7 @@ export default function ActivityList({
         <CardContent className="p-12 text-center">
           <div className="flex flex-col items-center gap-4">
             <div className="p-4 rounded-full bg-emerald-50 dark:bg-emerald-900/30">
-              <WalletIcon className="h-6 w-6 text-emerald-500 dark:text-emerald-400" />
+              <PlusCircleIcon className="h-6 w-6 text-emerald-500 dark:text-emerald-400" />
             </div>
             <div className="max-w-sm">
               <h3 className="text-lg font-medium mb-2 text-neutral-900 dark:text-white">
@@ -102,7 +102,7 @@ export default function ActivityList({
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
           <div className="flex items-center gap-2">
             <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-              <WalletIcon className="h-5 w-5 text-emerald-500" />
+              <BarChartIcon className="h-5 w-5 text-emerald-500" />
               Activity
             </CardTitle>
           </div>

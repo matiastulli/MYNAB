@@ -14,8 +14,12 @@ import { api } from "@/services/api"
 import { endOfMonth, format, startOfMonth } from 'date-fns'
 import {
   AlertTriangleIcon,
+  BarChartIcon,
+  FolderIcon,
+  PlusCircleIcon,
   TrendingDownIcon,
   TrendingUpIcon,
+  UploadIcon,
   UserIcon,
   WalletIcon
 } from "lucide-react"
@@ -36,7 +40,7 @@ export default function App() {
   });
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [activeTab, setActiveTab] = useState("entries");
-  
+
   // New date filter state
   const [dateRange, setDateRange] = useState({
     startDate: startOfMonth(new Date()),
@@ -46,11 +50,11 @@ export default function App() {
 
   // New currency state
   const [currency, setCurrency] = useState("ARS");
-  
+
   // Add state for files loading and error
   const [filesLoading, setFilesLoading] = useState(false);
   const [filesError, setFilesError] = useState(null);
-  
+
   // Check authentication status on load
   useEffect(() => {
     const checkAuth = () => {
@@ -100,17 +104,17 @@ export default function App() {
       // Format dates for API
       const startDateStr = format(dateRange.startDate, 'yyyy-MM-dd');
       const endDateStr = format(dateRange.endDate, 'yyyy-MM-dd');
-      
+
       // Use URL parameters for GET request
       const params = new URLSearchParams();
       params.append('start_date', startDateStr);
       params.append('end_date', endDateStr);
       params.append('currency', currency);
-      
+
       const url = `/budget/summary?${params.toString()}`;
-      
+
       const data = await api.get(url);
-      
+
       if (!data.error) {
         setSummary(data);
       } else {
@@ -128,7 +132,7 @@ export default function App() {
       // Format dates for API
       const startDateStr = format(dateRange.startDate, 'yyyy-MM-dd');
       const endDateStr = format(dateRange.endDate, 'yyyy-MM-dd');
-      
+
       // Use URL parameters for GET request
       const params = new URLSearchParams();
       params.append('start_date', startDateStr);
@@ -136,11 +140,11 @@ export default function App() {
       params.append('limit', pagination.limit);
       params.append('offset', pagination.offset);
       params.append('currency', currency);
-      
+
       const url = `/budget/details?${params.toString()}`;
-      
+
       const data = await api.get(url);
-      
+
       if (!data.error) {
         setEntries(data.data || []);
         setPagination({
@@ -164,13 +168,13 @@ export default function App() {
     try {
       // Use URL parameters for GET request
       const params = new URLSearchParams();
-      
+
       params.append('limit', pagination.limit);
       params.append('offset', pagination.offset);
       params.append('currency', currency);
-      
+
       const url = `/budget/files?${params.toString()}`;
-      
+
       const response = await api.get(url);
 
       if (!response.error) {
@@ -190,7 +194,7 @@ export default function App() {
       setFilesLoading(false);
     }
   };
-  
+
   const handleLogout = () => {
     api.logout();
     setIsAuthenticated(false);
@@ -215,7 +219,7 @@ export default function App() {
     fetchSummary();
     fetchDetails();
     fetchFiles();
-    
+
     // Switch to entries tab to show the imported transactions
     setActiveTab("entries");
   };
@@ -224,16 +228,16 @@ export default function App() {
   const handleDateRangeChange = (newRange) => {
     setDateRange(newRange);
     // Reset pagination when changing date range
-    setPagination({...pagination, offset: 0});
+    setPagination({ ...pagination, offset: 0 });
   };
 
   const handlePaginationChange = (newPagination) => {
     setPagination(newPagination);
     // Files will be fetched by useEffect when pagination changes
   };
-  
+
   const balance = summary.income - summary.outcome;
-  
+
   // Get formatted date range for display
   let dateRangeFormatted;
   if (dateRange.preset === 'current-month') {
@@ -248,7 +252,7 @@ export default function App() {
     <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-[#121418] dark:to-[#191c22]">
       {showAuthModal && <AuthModal onAuthenticated={handleAuthentication} />}
 
-      <div className="max-w-5xl mx-auto px-4 py-8 md:px-6 md:py-12">
+      <div className="max-w-5xl mx-auto px-3 py-4 md:px-6 md:py-12">
         {/* Header */}
         <header className="mb-6 md:mb-10">
           <div className="flex flex-row items-center justify-between gap-2 flex-wrap">
@@ -262,9 +266,9 @@ export default function App() {
                 </p>
                 {isAuthenticated && (
                   <>
-                    <DateRangeFilter 
-                      dateRange={dateRange} 
-                      onDateRangeChange={handleDateRangeChange} 
+                    <DateRangeFilter
+                      dateRange={dateRange}
+                      onDateRangeChange={handleDateRangeChange}
                     />
                     <CurrencyFilter
                       selectedCurrency={currency}
@@ -276,7 +280,7 @@ export default function App() {
             </div>
 
             {isAuthenticated && userData && (
-              <div 
+              <div
                 className="flex items-center gap-2 cursor-pointer bg-white/80 dark:bg-[#1a1e24]/80 hover:bg-white dark:hover:bg-[#1e232a] rounded-lg px-3 py-1.5 transition-colors shadow-sm"
                 onClick={() => setShowProfileModal(true)}
               >
@@ -306,16 +310,16 @@ export default function App() {
                   <p className="text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                     Current Balance
                   </p>
-                  <p className={`text-2xl font-semibold mt-2 ${balance >= 0 
-                      ? "text-emerald-600 dark:text-emerald-400" 
-                      : "text-red-500 dark:text-red-400"}`}>
+                  <p className={`text-2xl font-semibold mt-2 ${balance >= 0
+                    ? "text-emerald-600 dark:text-emerald-400"
+                    : "text-red-500 dark:text-red-400"}`}>
                     {currency === "EUR" ? "€" : "$"}
                     {Math.abs(balance).toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </p>
                 </div>
-                <div className={`p-3 rounded-full ${balance >= 0 
-                    ? "bg-emerald-50 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400" 
-                    : "bg-red-50 dark:bg-red-900/70 text-red-500 dark:text-red-400"}`}>
+                <div className={`p-3 rounded-full ${balance >= 0
+                  ? "bg-emerald-50 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400"
+                  : "bg-red-50 dark:bg-red-900/70 text-red-500 dark:text-red-400"}`}>
                   <WalletIcon className="h-6 w-6" />
                 </div>
               </div>
@@ -380,34 +384,39 @@ export default function App() {
 
         {/* Main Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-          <div className="flex justify-center">
-            <TabsList className="inline-flex bg-white/80 dark:bg-[#1a1e24]/80 p-1.5 gap-x-1.5 rounded-xl shadow-sm">
+          <div className="flex justify-center w-full">
+            <TabsList className="flex bg-white/80 dark:bg-[#1a1e24]/80 p-1.5 gap-x-1.5 rounded-xl shadow-sm overflow-x-auto max-w-full w-full sm:w-auto">
               <TabsTrigger
                 value="entries"
-                className="text-neutral-700 dark:text-neutral-300 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-4"
+                className="flex-1 sm:flex-none text-neutral-700 dark:text-neutral-300 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
               >
-                Activity
+                <BarChartIcon className="h-4 w-4" />
+                <span className="hidden sm:inline-block ml-2">Activity</span>
               </TabsTrigger>
               <TabsTrigger
                 value="new"
-                className="text-neutral-700 dark:text-neutral-300 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-4"
+                className="flex-1 sm:flex-none text-neutral-700 dark:text-neutral-300 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
               >
-                Add Transaction
+                <PlusCircleIcon className="h-4 w-4" />
+                <span className="hidden sm:inline-block ml-2">Add Transaction</span>
               </TabsTrigger>
               <TabsTrigger
                 value="import"
-                className="text-neutral-700 dark:text-neutral-300 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-4"
+                className="flex-1 sm:flex-none text-neutral-700 dark:text-neutral-300 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
               >
-                Import Statements
+                <UploadIcon className="h-4 w-4" />
+                <span className="hidden sm:inline-block ml-2">Import Statements</span>
               </TabsTrigger>
               <TabsTrigger
                 value="files"
-                className="text-neutral-700 dark:text-neutral-300 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-4"
+                className="flex-1 sm:flex-none text-neutral-700 dark:text-neutral-300 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
               >
-                Bank Statements
+                <FolderIcon className="h-4 w-4" />
+                <span className="hidden sm:inline-block ml-2">Bank Statements</span>
               </TabsTrigger>
             </TabsList>
           </div>
+
 
           {/* Transactions List */}
           <TabsContent value="entries" className="space-y-4 mt-6 focus-visible:outline-none">
@@ -423,8 +432,8 @@ export default function App() {
                 fetchDetails();
               }}
             />
-          </TabsContent>          
-          
+          </TabsContent>
+
           {/* Add New Transaction */}
           <TabsContent value="new" className="mt-6 focus-visible:outline-none">
             <ManualTransactionForm
@@ -437,7 +446,7 @@ export default function App() {
               }}
             />
           </TabsContent>
-          
+
           {/* Import Transactions */}
           <TabsContent value="import" className="mt-6 focus-visible:outline-none">
             <ImportFile

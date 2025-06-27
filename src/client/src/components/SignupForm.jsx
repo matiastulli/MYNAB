@@ -50,7 +50,7 @@ export default function SignupForm({ onSignUp, onSwitchToLogin }) {
     // Fix the regex pattern and improve password validation
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z0-9\W]).*$/
     if (!passwordRegex.test(form.password)) {
-      setError("Password requirements not met. Please include at least one lowercase letter and either one uppercase letter, number, or special character.")
+      setError("Password requirements not met. Please include at least one lowercase letter, uppercase letter, number and special character.")
       setIsLoading(false)
       return
     }
@@ -156,7 +156,7 @@ export default function SignupForm({ onSignUp, onSwitchToLogin }) {
               />
             </div>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              <span className="font-medium">Password requirements:</span> Minimum 6 characters, must include at least one lowercase letter (a-z) and at least one of: uppercase letter (A-Z), number, or special character.
+              <span className="font-medium">Password requirements:</span> Minimum 6 characters, must include at least one lowercase letter (a-z), one uppercase letter (A-Z), number and special character.
             </p>
           </div>
           

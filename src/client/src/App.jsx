@@ -55,6 +55,10 @@ export default function App() {
   const [filesLoading, setFilesLoading] = useState(false);
   const [filesError, setFilesError] = useState(null);
 
+  // Add loading states for different data fetches
+  const [summaryLoading, setSummaryLoading] = useState(false);
+  const [entriesLoading, setEntriesLoading] = useState(false);
+
   // Check authentication status on load
   useEffect(() => {
     const checkAuth = () => {
@@ -100,21 +104,22 @@ export default function App() {
   };
 
   const fetchSummary = async () => {
+    setSummaryLoading(true); // Start loading
     try {
       // Format dates for API
       const startDateStr = format(dateRange.startDate, 'yyyy-MM-dd');
       const endDateStr = format(dateRange.endDate, 'yyyy-MM-dd');
-
+      
       // Use URL parameters for GET request
       const params = new URLSearchParams();
       params.append('start_date', startDateStr);
       params.append('end_date', endDateStr);
       params.append('currency', currency);
-
+      
       const url = `/budget/summary?${params.toString()}`;
-
+      
       const data = await api.get(url);
-
+      
       if (!data.error) {
         setSummary(data);
       } else {
@@ -124,15 +129,18 @@ export default function App() {
       console.error("Failed to fetch summary:", error);
       // Set default summary to avoid blank UI
       setSummary({ income: 0, outcome: 0 });
+    } finally {
+      setSummaryLoading(false); // End loading
     }
   };
 
   const fetchDetails = async () => {
+    setEntriesLoading(true); // Start loading
     try {
       // Format dates for API
       const startDateStr = format(dateRange.startDate, 'yyyy-MM-dd');
       const endDateStr = format(dateRange.endDate, 'yyyy-MM-dd');
-
+      
       // Use URL parameters for GET request
       const params = new URLSearchParams();
       params.append('start_date', startDateStr);
@@ -140,11 +148,11 @@ export default function App() {
       params.append('limit', pagination.limit);
       params.append('offset', pagination.offset);
       params.append('currency', currency);
-
+      
       const url = `/budget/details?${params.toString()}`;
-
+      
       const data = await api.get(url);
-
+      
       if (!data.error) {
         setEntries(data.data || []);
         setPagination({
@@ -158,6 +166,8 @@ export default function App() {
     } catch (error) {
       console.error("Failed to fetch details:", error);
       setEntries([]);
+    } finally {
+      setEntriesLoading(false); // End loading
     }
   };
 
@@ -269,12 +279,24 @@ export default function App() {
                     <DateRangeFilter
                       dateRange={dateRange}
                       onDateRangeChange={handleDateRangeChange}
+                      isLoading={summaryLoading || entriesLoading}
                     />
                     <CurrencyFilter
                       selectedCurrency={currency}
                       onCurrencyChange={setCurrency}
+                      isLoading={summaryLoading || entriesLoading}
                     />
                   </>
+                )}
+                
+                {/* Loading indicator animation */}
+                {(summaryLoading || entriesLoading) && (
+                  <span className="flex items-center ml-1 animate-pulse">
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  </span>
                 )}
               </div>
             </div>
@@ -303,26 +325,31 @@ export default function App() {
         {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           {/* Balance Card */}
-          <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow">
+          <Card className={`border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow ${summaryLoading ? 'relative overflow-hidden' : ''}`}>
             <CardContent className="p-6">
+              {summaryLoading && (
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 dark:via-white/10 to-transparent animate-shimmer"></div>
+              )}
+              
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
                     Current Balance
                   </p>
-                  <p className={`text-2xl font-semibold mt-2 ${balance >= 0
-                    ? "text-emerald-600 dark:text-emerald-400"
+                  <p className={`text-2xl font-semibold mt-2 ${balance >= 0 
+                    ? "text-emerald-600 dark:text-emerald-400" 
                     : "text-red-500 dark:text-red-400"}`}>
                     {currency === "EUR" ? "€" : "$"}
                     {Math.abs(balance).toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </p>
                 </div>
-                <div className={`p-3 rounded-full ${balance >= 0
-                  ? "bg-emerald-50 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400"
+                <div className={`p-3 rounded-full ${balance >= 0 
+                  ? "bg-emerald-50 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400" 
                   : "bg-red-50 dark:bg-red-900/70 text-red-500 dark:text-red-400"}`}>
                   <WalletIcon className="h-6 w-6" />
                 </div>
               </div>
+              
               <div className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-800">
                 <p className="text-xs text-neutral-500 dark:text-neutral-400">
                   {balance >= 0 ? "You're in good standing" : "Your expenses exceed income"}
@@ -331,9 +358,13 @@ export default function App() {
             </CardContent>
           </Card>
 
-          {/* Income Card */}
-          <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow">
+          {/* Income Card - Add the same loading animation */}
+          <Card className={`border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow ${summaryLoading ? 'relative overflow-hidden' : ''}`}>
             <CardContent className="p-6">
+              {summaryLoading && (
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 dark:via-white/10 to-transparent animate-shimmer"></div>
+              )}
+              
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
@@ -348,6 +379,7 @@ export default function App() {
                   <TrendingUpIcon className="h-6 w-6" />
                 </div>
               </div>
+              
               <div className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-800">
                 <p className="text-xs text-neutral-500 dark:text-neutral-400">
                   Total income for {dateRangeFormatted}
@@ -356,9 +388,13 @@ export default function App() {
             </CardContent>
           </Card>
 
-          {/* Expenses Card */}
-          <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow">
+          {/* Expenses Card - Add the same loading animation */}
+          <Card className={`border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow ${summaryLoading ? 'relative overflow-hidden' : ''}`}>
             <CardContent className="p-6">
+              {summaryLoading && (
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 dark:via-white/10 to-transparent animate-shimmer"></div>
+              )}
+              
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
@@ -373,6 +409,7 @@ export default function App() {
                   <TrendingDownIcon className="h-6 w-6" />
                 </div>
               </div>
+              
               <div className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-800">
                 <p className="text-xs text-neutral-500 dark:text-neutral-400">
                   Total expenses for {dateRangeFormatted}
@@ -431,6 +468,7 @@ export default function App() {
                 fetchSummary();
                 fetchDetails();
               }}
+              isLoading={entriesLoading}
             />
           </TabsContent>
 

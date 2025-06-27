@@ -386,25 +386,25 @@ export default function App() {
                 value="entries"
                 className="text-neutral-700 dark:text-neutral-300 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-4"
               >
-                Transactions
+                Activity
               </TabsTrigger>
               <TabsTrigger
                 value="new"
                 className="text-neutral-700 dark:text-neutral-300 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-4"
               >
-                Add Manual
+                Add Transaction
               </TabsTrigger>
               <TabsTrigger
                 value="import"
                 className="text-neutral-700 dark:text-neutral-300 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-4"
               >
-                Import
+                Import Statements
               </TabsTrigger>
               <TabsTrigger
                 value="files"
                 className="text-neutral-700 dark:text-neutral-300 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-4"
               >
-                Files
+                Bank Statements
               </TabsTrigger>
             </TabsList>
           </div>

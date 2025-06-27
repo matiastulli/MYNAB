@@ -56,7 +56,7 @@ export default function FilesList({
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
           <FolderIcon className="h-5 w-5 text-emerald-500" />
-          Uploaded Files
+          Bank Statements
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">

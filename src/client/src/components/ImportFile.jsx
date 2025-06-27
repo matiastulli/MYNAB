@@ -136,7 +136,7 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
           <UploadIcon className="h-5 w-5 text-emerald-500" />
-          Import Bank Statement
+          Import Statements
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">

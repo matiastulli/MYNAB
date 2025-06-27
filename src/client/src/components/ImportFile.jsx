@@ -74,7 +74,7 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
     try {
       // Convert file to Base64
       const base64File = await convertFileToBase64(file);
-      
+
       // Send the file as base64 string using the regular post method
       const response = await api.post("/budget/import-file", {
         bank_name: bankName,
@@ -93,25 +93,25 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
       };
 
       setResult(resultData);
-      
+
       // Show success message before redirecting
       setTimeout(() => {
         // Reset form state
         setFile(null);
         setBankName("");
         setResult(null);
-        
+
         // Call the callback to refresh data and redirect
         if (onImportComplete) {
           onImportComplete();
         }
-        
+
         // Redirect to main entries view
         if (onImportSuccess) {
           onImportSuccess(resultData);
         }
       }, 1500); // Show success message for 1.5 seconds before redirecting
-      
+
     } catch (err) {
       setError(err.message || "An error occurred during import");
     } finally {
@@ -185,9 +185,9 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
             <Label htmlFor="importFile" className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
               Statement File
             </Label>
-            <div 
-              className={`border-2 border-dashed rounded-lg p-6 text-center ${isDragging 
-                ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/10' 
+            <div
+              className={`border-2 border-dashed rounded-lg p-6 text-center ${isDragging
+                ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/10'
                 : 'border-neutral-200 dark:border-neutral-700 hover:border-emerald-400 dark:hover:border-emerald-700'}`}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}

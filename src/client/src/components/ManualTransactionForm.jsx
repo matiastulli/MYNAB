@@ -8,21 +8,21 @@ import { api } from "@/services/api";
 import { CalendarIcon, CheckIcon, CircleDollarSignIcon, PlusIcon } from "lucide-react";
 import { useState } from "react";
 
-export default function ManualTransactionForm({ 
-  isAuthenticated, 
-  onSignInClick, 
-  onTransactionAdded 
+export default function ManualTransactionForm({
+  isAuthenticated,
+  onSignInClick,
+  onTransactionAdded
 }) {
-  const [form, setForm] = useState({ 
-    amount: "", 
-    type: "outcome", 
-    description: "", 
+  const [form, setForm] = useState({
+    amount: "",
+    type: "outcome",
+    description: "",
     date: new Date().toISOString().split('T')[0], // Default to today
     currency: "ARS",
     source: "manual",
     reference_id: ""
   });
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -39,21 +39,21 @@ export default function ManualTransactionForm({
       const response = await api.post("/budget/entry", form);
       if (!response.error) {
         setSuccess(true);
-        
+
         // Reset form
-        setForm({ 
-          amount: "", 
-          type: "outcome", 
-          description: "", 
+        setForm({
+          amount: "",
+          type: "outcome",
+          description: "",
           date: new Date().toISOString().split('T')[0],
           currency: "ARS",
           source: "manual",
           reference_id: ""
         });
-        
+
         // Notify parent component
         onTransactionAdded();
-        
+
         // Reset success message after 3 seconds
         setTimeout(() => setSuccess(false), 3000);
       }
@@ -92,7 +92,7 @@ export default function ManualTransactionForm({
               <h3 className="text-lg font-medium text-neutral-900 dark:text-white mb-2">Transaction Added!</h3>
               <p className="text-neutral-500 dark:text-neutral-400">Your transaction has been successfully added to your account.</p>
             </div>
-            <Button 
+            <Button
               onClick={() => setSuccess(false)}
               className="mt-2 bg-emerald-600 hover:bg-emerald-700 text-white"
             >

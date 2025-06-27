@@ -6,10 +6,10 @@ import { api } from "@/services/api";
 import { AlertTriangleIcon, CheckCircleIcon, LogOutIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export default function ProfileUpdateDialog({ 
-  open, 
-  onOpenChange, 
-  userData, 
+export default function ProfileUpdateDialog({
+  open,
+  onOpenChange,
+  userData,
   onProfileUpdated,
   onLogout
 }) {
@@ -35,7 +35,7 @@ export default function ProfileUpdateDialog({
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
     setIsUpdating(true);
-    
+
     try {
       const response = await api.put("/auth/profile", profileForm);
       if (!response.error) {
@@ -85,7 +85,7 @@ export default function ProfileUpdateDialog({
             )}
           </DialogDescription>
         </DialogHeader>
-        
+
         {updateSuccess ? (
           <div className="flex flex-col items-center py-8 gap-3">
             <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-full">
@@ -96,39 +96,39 @@ export default function ProfileUpdateDialog({
         ) : (
           <form onSubmit={handleProfileUpdate} className="space-y-4">
             <div className="space-y-2">
-              <Label 
-                htmlFor="name" 
+              <Label
+                htmlFor="name"
                 className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
               >
                 First Name
               </Label>
-              <Input 
-                id="name" 
+              <Input
+                id="name"
                 value={profileForm.name}
-                onChange={(e) => setProfileForm({...profileForm, name: e.target.value})}
+                onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
                 className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] text-neutral-900 dark:text-white placeholder:text-neutral-500 dark:placeholder:text-neutral-300"
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
-              <Label 
-                htmlFor="last_name" 
+              <Label
+                htmlFor="last_name"
                 className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
               >
                 Last Name
               </Label>
-              <Input 
-                id="last_name" 
+              <Input
+                id="last_name"
                 value={profileForm.last_name}
-                onChange={(e) => setProfileForm({...profileForm, last_name: e.target.value})}
+                onChange={(e) => setProfileForm({ ...profileForm, last_name: e.target.value })}
                 className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] text-neutral-900 dark:text-white placeholder:text-neutral-500 dark:placeholder:text-neutral-300"
               />
             </div>
-            
+
             <div className="space-y-2">
-              <Label 
-                htmlFor="national_id" 
+              <Label
+                htmlFor="national_id"
                 className="text-sm font-medium text-neutral-700 dark:text-neutral-300 flex items-center gap-1"
               >
                 CUIT
@@ -136,14 +136,14 @@ export default function ProfileUpdateDialog({
                   <AlertTriangleIcon className="h-4 w-4 text-amber-500" />
                 )}
               </Label>
-              <Input 
-                id="national_id" 
+              <Input
+                id="national_id"
                 type="text" // Explicitly set type to text for better control
                 value={profileForm.national_id}
                 onChange={(e) => {
                   // Allow only numbers by removing non-numeric characters
                   const numericValue = e.target.value.replace(/[^0-9]/g, '');
-                  setProfileForm({...profileForm, national_id: numericValue});
+                  setProfileForm({ ...profileForm, national_id: numericValue });
                 }}
                 className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] text-neutral-900 dark:text-white placeholder:text-neutral-500 dark:placeholder:text-neutral-300"
                 placeholder="e.g. 20415436042"
@@ -154,7 +154,7 @@ export default function ProfileUpdateDialog({
                 Used to automatically filter out personal transactions.
               </p>
             </div>
-            
+
             <DialogFooter className="flex flex-col sm:flex-row gap-2 pt-2 mt-2 border-t border-neutral-100 dark:border-neutral-800">
               <Button
                 type="button"
@@ -164,7 +164,7 @@ export default function ProfileUpdateDialog({
               >
                 Cancel
               </Button>
-              <Button 
+              <Button
                 type="submit"
                 disabled={isUpdating}
                 className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white"
@@ -181,11 +181,11 @@ export default function ProfileUpdateDialog({
             </DialogFooter>
           </form>
         )}
-        
+
         <div className="pt-4 mt-6 border-t border-neutral-200 dark:border-neutral-700">
           <Button
             type="button"
-            variant="ghost" 
+            variant="ghost"
             onClick={handleLogout}
             className="w-full text-red-500 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 flex items-center justify-center gap-2"
           >

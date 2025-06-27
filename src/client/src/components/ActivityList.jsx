@@ -21,21 +21,21 @@ export default function ActivityList({
   useEffect(() => {
     // Apply filtering and sorting
     let result = [...entries];
-    
+
     // Apply search filter
     if (searchTerm) {
-      result = result.filter(entry => 
+      result = result.filter(entry =>
         entry.description?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    
+
     // Apply sorting by amount if direction is set
     if (sortDirection === 'asc') {
       result = [...result].sort((a, b) => a.amount - b.amount);
     } else if (sortDirection === 'desc') {
       result = [...result].sort((a, b) => b.amount - a.amount);
     }
-    
+
     setFilteredEntries(result);
   }, [entries, searchTerm, sortDirection]);
 
@@ -98,52 +98,53 @@ export default function ActivityList({
 
   return (
     <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm">
-      <CardHeader className="pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-            <WalletIcon className="h-5 w-5 text-emerald-500" />
-            Activity
-          </CardTitle>
-          <span className="text-xs font-medium py-1 px-2 bg-neutral-100 dark:bg-[#252a34] text-neutral-500 dark:text-neutral-400 rounded-md flex items-center gap-1">
-            <CalendarIcon className="h-3 w-3" />
-            {dateRangeFormatted}
-          </span>
-        </div>
-        
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <div className="relative flex-1 sm:min-w-[240px]">
-            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
-            <input 
-              type="search" 
-              placeholder="Search transactions..." 
-              className="w-full h-9 py-2 pl-9 pr-4 rounded-lg text-sm bg-neutral-100 dark:bg-[#252a34] border-0 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+      <CardHeader className="pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
+          <div className="flex items-center gap-2">
+            <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+              <WalletIcon className="h-5 w-5 text-emerald-500" />
+              Activity
+            </CardTitle>
+            <span className="text-xs font-medium py-1 px-2 bg-neutral-100 dark:bg-[#252a34] text-neutral-500 dark:text-neutral-400 rounded-md flex items-center gap-1">
+              <CalendarIcon className="h-3 w-3" />
+              {dateRangeFormatted}
+            </span>
           </div>
-          
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleSortDirection}
-            title={
-              sortDirection === 'asc' ? "Sorting: Low to High" : 
-              sortDirection === 'desc' ? "Sorting: High to Low" : 
-              "Sort by Amount"
-            }
-            className={`h-9 px-3 rounded-lg ${
-              sortDirection ? 'bg-neutral-100 dark:bg-[#252a34] text-emerald-600 dark:text-emerald-400' : 
-              'text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-[#252a34]'
-            }`}
-          >
-            {sortDirection === 'asc' ? (
-              <ArrowUpIcon className="h-4 w-4" />
-            ) : sortDirection === 'desc' ? (
-              <ArrowDownIcon className="h-4 w-4" />
-            ) : (
-              <span className="text-xs">Sort</span>
-            )}
-          </Button>
+
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="relative flex-1 sm:min-w-[240px]">
+              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+              <input
+                type="search"
+                placeholder="Search transactions..."
+                className="w-full h-9 py-2 pl-9 pr-4 rounded-lg text-sm bg-neutral-100 dark:bg-[#252a34] border-0 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleSortDirection}
+              title={
+                sortDirection === 'asc' ? "Sorting: Low to High" :
+                  sortDirection === 'desc' ? "Sorting: High to Low" :
+                    "Sort by Amount"
+              }
+              className={`h-9 px-3 rounded-lg ${sortDirection ? 'bg-neutral-100 dark:bg-[#252a34] text-emerald-600 dark:text-emerald-400' :
+                  'text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-[#252a34]'
+                }`}
+            >
+              {sortDirection === 'asc' ? (
+                <ArrowUpIcon className="h-4 w-4" />
+              ) : sortDirection === 'desc' ? (
+                <ArrowDownIcon className="h-4 w-4" />
+              ) : (
+                <span className="text-xs">Sort</span>
+              )}
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="p-0">

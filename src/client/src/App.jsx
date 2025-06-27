@@ -218,9 +218,6 @@ export default function App() {
     
     // Switch to entries tab to show the imported transactions
     setActiveTab("entries");
-    
-    // Optional: Show toast notification with import results
-    console.log(`Successfully imported ${result.count} transactions`);
   };
 
   // Handle date range change from filter component
@@ -252,7 +249,7 @@ export default function App() {
       {showAuthModal && <AuthModal onAuthenticated={handleAuthentication} />}
 
       <div className="max-w-5xl mx-auto px-4 py-8 md:px-6 md:py-12">
-        {/* Header - Improved for mobile */}
+        {/* Header */}
         <header className="mb-6 md:mb-10">
           <div className="flex flex-row items-center justify-between gap-2 flex-wrap">
             <div>

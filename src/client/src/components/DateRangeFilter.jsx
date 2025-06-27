@@ -98,9 +98,9 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange }) {
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="sm" 
+        <Button
+          variant="ghost"
+          size="sm"
           className="h-7 bg-white/50 dark:bg-[#1e232a]/50 hover:bg-white dark:hover:bg-[#252b36] gap-1 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400"
         >
           <CalendarIcon className="h-3.5 w-3.5 text-neutral-500" />
@@ -111,53 +111,59 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange }) {
       <PopoverContent className="w-80 p-4 border-0 bg-white dark:bg-[#1e232a] shadow-lg">
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="datePreset" className="text-neutral-700 dark:text-neutral-300">Date Range</Label>
-            <Select 
-              value={tempRange.preset}
-              onValueChange={handlePresetChange}
-            >
-              <SelectTrigger 
+            <Label htmlFor="datePreset" className="text-neutral-700 dark:text-neutral-300">
+              Date Range
+            </Label>
+            <Select value={tempRange.preset} onValueChange={handlePresetChange}>
+              <SelectTrigger
                 id="datePreset"
-                className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47]"
+                className="border-0 bg-white dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-200 h-9"
               >
-                <SelectValue placeholder="Select period" />
+                <SelectValue
+                  placeholder="Select period"
+                  className="text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-200"
+                />
               </SelectTrigger>
               <SelectContent className="dark:bg-[#2a303a] border-0">
-                <SelectItem value="current-month">Current Month</SelectItem>
-                <SelectItem value="last-month">Last Month</SelectItem>
-                <SelectItem value="last-3-months">Last 3 Months</SelectItem>
-                <SelectItem value="last-6-months">Last 6 Months</SelectItem>
-                <SelectItem value="custom">Custom Range</SelectItem>
+                <SelectItem value="current-month" className="text-neutral-900 dark:text-white">Current Month</SelectItem>
+                <SelectItem value="last-month" className="text-neutral-900 dark:text-white">Last Month</SelectItem>
+                <SelectItem value="last-3-months" className="text-neutral-900 dark:text-white">Last 3 Months</SelectItem>
+                <SelectItem value="last-6-months" className="text-neutral-900 dark:text-white">Last 6 Months</SelectItem>
+                <SelectItem value="custom" className="text-neutral-900 dark:text-white">Custom Range</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-2">
-              <Label htmlFor="startDate" className="text-neutral-700 dark:text-neutral-300 text-xs">Start Date</Label>
-              <Input 
+              <Label htmlFor="startDate" className="text-neutral-700 dark:text-neutral-300 text-xs">
+                Start Date
+              </Label>
+              <Input
                 id="startDate"
-                type="date" 
-                value={formatDateForInput(tempRange.startDate)} 
-                onChange={handleStartDateChange} 
-                className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] h-9"
+                type="date"
+                value={formatDateForInput(tempRange.startDate)}
+                onChange={handleStartDateChange}
+                className="border-0 bg-white dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-200 h-9"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="endDate" className="text-neutral-700 dark:text-neutral-300 text-xs">End Date</Label>
-              <Input 
+              <Label htmlFor="endDate" className="text-neutral-700 dark:text-neutral-300 text-xs">
+                End Date
+              </Label>
+              <Input
                 id="endDate"
-                type="date" 
-                value={formatDateForInput(tempRange.endDate)} 
+                type="date"
+                value={formatDateForInput(tempRange.endDate)}
                 onChange={handleEndDateChange}
                 min={formatDateForInput(tempRange.startDate)}
-                className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] h-9"
+                className="border-0 bg-white dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-200 h-9"
               />
             </div>
           </div>
-          
+
           <div className="flex justify-end pt-2">
-            <Button 
+            <Button
               onClick={handleApply}
               className="bg-emerald-600 hover:bg-emerald-700 text-white"
             >
@@ -168,4 +174,5 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange }) {
       </PopoverContent>
     </Popover>
   );
+
 }

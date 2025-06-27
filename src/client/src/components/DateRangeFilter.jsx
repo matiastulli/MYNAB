@@ -13,7 +13,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { endOfMonth, format, startOfMonth, subMonths } from "date-fns";
+import { formatDateForInput, parseDatePreservingDay } from "@/lib/date-utils";
+import { endOfMonth, startOfMonth, subMonths } from "date-fns";
 import { CalendarIcon, ChevronDownIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -67,8 +68,13 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoadin
     setTempRange(newRange);
   };
 
+  // Format dates for input fields - Replace with our utility function
+  const formatDateForInputField = (date) => {
+    return formatDateForInput(date);
+  };
+
   const handleStartDateChange = (e) => {
-    const date = new Date(e.target.value);
+    const date = parseDatePreservingDay(e.target.value);
     setTempRange({
       ...tempRange,
       startDate: date,
@@ -77,7 +83,7 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoadin
   };
 
   const handleEndDateChange = (e) => {
-    const date = new Date(e.target.value);
+    const date = parseDatePreservingDay(e.target.value);
     setTempRange({
       ...tempRange,
       endDate: date,
@@ -88,11 +94,6 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoadin
   const handleApply = () => {
     onDateRangeChange(tempRange);
     setIsOpen(false);
-  };
-
-  // Format dates for input fields
-  const formatDateForInput = (date) => {
-    return format(date, 'yyyy-MM-dd');
   };
 
   return (
@@ -149,7 +150,7 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoadin
               <Input
                 id="startDate"
                 type="date"
-                value={formatDateForInput(tempRange.startDate)}
+                value={formatDateForInputField(tempRange.startDate)}
                 onChange={handleStartDateChange}
                 className="border-0 bg-white dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-200 h-9"
               />
@@ -161,9 +162,9 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoadin
               <Input
                 id="endDate"
                 type="date"
-                value={formatDateForInput(tempRange.endDate)}
+                value={formatDateForInputField(tempRange.endDate)}
                 onChange={handleEndDateChange}
-                min={formatDateForInput(tempRange.startDate)}
+                min={formatDateForInputField(tempRange.startDate)}
                 className="border-0 bg-white dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-200 h-9"
               />
             </div>

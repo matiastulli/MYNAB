@@ -10,6 +10,7 @@ import ManualTransactionForm from "@/components/ManualTransactionForm"
 import ProfileUpdateDialog from "@/components/ProfileUpdateDialog"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { toDateOnlyISOString } from "@/lib/date-utils"
 import { api } from "@/services/api"
 import { endOfMonth, format, startOfMonth } from 'date-fns'
 import {
@@ -106,9 +107,9 @@ export default function App() {
   const fetchSummary = async () => {
     setSummaryLoading(true); // Start loading
     try {
-      // Format dates for API
-      const startDateStr = format(dateRange.startDate, 'yyyy-MM-dd');
-      const endDateStr = format(dateRange.endDate, 'yyyy-MM-dd');
+      // Format dates for API using our utility function
+      const startDateStr = toDateOnlyISOString(dateRange.startDate);
+      const endDateStr = toDateOnlyISOString(dateRange.endDate);
       
       // Use URL parameters for GET request
       const params = new URLSearchParams();
@@ -137,9 +138,9 @@ export default function App() {
   const fetchDetails = async () => {
     setEntriesLoading(true); // Start loading
     try {
-      // Format dates for API
-      const startDateStr = format(dateRange.startDate, 'yyyy-MM-dd');
-      const endDateStr = format(dateRange.endDate, 'yyyy-MM-dd');
+      // Format dates for API using our utility function
+      const startDateStr = toDateOnlyISOString(dateRange.startDate);
+      const endDateStr = toDateOnlyISOString(dateRange.endDate);
       
       // Use URL parameters for GET request
       const params = new URLSearchParams();

@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toDateOnlyISOString } from "@/lib/date-utils";
 import { api } from "@/services/api";
 import { CalendarIcon, CheckIcon, PlusCircleIcon, PlusIcon } from "lucide-react";
 import { useState } from "react";
@@ -17,7 +18,8 @@ export default function ManualTransactionForm({
     amount: "",
     type: "outcome",
     description: "",
-    date: new Date().toISOString().split('T')[0],
+    // Use today's date in a timezone-safe way
+    date: toDateOnlyISOString(new Date()),
     currency: "ARS",
     source: "manual",
     reference_id: ""
@@ -45,7 +47,7 @@ export default function ManualTransactionForm({
           amount: "",
           type: "outcome",
           description: "",
-          date: new Date().toISOString().split('T')[0],
+          date: toDateOnlyISOString(new Date()),
           currency: "ARS",
           source: "manual",
           reference_id: ""

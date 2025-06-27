@@ -1,8 +1,8 @@
 import SignInPrompt from "@/components/SignInPrompt";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatDateSafe } from "@/lib/date-utils";
 import { api } from "@/services/api";
-import { format } from "date-fns";
 import { CalendarIcon, FileIcon, FolderIcon, TrashIcon } from "lucide-react";
 
 export default function FilesList({
@@ -33,12 +33,9 @@ export default function FilesList({
     }
   };
 
+  // Update this function to use our safe date formatter
   const formatDate = (dateString) => {
-    try {
-      return format(new Date(dateString), 'MMM dd, yyyy');
-    } catch (error) {
-      return dateString;
-    }
+    return formatDateSafe(dateString, 'MMM dd, yyyy');
   };
 
   if (!isAuthenticated) {

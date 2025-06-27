@@ -1,6 +1,7 @@
 import SignInPrompt from "@/components/SignInPrompt";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { parseDatePreservingDay } from "@/lib/date-utils";
 import { api } from "@/services/api";
 import { ArrowDownIcon, ArrowUpIcon, BarChartIcon, CalendarIcon, CircleDollarSignIcon, PlusCircleIcon, SearchIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -211,11 +212,15 @@ export default function ActivityList({
                     <div className="flex items-center gap-1">
                       <CalendarIcon className="h-3.5 w-3.5 opacity-70" />
                       <span>
-                        {new Date(entry.date).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
+                        {(() => {
+                          // Use our utility function to ensure date is parsed correctly
+                          const entryDate = parseDatePreservingDay(entry.date);
+                          return entryDate.toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          });
+                        })()}
                       </span>
                     </div>
                     {entry.source && (

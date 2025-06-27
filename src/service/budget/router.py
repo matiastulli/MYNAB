@@ -42,19 +42,29 @@ async def post_file(
     Import transactions from file (Base64 encoded) based on the bank format.
     Supported banks: santander_rio, ICBC, mercado_pago
     """
-    # Validate file type
-    if not file_name.endswith(('.xlsx', '.xls', '.csv', '.pdf')):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="File must be an Excel or PDF file (.xlsx, .xls, .csv, .pdf)"
-        )
-
-    # Validate bank name
-    supported_banks = ["santander_rio", "ICBC", "mercado_pago"]
+    # Define bank-specific file formats
+    bank_formats = {
+        "santander_rio": [".xlsx"],
+        "ICBC": [".csv"],
+        "mercado_pago": [".pdf"]
+    }
+    
+    # Validate bank name first
+    supported_banks = list(bank_formats.keys())
     if bank_name.lower() not in map(str.lower, supported_banks):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Unsupported bank. Supported banks: {', '.join(supported_banks)}"
+        )
+    
+    # Get expected formats for the selected bank (case insensitive match)
+    expected_format = bank_formats[[k for k in bank_formats.keys() if k.lower() == bank_name.lower()][0]]
+    
+    # Validate file type based on bank selection
+    if not any(file_name.lower().endswith(ext.lower()) for ext in expected_format):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"For {bank_name}, file must be in format: {', '.join(expected_format)}"
         )
 
     file_id = await create_file(
@@ -65,7 +75,6 @@ async def post_file(
     )
 
     try:
-
         # Process bank statement in the service layer
         entry_count = await process_bank_statement(jwt_data.id_user, file_id, bank_name, currency, file_content)
 
@@ -75,9 +84,19 @@ async def post_file(
         }
 
     except Exception as e:
+        error_msg = str(e)
+        
+        # Provide more user-friendly error messages for common errors
+        if "Excel file format cannot be determined" in error_msg:
+            error_detail = f"Invalid Excel file format for {bank_name}. Please make sure you're uploading a valid Excel file (.xlsx) from {bank_name}."
+        elif "No columns to parse from file" in error_msg:
+            error_detail = f"Could not extract data from the {bank_name} file. Please make sure you're uploading the correct file format."
+        else:
+            error_detail = f"Error processing file: {error_msg}"
+            
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error processing file: {str(e)}"
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=error_detail
         ) from e
 
 

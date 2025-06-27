@@ -119,6 +119,21 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
     }
   };
 
+  // Bank-specific supported formats
+  const bankFormats = {
+    santander_rio: ".xlsx",
+    ICBC: ".csv",
+    mercado_pago: ".pdf"
+  };
+
+  // Get supported format text based on selected bank
+  const getSupportedFormatText = () => {
+    if (!bankName) {
+      return "Supported formats: .xlsx, .csv, .pdf";
+    }
+    return `Supported format: ${bankFormats[bankName]}`;
+  };
+
   // Use the SignInPrompt component for unauthenticated users
   if (!isAuthenticated) {
     return (
@@ -206,7 +221,7 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
                     Drag & drop your file here or
                   </p>
                   <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-                    Supported formats: .xlsx, .xls, .csv, .pdf
+                    {getSupportedFormatText()}
                   </p>
                 </div>
                 <label htmlFor="importFile" className="cursor-pointer bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 font-medium px-4 py-2 rounded-lg text-sm transition-colors inline-block">

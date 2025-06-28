@@ -4,7 +4,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon, CircleDollarSignIcon } from "lucide-react";
 import { useState } from "react";
 
 export default function CurrencyFilter({ selectedCurrency, onCurrencyChange }) {
@@ -30,9 +30,11 @@ export default function CurrencyFilter({ selectedCurrency, onCurrencyChange }) {
         <Button
           variant="ghost"
           size="sm"
-          className="h-7 bg-white/50 dark:bg-[#1e232a]/50 hover:bg-white dark:hover:bg-[#252b36] gap-1 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400"
+          className="h-7 bg-white/70 dark:bg-[#1e232a]/70 hover:bg-white dark:hover:bg-[#252b36] gap-1 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-700"
         >
+          <CircleDollarSignIcon className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400 mr-1" />
           <span className="font-medium">{selectedCurrencyInfo.code}</span>
+          <span className="hidden sm:inline text-neutral-400 dark:text-neutral-500">currency</span>
           <ChevronDownIcon className="h-3.5 w-3.5 opacity-70" />
         </Button>
       </PopoverTrigger>

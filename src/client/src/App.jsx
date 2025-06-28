@@ -3,6 +3,7 @@
 import ActivityList from "@/components/ActivityList"
 import AuthModal from "@/components/AuthModal"
 import CurrencyFilter from "@/components/CurrencyFilter"
+import CurrencyNotification from "@/components/CurrencyNotification"
 import DateRangeFilter from "@/components/DateRangeFilter"
 import FilesList from "@/components/FilesList"
 import ImportFile from "@/components/ImportFile"
@@ -59,6 +60,10 @@ export default function App() {
   // Add loading states for different data fetches
   const [summaryLoading, setSummaryLoading] = useState(false);
   const [entriesLoading, setEntriesLoading] = useState(false);
+
+  // New state for currency notification
+  const [showCurrencyNotification, setShowCurrencyNotification] = useState(false);
+  const [prevCurrency, setPrevCurrency] = useState(null);
 
   // Check authentication status on load
   useEffect(() => {
@@ -242,6 +247,13 @@ export default function App() {
     setPagination({ ...pagination, offset: 0 });
   };
 
+  // Handle currency change with notification
+  const handleCurrencyChange = (newCurrency) => {
+    setPrevCurrency(currency);
+    setCurrency(newCurrency);
+    setShowCurrencyNotification(true);
+  };
+
   const handlePaginationChange = (newPagination) => {
     setPagination(newPagination);
     // Files will be fetched by useEffect when pagination changes
@@ -284,7 +296,7 @@ export default function App() {
                     />
                     <CurrencyFilter
                       selectedCurrency={currency}
-                      onCurrencyChange={setCurrency}
+                      onCurrencyChange={handleCurrencyChange}
                       isLoading={summaryLoading || entriesLoading}
                     />
                   </>
@@ -463,7 +475,7 @@ export default function App() {
               entries={entries}
               dateRange={dateRange}
               dateRangeFormatted={dateRangeFormatted}
-              currency={currency}
+              currency={currency} // Pass currency to ActivityList
               onSignInClick={() => setShowAuthModal(true)}
               onTransactionDeleted={() => {
                 fetchSummary();
@@ -477,7 +489,7 @@ export default function App() {
           <TabsContent value="new" className="mt-6 focus-visible:outline-none">
             <ManualTransactionForm
               isAuthenticated={isAuthenticated}
-              defaultCurrency={currency}
+              defaultCurrency={currency} // Pass currency as defaultCurrency
               onSignInClick={() => setShowAuthModal(true)}
               onTransactionAdded={() => {
                 fetchSummary();
@@ -497,7 +509,7 @@ export default function App() {
               }}
               onImportSuccess={handleImportSuccess}
               className="max-w-2xl mx-auto"
-              currency={currency}
+              currency={currency} // Pass currency to ImportFile
             />
           </TabsContent>
 
@@ -516,6 +528,7 @@ export default function App() {
               error={filesError}
               pagination={pagination}
               onPaginationChange={handlePaginationChange}
+              currency={currency} // Pass currency to FilesList
             />
           </TabsContent>
         </Tabs>
@@ -527,6 +540,13 @@ export default function App() {
           userData={userData}
           onProfileUpdated={fetchUserProfile}
           onLogout={handleLogout}
+        />
+        
+        {/* Currency change notification */}
+        <CurrencyNotification 
+          currency={currency}
+          isVisible={showCurrencyNotification}
+          onClose={() => setShowCurrencyNotification(false)}
         />
       </div>
     </div>

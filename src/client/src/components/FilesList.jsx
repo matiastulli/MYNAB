@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDateSafe } from "@/lib/date-utils";
 import { api } from "@/services/api";
-import { CalendarIcon, FileIcon, FolderIcon, TrashIcon } from "lucide-react";
+import { CalendarIcon, CircleDollarSignIcon, FileIcon, FolderIcon, TrashIcon } from "lucide-react";
 
 export default function FilesList({
   isAuthenticated,
@@ -13,7 +13,8 @@ export default function FilesList({
   loading = false,
   error = null,
   pagination = { limit: 50, offset: 0, total: 0 },
-  onPaginationChange
+  onPaginationChange,
+  currency = "ARS" // Add currency prop
 }) {
   const handleDeleteFile = async (fileId) => {
     if (!confirm("Are you sure you want to delete this file?")) return;
@@ -51,10 +52,19 @@ export default function FilesList({
   return (
     <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-          <FolderIcon className="h-5 w-5 text-emerald-500" />
-          Bank Statements
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+              <FolderIcon className="h-5 w-5 text-emerald-500" />
+              Bank Statements
+            </CardTitle>
+            {/* Currency indicator */}
+            <div className="flex items-center text-xs bg-blue-50/70 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded border border-blue-100 dark:border-blue-800/30">
+              <CircleDollarSignIcon className="h-3 w-3 mr-1" />
+              {currency}
+            </div>
+          </div>
+        </div>
       </CardHeader>
       <CardContent className="p-6">
         <div className="space-y-4">
@@ -76,10 +86,26 @@ export default function FilesList({
               <div className="p-4 rounded-full bg-neutral-100 dark:bg-[#2a303a] inline-flex mx-auto">
                 <FileIcon className="h-8 w-8 text-neutral-400 dark:text-neutral-500" />
               </div>
-              <p className="text-neutral-600 dark:text-neutral-400 mt-4 text-lg">No files uploaded yet</p>
+              <p className="text-neutral-600 dark:text-neutral-400 mt-4 text-lg">No {currency} files available</p>
               <p className="text-neutral-500 dark:text-neutral-500 mt-2 max-w-md mx-auto">
-                Use the Import tab to upload bank statements and track your transactions
+                You're currently viewing files in <span className="font-medium">{currency}</span> currency. Try changing the currency filter or use the Import tab to upload bank statements.
               </p>
+              
+              {/* Currency filter notice */}
+              <div className="flex items-center justify-center gap-2 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 rounded-md max-w-xs mx-auto mt-4">
+                <CircleDollarSignIcon className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                <p className="text-xs text-blue-700 dark:text-blue-200 text-left">
+                  Files are filtered based on the currency they contain.
+                </p>
+              </div>
+              
+              <Button
+                className="bg-emerald-600 hover:bg-emerald-700 text-white mt-4"
+                size="sm"
+                onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
+              >
+                Change Currency Filter
+              </Button>
             </div>
           )}
 
@@ -95,9 +121,15 @@ export default function FilesList({
                       <FileIcon className="h-5 w-5 text-emerald-500 dark:text-emerald-400" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="font-medium text-neutral-900 dark:text-neutral-100 mr-auto">
-                        {file.file_name || "Unnamed file"}
-                      </p>
+                      <div className="flex items-center">
+                        <p className="font-medium text-neutral-900 dark:text-neutral-100 mr-auto">
+                          {file.file_name || "Unnamed file"}
+                        </p>
+                        {/* Show currency tag on each file */}
+                        <span className="ml-2 text-xs px-1.5 py-0.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 rounded">
+                          {currency}
+                        </span>
+                      </div>
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-neutral-500 dark:text-neutral-400 mt-1">
                         <div className="flex items-center gap-1">
                           <CalendarIcon className="h-3.5 w-3.5 opacity-70" />
@@ -105,6 +137,12 @@ export default function FilesList({
                             {formatDate(file.created_at)}
                           </span>
                         </div>
+                        {file.imported_count && (
+                          <div className="flex items-center gap-1">
+                            <span>•</span>
+                            <span>{file.imported_count} transactions</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

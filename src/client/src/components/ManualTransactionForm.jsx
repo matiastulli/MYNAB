@@ -6,13 +6,14 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toDateOnlyISOString } from "@/lib/date-utils";
 import { api } from "@/services/api";
-import { CalendarIcon, CheckIcon, PlusCircleIcon, PlusIcon } from "lucide-react";
-import { useState } from "react";
+import { AlertCircleIcon, CalendarIcon, CheckIcon, CircleDollarSignIcon, PlusCircleIcon, PlusIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function ManualTransactionForm({
   isAuthenticated,
   onSignInClick,
-  onTransactionAdded
+  onTransactionAdded,
+  defaultCurrency = "ARS" // Accept default currency from parent component
 }) {
   const [form, setForm] = useState({
     amount: "",
@@ -20,10 +21,18 @@ export default function ManualTransactionForm({
     description: "",
     // Use today's date in a timezone-safe way
     date: toDateOnlyISOString(new Date()),
-    currency: "ARS",
+    currency: defaultCurrency, // Use the passed in currency
     source: "manual",
     reference_id: ""
   });
+
+  // Update form when defaultCurrency changes
+  useEffect(() => {
+    setForm(prevForm => ({
+      ...prevForm,
+      currency: defaultCurrency
+    }));
+  }, [defaultCurrency]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -48,7 +57,7 @@ export default function ManualTransactionForm({
           type: "outcome",
           description: "",
           date: toDateOnlyISOString(new Date()),
-          currency: "ARS",
+          currency: defaultCurrency, // Keep the current currency
           source: "manual",
           reference_id: ""
         });
@@ -85,6 +94,14 @@ export default function ManualTransactionForm({
       </CardTitle>
     </CardHeader>
     <CardContent className="p-6">
+      {/* Currency filter notice */}
+      <div className="flex items-center gap-2 px-4 py-2 bg-blue-50/80 dark:bg-blue-900/20 rounded-lg mb-6 border border-blue-100 dark:border-blue-800/30">
+        <CircleDollarSignIcon className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+        <p className="text-sm text-blue-700 dark:text-blue-200">
+          You're adding a <span className="font-semibold">{defaultCurrency}</span> transaction. Make sure this matches your bank's currency.
+        </p>
+      </div>
+
       {success ? (
         <div className="flex flex-col items-center py-8 gap-4">
           <div className="p-3 rounded-full bg-emerald-100 dark:bg-emerald-900/30">
@@ -110,7 +127,7 @@ export default function ManualTransactionForm({
               </Label>
               <div className="relative w-full">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-600 dark:text-neutral-300 text-sm font-medium">
-                  {form.currency === 'USD' ? '$' : form.currency === 'EUR' ? '€' : '$'}
+                  {form.currency === 'USD' ? '$' : form.currency === 'EUR' ? '€' : form.currency === 'BRL' ? 'R$' : '$'}
                 </span>
                 <Input
                   id="amount"
@@ -185,22 +202,55 @@ export default function ManualTransactionForm({
 
             <div className="space-y-2 w-full">
               <Label htmlFor="currency" className="text-sm font-medium text-neutral-700 dark:text-neutral-200 flex items-center gap-1.5">
+                <CircleDollarSignIcon className="h-4 w-4 opacity-70" />
                 Currency
               </Label>
-              <Select value={form.currency} onValueChange={(value) => setForm({ ...form, currency: value })}>
+              <Select 
+                value={form.currency} 
+                onValueChange={(value) => setForm({ ...form, currency: value })}
+              >
                 <SelectTrigger
                   id="currency"
-                  className="w-full border-0 bg-white dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] h-[42px] text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-200"
+                  className={`w-full border-0 bg-white dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] h-[42px] text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-200 ${form.currency !== defaultCurrency ? 'ring-2 ring-amber-400/50' : ''}`}
                 >
                   <SelectValue placeholder="Select currency" />
                 </SelectTrigger>
                 <SelectContent className="w-full dark:bg-[#1e232a] dark:border-neutral-700">
-                  <SelectItem value="ARS" className="text-neutral-900 dark:text-white">ARS - Argentine Peso</SelectItem>
-                  <SelectItem value="USD" className="text-neutral-900 dark:text-white">USD - US Dollar</SelectItem>
-                  <SelectItem value="EUR" className="text-neutral-900 dark:text-white">EUR - Euro</SelectItem>
-                  <SelectItem value="BRL" className="text-neutral-900 dark:text-white">BRL - Brazilian Real</SelectItem>
+                  <SelectItem value="ARS" className="text-neutral-900 dark:text-white">
+                    <div className="flex items-center justify-between w-full">
+                      <span>ARS - Argentine Peso</span>
+                      {defaultCurrency === "ARS" && <span className="text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded">Current Filter</span>}
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="USD" className="text-neutral-900 dark:text-white">
+                    <div className="flex items-center justify-between w-full">
+                      <span>USD - US Dollar</span>
+                      {defaultCurrency === "USD" && <span className="text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded">Current Filter</span>}
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="EUR" className="text-neutral-900 dark:text-white">
+                    <div className="flex items-center justify-between w-full">
+                      <span>EUR - Euro</span>
+                      {defaultCurrency === "EUR" && <span className="text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded">Current Filter</span>}
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="BRL" className="text-neutral-900 dark:text-white">
+                    <div className="flex items-center justify-between w-full">
+                      <span>BRL - Brazilian Real</span>
+                      {defaultCurrency === "BRL" && <span className="text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded">Current Filter</span>}
+                    </div>
+                  </SelectItem>
                 </SelectContent>
               </Select>
+              
+              {form.currency !== defaultCurrency && (
+                <div className="flex items-center gap-1 mt-1">
+                  <AlertCircleIcon className="h-3.5 w-3.5 text-amber-500" />
+                  <p className="text-xs text-amber-600 dark:text-amber-400">
+                    This doesn't match your current currency filter ({defaultCurrency})
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 

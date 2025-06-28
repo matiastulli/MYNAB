@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { api } from "@/services/api";
-import { CheckCircleIcon, FileIcon, UploadCloudIcon, UploadIcon, XCircleIcon } from "lucide-react";
+import { CheckCircleIcon, CircleDollarSignIcon, FileIcon, UploadCloudIcon, UploadIcon, XCircleIcon } from "lucide-react";
 import { useState } from "react";
 
 export default function ImportFile({ onImportComplete, onImportSuccess, isAuthenticated, onSignInClick, currency }) {
@@ -119,11 +119,11 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
     }
   };
 
-  // Bank-specific supported formats
+  // Bank-specific supported formats and their default currencies
   const bankFormats = {
-    santander_rio: ".xlsx",
-    ICBC: ".csv",
-    mercado_pago: ".pdf"
+    santander_rio: { format: ".xlsx", defaultCurrency: "ARS" },
+    ICBC: { format: ".csv", defaultCurrency: "ARS" },
+    mercado_pago: { format: ".pdf", defaultCurrency: "ARS" }
   };
 
   // Get supported format text based on selected bank
@@ -131,8 +131,11 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
     if (!bankName) {
       return "Supported formats: .xlsx, .csv, .pdf";
     }
-    return `Supported format: ${bankFormats[bankName]}`;
+    return `Supported format: ${bankFormats[bankName].format}`;
   };
+
+  // Check if selected currency matches bank's default currency
+  const isCurrencyMismatch = bankName && bankFormats[bankName].defaultCurrency !== currency;
 
   // Use the SignInPrompt component for unauthenticated users
   if (!isAuthenticated) {
@@ -155,6 +158,17 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
       </CardTitle>
     </CardHeader>
     <CardContent className="p-6">
+      {/* Currency Notice Alert */}
+      <Alert className="mb-6 bg-blue-50/80 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 text-blue-800 dark:text-blue-300">
+        <div className="flex items-center gap-2">
+          <CircleDollarSignIcon className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+          <AlertTitle>Currency filter is set to {currency}</AlertTitle>
+        </div>
+        <AlertDescription className="text-blue-700 dark:text-blue-200 mt-1">
+          You're currently viewing {currency} transactions. Make sure the statement you're uploading contains transactions in this currency.
+        </AlertDescription>
+      </Alert>
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2">
           <Label htmlFor="bank" className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
@@ -191,6 +205,17 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
               </SelectItem>
             </SelectContent>
           </Select>
+          
+          {/* Currency mismatch warning */}
+          {isCurrencyMismatch && (
+            <p className="text-xs text-amber-600 dark:text-amber-400 mt-2 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              This bank typically uses {bankFormats[bankName].defaultCurrency}, but your currency filter is set to {currency}.
+            </p>
+          )}
+          
           <p className="text-xs text-amber-600 dark:text-amber-400 mt-2 flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -296,6 +321,5 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
       </form>
     </CardContent>
   </Card>
-);
-
+  );
 }

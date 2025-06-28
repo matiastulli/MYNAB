@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { parseDatePreservingDay } from "@/lib/date-utils";
 import { api } from "@/services/api";
-import { ArrowDownIcon, ArrowUpIcon, BarChartIcon, CalendarIcon, CircleDollarSignIcon, PlusCircleIcon, SearchIcon, TrashIcon } from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon, BarChartIcon, CalendarIcon, CircleDollarSignIcon, FilterIcon, PlusCircleIcon, SearchIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function ActivityList({
@@ -13,7 +13,8 @@ export default function ActivityList({
   dateRangeFormatted,
   onSignInClick,
   onTransactionDeleted,
-  isLoading = false // New prop for loading state
+  isLoading = false,
+  currency = "ARS" // Add currency prop
 }) {
   const [deletingId, setDeletingId] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -84,13 +85,31 @@ export default function ActivityList({
         <CardContent className="p-12 text-center">
           <div className="flex flex-col items-center gap-4">
             <div className="p-4 rounded-full bg-emerald-50 dark:bg-emerald-900/30">
-              <PlusCircleIcon className="h-6 w-6 text-emerald-500 dark:text-emerald-400" />
+              <FilterIcon className="h-6 w-6 text-emerald-500 dark:text-emerald-400" />
             </div>
             <div className="max-w-sm">
               <h3 className="text-lg font-medium mb-2 text-neutral-900 dark:text-white">
-                No transactions for {dateRangeFormatted}
+                No {currency} transactions for {dateRangeFormatted}
               </h3>
-              <p className="text-neutral-500 dark:text-neutral-300">Add your first transaction or import from your bank statements</p>
+              <p className="text-neutral-500 dark:text-neutral-300 mb-4">
+                No transactions match your current filters
+              </p>
+              
+              {/* Currency filter notice */}
+              <div className="flex items-center justify-center gap-2 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 rounded-md max-w-xs mx-auto mb-4">
+                <CircleDollarSignIcon className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                <p className="text-xs text-blue-700 dark:text-blue-200 text-left">
+                  You're viewing <span className="font-semibold">{currency}</span> transactions only. Try changing the currency filter to see more.
+                </p>
+              </div>
+              
+              <Button
+                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                size="sm"
+                onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
+              >
+                Change Currency or Date Range
+              </Button>
             </div>
           </div>
         </CardContent>
@@ -107,6 +126,11 @@ export default function ActivityList({
               <BarChartIcon className="h-5 w-5 text-emerald-500" />
               Activity
             </CardTitle>
+            {/* Currency indicator */}
+            <div className="flex items-center text-xs bg-blue-50/70 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded border border-blue-100 dark:border-blue-800/30">
+              <CircleDollarSignIcon className="h-3 w-3 mr-1" />
+              {currency}
+            </div>
             {isLoading && (
               <div className="animate-pulse flex items-center">
                 <svg className="animate-spin h-4 w-4 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

@@ -11,6 +11,7 @@ from src.service.exceptions import BadRequest, PermissionDenied, NotAuthenticate
 from src.service.config import app_configs, settings
 from src.service.auth_user.router import router as auth_user_router
 from src.service.budget.router import router as budget_router
+from src.service.budget_transaction_category.router import router as budget_transaction_category_router
 
 load_dotenv()
 
@@ -94,3 +95,4 @@ async def healthcheck():
 
 app.include_router(auth_user_router, prefix="/auth", tags=["Auth"])
 app.include_router(budget_router, prefix="/budget", tags=["Budget"])
+app.include_router(budget_transaction_category_router, prefix="/budget-transaction-category", tags=["Budget Transaction Category"])

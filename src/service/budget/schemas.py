@@ -92,10 +92,3 @@ class FilesResponse(CustomModel):
 class FilesResponseWithMeta(CustomModel):
     data: List[FilesResponse]
     metadata: Metadata
-
-
-class TransactionCategoryResponse(CustomModel):
-    id: int
-    category_key: str
-    category_name: str
-    description: Optional[str] = None

@@ -36,7 +36,7 @@ export default function AddTransaction({
       if (isAuthenticated) {
         setLoadingCategories(true);
         try {
-          const response = await api.get("/budget/categories");
+          const response = await api.get("/budget-transaction-category/budget-transaction-category");
           if (response && !response.error) {
             setCategories(response);
           }

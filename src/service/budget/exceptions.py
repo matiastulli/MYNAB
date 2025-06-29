@@ -2,9 +2,9 @@ from src.service.budget.constants import ERRORCODE
 from src.service.exceptions import BadRequest
 
 
-class ExistentCattleHistoryForCattleStatic(BadRequest):
-    DETAIL = ERRORCODE.EXISTING_CATTLE_HISTORY_FOR_CATTLE_STATIC
-    ERROR_CODE = "EXISTING_CATTLE_HISTORY_FOR_CATTLE_STATIC"
+class DummyExample(BadRequest):
+    DETAIL = ERRORCODE.DUMMY_EXAMPLE
+    ERROR_CODE = "DUMMY_EXAMPLE"
 
     def __init__(self):
         super().__init__(detail=self.DETAIL)

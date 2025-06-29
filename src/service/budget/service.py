@@ -10,7 +10,7 @@ from src.service.auth_user.service import get_user_by_id
 from src.service.budget.utils import extract_pdf_to_dataframe, identify_transaction_category
 from src.service.database import fetch_all, fetch_one, execute, budget_entry, files, budget_transaction_category
 from src.service.budget.schemas import BudgetEntryCreate, CategorySummary
-from src.service.budget.constants import CATEGORY_IDS
+from src.service.budget_transaction_category.constants import CATEGORY_IDS
 
 
 async def create_budget_entry(user_id: int, entry: BudgetEntryCreate) -> None:
@@ -365,7 +365,8 @@ def _process_santander_rio_format(df: pd.DataFrame, file_id: int, bank_name: str
                 ))
             except Exception:
                 continue
-    except Exception as e:
+    except Exception as ex:
+        logger.error(f"Error processing Santander Rio statement: {ex}")
         return []
     return entries
 
@@ -547,13 +548,3 @@ def _process_icbc_format(df: pd.DataFrame, file_id: int, bank_name: str, currenc
             continue
 
     return entries
-
-
-async def get_transaction_categories() -> List[Dict[str, Any]]:
-    """
-    Get all transaction categories for dropdown display in the client
-    Returns a list of categories with their IDs, keys, and names
-    """
-    stmt = select(budget_transaction_category)
-    categories = await fetch_all(stmt)
-    return categories

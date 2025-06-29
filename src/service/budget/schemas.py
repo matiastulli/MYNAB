@@ -24,6 +24,7 @@ class BudgetEntryCreate(CustomModel):
     source: Optional[str] = None  # e.g., 'icbc', 'mercado_pago', 'manual'
     type: str
     description: Optional[str] = None
+    category_id: Optional[int] = None
     file_id: Optional[int] = None
     date: date
 

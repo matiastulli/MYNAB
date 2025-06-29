@@ -7,7 +7,7 @@ import base64
 from loguru import logger
 
 from src.service.auth_user.service import get_user_by_id
-from src.service.budget.utils import extract_pdf_to_dataframe
+from src.service.budget.utils import extract_pdf_to_dataframe, identify_transaction_category, get_category_id_by_key
 from src.service.database import fetch_all, fetch_one, execute, budget_entry, files, budget_transaction_category
 from src.service.budget.schemas import BudgetEntryCreate, CategorySummary
 
@@ -21,6 +21,7 @@ async def create_budget_entry(user_id: int, entry: BudgetEntryCreate) -> None:
         currency=entry.currency,
         source=entry.source,
         description=entry.description,
+        category_id=entry.category_id if entry.category_id else None,
         date=entry.date,
         file_id=entry.file_id if entry.file_id else None,
         created_at=datetime.utcnow(),
@@ -45,7 +46,7 @@ async def get_budget_summary(user_id: int, start_date: date, end_date: date, cur
     summary = {"income": 0.0, "outcome": 0.0}
     for row in type_result:
         summary[row["type"]] = float(row["total"])
-    
+
     # Get summary by category
     category_stmt = select(
         budget_entry.c.type,
@@ -69,21 +70,21 @@ async def get_budget_summary(user_id: int, start_date: date, end_date: date, cur
     )
 
     category_result = await fetch_all(category_stmt)
-    
+
     # Process category summaries
     categories = {
         "income": [],
         "outcome": []
     }
-    
+
     for row in category_result:
         entry_type = row["type"]
         if entry_type not in categories:
             continue
-            
+
         category_key = row["category_key"] if row["category_key"] else "uncategorized"
         category_name = row["category_name"] if row["category_name"] else "Uncategorized"
-        
+
         categories[entry_type].append(
             CategorySummary(
                 key=category_key,
@@ -91,7 +92,7 @@ async def get_budget_summary(user_id: int, start_date: date, end_date: date, cur
                 amount=float(row["total"])
             ).dict()
         )
-    
+
     # Return combined summary that matches BudgetSummary schema
     return {
         "income": summary["income"],
@@ -296,6 +297,13 @@ async def process_bank_statement(user_id: int, file_id: int, bank_name: str, cur
         if any(desc.lower() in entry.description.lower() for desc in ignored_descriptions):
             continue
 
+        # Identify category for the entry
+        category_key = identify_transaction_category(entry.description)
+        if category_key:
+            category_id = await get_category_id_by_key(category_key)
+            if category_id:
+                entry.category_id = category_id
+
         filtered_entries.append(entry)
 
     # Save filtered entries to database
@@ -344,6 +352,7 @@ def _process_santander_rio_format(df: pd.DataFrame, file_id: int, bank_name: str
                     continue
 
                 entry_type = "income" if amount > 0 else "outcome"
+
                 entries.append(BudgetEntryCreate(
                     reference_id=reference_id,
                     date=date_raw,
@@ -352,7 +361,8 @@ def _process_santander_rio_format(df: pd.DataFrame, file_id: int, bank_name: str
                     source=bank_name,
                     description=description,
                     type=entry_type,
-                    file_id=file_id
+                    file_id=file_id,
+                    category_id=None  # Will be set in process_bank_statement
                 ))
             except Exception:
                 continue
@@ -456,7 +466,7 @@ def _process_mercado_pago_format(df: pd.DataFrame, file_id: int, bank_name: str,
                     # Remove currency symbols and clean the string
                     amount_str = amount_str.replace(
                         "$", "").replace(".", "").strip()
-                        
+
                     # Replace comma with period for decimal separator
                     amount_str = amount_str.replace(",", ".")
 
@@ -482,7 +492,8 @@ def _process_mercado_pago_format(df: pd.DataFrame, file_id: int, bank_name: str,
                     source=bank_name,
                     description=description,
                     type=entry_type,
-                    file_id=file_id
+                    file_id=file_id,
+                    category_id=None  # Will be set in process_bank_statement
                 ))
 
             except Exception as e:
@@ -530,7 +541,8 @@ def _process_icbc_format(df: pd.DataFrame, file_id: int, bank_name: str, currenc
                 source=bank_name,
                 description=description,
                 type=entry_type,
-                file_id=file_id
+                file_id=file_id,
+                category_id=None  # Will be set in process_bank_statement
             ))
         except Exception:
             continue

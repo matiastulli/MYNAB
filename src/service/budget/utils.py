@@ -1,7 +1,11 @@
+from sqlalchemy import select
 import pandas as pd
 import io
 import pdfplumber
 import re
+
+from src.service.budget.constants import TRANSACTION_CATEGORIES
+from src.service.database import fetch_one, budget_transaction_category
 
 def extract_pdf_to_dataframe(file_bytes: bytes) -> pd.DataFrame:
     """
@@ -37,3 +41,34 @@ def extract_pdf_to_dataframe(file_bytes: bytes) -> pd.DataFrame:
     )
 
     return df
+
+async def get_category_id_by_key(category_key: str) -> int:
+    """Get category ID from the database by category key"""
+    stmt = select(budget_transaction_category.c.id).where(
+        budget_transaction_category.c.category_key == category_key
+    )
+    result = await fetch_one(stmt)
+    return result['id'] if result else None
+
+
+def identify_transaction_category(description: str) -> str:
+    """
+    Identify the transaction category based on the description
+    Returns the category key or None if no match found
+    """
+    description = description.lower()
+    
+    # Check each category's patterns
+    for category_attr in dir(TRANSACTION_CATEGORIES):
+        if category_attr.startswith('_'):
+            continue
+            
+        patterns = getattr(TRANSACTION_CATEGORIES, category_attr)
+        if not isinstance(patterns, list):
+            continue
+            
+        for pattern in patterns:
+            if re.search(pattern, description, re.IGNORECASE):
+                return category_attr
+                
+    return None

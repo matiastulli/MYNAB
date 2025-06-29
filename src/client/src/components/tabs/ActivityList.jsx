@@ -1,7 +1,7 @@
 import SignInPrompt from "@/components/auth_user/SignInPrompt";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { parseDatePreservingDay } from "@/lib/date-utils";
+import { parseDatePreservingDay } from "@/lib/dateUtils";
 import { api } from "@/services/api";
 import { ArrowDownIcon, ArrowUpIcon, BarChartIcon, CalendarIcon, CircleDollarSignIcon, FilterIcon, SearchIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";

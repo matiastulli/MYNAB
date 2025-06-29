@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { formatDateForInput, parseDatePreservingDay } from "@/lib/date-utils";
+import { formatDateForInput, parseDatePreservingDay } from "@/lib/dateUtils";
 import { endOfMonth, startOfMonth, subMonths } from "date-fns";
 import { CalendarIcon, ChevronDownIcon } from "lucide-react";
 import { useEffect, useState } from "react";

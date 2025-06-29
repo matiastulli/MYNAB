@@ -11,7 +11,8 @@ import FilesList from "@/components/tabs/FilesList"
 import ImportFile from "@/components/tabs/ImportFile"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { toDateOnlyISOString } from "@/lib/date-utils"
+import { toDateOnlyISOString } from "@/lib/dateUtils"
+import { setupSystemPreferenceListener } from "@/lib/themeUtils"
 import { api } from "@/services/api"
 import { endOfMonth, format, startOfMonth } from 'date-fns'
 import {
@@ -100,6 +101,12 @@ export default function App() {
       fetchFiles();
     }
   }, [currency]);
+
+  // Setup system preference listener for theme changes
+  useEffect(() => {
+    const cleanup = setupSystemPreferenceListener();
+    return cleanup;
+  }, []);
 
   const fetchUserProfile = async () => {
     const profile = await api.get("/auth/profile");

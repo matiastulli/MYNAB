@@ -1,7 +1,7 @@
 import SignInPrompt from "@/components/auth_user/SignInPrompt";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatDateSafe } from "@/lib/date-utils";
+import { formatDateSafe } from "@/lib/dateUtils";
 import { api } from "@/services/api";
 import { CalendarIcon, CircleDollarSignIcon, FileIcon, FolderIcon, TrashIcon } from "lucide-react";
 

@@ -2,8 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { isDarkModeActive, toggleTheme } from "@/lib/themeUtils";
 import { api } from "@/services/api";
-import { AlertTriangleIcon, CheckCircleIcon, LogOutIcon } from "lucide-react";
+import { AlertTriangleIcon, CheckCircleIcon, LogOutIcon, MoonIcon, SunIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function ProfileUpdateDialog({
@@ -62,6 +63,32 @@ export default function ProfileUpdateDialog({
     setTimeout(() => {
       onLogout();
     }, 300); // Small delay to allow the dialog to close smoothly
+  };
+
+  // Simplified theme state management
+  const [isDarkMode, setIsDarkMode] = useState(isDarkModeActive);
+
+  // Re-check when dialog opens
+  useEffect(() => {
+    if (open) {
+      setIsDarkMode(isDarkModeActive());
+    }
+  }, [open]);
+
+  // Listen for theme changes from other parts of the app
+  useEffect(() => {
+    const handleThemeChange = () => {
+      setIsDarkMode(isDarkModeActive());
+    };
+
+    window.addEventListener('themechange', handleThemeChange);
+    return () => window.removeEventListener('themechange', handleThemeChange);
+  }, []);
+
+  // Enhanced theme toggle handler
+  const handleToggleTheme = () => {
+    const newDarkMode = toggleTheme();
+    setIsDarkMode(newDarkMode);
   };
 
   return (
@@ -181,6 +208,24 @@ export default function ProfileUpdateDialog({
             </DialogFooter>
           </form>
         )}
+
+        {/* Theme toggle section */}
+        <div className="pt-4 mt-6 border-t border-neutral-100 dark:border-neutral-800">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={handleToggleTheme}
+            className="w-full flex items-center justify-center gap-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800/30"
+            title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            {isDarkMode ? (
+              <SunIcon className="h-4 w-4 text-amber-400" />
+            ) : (
+              <MoonIcon className="h-4 w-4 text-indigo-500" />
+            )}
+            {isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          </Button>
+        </div>
 
         <div className="pt-4 mt-6 border-t border-neutral-200 dark:border-neutral-700">
           <Button

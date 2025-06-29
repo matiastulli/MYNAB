@@ -91,35 +91,35 @@ export default function SignupForm({ onSignUp, onSwitchToLogin }) {
   }
 
   return (
-    <Card className="max-w-md mx-auto border-0 bg-white/60 dark:bg-[#1a1e24]/90 backdrop-blur-sm">
+    <Card className="max-w-md mx-auto border-border bg-card backdrop-blur-sm">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-medium text-gray-900 dark:text-white">Create an account</CardTitle>
-        <CardDescription className="text-gray-600 dark:text-gray-300">Enter your information to create a MYNAB account</CardDescription>
+        <CardTitle className="text-2xl font-medium text-foreground">Create an account</CardTitle>
+        <CardDescription className="text-muted-foreground">Enter your information to create a MYNAB account</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-gray-700 dark:text-white">First Name</Label>
+              <Label htmlFor="name" className="text-foreground">First Name</Label>
               <div className="relative">
-                <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-300" />
+                <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input 
                   id="name" 
                   placeholder="John" 
-                  className="pl-10 border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] text-gray-900 dark:text-white"
+                  className="pl-10 border-0 bg-muted focus:bg-background text-foreground placeholder:text-muted-foreground"
                   value={form.name}
                   onChange={handleChange}
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="last_name" className="text-gray-700 dark:text-white">Last Name</Label>
+              <Label htmlFor="last_name" className="text-foreground">Last Name</Label>
               <div className="relative">
-                <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-300" />
+                <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input 
                   id="last_name" 
                   placeholder="Doe" 
-                  className="pl-10 border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] text-gray-900 dark:text-white"
+                  className="pl-10 border-0 bg-muted focus:bg-background text-foreground placeholder:text-muted-foreground"
                   value={form.last_name}
                   onChange={handleChange}
                 />
@@ -128,14 +128,14 @@ export default function SignupForm({ onSignUp, onSwitchToLogin }) {
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-gray-700 dark:text-white">Email</Label>
+            <Label htmlFor="email" className="text-foreground">Email</Label>
             <div className="relative">
-              <AtSignIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-300" />
+              <AtSignIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input 
                 id="email" 
                 type="email" 
                 placeholder="john.doe@example.com" 
-                className="pl-10 border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] text-gray-900 dark:text-white"
+                className="pl-10 border-0 bg-muted focus:bg-background text-foreground placeholder:text-muted-foreground"
                 value={form.email}
                 onChange={handleChange}
               />
@@ -143,32 +143,32 @@ export default function SignupForm({ onSignUp, onSwitchToLogin }) {
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-gray-700 dark:text-white">Password</Label>
+            <Label htmlFor="password" className="text-foreground">Password</Label>
             <div className="relative">
-              <KeyIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-300" />
+              <KeyIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input 
                 id="password" 
                 type="password" 
                 placeholder="••••••••" 
-                className="pl-10 border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] text-gray-900 dark:text-white"
+                className="pl-10 border-0 bg-muted focus:bg-background text-foreground placeholder:text-muted-foreground"
                 value={form.password}
                 onChange={handleChange}
               />
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               <span className="font-medium">Password requirements:</span> Minimum 6 characters, must include at least one lowercase letter (a-z), one uppercase letter (A-Z), number and special character.
             </p>
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword" className="text-gray-700 dark:text-white">Confirm Password</Label>
+            <Label htmlFor="confirmPassword" className="text-foreground">Confirm Password</Label>
             <div className="relative">
-              <KeyIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-300" />
+              <KeyIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input 
                 id="confirmPassword" 
                 type="password" 
                 placeholder="••••••••" 
-                className="pl-10 border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] text-gray-900 dark:text-white"
+                className="pl-10 border-0 bg-muted focus:bg-background text-foreground placeholder:text-muted-foreground"
                 value={form.confirmPassword}
                 onChange={handleChange}
               />
@@ -183,12 +183,12 @@ export default function SignupForm({ onSignUp, onSwitchToLogin }) {
           
           <Button 
             type="submit" 
-            className="w-full bg-neutral-900 hover:bg-neutral-800 dark:bg-emerald-800/80 dark:hover:bg-emerald-700/90 text-white"
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
             disabled={isLoading}
           >
             {isLoading ? (
               <div className="flex items-center gap-2">
-                <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="h-4 w-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
                 Creating Account...
               </div>
             ) : (
@@ -200,7 +200,7 @@ export default function SignupForm({ onSignUp, onSwitchToLogin }) {
           </Button>
           
           <div className="text-center mt-4">
-            <p className="text-sm text-gray-500 dark:text-gray-300">
+            <p className="text-sm text-muted-foreground">
               Already have an account?{" "}
               <button 
                 type="button"

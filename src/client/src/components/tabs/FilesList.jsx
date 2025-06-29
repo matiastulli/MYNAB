@@ -50,11 +50,11 @@ export default function FilesList({
   }
 
   return (
-    <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm">
+    <Card className="border-border bg-card backdrop-blur-sm shadow-sm">
       <CardHeader className="pb-2">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
           <div className="flex items-center gap-2">
-          <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+          <CardTitle className="text-lg font-medium text-foreground flex items-center gap-2">
             <FolderIcon className="h-5 w-5 text-emerald-500" />
             Bank Statements
           </CardTitle>
@@ -71,7 +71,7 @@ export default function FilesList({
           {loading && (
             <div className="text-center py-8 sm:py-12">
               <div className="inline-block h-8 w-8 animate-spin rounded-full border-3 border-solid border-emerald-500 border-r-transparent align-[-0.125em]"></div>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-4">Loading your files...</p>
+              <p className="text-sm text-muted-foreground mt-4">Loading your files...</p>
             </div>
           )}
 
@@ -83,11 +83,11 @@ export default function FilesList({
 
           {!loading && files.length === 0 && !error && (
             <div className="text-center py-6 sm:py-12 px-2">
-              <div className="p-3 sm:p-4 rounded-full bg-neutral-100 dark:bg-[#2a303a] inline-flex mx-auto">
-                <FileIcon className="h-6 w-6 sm:h-8 sm:w-8 text-neutral-400 dark:text-neutral-500" />
+              <div className="p-3 sm:p-4 rounded-full bg-muted inline-flex mx-auto">
+                <FileIcon className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground" />
               </div>
-              <p className="text-neutral-600 dark:text-neutral-400 mt-3 sm:mt-4 text-base sm:text-lg">No {currency} files available</p>
-              <p className="text-neutral-500 dark:text-neutral-500 mt-2 max-w-md mx-auto text-sm sm:text-base">
+              <p className="text-foreground mt-3 sm:mt-4 text-base sm:text-lg">No {currency} files available</p>
+              <p className="text-muted-foreground mt-2 max-w-md mx-auto text-sm sm:text-base">
                 You're currently viewing files in <span className="font-medium">{currency}</span> currency.
               </p>
               
@@ -110,23 +110,23 @@ export default function FilesList({
           )}
 
           {files.length > 0 && (
-            <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
+            <div className="divide-y divide-border">
               {files.map((file) => (
                 <div 
                   key={file.id} 
-                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-6 hover:bg-neutral-50 dark:hover:bg-[#212630] transition-colors"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-6 hover:bg-accent transition-colors"
                 >
                   <div className="flex items-start gap-3 sm:gap-4 w-full sm:w-auto">
-                    <div className="p-2 sm:p-3 rounded-xl flex-shrink-0 bg-neutral-100 dark:bg-[#2a303a]">
+                    <div className="p-2 sm:p-3 rounded-xl flex-shrink-0 bg-muted">
                       <FileIcon className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 dark:text-emerald-400" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-1 sm:gap-2">
-                        <p className="font-medium text-neutral-900 dark:text-neutral-100 mr-1 text-sm sm:text-base">
+                        <p className="font-medium text-foreground mr-1 text-sm sm:text-base">
                           {file.file_name || "Unnamed file"}
                         </p>
                       </div>
-                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-muted-foreground mt-1">
                         <div className="flex items-center gap-1">
                           <CalendarIcon className="h-3 w-3 sm:h-3.5 sm:w-3.5 opacity-70" />
                           <span>
@@ -146,7 +146,7 @@ export default function FilesList({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="ml-auto h-8 w-8 p-0 flex items-center justify-center rounded-full text-neutral-400 hover:text-red-500 dark:text-neutral-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                      className="ml-auto h-8 w-8 p-0 flex items-center justify-center rounded-full text-muted-foreground hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
                       onClick={() => handleDeleteFile(file.id)}
                     >
                       <TrashIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -158,7 +158,7 @@ export default function FilesList({
           )}
 
           {pagination.total > pagination.limit && (
-            <div className="flex justify-between items-center mt-6 bg-white/50 dark:bg-[#1e232a]/50 p-2 sm:p-3 rounded-lg text-xs sm:text-sm">
+            <div className="flex justify-between items-center mt-6 bg-card p-2 sm:p-3 rounded-lg text-xs sm:text-sm border border-border">
               <Button
                 variant="outline"
                 size="sm"
@@ -167,11 +167,11 @@ export default function FilesList({
                   ...pagination,
                   offset: Math.max(0, pagination.offset - pagination.limit)
                 })}
-                className="border-0 bg-white dark:bg-[#252b36] shadow-sm h-8 px-2 sm:px-3 text-xs sm:text-sm"
+                className="border-0 bg-background shadow-sm h-8 px-2 sm:px-3 text-xs sm:text-sm"
               >
                 Previous
               </Button>
-              <span className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 px-1">
+              <span className="text-xs sm:text-sm text-muted-foreground px-1">
                 {pagination.offset + 1}-{Math.min(pagination.offset + pagination.limit, pagination.total)} of {pagination.total}
               </span>
               <Button
@@ -182,7 +182,7 @@ export default function FilesList({
                   ...pagination,
                   offset: pagination.offset + pagination.limit
                 })}
-                className="border-0 bg-white dark:bg-[#252b36] shadow-sm h-8 px-2 sm:px-3 text-xs sm:text-sm"
+                className="border-0 bg-background shadow-sm h-8 px-2 sm:px-3 text-xs sm:text-sm"
               >
                 Next
               </Button>

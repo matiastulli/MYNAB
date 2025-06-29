@@ -86,11 +86,11 @@ export default function ManualTransactionForm({
   }
 
   return (
-  <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm">
+  <Card className="border-border bg-card backdrop-blur-sm shadow-sm">
     <CardHeader className="pb-2">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
           <div className="flex items-center gap-2">
-        <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+        <CardTitle className="text-lg font-medium text-foreground flex items-center gap-2">
           <PlusCircleIcon className="h-5 w-5 text-emerald-500" />
           Add Transaction
         </CardTitle>
@@ -110,8 +110,8 @@ export default function ManualTransactionForm({
             <CheckIcon className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
           </div>
           <div className="text-center">
-            <h3 className="text-lg font-medium text-neutral-900 dark:text-white mb-2">Transaction Added!</h3>
-            <p className="text-neutral-500 dark:text-neutral-400">Your transaction has been successfully added to your account.</p>
+            <h3 className="text-lg font-medium text-foreground mb-2">Transaction Added!</h3>
+            <p className="text-muted-foreground">Your transaction has been successfully added to your account.</p>
           </div>
           <Button
             onClick={() => setSuccess(false)}
@@ -124,11 +124,11 @@ export default function ManualTransactionForm({
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2 w-full">
-              <Label htmlFor="amount" className="text-sm font-medium text-neutral-700 dark:text-neutral-200 flex items-center gap-1.5">
+              <Label htmlFor="amount" className="text-sm font-medium text-foreground flex items-center gap-1.5">
                 Amount
               </Label>
               <div className="relative w-full">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-600 dark:text-neutral-300 text-sm font-medium">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground text-sm font-medium">
                   {form.currency === 'USD' ? '$' : form.currency === 'EUR' ? '€' : form.currency === 'BRL' ? 'R$' : '$'}
                 </span>
                 <Input
@@ -137,7 +137,7 @@ export default function ManualTransactionForm({
                   step="0.01"
                   value={form.amount}
                   onChange={(e) => setForm({ ...form, amount: e.target.value })}
-                  className="w-full pl-7 border-0 bg-white dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-200 text-lg h-[42px]"
+                  className="w-full pl-7 border-0 bg-muted focus:bg-background transition-colors text-foreground placeholder:text-muted-foreground text-lg h-[42px]"
                   placeholder="0.00"
                   required
                 />
@@ -145,24 +145,24 @@ export default function ManualTransactionForm({
             </div>
 
             <div className="space-y-2 w-full">
-              <Label htmlFor="type" className="text-sm font-medium text-neutral-700 dark:text-neutral-200 flex items-center gap-1.5">
+              <Label htmlFor="type" className="text-sm font-medium text-foreground flex items-center gap-1.5">
                 Transaction Type
               </Label>
               <Select value={form.type} onValueChange={(value) => setForm({ ...form, type: value })}>
                 <SelectTrigger
                   id="type"
-                  className="w-full border-0 bg-white dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] h-[42px] text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-200"
+                  className="w-full border-0 bg-muted focus:bg-background h-[42px] text-foreground placeholder:text-muted-foreground"
                 >
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
-                <SelectContent className="w-full dark:bg-[#1e232a] dark:border-neutral-700">
-                  <SelectItem value="outcome" className="text-neutral-900 dark:text-white">
+                <SelectContent className="w-full bg-popover border-border">
+                  <SelectItem value="outcome" className="text-popover-foreground">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full bg-red-500"></div>
                       <span>Expense</span>
                     </div>
                   </SelectItem>
-                  <SelectItem value="income" className="text-neutral-900 dark:text-white">
+                  <SelectItem value="income" className="text-popover-foreground">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
                       <span>Income</span>
@@ -174,21 +174,21 @@ export default function ManualTransactionForm({
           </div>
 
           <div className="space-y-2 w-full">
-            <Label htmlFor="description" className="text-sm font-medium text-neutral-700 dark:text-neutral-200 flex items-center gap-1.5">
+            <Label htmlFor="description" className="text-sm font-medium text-foreground flex items-center gap-1.5">
               Description
             </Label>
             <Input
               id="description"
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
-              className="w-full border-0 bg-white dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-200 h-[42px]"
+              className="w-full border-0 bg-muted focus:bg-background transition-colors text-foreground placeholder:text-muted-foreground h-[42px]"
               placeholder="What's this transaction for?"
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2 w-full">
-              <Label htmlFor="date" className="text-sm font-medium text-neutral-700 dark:text-neutral-200 flex items-center gap-1.5">
+              <Label htmlFor="date" className="text-sm font-medium text-foreground flex items-center gap-1.5">
                 <CalendarIcon className="h-4 w-4 opacity-70" />
                 Date
               </Label>
@@ -197,13 +197,13 @@ export default function ManualTransactionForm({
                 type="date"
                 value={form.date}
                 onChange={(e) => setForm({ ...form, date: e.target.value })}
-                className="w-full border-0 bg-white dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors text-neutral-900 dark:text-white h-[42px]"
+                className="w-full border-0 bg-muted focus:bg-background transition-colors text-foreground h-[42px]"
                 required
               />
             </div>
 
             <div className="space-y-2 w-full">
-              <Label htmlFor="currency" className="text-sm font-medium text-neutral-700 dark:text-neutral-200 flex items-center gap-1.5">
+              <Label htmlFor="currency" className="text-sm font-medium text-foreground flex items-center gap-1.5">
                 <CircleDollarSignIcon className="h-4 w-4 opacity-70" />
                 Currency
               </Label>
@@ -213,30 +213,30 @@ export default function ManualTransactionForm({
               >
                 <SelectTrigger
                   id="currency"
-                  className={`w-full border-0 bg-white dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] h-[42px] text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-200 ${form.currency !== defaultCurrency ? 'ring-2 ring-amber-400/50' : ''}`}
+                  className={`w-full border-0 bg-muted focus:bg-background h-[42px] text-foreground placeholder:text-muted-foreground ${form.currency !== defaultCurrency ? 'ring-2 ring-amber-400/50' : ''}`}
                 >
                   <SelectValue placeholder="Select currency" />
                 </SelectTrigger>
-                <SelectContent className="w-full dark:bg-[#1e232a] dark:border-neutral-700">
-                  <SelectItem value="ARS" className="text-neutral-900 dark:text-white">
+                <SelectContent className="w-full bg-popover border-border">
+                  <SelectItem value="ARS" className="text-popover-foreground">
                     <div className="flex items-center justify-between w-full">
                       <span>ARS - Argentine Peso</span>
                       {defaultCurrency === "ARS" && <span className="text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded">Current Filter</span>}
                     </div>
                   </SelectItem>
-                  <SelectItem value="USD" className="text-neutral-900 dark:text-white">
+                  <SelectItem value="USD" className="text-popover-foreground">
                     <div className="flex items-center justify-between w-full">
                       <span>USD - US Dollar</span>
                       {defaultCurrency === "USD" && <span className="text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded">Current Filter</span>}
                     </div>
                   </SelectItem>
-                  <SelectItem value="EUR" className="text-neutral-900 dark:text-white">
+                  <SelectItem value="EUR" className="text-popover-foreground">
                     <div className="flex items-center justify-between w-full">
                       <span>EUR - Euro</span>
                       {defaultCurrency === "EUR" && <span className="text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded">Current Filter</span>}
                     </div>
                   </SelectItem>
-                  <SelectItem value="BRL" className="text-neutral-900 dark:text-white">
+                  <SelectItem value="BRL" className="text-popover-foreground">
                     <div className="flex items-center justify-between w-full">
                       <span>BRL - Brazilian Real</span>
                       {defaultCurrency === "BRL" && <span className="text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded">Current Filter</span>}
@@ -257,14 +257,14 @@ export default function ManualTransactionForm({
           </div>
 
           <div className="space-y-2 w-full">
-            <Label htmlFor="reference_id" className="text-sm font-medium text-neutral-700 dark:text-neutral-200 flex items-center gap-1.5">
-              Reference ID <span className="text-xs text-neutral-400">(Optional)</span>
+            <Label htmlFor="reference_id" className="text-sm font-medium text-foreground flex items-center gap-1.5">
+              Reference ID <span className="text-xs text-muted-foreground">(Optional)</span>
             </Label>
             <Input
               id="reference_id"
               value={form.reference_id}
               onChange={(e) => setForm({ ...form, reference_id: e.target.value })}
-              className="w-full border-0 bg-white dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] transition-colors text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-200 h-[42px]"
+              className="w-full border-0 bg-muted focus:bg-background transition-colors text-foreground placeholder:text-muted-foreground h-[42px]"
               placeholder="Enter transaction reference ID"
             />
           </div>

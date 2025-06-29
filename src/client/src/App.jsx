@@ -279,7 +279,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-[#121418] dark:to-[#191c22]">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
       {showAuthModal === true && (
         <AuthModal
           onAuthenticated={handleAuthentication}
@@ -292,11 +292,11 @@ export default function App() {
         <header className="mb-6 md:mb-10">
           <div className="flex flex-row items-center justify-between gap-2 flex-wrap">
             <div>
-              <h1 className="text-xl sm:text-2xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100">
+              <h1 className="text-xl sm:text-2xl font-medium tracking-tight text-foreground">
                 Budget Overview
               </h1>
               <div className="flex items-center gap-2 mt-1">
-                <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   {dateRangeFormatted}
                 </p>
                 {isAuthenticated && (
@@ -328,13 +328,13 @@ export default function App() {
 
             {isAuthenticated && userData && (
               <div
-                className="flex items-center gap-2 cursor-pointer bg-white/80 dark:bg-[#1a1e24]/80 hover:bg-white dark:hover:bg-[#1e232a] rounded-lg px-3 py-1.5 transition-colors shadow-sm"
+                className="flex items-center gap-2 cursor-pointer bg-card hover:bg-accent rounded-lg px-3 py-1.5 transition-colors shadow-sm border border-border"
                 onClick={() => setShowProfileModal(true)}
               >
                 <div className="bg-emerald-100 dark:bg-emerald-900/30 rounded-full p-1">
                   <UserIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-600 dark:text-emerald-400" />
                 </div>
-                <span className="text-xs sm:text-sm font-medium text-neutral-800 dark:text-neutral-200 truncate max-w-[120px] sm:max-w-full">
+                <span className="text-xs sm:text-sm font-medium text-card-foreground truncate max-w-[120px] sm:max-w-full">
                   {userData.name} {userData.last_name}
                 </span>
                 {(!userData.national_id || userData.national_id === "") && (
@@ -350,15 +350,15 @@ export default function App() {
         {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           {/* Balance Card */}
-          <Card className={`border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow ${summaryLoading ? 'relative overflow-hidden' : ''}`}>
+          <Card className={`border-border bg-card backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow ${summaryLoading ? 'relative overflow-hidden' : ''}`}>
             <CardContent className="p-6">
               {summaryLoading && (
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 dark:via-white/10 to-transparent animate-shimmer"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-foreground/10 to-transparent animate-shimmer"></div>
               )}
               
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Current Balance
                   </p>
                   <p className={`text-2xl font-semibold mt-2 ${balance >= 0 
@@ -375,24 +375,24 @@ export default function App() {
                 </div>
               </div>
               
-              <div className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-800">
-                <p className="text-xs text-neutral-500 dark:text-neutral-400">
+              <div className="mt-4 pt-4 border-t border-border">
+                <p className="text-xs text-muted-foreground">
                   {balance >= 0 ? "You're in good standing" : "Your expenses exceed income"}
                 </p>
               </div>
             </CardContent>
           </Card>
 
-          {/* Income Card - Add the same loading animation */}
-          <Card className={`border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow ${summaryLoading ? 'relative overflow-hidden' : ''}`}>
+          {/* Income Card */}
+          <Card className={`border-border bg-card backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow ${summaryLoading ? 'relative overflow-hidden' : ''}`}>
             <CardContent className="p-6">
               {summaryLoading && (
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 dark:via-white/10 to-transparent animate-shimmer"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-foreground/10 to-transparent animate-shimmer"></div>
               )}
               
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Income
                   </p>
                   <p className="text-2xl font-semibold mt-2 text-emerald-600 dark:text-emerald-400">
@@ -405,24 +405,24 @@ export default function App() {
                 </div>
               </div>
               
-              <div className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-800">
-                <p className="text-xs text-neutral-500 dark:text-neutral-400">
+              <div className="mt-4 pt-4 border-t border-border">
+                <p className="text-xs text-muted-foreground">
                   Total income for {dateRangeFormatted}
                 </p>
               </div>
             </CardContent>
           </Card>
 
-          {/* Expenses Card - Add the same loading animation */}
-          <Card className={`border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow ${summaryLoading ? 'relative overflow-hidden' : ''}`}>
+          {/* Expenses Card */}
+          <Card className={`border-border bg-card backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow ${summaryLoading ? 'relative overflow-hidden' : ''}`}>
             <CardContent className="p-6">
               {summaryLoading && (
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 dark:via-white/10 to-transparent animate-shimmer"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-foreground/10 to-transparent animate-shimmer"></div>
               )}
               
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Expenses
                   </p>
                   <p className="text-2xl font-semibold mt-2 text-red-500 dark:text-red-400">
@@ -435,8 +435,8 @@ export default function App() {
                 </div>
               </div>
               
-              <div className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-800">
-                <p className="text-xs text-neutral-500 dark:text-neutral-400">
+              <div className="mt-4 pt-4 border-t border-border">
+                <p className="text-xs text-muted-foreground">
                   Total expenses for {dateRangeFormatted}
                 </p>
               </div>
@@ -447,31 +447,31 @@ export default function App() {
         {/* Main Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
           <div className="flex justify-center w-full">
-            <TabsList className="flex bg-white/80 dark:bg-[#1a1e24]/80 p-1.5 gap-x-1.5 rounded-xl shadow-sm overflow-x-auto max-w-full w-full sm:w-auto">
+            <TabsList className="flex bg-card p-1.5 gap-x-1.5 rounded-xl shadow-sm border border-border overflow-x-auto max-w-full w-full sm:w-auto">
               <TabsTrigger
                 value="entries"
-                className="flex-1 sm:flex-none text-neutral-700 dark:text-neutral-300 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
+                className="flex-1 sm:flex-none text-muted-foreground data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
               >
                 <BarChartIcon className="h-4 w-4" />
                 <span className="hidden sm:inline-block ml-2">Activity</span>
               </TabsTrigger>
               <TabsTrigger
                 value="new"
-                className="flex-1 sm:flex-none text-neutral-700 dark:text-neutral-300 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
+                className="flex-1 sm:flex-none text-muted-foreground data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
               >
                 <PlusCircleIcon className="h-4 w-4" />
                 <span className="hidden sm:inline-block ml-2">Add Transaction</span>
               </TabsTrigger>
               <TabsTrigger
                 value="import"
-                className="flex-1 sm:flex-none text-neutral-700 dark:text-neutral-300 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
+                className="flex-1 sm:flex-none text-muted-foreground data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
               >
                 <UploadIcon className="h-4 w-4" />
                 <span className="hidden sm:inline-block ml-2">Import Statements</span>
               </TabsTrigger>
               <TabsTrigger
                 value="files"
-                className="flex-1 sm:flex-none text-neutral-700 dark:text-neutral-300 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
+                className="flex-1 sm:flex-none text-muted-foreground data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
               >
                 <FolderIcon className="h-4 w-4" />
                 <span className="hidden sm:inline-block ml-2">Bank Statements</span>

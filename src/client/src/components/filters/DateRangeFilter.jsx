@@ -102,49 +102,49 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoadin
         <Button
           variant="ghost"
           size="sm"
-          className={`h-7 bg-white/50 dark:bg-[#1e232a]/50 hover:bg-white dark:hover:bg-[#252b36] gap-1 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 ${isLoading ? 'opacity-70 pointer-events-none' : ''}`}
+          className={`h-7 bg-card hover:bg-accent gap-1 text-xs sm:text-sm text-muted-foreground border border-border ${isLoading ? 'opacity-70 pointer-events-none' : ''}`}
           disabled={isLoading}
         >
-          <CalendarIcon className={`h-3.5 w-3.5 text-neutral-500 ${isLoading ? 'animate-pulse' : ''}`} />
+          <CalendarIcon className={`h-3.5 w-3.5 text-muted-foreground ${isLoading ? 'animate-pulse' : ''}`} />
           <span className="hidden sm:inline">Change period</span>
           <ChevronDownIcon className="h-3.5 w-3.5 opacity-70" />
           {isLoading && (
             <svg className="animate-spin ml-1 h-3 w-3 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-4 border-0 bg-white dark:bg-[#1e232a] shadow-lg">
+      <PopoverContent className="w-80 p-4 bg-popover text-popover-foreground border-border shadow-lg">
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="datePreset" className="text-neutral-700 dark:text-neutral-300">
+            <Label htmlFor="datePreset" className="text-popover-foreground">
               Date Range
             </Label>
             <Select value={tempRange.preset} onValueChange={handlePresetChange}>
               <SelectTrigger
                 id="datePreset"
-                className="border-0 bg-white dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-200 h-9"
+                className="border-border bg-background text-foreground placeholder:text-muted-foreground h-9"
               >
                 <SelectValue
                   placeholder="Select period"
-                  className="text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-200"
+                  className="text-foreground placeholder:text-muted-foreground"
                 />
               </SelectTrigger>
-              <SelectContent className="dark:bg-[#2a303a] border-0">
-                <SelectItem value="current-month" className="text-neutral-900 dark:text-white">Current Month</SelectItem>
-                <SelectItem value="last-month" className="text-neutral-900 dark:text-white">Last Month</SelectItem>
-                <SelectItem value="last-3-months" className="text-neutral-900 dark:text-white">Last 3 Months</SelectItem>
-                <SelectItem value="last-6-months" className="text-neutral-900 dark:text-white">Last 6 Months</SelectItem>
-                <SelectItem value="custom" className="text-neutral-900 dark:text-white">Custom Range</SelectItem>
+              <SelectContent className="bg-popover border-border">
+                <SelectItem value="current-month">Current Month</SelectItem>
+                <SelectItem value="last-month">Last Month</SelectItem>
+                <SelectItem value="last-3-months">Last 3 Months</SelectItem>
+                <SelectItem value="last-6-months">Last 6 Months</SelectItem>
+                <SelectItem value="custom">Custom Range</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-2">
-              <Label htmlFor="startDate" className="text-neutral-700 dark:text-neutral-300 text-xs">
+              <Label htmlFor="startDate" className="text-popover-foreground text-xs">
                 Start Date
               </Label>
               <Input
@@ -152,11 +152,11 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoadin
                 type="date"
                 value={formatDateForInputField(tempRange.startDate)}
                 onChange={handleStartDateChange}
-                className="border-0 bg-white dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-200 h-9"
+                className="border-border bg-background text-foreground placeholder:text-muted-foreground h-9"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="endDate" className="text-neutral-700 dark:text-neutral-300 text-xs">
+              <Label htmlFor="endDate" className="text-popover-foreground text-xs">
                 End Date
               </Label>
               <Input
@@ -165,7 +165,7 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoadin
                 value={formatDateForInputField(tempRange.endDate)}
                 onChange={handleEndDateChange}
                 min={formatDateForInputField(tempRange.startDate)}
-                className="border-0 bg-white dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-200 h-9"
+                className="border-border bg-background text-foreground placeholder:text-muted-foreground h-9"
               />
             </div>
           </div>
@@ -180,7 +180,7 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoadin
                 <div className="flex items-center gap-2">
                   <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
                   Applying...
                 </div>

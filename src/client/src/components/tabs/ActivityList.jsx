@@ -81,14 +81,14 @@ export default function ActivityList({
 
   if (entries.length === 0) {
     return (
-      <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm">
+      <Card className="border-border bg-card backdrop-blur-sm shadow-sm">
         <CardContent className="p-12 text-center">
           <div className="flex flex-col items-center gap-4">
             <div className="p-4 rounded-full bg-emerald-50 dark:bg-emerald-900/30">
               <FilterIcon className="h-6 w-6 text-emerald-500 dark:text-emerald-400" />
             </div>
             <div className="max-w-sm">
-              <h3 className="text-lg font-medium mb-2 text-neutral-900 dark:text-white">
+              <h3 className="text-lg font-medium mb-2 text-foreground">
                 No {currency} transactions for {dateRangeFormatted}
               </h3>
               
@@ -115,11 +115,11 @@ export default function ActivityList({
   }
 
   return (
-    <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm">
+    <Card className="border-border bg-card backdrop-blur-sm shadow-sm">
       <CardHeader className="pb-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
           <div className="flex items-center gap-2">
-            <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+            <CardTitle className="text-lg font-medium text-foreground flex items-center gap-2">
               <BarChartIcon className="h-5 w-5 text-emerald-500" />
               Activity
             </CardTitle>
@@ -132,7 +132,7 @@ export default function ActivityList({
               <div className="animate-pulse flex items-center">
                 <svg className="animate-spin h-4 w-4 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
               </div>
             )}
@@ -140,11 +140,11 @@ export default function ActivityList({
 
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <div className="relative flex-1 sm:min-w-[240px]">
-              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
                 type="search"
                 placeholder="Search transactions..."
-                className="w-full h-9 py-2 pl-9 pr-4 rounded-lg text-sm bg-neutral-100 dark:bg-[#252a34] border-0 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                className="w-full h-9 py-2 pl-9 pr-4 rounded-lg text-sm bg-muted border-0 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-foreground placeholder:text-muted-foreground"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -159,8 +159,8 @@ export default function ActivityList({
                   sortDirection === 'desc' ? "Sorting: High to Low" :
                     "Sort by Amount"
               }
-              className={`h-9 px-3 rounded-lg ${sortDirection ? 'bg-neutral-100 dark:bg-[#252a34] text-emerald-600 dark:text-emerald-400' :
-                  'text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-[#252a34]'
+              className={`h-9 px-3 rounded-lg ${sortDirection ? 'bg-muted text-emerald-600 dark:text-emerald-400' :
+                  'text-muted-foreground hover:bg-muted'
                 }`}
             >
               {sortDirection === 'asc' ? (
@@ -176,7 +176,7 @@ export default function ActivityList({
       </CardHeader>
       <CardContent className="p-0">
         {isLoading && entries.length > 0 && (
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 dark:via-white/5 to-transparent animate-shimmer z-10"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-foreground/10 to-transparent animate-shimmer z-10"></div>
         )}
 
         {isLoading && entries.length === 0 && (
@@ -184,18 +184,18 @@ export default function ActivityList({
             <div className="h-12 w-12 mb-4">
               <svg className="animate-spin h-full w-full text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
             </div>
-            <p className="text-neutral-500 dark:text-neutral-400">Loading transactions...</p>
+            <p className="text-muted-foreground">Loading transactions...</p>
           </div>
         )}
 
-        <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
+        <div className="divide-y divide-border">
           {filteredEntries.map((entry) => (
             <div
               key={entry.id}
-              className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-6 hover:bg-neutral-50 dark:hover:bg-[#212630] transition-colors"
+              className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-6 hover:bg-accent transition-colors"
             >
               <div className="flex items-start gap-4 w-full sm:w-auto">
                 <div
@@ -212,7 +212,7 @@ export default function ActivityList({
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center justify-between sm:justify-start gap-2 sm:gap-1">
-                    <p className="font-medium text-neutral-900 dark:text-neutral-100 mr-auto">
+                    <p className="font-medium text-foreground mr-auto">
                       {entry.description || "No description"}
                     </p>
                     <p
@@ -229,7 +229,7 @@ export default function ActivityList({
                       )}
                     </p>
                   </div>
-                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground mt-1">
                     <div className="flex items-center gap-1">
                       <CalendarIcon className="h-3.5 w-3.5 opacity-70" />
                       <span>
@@ -282,7 +282,7 @@ export default function ActivityList({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="ml-auto sm:ml-4 text-neutral-400 hover:text-red-500 dark:text-neutral-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                  className="ml-auto sm:ml-4 text-muted-foreground hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
                   onClick={() => handleDelete(entry.id)}
                   disabled={deletingId === entry.id}
                 >

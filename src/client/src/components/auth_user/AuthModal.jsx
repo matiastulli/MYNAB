@@ -33,10 +33,10 @@ export default function AuthModal({ onAuthenticated, onClose = () => { } }) {
           onClick={() => {
             onClose()
           }}
-          className="absolute -top-2 -right-2 bg-white dark:bg-neutral-800 rounded-full p-1 shadow-md hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
+          className="absolute -top-2 -right-2 bg-background border border-border rounded-full p-1 shadow-md hover:bg-accent transition-colors"
           aria-label="Close"
         >
-          <XIcon className="h-5 w-5 text-neutral-600 dark:text-neutral-300" />
+          <XIcon className="h-5 w-5 text-foreground" />
         </button>
 
         <div className="text-center mb-6">

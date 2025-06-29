@@ -5,22 +5,20 @@ import { UserIcon } from "lucide-react";
 export default function SignInPrompt({
   title = "Sign in to continue",
   description = "Please sign in to your account to access this feature",
-  icon = <UserIcon className="h-6 w-6 text-neutral-400 dark:text-neutral-300" />,
+  icon = <UserIcon className="h-6 w-6 text-muted-foreground" />,
   buttonText = "Sign In",
   onSignInClick,
 }) {
   return (
-    <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm">
+    <Card className="border-border bg-card backdrop-blur-sm shadow-sm">
       <CardContent className="p-12 text-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="p-4 rounded-full bg-neutral-100 dark:bg-[#2a303a]">
-            {icon}
-          </div>
+          <div className="p-4 rounded-full bg-muted">{icon}</div>
           <div className="max-w-sm">
-            <h3 className="text-lg font-medium mb-2 text-neutral-900 dark:text-white">
+            <h3 className="text-lg font-medium mb-2 text-foreground">
               {title}
             </h3>
-            <p className="text-neutral-500 dark:text-neutral-300 mb-4">
+            <p className="text-muted-foreground mb-4">
               {description}
             </p>
           </div>

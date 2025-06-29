@@ -29,15 +29,15 @@ export default function CurrencyNotification({
 
   return (
     <div className="fixed top-6 inset-x-4 sm:inset-x-auto sm:right-6 sm:left-auto z-50 sm:max-w-md mx-auto sm:mx-0 transform transition-all duration-300 ease-in-out flex justify-center sm:justify-end">
-      <div className="bg-white dark:bg-[#1e232a] rounded-lg shadow-lg border border-emerald-100 dark:border-emerald-800/30 p-4 flex items-start gap-3 w-full sm:w-auto max-w-md">
+      <div className="bg-card rounded-lg shadow-lg border border-emerald-100 dark:border-emerald-800/30 p-4 flex items-start gap-3 w-full sm:w-auto max-w-md">
         <div className="p-2 rounded-full bg-emerald-50 dark:bg-emerald-900/30">
           <CircleDollarSignIcon className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
         </div>
         <div className="flex-1">
-          <h4 className="font-medium text-neutral-900 dark:text-neutral-100">
+          <h4 className="font-medium text-foreground">
             Currency Changed to {currency}
           </h4>
-          <p className="text-sm text-neutral-600 dark:text-neutral-300 mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             You're now viewing {currency} transactions.
           </p>
         </div>
@@ -46,7 +46,7 @@ export default function CurrencyNotification({
             setShow(false);
             if (onClose) onClose();
           }}
-          className="text-neutral-400 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-300"
+          className="text-muted-foreground hover:text-foreground"
           aria-label="Close notification"
         >
           <XIcon className="h-5 w-5" />

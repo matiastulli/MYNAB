@@ -1,24 +1,13 @@
+import { initializeTheme, setupSystemPreferenceListener } from '@/lib/themeUtils.js'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { registerSW } from 'virtual:pwa-register'
 import App from './App.jsx'
 import './index.css'
 
-// Initialize theme from localStorage or system preference
-function initializeTheme() {
-  const storedTheme = localStorage.getItem('theme');
-  
-  if (storedTheme === 'dark') {
-    document.documentElement.classList.add('dark');
-  } else if (storedTheme === 'light') {
-    document.documentElement.classList.remove('dark');
-  } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    document.documentElement.classList.add('dark');
-  }
-}
-
 // Initialize theme before rendering
 initializeTheme();
+setupSystemPreferenceListener();
 
 // Register service worker
 const updateSW = registerSW({

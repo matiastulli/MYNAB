@@ -2,78 +2,88 @@
  * Theme utility functions for consistent theme handling across the app
  */
 
+// Initialize theme on app start
+export function initializeTheme() {
+  const storedTheme = localStorage.getItem('theme');
+  
+  if (storedTheme === 'dark') {
+    document.documentElement.classList.add('dark');
+  } else if (storedTheme === 'light') {
+    document.documentElement.classList.remove('dark');
+  } else {
+    // Follow system preference if no stored preference
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.documentElement.classList.add('dark');
+    }
+  }
+}
+
 // Check if dark mode is currently active
 export function isDarkModeActive() {
   if (typeof window === 'undefined') return false;
-  
-  // First check localStorage
-  const storedTheme = localStorage.getItem('theme');
-  if (storedTheme) {
-    return storedTheme === 'dark';
-  }
-  
-  // Then check system preference
-  if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    return true;
-  }
-  
-  // Finally check HTML class
   return document.documentElement.classList.contains('dark');
+}
+
+// Get current theme mode including system
+export function getCurrentTheme() {
+  const storedTheme = localStorage.getItem('theme');
+  if (storedTheme) return storedTheme;
+  return 'system';
 }
 
 // Toggle between light and dark themes
 export function toggleTheme() {
   const currentlyDark = isDarkModeActive();
   const newMode = currentlyDark ? 'light' : 'dark';
-  
-  if (newMode === 'dark') {
-    document.documentElement.classList.add('dark');
-  } else {
-    document.documentElement.classList.remove('dark');
-  }
-  
-  // Store in localStorage
-  localStorage.setItem('theme', newMode);
-  
-  // Notify app of theme change via custom event
-  window.dispatchEvent(new CustomEvent('themechange', { 
-    detail: { theme: newMode } 
-  }));
-  
+  setTheme(newMode);
   return !currentlyDark;
 }
 
-// Set theme directly to light or dark
+// Set theme directly
 export function setTheme(mode) {
-  if (mode !== 'dark' && mode !== 'light') {
-    throw new Error('Theme must be "dark" or "light"');
+  if (!['dark', 'light', 'system'].includes(mode)) {
+    throw new Error('Theme must be "dark", "light", or "system"');
   }
   
-  if (mode === 'dark') {
-    document.documentElement.classList.add('dark');
+  if (mode === 'system') {
+    localStorage.removeItem('theme');
+    // Apply system preference
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   } else {
-    document.documentElement.classList.remove('dark');
+    localStorage.setItem('theme', mode);
+    if (mode === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   }
   
-  localStorage.setItem('theme', mode);
-  
+  // Notify components of theme change
   window.dispatchEvent(new CustomEvent('themechange', { 
-    detail: { theme: mode } 
+    detail: { theme: mode, isDark: isDarkModeActive() } 
   }));
 }
 
-// Listen for system preference changes
+// Setup system preference listener
 export function setupSystemPreferenceListener() {
   const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
   
   const handleChange = () => {
-    // Only follow system preference if user hasn't explicitly set a preference
+    // Only follow system preference if no stored preference
     if (!localStorage.getItem('theme')) {
       if (mediaQuery.matches) {
         document.documentElement.classList.add('dark');
       } else {
         document.documentElement.classList.remove('dark');
       }
+      // Notify components
+      window.dispatchEvent(new CustomEvent('themechange', { 
+        detail: { theme: 'system', isDark: mediaQuery.matches } 
+      }));
     }
   };
   

@@ -150,11 +150,11 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
   }
 
   return (
-  <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm">
+  <Card className="border-border bg-card backdrop-blur-sm shadow-sm">
     <CardHeader className="pb-2">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
           <div className="flex items-center gap-2">
-        <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+        <CardTitle className="text-lg font-medium text-foreground flex items-center gap-2">
           <UploadIcon className="h-5 w-5 text-emerald-500" />
           Import Statements
         </CardTitle>
@@ -170,33 +170,33 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="bank" className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
+          <Label htmlFor="bank" className="text-sm font-medium text-foreground">
             Select Bank
           </Label>
           <Select value={bankName} onValueChange={setBankName}>
             <SelectTrigger
               id="bank"
-              className="border-0 bg-white dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] h-[42px] text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-200"
+              className="border-0 bg-muted focus:bg-background h-[42px] text-foreground placeholder:text-muted-foreground"
             >
               <SelectValue
                 placeholder="Select your bank"
-                className="text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-200"
+                className="text-foreground placeholder:text-muted-foreground"
               />
             </SelectTrigger>
-            <SelectContent className="dark:bg-[#1e232a] dark:border-neutral-700">
-              <SelectItem value="santander_rio" className="text-neutral-900 dark:text-white">
+            <SelectContent className="bg-popover border-border">
+              <SelectItem value="santander_rio" className="text-popover-foreground">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-red-500 rounded-full"></div>
                   Santander Rio
                 </div>
               </SelectItem>
-              <SelectItem value="ICBC" className="text-neutral-900 dark:text-white">
+              <SelectItem value="ICBC" className="text-popover-foreground">
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-white dark:bg-neutral-200 rounded-full"></div>
+                  <div className="w-2 h-2 bg-foreground rounded-full"></div>
                   ICBC
                 </div>
               </SelectItem>
-              <SelectItem value="mercado_pago" className="text-neutral-900 dark:text-white">
+              <SelectItem value="mercado_pago" className="text-popover-foreground">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
                   Mercado Pago
@@ -224,27 +224,27 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="importFile" className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
+          <Label htmlFor="importFile" className="text-sm font-medium text-foreground">
             Statement File
           </Label>
           <div
             className={`border-2 border-dashed rounded-lg p-6 text-center ${isDragging
               ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/10'
-              : 'border-neutral-200 dark:border-neutral-700 hover:border-emerald-400 dark:hover:border-emerald-700'}`}
+              : 'border-border hover:border-emerald-400 dark:hover:border-emerald-700'}`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
           >
             {!file ? (
               <div className="flex flex-col items-center space-y-4">
-                <div className="p-3 rounded-full bg-neutral-100 dark:bg-[#2a303a]">
-                  <UploadCloudIcon className="h-8 w-8 text-neutral-500 dark:text-neutral-400" />
+                <div className="p-3 rounded-full bg-muted">
+                  <UploadCloudIcon className="h-8 w-8 text-muted-foreground" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                  <p className="text-sm font-medium text-foreground">
                     Drag & drop your file here or
                   </p>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     {getSupportedFormatText()}
                   </p>
                 </div>
@@ -265,15 +265,15 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
                   <FileIcon className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
                 </div>
                 <div className="text-center sm:text-left">
-                  <p className="font-medium text-neutral-900 dark:text-white">{file.name}</p>
-                  <p className="text-xs text-neutral-500 mt-1">{(file.size / 1024).toFixed(2)} KB • {file.type || "unknown type"}</p>
+                  <p className="font-medium text-foreground">{file.name}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{(file.size / 1024).toFixed(2)} KB • {file.type || "unknown type"}</p>
                 </div>
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   onClick={() => setFile(null)}
-                  className="text-neutral-600 dark:text-neutral-400 border-0"
+                  className="text-muted-foreground border-0"
                 >
                   Change
                 </Button>

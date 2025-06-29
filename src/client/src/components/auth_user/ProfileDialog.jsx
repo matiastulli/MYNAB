@@ -65,40 +65,33 @@ export default function ProfileUpdateDialog({
     }, 300); // Small delay to allow the dialog to close smoothly
   };
 
-  // Simplified theme state management
-  const [isDarkMode, setIsDarkMode] = useState(isDarkModeActive);
+  // Simple theme state - just track current state
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
-  // Re-check when dialog opens
+  // Update theme state when dialog opens or theme changes
   useEffect(() => {
-    if (open) {
-      setIsDarkMode(isDarkModeActive());
-    }
-  }, [open]);
-
-  // Listen for theme changes from other parts of the app
-  useEffect(() => {
-    const handleThemeChange = () => {
-      setIsDarkMode(isDarkModeActive());
-    };
-
+    const updateThemeState = () => setIsDarkMode(isDarkModeActive());
+    
+    updateThemeState(); // Initial check
+    
+    const handleThemeChange = () => updateThemeState();
     window.addEventListener('themechange', handleThemeChange);
+    
     return () => window.removeEventListener('themechange', handleThemeChange);
   }, []);
 
-  // Enhanced theme toggle handler
   const handleToggleTheme = () => {
-    const newDarkMode = toggleTheme();
-    setIsDarkMode(newDarkMode);
+    toggleTheme();
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-white dark:bg-[#1a1e24] border-0 shadow-lg">
+      <DialogContent className="bg-background border-border shadow-lg">
         <DialogHeader>
-          <DialogTitle className="text-xl font-medium dark:text-white">Your Profile</DialogTitle>
-          <DialogDescription className="text-neutral-500 dark:text-neutral-400">
+          <DialogTitle className="text-xl font-medium text-foreground">Your Profile</DialogTitle>
+          <DialogDescription className="text-muted-foreground">
             {(!userData?.national_id || userData?.national_id === "") ? (
-              <div className="flex items-start gap-2 mt-2 p-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800/30 rounded-md">
+              <div className="flex items-start gap-2 mt-2 p-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/30 rounded-md">
                 <AlertTriangleIcon className="h-5 w-5 text-amber-500 mt-0.5" />
                 <div>
                   <p className="font-medium text-amber-700 dark:text-amber-400">CUIT Required</p>
@@ -118,14 +111,14 @@ export default function ProfileUpdateDialog({
             <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-full">
               <CheckCircleIcon className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
             </div>
-            <p className="text-lg font-medium text-neutral-900 dark:text-neutral-100">Profile Updated</p>
+            <p className="text-lg font-medium text-foreground">Profile Updated</p>
           </div>
         ) : (
           <form onSubmit={handleProfileUpdate} className="space-y-4">
             <div className="space-y-2">
               <Label
                 htmlFor="name"
-                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+                className="text-sm font-medium text-foreground"
               >
                 First Name
               </Label>
@@ -133,7 +126,7 @@ export default function ProfileUpdateDialog({
                 id="name"
                 value={profileForm.name}
                 onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
-                className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] text-neutral-900 dark:text-white placeholder:text-neutral-500 dark:placeholder:text-neutral-300"
+                className="border-0 bg-muted focus:bg-background text-foreground placeholder:text-muted-foreground"
                 required
               />
             </div>
@@ -141,7 +134,7 @@ export default function ProfileUpdateDialog({
             <div className="space-y-2">
               <Label
                 htmlFor="last_name"
-                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+                className="text-sm font-medium text-foreground"
               >
                 Last Name
               </Label>
@@ -149,14 +142,14 @@ export default function ProfileUpdateDialog({
                 id="last_name"
                 value={profileForm.last_name}
                 onChange={(e) => setProfileForm({ ...profileForm, last_name: e.target.value })}
-                className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] text-neutral-900 dark:text-white placeholder:text-neutral-500 dark:placeholder:text-neutral-300"
+                className="border-0 bg-muted focus:bg-background text-foreground placeholder:text-muted-foreground"
               />
             </div>
 
             <div className="space-y-2">
               <Label
                 htmlFor="national_id"
-                className="text-sm font-medium text-neutral-700 dark:text-neutral-300 flex items-center gap-1"
+                className="text-sm font-medium text-foreground flex items-center gap-1"
               >
                 CUIT
                 {(!userData?.national_id || userData?.national_id === "") && (
@@ -165,29 +158,28 @@ export default function ProfileUpdateDialog({
               </Label>
               <Input
                 id="national_id"
-                type="text" // Explicitly set type to text for better control
+                type="text"
                 value={profileForm.national_id}
                 onChange={(e) => {
-                  // Allow only numbers by removing non-numeric characters
                   const numericValue = e.target.value.replace(/[^0-9]/g, '');
                   setProfileForm({ ...profileForm, national_id: numericValue });
                 }}
-                className="border-0 bg-neutral-100 dark:bg-[#2a303a] focus:bg-white dark:focus:bg-[#353b47] text-neutral-900 dark:text-white placeholder:text-neutral-500 dark:placeholder:text-neutral-300"
+                className="border-0 bg-muted focus:bg-background text-foreground placeholder:text-muted-foreground"
                 placeholder="e.g. 20415436042"
-                inputMode="numeric" // Hint for mobile devices to show numeric keyboard
-                pattern="[0-9]*" // Another hint for browsers
+                inputMode="numeric"
+                pattern="[0-9]*"
               />
-              <p className="text-xs text-neutral-500 dark:text-neutral-400">
+              <p className="text-xs text-muted-foreground">
                 Used to automatically filter out personal transactions.
               </p>
             </div>
 
-            <DialogFooter className="flex flex-col sm:flex-row gap-2 pt-2 mt-2 border-t border-neutral-100 dark:border-neutral-800">
+            <DialogFooter className="flex flex-col sm:flex-row gap-2 pt-2 mt-2 border-t border-border">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
-                className="w-full sm:w-auto border-neutral-200 dark:border-neutral-700 dark:bg-[#2a303a] dark:hover:bg-[#353b47] dark:text-neutral-200"
+                className="w-full sm:w-auto"
               >
                 Cancel
               </Button>
@@ -210,12 +202,12 @@ export default function ProfileUpdateDialog({
         )}
 
         {/* Theme toggle section */}
-        <div className="pt-4 mt-6 border-t border-neutral-100 dark:border-neutral-800">
+        <div className="pt-4 mt-6 border-t border-border">
           <Button
             type="button"
             variant="ghost"
             onClick={handleToggleTheme}
-            className="w-full flex items-center justify-center gap-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800/30"
+            className="w-full flex items-center justify-center gap-2 text-foreground hover:bg-accent"
             title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
           >
             {isDarkMode ? (
@@ -227,12 +219,12 @@ export default function ProfileUpdateDialog({
           </Button>
         </div>
 
-        <div className="pt-4 mt-6 border-t border-neutral-200 dark:border-neutral-700">
+        <div className="pt-4 mt-6 border-t border-border">
           <Button
             type="button"
             variant="ghost"
             onClick={handleLogout}
-            className="w-full text-red-500 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 flex items-center justify-center gap-2"
+            className="w-full text-destructive hover:text-destructive hover:bg-destructive/10 flex items-center justify-center gap-2"
           >
             <LogOutIcon className="h-4 w-4" />
             Sign Out

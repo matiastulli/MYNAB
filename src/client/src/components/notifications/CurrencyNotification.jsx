@@ -29,9 +29,9 @@ export default function CurrencyNotification({
 
   return (
     <div className="fixed top-6 inset-x-4 sm:inset-x-auto sm:right-6 sm:left-auto z-50 sm:max-w-md mx-auto sm:mx-0 transform transition-all duration-300 ease-in-out flex justify-center sm:justify-end">
-      <div className="bg-card rounded-lg shadow-lg border border-emerald-100 dark:border-emerald-800/30 p-4 flex items-start gap-3 w-full sm:w-auto max-w-md">
-        <div className="p-2 rounded-full bg-emerald-50 dark:bg-emerald-900/30">
-          <CircleDollarSignIcon className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+      <div className="bg-card rounded-lg shadow-lg border border-accent/30 p-4 flex items-start gap-3 w-full sm:w-auto max-w-md">
+        <div className="p-2 rounded-full bg-accent/20">
+          <CircleDollarSignIcon className="h-5 w-5 text-accent" />
         </div>
         <div className="flex-1">
           <h4 className="font-medium text-foreground">

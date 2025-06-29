@@ -55,11 +55,11 @@ export default function FilesList({
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
           <div className="flex items-center gap-2">
           <CardTitle className="text-lg font-medium text-foreground flex items-center gap-2">
-            <FolderIcon className="h-5 w-5 text-emerald-500" />
+            <FolderIcon className="h-5 w-5 text-accent" />
             Bank Statements
           </CardTitle>
           {/* Currency indicator - improved for mobile */}
-          <div className="flex items-center text-xs bg-blue-50/70 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded border border-blue-100 dark:border-blue-800/30 w-fit ml-0 xs:ml-2">
+          <div className="flex items-center text-xs bg-accent/10 text-accent px-1.5 py-0.5 rounded border border-accent/20">
             <CircleDollarSignIcon className="h-3 w-3 mr-1" />
             {currency}
           </div>
@@ -70,13 +70,13 @@ export default function FilesList({
         <div className="space-y-4">
           {loading && (
             <div className="text-center py-8 sm:py-12">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-3 border-solid border-emerald-500 border-r-transparent align-[-0.125em]"></div>
+              <div className="inline-block h-8 w-8 animate-spin rounded-full border-3 border-solid border-accent border-r-transparent align-[-0.125em]"></div>
               <p className="text-sm text-muted-foreground mt-4">Loading your files...</p>
             </div>
           )}
 
           {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 p-3 sm:p-4 rounded-lg shadow-sm text-sm sm:text-base">
+            <div className="bg-destructive/10 border border-destructive/30 text-destructive p-3 sm:p-4 rounded-lg shadow-sm text-sm sm:text-base">
               {error}
             </div>
           )}
@@ -92,15 +92,15 @@ export default function FilesList({
               </p>
               
               {/* Currency filter notice - more compact on mobile */}
-              <div className="flex items-center justify-center gap-2 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 rounded-md max-w-xs mx-auto mt-4 text-xs sm:text-sm">
-                <CircleDollarSignIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
-                <p className="text-blue-700 dark:text-blue-200 text-left">
+              <div className="badge badge-info flex items-center justify-center gap-2 p-2 max-w-xs mx-auto mt-4 text-xs sm:text-sm">
+                <CircleDollarSignIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+                <p className="text-left">
                   Files are filtered based on their currency.
                 </p>
               </div>
               
               <Button
-                className="bg-emerald-600 hover:bg-emerald-700 text-white mt-4 h-9 px-3 text-sm"
+                className="bg-accent hover:bg-accent/90 text-accent-foreground mt-4 h-9 px-3 text-sm"
                 size="sm"
                 onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
               >
@@ -114,11 +114,11 @@ export default function FilesList({
               {files.map((file) => (
                 <div 
                   key={file.id} 
-                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-6 hover:bg-accent transition-colors"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-6 hover:bg-accent/10 transition-colors"
                 >
                   <div className="flex items-start gap-3 sm:gap-4 w-full sm:w-auto">
-                    <div className="p-2 sm:p-3 rounded-xl flex-shrink-0 bg-muted">
-                      <FileIcon className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 dark:text-emerald-400" />
+                    <div className="p-2 sm:p-3 rounded-xl flex-shrink-0 bg-accent/10">
+                      <FileIcon className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-1 sm:gap-2">
@@ -146,7 +146,7 @@ export default function FilesList({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="ml-auto h-8 w-8 p-0 flex items-center justify-center rounded-full text-muted-foreground hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                      className="ml-auto h-8 w-8 p-0 flex items-center justify-center rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                       onClick={() => handleDeleteFile(file.id)}
                     >
                       <TrashIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -167,7 +167,7 @@ export default function FilesList({
                   ...pagination,
                   offset: Math.max(0, pagination.offset - pagination.limit)
                 })}
-                className="border-0 bg-background shadow-sm h-8 px-2 sm:px-3 text-xs sm:text-sm"
+                className="border-0 bg-background shadow-sm h-8 px-2 sm:px-3 text-xs sm:text-sm text-foreground"
               >
                 Previous
               </Button>
@@ -182,7 +182,7 @@ export default function FilesList({
                   ...pagination,
                   offset: pagination.offset + pagination.limit
                 })}
-                className="border-0 bg-background shadow-sm h-8 px-2 sm:px-3 text-xs sm:text-sm"
+                className="border-0 bg-background shadow-sm h-8 px-2 sm:px-3 text-xs sm:text-sm text-foreground"
               >
                 Next
               </Button>

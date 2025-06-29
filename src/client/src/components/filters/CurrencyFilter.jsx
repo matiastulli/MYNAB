@@ -28,12 +28,12 @@ export default function CurrencyFilter({ selectedCurrency, onCurrencyChange }) {
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="ghost"
+          variant="outline"
           size="sm"
-          className="h-7 bg-card hover:bg-accent gap-1 text-xs sm:text-sm text-muted-foreground border border-border"
+          className="h-8 bg-background hover:bg-accent gap-1 text-xs sm:text-sm shadow-sm filter-button"
         >
-          <CircleDollarSignIcon className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400 mr-1" />
-          <span className="font-medium">{selectedCurrencyInfo.code}</span>
+          <CircleDollarSignIcon className="h-3.5 w-3.5 text-accent" />
+          <span className="font-medium text-foreground">{selectedCurrencyInfo.code}</span>
           <span className="hidden sm:inline text-muted-foreground">currency</span>
           <ChevronDownIcon className="h-3.5 w-3.5 opacity-70" />
         </Button>
@@ -46,8 +46,8 @@ export default function CurrencyFilter({ selectedCurrency, onCurrencyChange }) {
               onClick={() => handleSelect(currency.code)}
               className={`w-full text-left px-3 py-1.5 rounded-md text-sm transition-colors ${
                 currency.code === selectedCurrency
-                  ? "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400"
-                  : "hover:bg-accent text-popover-foreground"
+                  ? "bg-accent/20 text-accent font-medium"
+                  : "hover:bg-accent/10 text-popover-foreground"
               }`}
             >
               <div className="flex items-center justify-between">
@@ -57,7 +57,7 @@ export default function CurrencyFilter({ selectedCurrency, onCurrencyChange }) {
                     {currency.name}
                   </span>
                 </div>
-                <span className="text-popover-foreground">{currency.symbol}</span>
+                <span className="text-popover-foreground font-semibold">{currency.symbol}</span>
               </div>
             </button>
           ))}

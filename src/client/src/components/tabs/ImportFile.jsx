@@ -155,11 +155,11 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
           <div className="flex items-center gap-2">
         <CardTitle className="text-lg font-medium text-foreground flex items-center gap-2">
-          <UploadIcon className="h-5 w-5 text-emerald-500" />
+          <UploadIcon className="h-5 w-5 text-accent" />
           Import Statements
         </CardTitle>
         {/* Currency indicator - positioned next to the title */}
-        <div className="flex items-center text-xs bg-blue-50/70 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded border border-blue-100 dark:border-blue-800/30 w-fit ml-0 xs:ml-2">
+        <div className="flex items-center text-xs bg-accent/10 text-accent px-1.5 py-0.5 rounded border border-accent/20">
           <CircleDollarSignIcon className="h-3 w-3 mr-1" />
           {currency}
         </div>
@@ -207,7 +207,7 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
           
           {/* Currency mismatch warning */}
           {isCurrencyMismatch && (
-            <p className="text-xs text-amber-600 dark:text-amber-400 mt-2 flex items-center">
+            <p className="text-xs badge badge-warning flex items-center mt-2">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
@@ -215,7 +215,7 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
             </p>
           )}
           
-          <p className="text-xs text-amber-600 dark:text-amber-400 mt-2 flex items-center">
+          <p className="text-xs badge badge-info mt-2 flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -229,8 +229,8 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
           </Label>
           <div
             className={`border-2 border-dashed rounded-lg p-6 text-center ${isDragging
-              ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/10'
-              : 'border-border hover:border-emerald-400 dark:hover:border-emerald-700'}`}
+              ? 'border-accent bg-accent/5'
+              : 'border-border hover:border-accent/40'}`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
@@ -248,7 +248,7 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
                     {getSupportedFormatText()}
                   </p>
                 </div>
-                <label htmlFor="importFile" className="cursor-pointer bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 font-medium px-4 py-2 rounded-lg text-sm transition-colors inline-block">
+                <label htmlFor="importFile" className="cursor-pointer bg-accent/10 hover:bg-accent/20 text-accent font-medium px-4 py-2 rounded-lg text-sm transition-colors inline-block">
                   Browse Files
                 </label>
                 <Input
@@ -261,8 +261,8 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
               </div>
             ) : (
               <div className="flex flex-col sm:flex-row items-center gap-4 justify-center">
-                <div className="p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
-                  <FileIcon className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+                <div className="p-3 bg-accent/10 rounded-lg">
+                  <FileIcon className="h-6 w-6 text-accent" />
                 </div>
                 <div className="text-center sm:text-left">
                   <p className="font-medium text-foreground">{file.name}</p>
@@ -283,17 +283,17 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
         </div>
 
         {error && (
-          <Alert variant="destructive" className="dark:bg-red-900/30 dark:border-red-800 border shadow-sm">
+          <Alert variant="destructive" className="bg-destructive/10 border-destructive/30 shadow-sm">
             <XCircleIcon className="h-4 w-4" />
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
+            <AlertTitle className="text-destructive font-medium">Error</AlertTitle>
+            <AlertDescription className="text-destructive/90">{error}</AlertDescription>
           </Alert>
         )}
 
         {result && (
-          <Alert className="dark:bg-emerald-900/30 dark:border-emerald-800 border shadow-sm">
+          <Alert className="bg-success-bg text-success-fg border-success-fg/30 shadow-sm">
             <CheckCircleIcon className="h-4 w-4" />
-            <AlertTitle>Success</AlertTitle>
+            <AlertTitle className="font-medium">Success</AlertTitle>
             <AlertDescription>
               {result.message} ({result.count} transactions imported)
             </AlertDescription>
@@ -303,7 +303,7 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
         <Button
           type="submit"
           disabled={isUploading || !file || !bankName}
-          className="w-full bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white transition-colors h-12"
+          className="w-full bg-accent hover:bg-accent/90 text-accent-foreground transition-colors h-12"
         >
           {isUploading ? (
             <div className="flex items-center justify-center gap-2">

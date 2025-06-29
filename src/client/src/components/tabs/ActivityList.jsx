@@ -120,17 +120,17 @@ export default function ActivityList({
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
           <div className="flex items-center gap-2">
             <CardTitle className="text-lg font-medium text-foreground flex items-center gap-2">
-              <BarChartIcon className="h-5 w-5 text-emerald-500" />
+              <BarChartIcon className="h-5 w-5 text-accent" />
               Activity
             </CardTitle>
             {/* Currency indicator */}
-            <div className="flex items-center text-xs bg-blue-50/70 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded border border-blue-100 dark:border-blue-800/30">
+            <div className="flex items-center text-xs bg-accent/10 text-accent px-1.5 py-0.5 rounded border border-accent/20">
               <CircleDollarSignIcon className="h-3 w-3 mr-1" />
               {currency}
             </div>
             {isLoading && (
               <div className="animate-pulse flex items-center">
-                <svg className="animate-spin h-4 w-4 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg className="animate-spin h-4 w-4 text-accent" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
@@ -144,7 +144,7 @@ export default function ActivityList({
               <input
                 type="search"
                 placeholder="Search transactions..."
-                className="w-full h-9 py-2 pl-9 pr-4 rounded-lg text-sm bg-muted border-0 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-foreground placeholder:text-muted-foreground"
+                className="w-full h-9 py-2 pl-9 pr-4 rounded-lg text-sm bg-muted border-0 focus:outline-none focus:ring-2 focus:ring-accent/20 text-foreground placeholder:text-muted-foreground"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -159,7 +159,7 @@ export default function ActivityList({
                   sortDirection === 'desc' ? "Sorting: High to Low" :
                     "Sort by Amount"
               }
-              className={`h-9 px-3 rounded-lg ${sortDirection ? 'bg-muted text-emerald-600 dark:text-emerald-400' :
+              className={`h-9 px-3 rounded-lg ${sortDirection ? 'bg-muted text-accent' :
                   'text-muted-foreground hover:bg-muted'
                 }`}
             >
@@ -195,20 +195,16 @@ export default function ActivityList({
           {filteredEntries.map((entry) => (
             <div
               key={entry.id}
-              className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-6 hover:bg-accent transition-colors"
+              className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-6 hover:bg-accent/10 transition-colors"
             >
               <div className="flex items-start gap-4 w-full sm:w-auto">
                 <div
                   className={`p-3 rounded-xl flex-shrink-0 ${entry.type === "income"
-                    ? "bg-emerald-50 dark:bg-emerald-900/50"
-                    : "bg-red-50 dark:bg-red-900/50"
+                    ? "bg-success-bg text-success-fg"
+                    : "bg-destructive/10 text-destructive"
                     }`}
                 >
-                  {entry.type === "income" ? (
-                    <CircleDollarSignIcon className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                  ) : (
-                    <CircleDollarSignIcon className="h-5 w-5 text-red-500 dark:text-red-400" />
-                  )}
+                  <CircleDollarSignIcon className="h-5 w-5" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center justify-between sm:justify-start gap-2 sm:gap-1">
@@ -217,8 +213,8 @@ export default function ActivityList({
                     </p>
                     <p
                       className={`sm:hidden font-semibold text-base ${entry.type === "income"
-                        ? "text-emerald-600 dark:text-emerald-400"
-                        : "text-red-500 dark:text-red-400"
+                        ? "financial-positive"
+                        : "financial-negative"
                         }`}
                     >
                       {entry.type === "income" ? "+" : "-"}
@@ -271,8 +267,8 @@ export default function ActivityList({
               <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto mt-4 sm:mt-0">
                 <p
                   className={`hidden sm:block text-lg font-semibold ${entry.type === "income"
-                    ? "text-emerald-600 dark:text-emerald-400"
-                    : "text-red-500 dark:text-red-400"
+                    ? "financial-positive"
+                    : "financial-negative"
                     }`}
                 >
                   {entry.type === "income" ? "+" : "-"}
@@ -282,7 +278,7 @@ export default function ActivityList({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="ml-auto sm:ml-4 text-muted-foreground hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                  className="ml-auto sm:ml-4 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                   onClick={() => handleDelete(entry.id)}
                   disabled={deletingId === entry.id}
                 >

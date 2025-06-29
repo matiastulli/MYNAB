@@ -86,16 +86,16 @@ export default function ProfileUpdateDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-background border-border shadow-lg">
+      <DialogContent className="bg-card text-card-foreground border-border shadow-lg backdrop-blur-none">
         <DialogHeader>
           <DialogTitle className="text-xl font-medium text-foreground">Your Profile</DialogTitle>
           <DialogDescription className="text-muted-foreground">
             {(!userData?.national_id || userData?.national_id === "") ? (
-              <div className="flex items-start gap-2 mt-2 p-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/30 rounded-md">
-                <AlertTriangleIcon className="h-5 w-5 text-amber-500 mt-0.5" />
+              <div className="flex items-start gap-2 mt-2 p-2 bg-warning-bg text-warning-fg border border-warning-fg/30 rounded-md">
+                <AlertTriangleIcon className="h-5 w-5 mt-0.5" />
                 <div>
-                  <p className="font-medium text-amber-700 dark:text-amber-400">CUIT Required</p>
-                  <p className="text-sm text-amber-600 dark:text-amber-500">
+                  <p className="font-medium">CUIT Required</p>
+                  <p className="text-sm opacity-90">
                     Adding your CUIT helps filter out personal transactions that shouldn't be counted in your budget.
                   </p>
                 </div>
@@ -108,8 +108,8 @@ export default function ProfileUpdateDialog({
 
         {updateSuccess ? (
           <div className="flex flex-col items-center py-8 gap-3">
-            <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-full">
-              <CheckCircleIcon className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
+            <div className="p-3 bg-success-bg text-success-fg rounded-full">
+              <CheckCircleIcon className="h-8 w-8" />
             </div>
             <p className="text-lg font-medium text-foreground">Profile Updated</p>
           </div>
@@ -179,14 +179,14 @@ export default function ProfileUpdateDialog({
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
-                className="w-full sm:w-auto"
+                className="w-full sm:w-auto bg-background text-foreground"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={isUpdating}
-                className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white"
+                className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground"
               >
                 {isUpdating ? (
                   <div className="flex items-center gap-2">
@@ -207,13 +207,13 @@ export default function ProfileUpdateDialog({
             type="button"
             variant="ghost"
             onClick={handleToggleTheme}
-            className="w-full flex items-center justify-center gap-2 text-foreground hover:bg-accent"
+            className="w-full flex items-center justify-center gap-2 text-foreground hover:bg-accent/10"
             title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
           >
             {isDarkMode ? (
-              <SunIcon className="h-4 w-4 text-amber-400" />
+              <SunIcon className="h-4 w-4 text-warning-fg" />
             ) : (
-              <MoonIcon className="h-4 w-4 text-indigo-500" />
+              <MoonIcon className="h-4 w-4 text-info-fg" />
             )}
             {isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
           </Button>

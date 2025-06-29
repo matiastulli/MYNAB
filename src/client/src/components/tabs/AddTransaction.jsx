@@ -91,11 +91,11 @@ export default function ManualTransactionForm({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
           <div className="flex items-center gap-2">
         <CardTitle className="text-lg font-medium text-foreground flex items-center gap-2">
-          <PlusCircleIcon className="h-5 w-5 text-emerald-500" />
+          <PlusCircleIcon className="h-5 w-5 text-accent" />
           Add Transaction
         </CardTitle>
         {/* Currency indicator - positioned next to the title */}
-        <div className="flex items-center text-xs bg-blue-50/70 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded border border-blue-100 dark:border-blue-800/30 w-fit ml-0 xs:ml-2">
+        <div className="flex items-center text-xs bg-accent/10 text-accent px-1.5 py-0.5 rounded border border-accent/20">
           <CircleDollarSignIcon className="h-3 w-3 mr-1" />
           {defaultCurrency}
         </div>
@@ -106,8 +106,8 @@ export default function ManualTransactionForm({
 
       {success ? (
         <div className="flex flex-col items-center py-8 gap-4">
-          <div className="p-3 rounded-full bg-emerald-100 dark:bg-emerald-900/30">
-            <CheckIcon className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+          <div className="p-3 rounded-full bg-success-bg">
+            <CheckIcon className="h-6 w-6 text-success-fg" />
           </div>
           <div className="text-center">
             <h3 className="text-lg font-medium text-foreground mb-2">Transaction Added!</h3>
@@ -115,7 +115,7 @@ export default function ManualTransactionForm({
           </div>
           <Button
             onClick={() => setSuccess(false)}
-            className="mt-2 bg-emerald-600 hover:bg-emerald-700 text-white"
+            className="mt-2 bg-accent hover:bg-accent/90 text-accent-foreground"
           >
             Add Another Transaction
           </Button>
@@ -158,13 +158,13 @@ export default function ManualTransactionForm({
                 <SelectContent className="w-full bg-popover border-border">
                   <SelectItem value="outcome" className="text-popover-foreground">
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                      <div className="w-3 h-3 rounded-full bg-destructive"></div>
                       <span>Expense</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="income" className="text-popover-foreground">
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
+                      <div className="w-3 h-3 rounded-full text-positive bg-positive"></div>
                       <span>Income</span>
                     </div>
                   </SelectItem>
@@ -213,7 +213,7 @@ export default function ManualTransactionForm({
               >
                 <SelectTrigger
                   id="currency"
-                  className={`w-full border-0 bg-muted focus:bg-background h-[42px] text-foreground placeholder:text-muted-foreground ${form.currency !== defaultCurrency ? 'ring-2 ring-amber-400/50' : ''}`}
+                  className={`w-full border-0 bg-muted focus:bg-background h-[42px] text-foreground placeholder:text-muted-foreground ${form.currency !== defaultCurrency ? 'ring-2 ring-warning-fg/30' : ''}`}
                 >
                   <SelectValue placeholder="Select currency" />
                 </SelectTrigger>
@@ -221,25 +221,25 @@ export default function ManualTransactionForm({
                   <SelectItem value="ARS" className="text-popover-foreground">
                     <div className="flex items-center justify-between w-full">
                       <span>ARS - Argentine Peso</span>
-                      {defaultCurrency === "ARS" && <span className="text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded">Current Filter</span>}
+                      {defaultCurrency === "ARS" && <span className="badge badge-info text-xs px-1.5 py-0.5 rounded">Current Filter</span>}
                     </div>
                   </SelectItem>
                   <SelectItem value="USD" className="text-popover-foreground">
                     <div className="flex items-center justify-between w-full">
                       <span>USD - US Dollar</span>
-                      {defaultCurrency === "USD" && <span className="text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded">Current Filter</span>}
+                      {defaultCurrency === "USD" && <span className="badge badge-info text-xs px-1.5 py-0.5 rounded">Current Filter</span>}
                     </div>
                   </SelectItem>
                   <SelectItem value="EUR" className="text-popover-foreground">
                     <div className="flex items-center justify-between w-full">
                       <span>EUR - Euro</span>
-                      {defaultCurrency === "EUR" && <span className="text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded">Current Filter</span>}
+                      {defaultCurrency === "EUR" && <span className="badge badge-info text-xs px-1.5 py-0.5 rounded">Current Filter</span>}
                     </div>
                   </SelectItem>
                   <SelectItem value="BRL" className="text-popover-foreground">
                     <div className="flex items-center justify-between w-full">
                       <span>BRL - Brazilian Real</span>
-                      {defaultCurrency === "BRL" && <span className="text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded">Current Filter</span>}
+                      {defaultCurrency === "BRL" && <span className="badge badge-info text-xs px-1.5 py-0.5 rounded">Current Filter</span>}
                     </div>
                   </SelectItem>
                 </SelectContent>
@@ -247,8 +247,8 @@ export default function ManualTransactionForm({
               
               {form.currency !== defaultCurrency && (
                 <div className="flex items-center gap-1 mt-1">
-                  <AlertCircleIcon className="h-3.5 w-3.5 text-amber-500" />
-                  <p className="text-xs text-amber-600 dark:text-amber-400">
+                  <AlertCircleIcon className="h-3.5 w-3.5 text-warning-fg" />
+                  <p className="text-xs text-warning-fg">
                     This doesn't match your current currency filter ({defaultCurrency})
                   </p>
                 </div>
@@ -269,24 +269,24 @@ export default function ManualTransactionForm({
             />
           </div>
 
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg p-4 text-sm w-full">
-            <h4 className="font-medium text-blue-800 dark:text-blue-300 flex items-center gap-2 mb-2">
+          <div className="bg-info-bg text-info-fg border border-info-fg/20 rounded-lg p-4 text-sm w-full">
+            <h4 className="font-medium flex items-center gap-2 mb-2">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               Setting an initial account balance
             </h4>
-            <p className="text-blue-700 dark:text-blue-200">
+            <p className="opacity-90">
               If you're importing recent transactions but already had money in your account, add your starting balance as an "Income" transaction with the description "Initial Balance".
             </p>
-            <p className="text-blue-700 dark:text-blue-200 mt-2">
+            <p className="opacity-90 mt-2">
               This helps ensure your account balances in the app match your real-world accounts since bank statements typically only include recent history (3-6 months).
             </p>
           </div>
 
           <Button
             type="submit"
-            className="w-full bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white transition-colors h-12"
+            className="w-full bg-accent hover:bg-accent/90 text-accent-foreground transition-colors h-12"
             disabled={isSubmitting}
           >
             {isSubmitting ? (
@@ -306,5 +306,4 @@ export default function ManualTransactionForm({
     </CardContent>
   </Card>
 );
-
 }

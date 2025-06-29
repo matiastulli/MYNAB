@@ -293,3 +293,15 @@ button:focus {
   background-color: hsl(var(--card)) !important;
   border: 2px solid hsl(var(--border));
 }
+
+/* Ensure dropdown content is never transparent */
+[data-radix-select-content] {
+  opacity: 1 !important;
+  background-color: hsl(var(--popover)) !important;
+  backdrop-filter: none !important;
+}
+
+/* Add solid border to dropdowns */
+[data-radix-select-content] {
+  border: 2px solid hsl(var(--border)) !important;
+}

@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toDateOnlyISOString } from "@/lib/dateUtils";
 import { api } from "@/services/api";
-import { AlertCircleIcon, CalendarIcon, CheckIcon, CircleDollarSignIcon, PlusCircleIcon, PlusIcon } from "lucide-react";
+import { CalendarIcon, CheckIcon, CircleDollarSignIcon, PlusCircleIcon, PlusIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function ManualTransactionForm({
@@ -156,7 +156,10 @@ export default function ManualTransactionForm({
                 >
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
-                <SelectContent className="w-full bg-popover border-border">
+                <SelectContent 
+                  className="bg-popover border-2 border-border shadow-lg"
+                  style={{ backgroundColor: 'hsl(var(--popover))' }}
+                >
                   <SelectItem value="outcome" className="text-popover-foreground">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full bg-destructive"></div>
@@ -208,52 +211,24 @@ export default function ManualTransactionForm({
                 <CircleDollarSignIcon className="h-4 w-4 opacity-70" />
                 Currency
               </Label>
-              <Select 
-                value={form.currency} 
-                onValueChange={(value) => setForm({ ...form, currency: value })}
-              >
-                <SelectTrigger
-                  id="currency"
-                  className={`w-full border-0 bg-muted focus:bg-background h-[42px] text-foreground placeholder:text-muted-foreground ${form.currency !== defaultCurrency ? 'ring-2 ring-warning-fg/30' : ''}`}
-                >
-                  <SelectValue placeholder="Select currency" />
-                </SelectTrigger>
-                <SelectContent className="w-full bg-popover border-border">
-                  <SelectItem value="ARS" className="text-popover-foreground">
-                    <div className="flex items-center justify-between w-full">
-                      <span>ARS - Argentine Peso</span>
-                      {defaultCurrency === "ARS" && <span className="badge badge-info text-xs px-1.5 py-0.5 rounded">Current Filter</span>}
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="USD" className="text-popover-foreground">
-                    <div className="flex items-center justify-between w-full">
-                      <span>USD - US Dollar</span>
-                      {defaultCurrency === "USD" && <span className="badge badge-info text-xs px-1.5 py-0.5 rounded">Current Filter</span>}
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="EUR" className="text-popover-foreground">
-                    <div className="flex items-center justify-between w-full">
-                      <span>EUR - Euro</span>
-                      {defaultCurrency === "EUR" && <span className="badge badge-info text-xs px-1.5 py-0.5 rounded">Current Filter</span>}
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="BRL" className="text-popover-foreground">
-                    <div className="flex items-center justify-between w-full">
-                      <span>BRL - Brazilian Real</span>
-                      {defaultCurrency === "BRL" && <span className="badge badge-info text-xs px-1.5 py-0.5 rounded">Current Filter</span>}
-                    </div>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              
-              {form.currency !== defaultCurrency && (
-                <div className="flex items-center gap-1 mt-1">
-                  <AlertCircleIcon className="h-3.5 w-3.5 text-warning-fg" />
-                  <p className="text-xs text-warning-fg">
-                    This doesn't match your current currency filter ({defaultCurrency})
-                  </p>
+              <div className="flex items-center h-[42px] px-3 rounded-md border-0 bg-muted text-foreground">
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">{defaultCurrency}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {defaultCurrency === "ARS" ? "Argentine Peso" : 
+                     defaultCurrency === "USD" ? "US Dollar" : 
+                     defaultCurrency === "EUR" ? "Euro" : 
+                     defaultCurrency === "BRL" ? "Brazilian Real" : ""}
+                  </span>
                 </div>
-              )}
+                <div className="ml-auto">
+                  <span className="badge badge-info text-xs px-1.5 py-0.5 rounded">Current Filter</span>
+                </div>
+              </div>
+              <p className="text-xs text-info-fg mt-1 flex items-center gap-1">
+                <CircleDollarSignIcon className="h-3.5 w-3.5" />
+                Transactions are added in your selected currency filter
+              </p>
             </div>
           </div>
 

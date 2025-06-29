@@ -183,7 +183,10 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
                 className="text-foreground placeholder:text-muted-foreground"
               />
             </SelectTrigger>
-            <SelectContent className="bg-popover border-border">
+            <SelectContent 
+              className="bg-popover border-2 border-border shadow-lg"
+              style={{ backgroundColor: 'hsl(var(--popover))' }}
+            >
               <SelectItem value="santander_rio" className="text-popover-foreground">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-red-500 rounded-full"></div>

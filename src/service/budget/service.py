@@ -7,9 +7,10 @@ import base64
 from loguru import logger
 
 from src.service.auth_user.service import get_user_by_id
-from src.service.budget.utils import extract_pdf_to_dataframe, identify_transaction_category, get_category_id_by_key
+from src.service.budget.utils import extract_pdf_to_dataframe, identify_transaction_category
 from src.service.database import fetch_all, fetch_one, execute, budget_entry, files, budget_transaction_category
 from src.service.budget.schemas import BudgetEntryCreate, CategorySummary
+from src.service.budget.constants import CATEGORY_IDS
 
 
 async def create_budget_entry(user_id: int, entry: BudgetEntryCreate) -> None:
@@ -299,10 +300,8 @@ async def process_bank_statement(user_id: int, file_id: int, bank_name: str, cur
 
         # Identify category for the entry
         category_key = identify_transaction_category(entry.description)
-        if category_key:
-            category_id = await get_category_id_by_key(category_key)
-            if category_id:
-                entry.category_id = category_id
+        if category_key and category_key in CATEGORY_IDS:
+            entry.category_id = CATEGORY_IDS[category_key]
 
         filtered_entries.append(entry)
 

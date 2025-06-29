@@ -42,14 +42,6 @@ def extract_pdf_to_dataframe(file_bytes: bytes) -> pd.DataFrame:
 
     return df
 
-async def get_category_id_by_key(category_key: str) -> int:
-    """Get category ID from the database by category key"""
-    stmt = select(budget_transaction_category.c.id).where(
-        budget_transaction_category.c.category_key == category_key
-    )
-    result = await fetch_one(stmt)
-    return result['id'] if result else None
-
 
 def identify_transaction_category(description: str) -> str:
     """

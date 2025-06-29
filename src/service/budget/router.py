@@ -180,6 +180,11 @@ async def get_monthly_summary(
     start_date: Optional[date] = Query(None),
     end_date: Optional[date] = Query(None),
 ):
+    """
+    Get budget summary with income/outcome totals and category breakdowns.
+    
+    Example URL: {{ENV_URL}}/budget/summary?currency="ARS"&start_date=2023-01-01&end_date=2023-01-31
+    """
     today = date.today()
 
     # Default to current month if no dates provided

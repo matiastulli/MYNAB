@@ -8,8 +8,8 @@ from loguru import logger
 
 from src.service.auth_user.service import get_user_by_id
 from src.service.budget.utils import extract_pdf_to_dataframe
-from src.service.database import fetch_all, fetch_one, execute, budget_entry, files
-from src.service.budget.schemas import BudgetEntryCreate
+from src.service.database import fetch_all, fetch_one, execute, budget_entry, files, budget_transaction_category
+from src.service.budget.schemas import BudgetEntryCreate, CategorySummary
 
 
 async def create_budget_entry(user_id: int, entry: BudgetEntryCreate) -> None:
@@ -29,8 +29,9 @@ async def create_budget_entry(user_id: int, entry: BudgetEntryCreate) -> None:
     await execute(stmt)
 
 
-async def get_budget_summary(user_id: int, start_date: date, end_date: date, currency: str) -> Dict[str, float]:
-    stmt = select(
+async def get_budget_summary(user_id: int, start_date: date, end_date: date, currency: str) -> Dict[str, Any]:
+    # Get overall summary by income/outcome type
+    type_stmt = select(
         budget_entry.c.type,
         func.sum(budget_entry.c.amount).label("total")
     ).where(
@@ -40,12 +41,63 @@ async def get_budget_summary(user_id: int, start_date: date, end_date: date, cur
         budget_entry.c.currency == currency
     ).group_by(budget_entry.c.type)
 
-    result = await fetch_all(stmt)
+    type_result = await fetch_all(type_stmt)
     summary = {"income": 0.0, "outcome": 0.0}
-    for row in result:
+    for row in type_result:
         summary[row["type"]] = float(row["total"])
+    
+    # Get summary by category
+    category_stmt = select(
+        budget_entry.c.type,
+        budget_transaction_category.c.category_key,
+        budget_transaction_category.c.category_name,
+        func.sum(budget_entry.c.amount).label("total")
+    ).select_from(
+        budget_entry.outerjoin(
+            budget_transaction_category,
+            budget_entry.c.category_id == budget_transaction_category.c.id
+        )
+    ).where(
+        budget_entry.c.user_id == user_id,
+        budget_entry.c.date >= start_date,
+        budget_entry.c.date <= end_date,
+        budget_entry.c.currency == currency
+    ).group_by(
+        budget_entry.c.type,
+        budget_transaction_category.c.category_key,
+        budget_transaction_category.c.category_name
+    )
 
-    return summary
+    category_result = await fetch_all(category_stmt)
+    
+    # Process category summaries
+    categories = {
+        "income": [],
+        "outcome": []
+    }
+    
+    for row in category_result:
+        entry_type = row["type"]
+        if entry_type not in categories:
+            continue
+            
+        category_key = row["category_key"] if row["category_key"] else "uncategorized"
+        category_name = row["category_name"] if row["category_name"] else "Uncategorized"
+        
+        categories[entry_type].append(
+            CategorySummary(
+                key=category_key,
+                name=category_name,
+                amount=float(row["total"])
+            ).dict()
+        )
+    
+    # Return combined summary that matches BudgetSummary schema
+    return {
+        "income": summary["income"],
+        "outcome": summary["outcome"],
+        "categories": categories
+    }
 
 
 async def get_budget_entries(

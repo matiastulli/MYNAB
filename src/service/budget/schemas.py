@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 from pydantic import validator
 from src.service.models import CustomModel, convert_datetime_to_date
@@ -34,9 +34,16 @@ class BudgetEntryCreate(CustomModel):
         return v
 
 
+class CategorySummary(CustomModel):
+    key: str
+    name: str
+    amount: float
+
+
 class BudgetSummary(CustomModel):
     income: float = 0.0
     outcome: float = 0.0
+    categories: Optional[Dict[str, List[CategorySummary]]] = None
 
 
 class Metadata(CustomModel):

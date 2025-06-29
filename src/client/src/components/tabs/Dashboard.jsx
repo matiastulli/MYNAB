@@ -33,7 +33,7 @@ import {
 export default function Dashboard({
   isAuthenticated,
   onSignInClick,
-  summary = { income: 0, outcome: 0, categories: [] },
+  summary = { income: 0, outcome: 0, categories: { income: [], outcome: [] } },
   entries = [],
   dateRange,
   dateRangeFormatted,
@@ -41,42 +41,41 @@ export default function Dashboard({
   isLoading = false,
   onTransactionDeleted
 }) {
-  
+
   // Calculate balance
   const balance = summary.income - summary.outcome;
-  
-  // Extract categories for visualization
-  const categories = summary.categories || [];
-  
+
+  // Extract categories for visualization - ensure backward compatibility
+  const categoriesData = summary.categories || { income: [], outcome: [] };
+
   // Format most recent entries
-  const recentEntries = [...entries].sort((a, b) => 
+  const recentEntries = [...entries].sort((a, b) =>
     new Date(b.date) - new Date(a.date)
   ).slice(0, 5);
-  
+
   // Prepare data for the spending chart
   const spendingData = [];
-  if (categories.length > 0) {
-    // Filter to get only expense categories
-    const expenseCategories = categories
-      .filter(cat => cat.total < 0)
-      .sort((a, b) => Math.abs(b.total) - Math.abs(a.total));
-      
+  if (categoriesData.outcome && categoriesData.outcome.length > 0) {
+    // Sort outcome categories by amount (descending)
+    const sortedCategories = [...categoriesData.outcome]
+      .sort((a, b) => b.amount - a.amount);
+
     // Take top 5 categories for the chart
-    const topCategories = expenseCategories.slice(0, 5);
-    
+    const topCategories = sortedCategories.slice(0, 5);
+
     // Calculate "Others" for remaining categories
-    const othersTotal = expenseCategories
+    const othersTotal = sortedCategories
       .slice(5)
-      .reduce((sum, cat) => sum + Math.abs(cat.total), 0);
-    
+      .reduce((sum, cat) => sum + cat.amount, 0);
+
     // Format data for pie chart
     spendingData.push(
       ...topCategories.map(cat => ({
-        name: cat.category,
-        value: Math.abs(cat.total),
+        name: cat.name,
+        value: cat.amount,
       }))
     );
-    
+
     // Add "Others" if there are more categories
     if (othersTotal > 0) {
       spendingData.push({
@@ -85,19 +84,24 @@ export default function Dashboard({
       });
     }
   }
-  
+
+  // Find top expense category
+  const topExpenseCategory = categoriesData.outcome && categoriesData.outcome.length > 0
+    ? [...categoriesData.outcome].sort((a, b) => b.amount - a.amount)[0]
+    : null;
+
   // Chart colors
   const COLORS = ['#10B981', '#3B82F6', '#F59E0B', '#8B5CF6', '#EC4899', '#6B7280'];
 
   // Format currency for display
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat('en-US', { 
-      style: 'currency', 
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
       currency: currency,
       maximumFractionDigits: 0
     }).format(value);
   };
-  
+
   if (!isAuthenticated) {
     return (
       <SignInPrompt
@@ -107,26 +111,26 @@ export default function Dashboard({
       />
     );
   }
-  
+
   return (
     <div className="space-y-6">
       <Card className="border-border bg-card backdrop-blur-sm shadow-sm overflow-hidden">
-        
+
         <CardHeader className="pb-2">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
-          <div className="flex items-center gap-2">
-        <CardTitle className="text-lg font-medium text-foreground flex items-center gap-2">
-          <LayoutDashboardIcon className="h-5 w-5 text-accent" />
-          Dashboard
-        </CardTitle>
-        {/* Currency indicator - positioned next to the title */}
-        <div className="flex items-center text-xs bg-accent/10 text-accent px-1.5 py-0.5 rounded border border-accent/20">
-          <CircleDollarSignIcon className="h-3 w-3 mr-1" />
-          {currency}
-        </div>
-      </div>
-      </div>
-    </CardHeader>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-lg font-medium text-foreground flex items-center gap-2">
+                <LayoutDashboardIcon className="h-5 w-5 text-accent" />
+                Dashboard
+              </CardTitle>
+              {/* Currency indicator - positioned next to the title */}
+              <div className="flex items-center text-xs bg-accent/10 text-accent px-1.5 py-0.5 rounded border border-accent/20">
+                <CircleDollarSignIcon className="h-3 w-3 mr-1" />
+                {currency}
+              </div>
+            </div>
+          </div>
+        </CardHeader>
 
         <CardContent className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -144,19 +148,19 @@ export default function Dashboard({
                   >
                     <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                     <XAxis dataKey="name" axisLine={false} tickLine={false} />
-                    <YAxis 
-                      axisLine={false} 
-                      tickLine={false} 
-                      tickFormatter={(value) => formatCurrency(value)} 
+                    <YAxis
+                      axisLine={false}
+                      tickLine={false}
+                      tickFormatter={(value) => formatCurrency(value)}
                     />
-                    <Tooltip 
-                      formatter={(value) => formatCurrency(value)} 
+                    <Tooltip
+                      formatter={(value) => formatCurrency(value)}
                       contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '0.5rem', border: '1px solid hsl(var(--border))' }}
                     />
-                    <Bar 
-                      dataKey="amount" 
-                      name="Amount" 
-                      radius={[4, 4, 0, 0]} 
+                    <Bar
+                      dataKey="amount"
+                      name="Amount"
+                      radius={[4, 4, 0, 0]}
                       maxBarSize={60}
                     >
                       <Cell fill="hsl(var(--chart-1))" />
@@ -238,11 +242,10 @@ export default function Dashboard({
                 >
                   <div className="flex items-center gap-3">
                     <div
-                      className={`p-2 rounded-full ${
-                        entry.amount >= 0
+                      className={`p-2 rounded-full ${entry.amount >= 0
                           ? "bg-success-bg text-success-fg"
                           : "bg-destructive/10 text-destructive"
-                      }`}
+                        }`}
                     >
                       {entry.amount >= 0 ? (
                         <ArrowUpRightIcon className="h-4 w-4" />
@@ -276,21 +279,20 @@ export default function Dashboard({
               ))}
             </div>
           )}
-          
+
         </CardContent>
       </Card>
-      
+
       {/* Financial snapshot */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="border-border bg-card backdrop-blur-sm shadow-sm">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-medium text-muted-foreground">Monthly Balance</h3>
-              <div className={`p-2 rounded-full ${
-                balance >= 0
+              <div className={`p-2 rounded-full ${balance >= 0
                   ? "bg-success-bg text-success-fg"
                   : "bg-destructive/10 text-destructive"
-              }`}>
+                }`}>
                 {balance >= 0 ? (
                   <TrendingUpIcon className="h-4 w-4" />
                 ) : (
@@ -298,11 +300,10 @@ export default function Dashboard({
                 )}
               </div>
             </div>
-            <p className={`text-xl font-semibold ${
-              balance >= 0
+            <p className={`text-xl font-semibold ${balance >= 0
                 ? "text-success-fg"
                 : "text-destructive"
-            }`}>
+              }`}>
               {formatCurrency(balance)}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
@@ -310,7 +311,7 @@ export default function Dashboard({
             </p>
           </CardContent>
         </Card>
-        
+
         <Card className="border-border bg-card backdrop-blur-sm shadow-sm">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
@@ -319,15 +320,13 @@ export default function Dashboard({
                 <PieChartIcon className="h-4 w-4" />
               </div>
             </div>
-            {categories.length > 0 ? (
+            {topExpenseCategory ? (
               <>
                 <p className="text-xl font-semibold text-foreground">
-                  {categories
-                    .filter(cat => cat.total < 0)
-                    .sort((a, b) => Math.abs(b.total) - Math.abs(a.total))[0]?.category || "None"}
+                  {topExpenseCategory.name}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Highest spending category
+                  {formatCurrency(topExpenseCategory.amount)} spent
                 </p>
               </>
             ) : (
@@ -335,7 +334,7 @@ export default function Dashboard({
             )}
           </CardContent>
         </Card>
-        
+
         <Card className="border-border bg-card backdrop-blur-sm shadow-sm">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">

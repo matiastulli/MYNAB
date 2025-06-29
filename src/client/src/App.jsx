@@ -32,7 +32,7 @@ import { useEffect, useState } from "react"
 
 export default function App() {
   // Existing state variables
-  const [summary, setSummary] = useState({ income: 0, outcome: 0 })
+  const [summary, setSummary] = useState({ income: 0, outcome: 0, categories: [] })
   const [entries, setEntries] = useState([])
   const [files, setFiles] = useState([])
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -144,7 +144,7 @@ export default function App() {
     } catch (error) {
       console.error("Failed to fetch summary:", error);
       // Set default summary to avoid blank UI
-      setSummary({ income: 0, outcome: 0 });
+      setSummary({ income: 0, outcome: 0, categories: [] });
     } finally {
       setSummaryLoading(false); // End loading
     }
@@ -225,7 +225,7 @@ export default function App() {
     api.logout();
     setIsAuthenticated(false);
     setUserData(null);
-    setSummary({ income: 0, outcome: 0 });
+    setSummary({ income: 0, outcome: 0, categories: [] });
     setEntries([]);
     setFiles([]);
   };

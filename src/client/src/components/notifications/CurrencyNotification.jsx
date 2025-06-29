@@ -75,8 +75,3 @@ export default function CurrencyNotification({
     </div>
   );
 }
-        </button>
-      </div>
-    </div>
-  );
-}

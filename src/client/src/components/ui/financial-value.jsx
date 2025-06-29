@@ -11,11 +11,11 @@ import { cn } from "@/lib/utils";
  * @param {boolean} props.showSign - Whether to show + or - sign
  * @param {boolean} props.compact - Compact display format
  */
-export function FinancialValue({ 
-  value, 
-  type = "neutral", 
+export function FinancialValue({
+  value,
+  type = "neutral",
   currency = "USD",
-  className, 
+  className,
   showSign = true,
   compact = false
 }) {
@@ -48,8 +48,8 @@ export function FinancialValue({
         minimumFractionDigits: 1,
         maximumFractionDigits: 1
       }) + "M";
-    } 
-    
+    }
+
     if (compact && Math.abs(num) >= 1000) {
       return (Math.abs(num) / 1000).toLocaleString("en-US", {
         minimumFractionDigits: 0,
@@ -57,7 +57,7 @@ export function FinancialValue({
       }) + "k";
     }
 
-    return Number(Math.abs(num)).toLocaleString("en-US", { 
+    return Number(Math.abs(num)).toLocaleString("en-US", {
       minimumFractionDigits: compact ? 0 : 2,
       maximumFractionDigits: 2
     });
@@ -83,23 +83,22 @@ export function FinancialValue({
     </span>
   );
 }
-  return (
-    <span className={cn(
-      getTypeClass(), 
-      sizeClasses[size] || "text-base",
-      animate && "transition-all duration-300 ease-in-out",
-      className
-    )}>
-      {showSign && isPositive && "+"}
-      {showSign && isNegative && "-"}
-      {getCurrencySymbol(currency)}
-      {formatNumber(value)}
-      {!compact && currency !== "USD" && currency !== "ARS" && (
-        <span className="text-xs ml-1 opacity-75">{currency}</span>
-      )}
-      {compact && (currency !== "USD" && currency !== "ARS") && (
-        <span className="text-xs ml-0.5 opacity-75">{currency}</span>
-      )}
-    </span>
-  );
-}
+return (
+  <span className={cn(
+    getTypeClass(),
+    sizeClasses[size] || "text-base",
+    animate && "transition-all duration-300 ease-in-out",
+    className
+  )}>
+    {showSign && isPositive && "+"}
+    {showSign && isNegative && "-"}
+    {getCurrencySymbol(currency)}
+    {formatNumber(value)}
+    {!compact && currency !== "USD" && currency !== "ARS" && (
+      <span className="text-xs ml-1 opacity-75">{currency}</span>
+    )}
+    {compact && (currency !== "USD" && currency !== "ARS") && (
+      <span className="text-xs ml-0.5 opacity-75">{currency}</span>
+    )}
+  </span>
+);

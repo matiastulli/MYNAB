@@ -9,6 +9,7 @@ import ActivityList from "@/components/tabs/ActivityList"
 import ManualTransactionForm from "@/components/tabs/AddTransaction"
 import FilesList from "@/components/tabs/FilesList"
 import ImportFile from "@/components/tabs/ImportFile"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toDateOnlyISOString } from "@/lib/dateUtils"
@@ -560,6 +561,19 @@ export default function App() {
           isVisible={showCurrencyNotification}
           onClose={() => setShowCurrencyNotification(false)}
         />
+
+        {/* Change Currency or Date Range Button - Always visible */}
+        {isAuthenticated && (
+          <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
+            <Button
+              variant="success"
+              size="sm"
+              onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
+            >
+              Change Currency or Date Range
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

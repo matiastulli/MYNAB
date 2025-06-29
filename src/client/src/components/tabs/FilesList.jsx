@@ -146,7 +146,7 @@ export default function FilesList({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="ml-auto h-8 w-8 p-0 flex items-center justify-center rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                      className="ml-auto h-8 w-8 p-0 flex items-center justify-center rounded-full hover:bg-destructive/10 hover:text-destructive"
                       onClick={() => handleDeleteFile(file.id)}
                     >
                       <TrashIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />

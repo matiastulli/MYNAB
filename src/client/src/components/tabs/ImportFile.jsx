@@ -302,8 +302,9 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
 
         <Button
           type="submit"
+          variant="success"
           disabled={isUploading || !file || !bankName}
-          className="w-full bg-accent hover:bg-accent/90 text-accent-foreground transition-colors h-12"
+          className="w-full transition-colors h-12"
         >
           {isUploading ? (
             <div className="flex items-center justify-center gap-2">

@@ -278,7 +278,7 @@ export default function ActivityList({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="ml-auto sm:ml-4 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                  className="ml-auto sm:ml-4 hover:bg-destructive/10 hover:text-destructive"
                   onClick={() => handleDelete(entry.id)}
                   disabled={deletingId === entry.id}
                 >

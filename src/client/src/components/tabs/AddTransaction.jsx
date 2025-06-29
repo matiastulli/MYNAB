@@ -115,7 +115,8 @@ export default function ManualTransactionForm({
           </div>
           <Button
             onClick={() => setSuccess(false)}
-            className="mt-2 bg-accent hover:bg-accent/90 text-accent-foreground"
+            variant="success"
+            className="mt-2"
           >
             Add Another Transaction
           </Button>
@@ -286,7 +287,8 @@ export default function ManualTransactionForm({
 
           <Button
             type="submit"
-            className="w-full bg-accent hover:bg-accent/90 text-accent-foreground transition-colors h-12"
+            variant="success"
+            className="w-full transition-colors h-12"
             disabled={isSubmitting}
           >
             {isSubmitting ? (

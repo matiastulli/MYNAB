@@ -86,7 +86,7 @@ export default function ProfileUpdateDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-card text-card-foreground border-border shadow-lg backdrop-blur-none">
+      <DialogContent className="bg-card text-card-foreground border-border shadow-lg dialog-content-solid">
         <DialogHeader>
           <DialogTitle className="text-xl font-medium text-foreground">Your Profile</DialogTitle>
           <DialogDescription className="text-muted-foreground">
@@ -179,14 +179,15 @@ export default function ProfileUpdateDialog({
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
-                className="w-full sm:w-auto bg-background text-foreground"
+                className="w-full sm:w-auto"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
+                variant="success"
                 disabled={isUpdating}
-                className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground"
+                className="w-full sm:w-auto"
               >
                 {isUpdating ? (
                   <div className="flex items-center gap-2">
@@ -222,9 +223,9 @@ export default function ProfileUpdateDialog({
         <div className="pt-4 mt-6 border-t border-border">
           <Button
             type="button"
-            variant="ghost"
+            variant="destructive"
             onClick={handleLogout}
-            className="w-full text-destructive hover:text-destructive hover:bg-destructive/10 flex items-center justify-center gap-2"
+            className="w-full flex items-center justify-center gap-2"
           >
             <LogOutIcon className="h-4 w-4" />
             Sign Out

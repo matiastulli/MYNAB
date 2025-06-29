@@ -102,12 +102,13 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoadin
         <Button
           variant="outline"
           size="sm"
-          className={`h-8 bg-background hover:bg-accent gap-1 text-xs sm:text-sm shadow-sm filter-button ${isLoading ? 'opacity-70 pointer-events-none' : ''}`}
+          className={`h-8 bg-card border-border hover:bg-accent gap-1 text-xs sm:text-sm shadow-sm ${isLoading ? 'opacity-70 pointer-events-none' : ''}`}
           disabled={isLoading}
+          style={{ backgroundColor: 'hsl(var(--card))' }} // Force solid background
         >
-          <CalendarIcon className={`h-3.5 w-3.5 text-primary ${isLoading ? 'animate-pulse' : ''}`} />
-          <span className="hidden sm:inline font-medium">Date Range</span>
-          <ChevronDownIcon className="h-3.5 w-3.5 opacity-70" />
+          <CalendarIcon className={`h-3.5 w-3.5 text-accent ${isLoading ? 'animate-pulse' : ''}`} />
+          <span className="hidden sm:inline font-medium text-foreground">Date Range</span>
+          <ChevronDownIcon className="h-3.5 w-3.5 text-muted-foreground" />
           {isLoading && (
             <svg className="animate-spin ml-1 h-3 w-3 text-accent" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -116,7 +117,10 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoadin
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-4 bg-popover text-popover-foreground border-border shadow-lg">
+      <PopoverContent 
+        className="w-80 p-4 bg-popover text-popover-foreground border-border shadow-lg dialog-content-solid"
+        style={{ backgroundColor: 'hsl(var(--popover))' }} // Force solid background
+      >
         <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="datePreset" className="text-popover-foreground">
@@ -132,7 +136,7 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoadin
                   className="text-foreground placeholder:text-muted-foreground"
                 />
               </SelectTrigger>
-              <SelectContent className="bg-popover border-border">
+              <SelectContent className="bg-popover border-border dialog-content-solid">
                 <SelectItem value="current-month">Current Month</SelectItem>
                 <SelectItem value="last-month">Last Month</SelectItem>
                 <SelectItem value="last-3-months">Last 3 Months</SelectItem>
@@ -173,8 +177,7 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoadin
           <div className="flex justify-end pt-2">
             <Button
               onClick={handleApply}
-              style={{ backgroundColor: "hsl(var(--positive))" }}
-              className="hover:opacity-90 text-positive-foreground"
+              variant="success"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -194,4 +197,5 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoadin
       </PopoverContent>
     </Popover>
   );
+}
 }

@@ -30,15 +30,19 @@ export default function CurrencyFilter({ selectedCurrency, onCurrencyChange }) {
         <Button
           variant="outline"
           size="sm"
-          className="h-8 bg-background hover:bg-accent gap-1 text-xs sm:text-sm shadow-sm filter-button"
+          className="h-8 bg-card border-border hover:bg-accent gap-1 text-xs sm:text-sm shadow-sm"
+          style={{ backgroundColor: 'hsl(var(--card))' }} // Force solid background
         >
-          <CircleDollarSignIcon className="h-3.5 w-3.5 text-accent" />
+          <CircleDollarSignIcon className="h-3.5 w-3.5 text-accent mr-1" />
           <span className="font-medium text-foreground">{selectedCurrencyInfo.code}</span>
           <span className="hidden sm:inline text-muted-foreground">currency</span>
-          <ChevronDownIcon className="h-3.5 w-3.5 opacity-70" />
+          <ChevronDownIcon className="h-3.5 w-3.5 text-muted-foreground" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-48 p-1 bg-popover text-popover-foreground border-border shadow-lg">
+      <PopoverContent 
+        className="w-48 p-1 bg-popover text-popover-foreground border-border shadow-lg dialog-content-solid"
+        style={{ backgroundColor: 'hsl(var(--popover))' }} // Force solid background
+      >
         <div className="space-y-0.5">
           {currencies.map((currency) => (
             <button

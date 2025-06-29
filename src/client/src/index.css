@@ -269,3 +269,27 @@ button:focus {
   background-color: hsl(var(--info-bg));
   color: hsl(var(--info-fg));
 }
+
+/* Dialog styling improvements */
+[role="dialog"] {
+  --dialog-shadow-light: 0px 10px 38px -10px rgba(22, 23, 24, 0.35), 0px 10px 20px -15px rgba(22, 23, 24, 0.2);
+  --dialog-shadow-dark: 0px 10px 38px -10px rgba(0, 0, 0, 0.6), 0px 10px 20px -15px rgba(0, 0, 0, 0.5);
+}
+
+[role="dialog"] > [data-state="open"] {
+  box-shadow: var(--dialog-shadow-light);
+  background-color: hsl(var(--card));
+  backdrop-filter: none;
+}
+
+.dark [role="dialog"] > [data-state="open"] {
+  box-shadow: var(--dialog-shadow-dark);
+  background-color: hsl(var(--card));
+  backdrop-filter: none;
+}
+
+/* Ensure modal content is never transparent */
+.dialog-content-solid {
+  background-color: hsl(var(--card)) !important;
+  border: 2px solid hsl(var(--border));
+}

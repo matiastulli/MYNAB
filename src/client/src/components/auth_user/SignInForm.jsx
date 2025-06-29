@@ -6,7 +6,7 @@ import { api } from "@/services/api"
 import { AtSignIcon, KeyIcon, LogInIcon } from "lucide-react"
 import { useState } from "react"
 
-export default function LoginForm({ onLogin, onSwitchToSignup }) {
+export default function SignInForm({ onLogin, onSwitchToSignup }) {
   const [form, setForm] = useState({
     email: "",
     password: ""

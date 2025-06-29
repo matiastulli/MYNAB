@@ -29,7 +29,14 @@ export default function CurrencyNotification({
 
   return (
     <div className="fixed top-6 inset-x-4 sm:inset-x-auto sm:right-6 sm:left-auto z-50 sm:max-w-md mx-auto sm:mx-0 transform transition-all duration-300 ease-in-out flex justify-center sm:justify-end">
-      <div className="bg-card rounded-lg shadow-lg border border-accent/30 p-4 flex items-start gap-3 w-full sm:w-auto max-w-md">
+      <div 
+        className="bg-card dialog-content-solid rounded-lg shadow-lg border-2 border-border p-4 flex items-start gap-3 w-full sm:w-auto max-w-md"
+        style={{ 
+          backgroundColor: 'hsl(var(--card))', 
+          backgroundImage: 'none',
+          boxShadow: 'var(--dialog-shadow-light)'
+        }}
+      >
         <div className="p-2 rounded-full bg-accent/20">
           <CircleDollarSignIcon className="h-5 w-5 text-accent" />
         </div>

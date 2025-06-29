@@ -7,6 +7,7 @@ import DateRangeFilter from "@/components/filters/DateRangeFilter"
 import CurrencyNotification from "@/components/notifications/CurrencyNotification"
 import ActivityList from "@/components/tabs/ActivityList"
 import AddTransaction from "@/components/tabs/AddTransaction"
+import Dashboard from "@/components/tabs/Dashboard"; // Import the Dashboard component
 import FilesList from "@/components/tabs/FilesList"
 import ImportFile from "@/components/tabs/ImportFile"
 import { Card, CardContent } from "@/components/ui/card"
@@ -19,6 +20,7 @@ import {
   AlertTriangleIcon,
   BarChartIcon,
   FolderIcon,
+  LayoutDashboardIcon, // Add icon for dashboard
   PlusCircleIcon,
   TrendingDownIcon,
   TrendingUpIcon,
@@ -42,7 +44,8 @@ export default function App() {
     total: 0
   });
   const [showProfileModal, setShowProfileModal] = useState(false);
-  const [activeTab, setActiveTab] = useState("entries");
+  // Change the default tab to "dashboard"
+  const [activeTab, setActiveTab] = useState("dashboard");
 
   // New date filter state
   const [dateRange, setDateRange] = useState({
@@ -449,6 +452,13 @@ export default function App() {
           <div className="flex justify-center w-full">
             <TabsList className="flex bg-card p-1.5 gap-x-1.5 rounded-xl shadow-sm border border-border overflow-x-auto max-w-full w-full sm:w-auto">
               <TabsTrigger
+                value="dashboard"
+                className="flex-1 sm:flex-none text-muted-foreground data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
+              >
+                <LayoutDashboardIcon className="h-4 w-4" />
+                <span className="hidden sm:inline-block ml-2">Dashboard</span>
+              </TabsTrigger>
+              <TabsTrigger
                 value="entries"
                 className="flex-1 sm:flex-none text-muted-foreground data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
               >
@@ -479,6 +489,24 @@ export default function App() {
             </TabsList>
           </div>
 
+
+          {/* Dashboard Tab Content */}
+          <TabsContent value="dashboard" className="space-y-4 mt-6 focus-visible:outline-none">
+            <Dashboard 
+              isAuthenticated={isAuthenticated}
+              onSignInClick={() => setShowAuthModal(true)}
+              summary={summary}
+              entries={entries}
+              dateRange={dateRange}
+              dateRangeFormatted={dateRangeFormatted}
+              currency={currency}
+              isLoading={summaryLoading || entriesLoading}
+              onTransactionDeleted={() => {
+                fetchSummary();
+                fetchDetails();
+              }}
+            />
+          </TabsContent>
 
           {/* Transactions List */}
           <TabsContent value="entries" className="space-y-4 mt-6 focus-visible:outline-none">

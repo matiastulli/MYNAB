@@ -10,6 +10,8 @@ import { cn } from "@/lib/utils";
  * @param {string} props.className - Additional CSS classes
  * @param {boolean} props.showSign - Whether to show + or - sign
  * @param {boolean} props.compact - Compact display format
+ * @param {string} props.size - Size variant: "xs", "sm", "base", "lg", "xl", "2xl"
+ * @param {boolean} props.animate - Whether to animate value changes
  */
 export function FinancialValue({
   value,
@@ -17,11 +19,23 @@ export function FinancialValue({
   currency = "USD",
   className,
   showSign = true,
-  compact = false
+  compact = false,
+  size = "base",
+  animate = false
 }) {
   const isPositive = type === "income";
   const isNegative = type === "outcome";
   const isZero = value === 0;
+
+  // Size classes mapping
+  const sizeClasses = {
+    xs: "text-xs",
+    sm: "text-sm",
+    base: "text-base",
+    lg: "text-lg",
+    xl: "text-xl",
+    "2xl": "text-2xl"
+  };
 
   // Get currency symbol with added support for more currencies
   const getCurrencySymbol = (code) => {
@@ -72,7 +86,13 @@ export function FinancialValue({
   };
 
   return (
-    <span className={cn(getTypeClass(), "whitespace-nowrap", className)}>
+    <span className={cn(
+      getTypeClass(),
+      sizeClasses[size] || "text-base",
+      animate && "transition-all duration-300 ease-in-out",
+      "whitespace-nowrap", 
+      className
+    )}>
       {showSign && isPositive && "+"}
       {showSign && isNegative && "-"}
       {getCurrencySymbol(currency)}
@@ -80,25 +100,9 @@ export function FinancialValue({
       {!compact && currency !== "USD" && currency !== "ARS" && (
         <span className="text-xs ml-1 opacity-75">{currency}</span>
       )}
+      {compact && (currency !== "USD" && currency !== "ARS") && (
+        <span className="text-xs ml-0.5 opacity-75">{currency}</span>
+      )}
     </span>
   );
 }
-return (
-  <span className={cn(
-    getTypeClass(),
-    sizeClasses[size] || "text-base",
-    animate && "transition-all duration-300 ease-in-out",
-    className
-  )}>
-    {showSign && isPositive && "+"}
-    {showSign && isNegative && "-"}
-    {getCurrencySymbol(currency)}
-    {formatNumber(value)}
-    {!compact && currency !== "USD" && currency !== "ARS" && (
-      <span className="text-xs ml-1 opacity-75">{currency}</span>
-    )}
-    {compact && (currency !== "USD" && currency !== "ARS") && (
-      <span className="text-xs ml-0.5 opacity-75">{currency}</span>
-    )}
-  </span>
-);

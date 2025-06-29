@@ -99,14 +99,6 @@ export default function ActivityList({
                   You're viewing <span className="font-semibold">{currency}</span> transactions only. Try changing the currency filter to see more.
                 </p>
               </div>
-              
-              <Button
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
-                size="sm"
-                onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
-              >
-                Change Currency or Date Range
-              </Button>
             </div>
           </div>
         </CardContent>

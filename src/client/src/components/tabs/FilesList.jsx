@@ -98,14 +98,6 @@ export default function FilesList({
                   Files are filtered based on their currency.
                 </p>
               </div>
-              
-              <Button
-                className="bg-accent hover:bg-accent/90 text-accent-foreground mt-4 h-9 px-3 text-sm"
-                size="sm"
-                onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
-              >
-                Change Currency Filter
-              </Button>
             </div>
           )}
 

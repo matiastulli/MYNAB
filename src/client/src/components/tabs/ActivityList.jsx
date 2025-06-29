@@ -5,9 +5,9 @@ import { FinancialValue } from "@/components/ui/financial-value";
 import { Spinner } from "@/components/ui/spinner";
 import { parseDatePreservingDay } from "@/lib/dateUtils";
 import { api } from "@/services/api";
-import { 
-  ArrowDownIcon, ArrowUpIcon, BarChart2Icon, BarChartIcon, CalendarIcon, 
-  CircleDollarSignIcon, FilterIcon, SearchIcon, TrashIcon 
+import {
+  ArrowDownIcon, ArrowUpIcon, BarChart2Icon, BarChartIcon, CalendarIcon,
+  CircleDollarSignIcon, FilterIcon, SearchIcon, TrashIcon
 } from "lucide-react";
 import { useEffect, useState } from "react";
 

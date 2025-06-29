@@ -1,6 +1,7 @@
 import SignInPrompt from "@/components/auth_user/SignInPrompt";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
 import { formatDateSafe } from "@/lib/dateUtils";
 import { api } from "@/services/api";
 import { CalendarIcon, CircleDollarSignIcon, FileIcon, FolderIcon, TrashIcon } from "lucide-react";
@@ -14,7 +15,7 @@ export default function FilesList({
   error = null,
   pagination = { limit: 50, offset: 0, total: 0 },
   onPaginationChange,
-  currency = "ARS" // Add currency prop
+  currency = "ARS"
 }) {
   const handleDeleteFile = async (fileId) => {
     if (!confirm("Are you sure you want to delete this file?")) return;
@@ -23,10 +24,8 @@ export default function FilesList({
       const response = await api.delete(`/budget/file/${fileId}`);
 
       if (!response.error) {
-        // Instead of fetching here, notify parent to refresh data
         if (onFileDeleted) onFileDeleted();
       } else {
-        // Error handling should be done by the parent component
         console.error("Error deleting file:", response.error);
       }
     } catch (err) {
@@ -54,24 +53,24 @@ export default function FilesList({
       <CardHeader className="pb-2">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
           <div className="flex items-center gap-2">
-          <CardTitle className="text-lg font-medium text-foreground flex items-center gap-2">
-            <FolderIcon className="h-5 w-5 text-accent" />
-            Bank Statements
-          </CardTitle>
-          {/* Currency indicator - improved for mobile */}
-          <div className="flex items-center text-xs bg-accent/10 text-accent px-1.5 py-0.5 rounded border border-accent/20">
-            <CircleDollarSignIcon className="h-3 w-3 mr-1" />
-            {currency}
+            <CardTitle className="text-lg font-medium text-foreground flex items-center gap-2">
+              <FolderIcon className="h-5 w-5 text-accent" />
+              Bank Statements
+            </CardTitle>
+            {/* Currency indicator - improved for mobile */}
+            <div className="flex items-center text-xs bg-accent/10 text-accent px-1.5 py-0.5 rounded border border-accent/20">
+              <CircleDollarSignIcon className="h-3 w-3 mr-1" />
+              {currency}
+            </div>
           </div>
         </div>
-      </div>
       </CardHeader>
       <CardContent className="p-4 sm:p-6">
         <div className="space-y-4">
           {loading && (
             <div className="text-center py-8 sm:py-12">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-3 border-solid border-accent border-r-transparent align-[-0.125em]"></div>
-              <p className="text-sm text-muted-foreground mt-4">Loading your files...</p>
+              <Spinner size="lg" className="mx-auto mb-3" />
+              <p className="text-sm text-muted-foreground">Loading your files...</p>
             </div>
           )}
 
@@ -90,14 +89,6 @@ export default function FilesList({
               <p className="text-muted-foreground mt-2 max-w-md mx-auto text-sm sm:text-base">
                 You're currently viewing files in <span className="font-medium">{currency}</span> currency.
               </p>
-              
-              {/* Currency filter notice - more compact on mobile */}
-              <div className="badge badge-info flex items-center justify-center gap-2 p-2 max-w-xs mx-auto mt-4 text-xs sm:text-sm">
-                <CircleDollarSignIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
-                <p className="text-left">
-                  Files are filtered based on their currency.
-                </p>
-              </div>
             </div>
           )}
 

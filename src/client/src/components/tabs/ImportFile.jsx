@@ -134,9 +134,6 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
     return `Supported format: ${bankFormats[bankName].format}`;
   };
 
-  // Check if selected currency matches bank's default currency
-  const isCurrencyMismatch = bankName && bankFormats[bankName].defaultCurrency !== currency;
-
   // Use the SignInPrompt component for unauthenticated users
   if (!isAuthenticated) {
     return (
@@ -150,179 +147,159 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
   }
 
   return (
-  <Card className="border-border bg-card backdrop-blur-sm shadow-sm">
-    <CardHeader className="pb-2">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
+    <Card className="border-border bg-card backdrop-blur-sm shadow-sm">
+      <CardHeader className="pb-2">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
           <div className="flex items-center gap-2">
-        <CardTitle className="text-lg font-medium text-foreground flex items-center gap-2">
-          <UploadIcon className="h-5 w-5 text-accent" />
-          Import Statements
-        </CardTitle>
-        {/* Currency indicator - positioned next to the title */}
-        <div className="flex items-center text-xs bg-accent/10 text-accent px-1.5 py-0.5 rounded border border-accent/20">
-          <CircleDollarSignIcon className="h-3 w-3 mr-1" />
-          {currency}
-        </div>
-      </div>
-      </div>
-    </CardHeader>
-    <CardContent className="p-6">
-
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-2">
-          <Label htmlFor="bank" className="text-sm font-medium text-foreground">
-            Select Bank
-          </Label>
-          <Select value={bankName} onValueChange={setBankName}>
-            <SelectTrigger
-              id="bank"
-              className="border-0 bg-muted focus:bg-background h-[42px] text-foreground placeholder:text-muted-foreground"
-            >
-              <SelectValue
-                placeholder="Select your bank"
-                className="text-foreground placeholder:text-muted-foreground"
-              />
-            </SelectTrigger>
-            <SelectContent 
-              className="bg-popover border-2 border-border shadow-lg"
-              style={{ backgroundColor: 'hsl(var(--popover))' }}
-            >
-              <SelectItem value="santander_rio" className="text-popover-foreground">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                  Santander Rio
-                </div>
-              </SelectItem>
-              <SelectItem value="ICBC" className="text-popover-foreground">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-foreground rounded-full"></div>
-                  ICBC
-                </div>
-              </SelectItem>
-              <SelectItem value="mercado_pago" className="text-popover-foreground">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                  Mercado Pago
-                </div>
-              </SelectItem>
-            </SelectContent>
-          </Select>
-          
-          {/* Currency mismatch warning */}
-          {isCurrencyMismatch && (
-            <p className="text-xs badge badge-warning flex items-center mt-2">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-              </svg>
-              This bank typically uses {bankFormats[bankName].defaultCurrency}, but your currency filter is set to {currency}.
-            </p>
-          )}
-          
-          <p className="text-xs badge badge-info mt-2 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Tip: When naming your file, include the bank name and date (e.g., "santander_rio_202404") to easily identify it later.
-          </p>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="importFile" className="text-sm font-medium text-foreground">
-            Statement File
-          </Label>
-          <div
-            className={`border-2 border-dashed rounded-lg p-6 text-center ${isDragging
-              ? 'border-accent bg-accent/5'
-              : 'border-border hover:border-accent/40'}`}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-          >
-            {!file ? (
-              <div className="flex flex-col items-center space-y-4">
-                <div className="p-3 rounded-full bg-muted">
-                  <UploadCloudIcon className="h-8 w-8 text-muted-foreground" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground">
-                    Drag & drop your file here or
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {getSupportedFormatText()}
-                  </p>
-                </div>
-                <label htmlFor="importFile" className="cursor-pointer bg-accent/10 hover:bg-accent/20 text-accent font-medium px-4 py-2 rounded-lg text-sm transition-colors inline-block">
-                  Browse Files
-                </label>
-                <Input
-                  id="importFile"
-                  type="file"
-                  accept=".xlsx,.xls,.csv,.pdf"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
-              </div>
-            ) : (
-              <div className="flex flex-col sm:flex-row items-center gap-4 justify-center">
-                <div className="p-3 bg-accent/10 rounded-lg">
-                  <FileIcon className="h-6 w-6 text-accent" />
-                </div>
-                <div className="text-center sm:text-left">
-                  <p className="font-medium text-foreground">{file.name}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{(file.size / 1024).toFixed(2)} KB • {file.type || "unknown type"}</p>
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setFile(null)}
-                  className="text-muted-foreground border-0"
-                >
-                  Change
-                </Button>
-              </div>
-            )}
+            <CardTitle className="text-lg font-medium text-foreground flex items-center gap-2">
+              <UploadIcon className="h-5 w-5 text-accent" />
+              Import Statements
+            </CardTitle>
+            {/* Currency indicator - positioned next to the title */}
+            <div className="flex items-center text-xs bg-accent/10 text-accent px-1.5 py-0.5 rounded border border-accent/20">
+              <CircleDollarSignIcon className="h-3 w-3 mr-1" />
+              {currency}
+            </div>
           </div>
         </div>
+      </CardHeader>
+      <CardContent className="p-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="bank" className="text-sm font-medium text-foreground">
+              Select Bank
+            </Label>
+            <Select value={bankName} onValueChange={setBankName}>
+              <SelectTrigger
+                id="bank"
+                className="border-0 bg-muted focus:bg-background h-[42px] text-foreground placeholder:text-muted-foreground"
+              >
+                <SelectValue
+                  placeholder="Select your bank"
+                  className="text-foreground placeholder:text-muted-foreground"
+                />
+              </SelectTrigger>
+              <SelectContent className="bg-popover border-2 border-border shadow-lg">
+                <SelectItem value="santander_rio" className="text-popover-foreground">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                    Santander Rio
+                  </div>
+                </SelectItem>
+                <SelectItem value="ICBC" className="text-popover-foreground">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-foreground rounded-full"></div>
+                    ICBC
+                  </div>
+                </SelectItem>
+                <SelectItem value="mercado_pago" className="text-popover-foreground">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                    Mercado Pago
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
 
-        {error && (
-          <Alert variant="destructive" className="bg-destructive/10 border-destructive/30 shadow-sm">
-            <XCircleIcon className="h-4 w-4" />
-            <AlertTitle className="text-destructive font-medium">Error</AlertTitle>
-            <AlertDescription className="text-destructive/90">{error}</AlertDescription>
-          </Alert>
-        )}
+          </div>
 
-        {result && (
-          <Alert className="bg-success-bg text-success-fg border-success-fg/30 shadow-sm">
-            <CheckCircleIcon className="h-4 w-4" />
-            <AlertTitle className="font-medium">Success</AlertTitle>
-            <AlertDescription>
-              {result.message} ({result.count} transactions imported)
-            </AlertDescription>
-          </Alert>
-        )}
-
-        <Button
-          type="submit"
-          variant="success"
-          disabled={isUploading || !file || !bankName}
-          className="w-full transition-colors h-12"
-        >
-          {isUploading ? (
-            <div className="flex items-center justify-center gap-2">
-              <div className="h-4 w-4 border-2 border-t-transparent rounded-full animate-spin"></div>
-              <span>Processing...</span>
+          <div className="space-y-2">
+            <Label htmlFor="importFile" className="text-sm font-medium text-foreground">
+              Statement File
+            </Label>
+            <div
+              className={`border-2 border-dashed rounded-lg p-6 text-center ${isDragging
+                ? 'border-accent bg-accent/5'
+                : 'border-border hover:border-accent/40'}`}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+            >
+              {!file ? (
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="p-3 rounded-full bg-muted">
+                    <UploadCloudIcon className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">
+                      Drag & drop your file here or
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {getSupportedFormatText()}
+                    </p>
+                  </div>
+                  <label htmlFor="importFile" className="cursor-pointer bg-accent/10 hover:bg-accent/20 text-accent font-medium px-4 py-2 rounded-lg text-sm transition-colors inline-block">
+                    Browse Files
+                  </label>
+                  <Input
+                    id="importFile"
+                    type="file"
+                    accept=".xlsx,.xls,.csv,.pdf"
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                </div>
+              ) : (
+                <div className="flex flex-col sm:flex-row items-center gap-4 justify-center">
+                  <div className="p-3 bg-accent/10 rounded-lg">
+                    <FileIcon className="h-6 w-6 text-accent" />
+                  </div>
+                  <div className="text-center sm:text-left">
+                    <p className="font-medium text-foreground">{file.name}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{(file.size / 1024).toFixed(2)} KB • {file.type || "unknown type"}</p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setFile(null)}
+                    className="text-muted-foreground border-0"
+                  >
+                    Change
+                  </Button>
+                </div>
+              )}
             </div>
-          ) : (
-            <>
-              <UploadIcon className="h-5 w-5 mr-2" />
-              Import Transactions
-            </>
+          </div>
+
+          {error && (
+            <Alert variant="destructive" className="bg-destructive/10 border-destructive/30 shadow-sm">
+              <XCircleIcon className="h-4 w-4" />
+              <AlertTitle className="text-destructive font-medium">Error</AlertTitle>
+              <AlertDescription className="text-destructive/90">{error}</AlertDescription>
+            </Alert>
           )}
-        </Button>
-      </form>
-    </CardContent>
-  </Card>
+
+          {result && (
+            <Alert className="bg-success-bg text-success-fg border-success-fg/30 shadow-sm">
+              <CheckCircleIcon className="h-4 w-4" />
+              <AlertTitle className="font-medium">Success</AlertTitle>
+              <AlertDescription>
+                {result.message} ({result.count} transactions imported)
+              </AlertDescription>
+            </Alert>
+          )}
+
+          <Button
+            type="submit"
+            variant="success"
+            disabled={isUploading || !file || !bankName}
+            className="w-full transition-colors h-12"
+          >
+            {isUploading ? (
+              <div className="flex items-center justify-center gap-2">
+                <div className="h-4 w-4 border-2 border-t-transparent rounded-full animate-spin"></div>
+                <span>Processing...</span>
+              </div>
+            ) : (
+              <>
+                <UploadIcon className="h-5 w-5 mr-2" />
+                Import Transactions
+              </>
+            )}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 }

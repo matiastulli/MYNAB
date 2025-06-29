@@ -18,16 +18,11 @@ import {
 
 // Import the recharts components for data visualization
 import {
-  Bar,
-  BarChart,
-  CartesianGrid,
   Cell,
   Pie,
   PieChart,
   ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis
+  Tooltip
 } from 'recharts';
 
 export default function Dashboard({
@@ -133,50 +128,14 @@ export default function Dashboard({
         </CardHeader>
 
         <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Income vs. Expenses chart */}
-            <div className={`${isLoading ? 'animate-pulse' : ''}`}>
-              <h3 className="text-sm font-medium mb-3 text-muted-foreground">Income vs. Expenses</h3>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={[
-                      { name: 'Income', amount: summary.income },
-                      { name: 'Expenses', amount: summary.outcome }
-                    ]}
-                    margin={{ top: 10, right: 10, left: 10, bottom: 20 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} />
-                    <YAxis
-                      axisLine={false}
-                      tickLine={false}
-                      tickFormatter={(value) => formatCurrency(value)}
-                    />
-                    <Tooltip
-                      formatter={(value) => formatCurrency(value)}
-                      contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '0.5rem', border: '1px solid hsl(var(--border))' }}
-                    />
-                    <Bar
-                      dataKey="amount"
-                      name="Amount"
-                      radius={[4, 4, 0, 0]}
-                      maxBarSize={60}
-                    >
-                      <Cell fill="hsl(var(--chart-1))" />
-                      <Cell fill="hsl(var(--chart-2))" />
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-
+          {/* Chart and categories display */}
+          <div className="flex flex-col lg:flex-row gap-6">
             {/* Spending breakdown chart */}
-            <div className={`${isLoading ? 'animate-pulse' : ''}`}>
+            <div className={`${isLoading ? 'animate-pulse' : ''} lg:w-1/2`}>
               <h3 className="text-sm font-medium mb-3 text-muted-foreground">Spending Breakdown</h3>
               <div className="h-64">
                 {spendingData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height="100%" minHeight={200}>
                     <PieChart>
                       <Pie
                         data={spendingData}
@@ -186,14 +145,23 @@ export default function Dashboard({
                         outerRadius={80}
                         paddingAngle={2}
                         dataKey="value"
-                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        label={false}
                         labelLine={false}
                       >
                         {spendingData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
-                      <Tooltip formatter={(value) => formatCurrency(value)} />
+                      <Tooltip 
+                        formatter={(value) => formatCurrency(value)} 
+                        contentStyle={{ 
+                          backgroundColor: 'hsl(var(--card))', 
+                          borderRadius: '0.5rem', 
+                          border: '1px solid hsl(var(--border))',
+                          color: 'hsl(var(--foreground))'
+                        }}
+                        labelStyle={{ color: 'hsl(var(--foreground))' }}
+                      />
                     </PieChart>
                   </ResponsiveContainer>
                 ) : (
@@ -204,8 +172,49 @@ export default function Dashboard({
                     </p>
                   </div>
                 )}
+                
+                {/* Total spending amount shown in the center - Mobile only */}
+                {spendingData.length > 0 && (
+                  <div className="mt-4 text-center lg:hidden">
+                    <p className="text-sm text-muted-foreground">Total spending</p>
+                    <p className="text-xl font-semibold">
+                      {formatCurrency(summary.outcome)}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
+            
+            {/* Categories list - displays differently on desktop vs mobile */}
+            {spendingData.length > 0 && (
+              <div className="lg:w-1/2 mt-15 lg:mt-0">
+                {/* Total spending amount - Desktop only */}
+                <div className="hidden lg:block mb-4">
+                  <h3 className="text-sm font-medium text-muted-foreground mb-1">Total spending</h3>
+                  <p className="text-xl font-semibold">
+                    {formatCurrency(summary.outcome)}
+                  </p>
+                </div>
+                
+                {/* Categories list */}
+                <div className="space-y-3">
+                  {spendingData.map((category, index) => (
+                    <div key={index} className="flex justify-between items-center">
+                      <div className="flex items-center gap-2">
+                        <div 
+                          className="w-3 h-3 rounded-full" 
+                          style={{ backgroundColor: COLORS[index % COLORS.length] }} 
+                        />
+                        <span className="font-medium">{category.name}</span>
+                      </div>
+                      <span className="text-right font-semibold">
+                        {formatCurrency(category.value)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

@@ -31,7 +31,6 @@ export default function CurrencyFilter({ selectedCurrency, onCurrencyChange }) {
           variant="outline"
           size="sm"
           className="h-8 bg-card border-border hover:bg-accent gap-1 text-xs sm:text-sm shadow-sm"
-          style={{ backgroundColor: 'hsl(var(--card))' }} // Force solid background
         >
           <CircleDollarSignIcon className="h-3.5 w-3.5 text-accent mr-1" />
           <span className="font-medium text-foreground">{selectedCurrencyInfo.code}</span>
@@ -39,10 +38,7 @@ export default function CurrencyFilter({ selectedCurrency, onCurrencyChange }) {
           <ChevronDownIcon className="h-3.5 w-3.5 text-muted-foreground" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent 
-        className="w-48 p-1 bg-popover text-popover-foreground border-border shadow-lg dialog-content-solid"
-        style={{ backgroundColor: 'hsl(var(--popover))' }} // Force solid background
-      >
+      <PopoverContent className="w-48 p-1 bg-popover text-popover-foreground border-border shadow-lg dialog-content-solid">
         <div className="space-y-0.5">
           {currencies.map((currency) => (
             <button

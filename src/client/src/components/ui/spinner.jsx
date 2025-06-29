@@ -1,16 +1,18 @@
 import { cn } from "@/lib/utils";
 
 /**
- * A reusable spinner component for loading states
+ * A reusable spinner component for loading states with enhanced visual feedback
  * 
  * @param {string} className - Additional CSS classes
- * @param {string} size - Size of the spinner (xs, sm, md, lg)
- * @param {string} color - Color of the spinner (uses text-{color} class)
+ * @param {string} size - Size of the spinner (xs, sm, md, lg, xl)
+ * @param {string} color - Color of the spinner (accent, primary, positive, destructive)
+ * @param {string} variant - Visual style (circle, dots)
  */
 export function Spinner({ 
   className, 
   size = "md", 
-  color = "accent"
+  color = "accent",
+  variant = "circle"
 }) {
   const sizeClasses = {
     xs: "h-3 w-3",
@@ -20,8 +22,37 @@ export function Spinner({
     xl: "h-8 w-8"
   };
   
+  const colorClasses = {
+    accent: "text-accent",
+    primary: "text-primary",
+    positive: "text-[hsl(var(--positive))]",
+    destructive: "text-destructive",
+    foreground: "text-foreground"
+  };
+  
   const sizeClass = sizeClasses[size] || sizeClasses.md;
-  const colorClass = `text-${color}`;
+  const colorClass = colorClasses[color] || colorClasses.accent;
+
+  if (variant === "dots") {
+    return (
+      <div className={cn("flex gap-1", className)}>
+        {[0, 1, 2].map((i) => (
+          <div
+            key={i}
+            className={cn(
+              "animate-pulse rounded-full",
+              sizeClass,
+              colorClass
+            )}
+            style={{
+              animationDelay: `${i * 0.15}s`,
+              backgroundColor: 'currentColor'
+            }}
+          />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className={cn("animate-spin", sizeClass, colorClass, className)}>

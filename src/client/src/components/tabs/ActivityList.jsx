@@ -1,9 +1,14 @@
 import SignInPrompt from "@/components/auth_user/SignInPrompt";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FinancialValue } from "@/components/ui/financial-value";
+import { Spinner } from "@/components/ui/spinner";
 import { parseDatePreservingDay } from "@/lib/dateUtils";
 import { api } from "@/services/api";
-import { ArrowDownIcon, ArrowUpIcon, BarChartIcon, CalendarIcon, CircleDollarSignIcon, FilterIcon, SearchIcon, TrashIcon } from "lucide-react";
+import { 
+  ArrowDownIcon, ArrowUpIcon, BarChart2Icon, BarChartIcon, CalendarIcon, 
+  CircleDollarSignIcon, FilterIcon, SearchIcon, TrashIcon 
+} from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function ActivityList({
@@ -20,6 +25,9 @@ export default function ActivityList({
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredEntries, setFilteredEntries] = useState(entries);
   const [sortDirection, setSortDirection] = useState(null); // null, 'asc', or 'desc'
+  const [groupByDate, setGroupByDate] = useState(true);
+  const [confirmDelete, setConfirmDelete] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
     // Apply filtering and sorting
@@ -52,8 +60,25 @@ export default function ActivityList({
     }
   };
 
+  const toggleGroupByDate = () => {
+    setGroupByDate(!groupByDate);
+  };
+
+  const handleDeleteConfirm = (id) => {
+    setConfirmDelete(id);
+    setShowDeleteConfirm(true);
+    
+    // Auto-hide after 3 seconds
+    setTimeout(() => {
+      setShowDeleteConfirm(false);
+    }, 3000);
+  };
+
   const handleDelete = async (id) => {
     setDeletingId(id);
+    setConfirmDelete(null);
+    setShowDeleteConfirm(false);
+    
     try {
       const response = await api.delete(`/budget/entry/${id}`);
       if (!response.error) {
@@ -69,6 +94,31 @@ export default function ActivityList({
     }
   };
 
+  // Group entries by date if groupByDate is true
+  const groupedEntries = () => {
+    if (!groupByDate) return { ungrouped: filteredEntries };
+    
+    return filteredEntries.reduce((groups, entry) => {
+      // Format the date as "YYYY-MM-DD" for grouping
+      const date = entry.date.split('T')[0];
+      if (!groups[date]) {
+        groups[date] = [];
+      }
+      groups[date].push(entry);
+      return groups;
+    }, {});
+  };
+
+  // Format date for display
+  const formatDisplayDate = (dateString) => {
+    const date = parseDatePreservingDay(dateString);
+    return date.toLocaleDateString("en-US", {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
   if (!isAuthenticated) {
     return (
       <SignInPrompt
@@ -81,11 +131,11 @@ export default function ActivityList({
 
   if (entries.length === 0) {
     return (
-      <Card className="border-border bg-card backdrop-blur-sm shadow-sm">
-        <CardContent className="p-12 text-center">
+      <Card className="border-border bg-card shadow-sm">
+        <CardContent className="p-8 sm:p-12 text-center">
           <div className="flex flex-col items-center gap-4">
-            <div className="p-4 rounded-full bg-emerald-50 dark:bg-emerald-900/30">
-              <FilterIcon className="h-6 w-6 text-emerald-500 dark:text-emerald-400" />
+            <div className="p-4 rounded-full bg-muted text-muted-foreground">
+              <FilterIcon className="h-6 w-6" />
             </div>
             <div className="max-w-sm">
               <h3 className="text-lg font-medium mb-2 text-foreground">
@@ -93,9 +143,9 @@ export default function ActivityList({
               </h3>
               
               {/* Currency filter notice */}
-              <div className="flex items-center justify-center gap-2 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 rounded-md max-w-xs mx-auto mb-4">
-                <CircleDollarSignIcon className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
-                <p className="text-xs text-blue-700 dark:text-blue-200 text-left">
+              <div className="flex items-center justify-center gap-2 p-3 bg-info-bg text-info-fg rounded-md max-w-xs mx-auto mb-4">
+                <CircleDollarSignIcon className="h-4 w-4 flex-shrink-0" />
+                <p className="text-sm text-left">
                   You're viewing <span className="font-semibold">{currency}</span> transactions only. Try changing the currency filter to see more.
                 </p>
               </div>
@@ -106,9 +156,11 @@ export default function ActivityList({
     );
   }
 
+  const groups = groupedEntries();
+
   return (
-    <Card className="border-border bg-card backdrop-blur-sm shadow-sm">
-      <CardHeader className="pb-4">
+    <Card className="border-border bg-card shadow-sm">
+      <CardHeader className="pb-3">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
           <div className="flex items-center gap-2">
             <CardTitle className="text-lg font-medium text-foreground flex items-center gap-2">
@@ -120,17 +172,10 @@ export default function ActivityList({
               <CircleDollarSignIcon className="h-3 w-3 mr-1" />
               {currency}
             </div>
-            {isLoading && (
-              <div className="animate-pulse flex items-center">
-                <svg className="animate-spin h-4 w-4 text-accent" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-              </div>
-            )}
+            {isLoading && <Spinner size="sm" className="ml-2" />}
           </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
             <div className="relative flex-1 sm:min-w-[240px]">
               <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
@@ -142,147 +187,211 @@ export default function ActivityList({
               />
             </div>
 
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleSortDirection}
-              title={
-                sortDirection === 'asc' ? "Sorting: Low to High" :
-                  sortDirection === 'desc' ? "Sorting: High to Low" :
-                    "Sort by Amount"
-              }
-              className={`h-9 px-3 rounded-lg ${sortDirection ? 'bg-muted text-accent' :
-                  'text-muted-foreground hover:bg-muted'
-                }`}
-            >
-              {sortDirection === 'asc' ? (
-                <ArrowUpIcon className="h-4 w-4" />
-              ) : sortDirection === 'desc' ? (
-                <ArrowDownIcon className="h-4 w-4" />
-              ) : (
-                <span className="text-xs">Sort</span>
-              )}
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleSortDirection}
+                title={
+                  sortDirection === 'asc' ? "Sorting: Low to High" :
+                    sortDirection === 'desc' ? "Sorting: High to Low" :
+                      "Sort by Amount"
+                }
+                className={`h-9 px-3 rounded-lg ${sortDirection ? 'bg-accent/10 text-accent' :
+                    'text-muted-foreground hover:bg-muted'
+                  }`}
+              >
+                {sortDirection === 'asc' ? (
+                  <ArrowUpIcon className="h-4 w-4" />
+                ) : sortDirection === 'desc' ? (
+                  <ArrowDownIcon className="h-4 w-4" />
+                ) : (
+                  <span className="text-xs">Sort</span>
+                )}
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleGroupByDate}
+                title={groupByDate ? "Showing grouped by date" : "Showing all transactions"}
+                className={`h-9 px-3 rounded-lg ${groupByDate ? 'bg-accent/10 text-accent' : 
+                  'text-muted-foreground hover:bg-muted'}`}
+              >
+                {groupByDate ? (
+                  <BarChart2Icon className="h-4 w-4" />
+                ) : (
+                  <BarChartIcon className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
           </div>
         </div>
       </CardHeader>
       <CardContent className="p-0">
         {isLoading && entries.length > 0 && (
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-foreground/10 to-transparent animate-shimmer z-10"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-foreground/5 to-transparent animate-shimmer z-10"></div>
         )}
 
         {isLoading && entries.length === 0 && (
           <div className="py-12 flex flex-col items-center justify-center">
-            <div className="h-12 w-12 mb-4">
-              <svg className="animate-spin h-4 w-4 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-            </div>
+            <Spinner size="lg" className="mb-4" />
             <p className="text-muted-foreground">Loading transactions...</p>
           </div>
         )}
 
         <div className="divide-y divide-border">
-          {filteredEntries.map((entry) => (
-            <div
-              key={entry.id}
-              className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-6 hover:bg-accent/10 transition-colors"
-            >
-              <div className="flex items-start gap-4 w-full sm:w-auto">
-                <div
-                  className={`p-3 rounded-xl flex-shrink-0 ${entry.type === "income"
-                    ? "bg-success-bg text-success-fg"
-                    : "bg-destructive/10 text-destructive"
-                    }`}
-                >
-                  <CircleDollarSignIcon className="h-5 w-5" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center justify-between sm:justify-start gap-2 sm:gap-1">
-                    <p className="font-medium text-foreground mr-auto">
-                      {entry.description || "No description"}
-                    </p>
-                    <p
-                      className={`sm:hidden font-semibold text-base ${entry.type === "income"
-                        ? "financial-positive"
-                        : "financial-negative"
-                        }`}
-                    >
-                      {entry.type === "income" ? "+" : "-"}
-                      {entry.currency === 'USD' ? '$' : entry.currency === 'EUR' ? '€' : '$'}
-                      {Number.parseFloat(entry.amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}
-                      {entry.currency && entry.currency !== 'USD' && entry.currency !== 'EUR' && entry.currency !== 'ARS' && (
-                        <span className="text-xs ml-1 opacity-75">{entry.currency}</span>
-                      )}
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground mt-1">
-                    <div className="flex items-center gap-1">
-                      <CalendarIcon className="h-3.5 w-3.5 opacity-70" />
-                      <span>
-                        {(() => {
-                          // Use our utility function to ensure date is parsed correctly
-                          const entryDate = parseDatePreservingDay(entry.date);
-                          return entryDate.toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          });
-                        })()}
-                      </span>
+          {Object.keys(groups).map(dateGroup => {
+            const entriesForGroup = groups[dateGroup];
+            
+            // Skip rendering if no entries (shouldn't happen, but just in case)
+            if (!entriesForGroup || entriesForGroup.length === 0) return null;
+            
+            return (
+              <div key={dateGroup} className="divide-y divide-border/50">
+                {/* Date header (only if grouping by date) */}
+                {groupByDate && dateGroup !== 'ungrouped' && (
+                  <div className="sticky top-0 z-10 bg-muted/80 backdrop-blur-sm px-4 py-1.5 text-sm font-medium text-foreground flex justify-between items-center">
+                    <div className="flex items-center gap-1.5">
+                      <CalendarIcon className="h-3.5 w-3.5 text-accent/80" />
+                      {formatDisplayDate(dateGroup)}
                     </div>
-                    {entry.source && (
-                      <>
-                        <span className="hidden xs:inline">•</span>
-                        <span className="capitalize">{entry.source.replace('_', ' ')}</span>
-                      </>
-                    )}
-                    {entry.currency && entry.currency !== 'ARS' && (
-                      <>
-                        <span className="hidden xs:inline">•</span>
-                        <span>{entry.currency}</span>
-                      </>
-                    )}
-                    {entry.reference_id && (
-                      <>
-                        <span className="hidden xs:inline">•</span>
-                        <span className="italic text-xs opacity-80 break-all">
-                          ref: {entry.reference_id.substring(0, 12)}
-                          {entry.reference_id.length > 12 ? '...' : ''}
-                        </span>
-                      </>
-                    )}
+                    <div className="text-xs text-muted-foreground">
+                      {entriesForGroup.length} transaction{entriesForGroup.length !== 1 ? 's' : ''}
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {/* Entries */}
+                {entriesForGroup.map((entry) => (
+                  <div
+                    key={entry.id}
+                    className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-5 hover:bg-accent/5 transition-colors"
+                  >
+                    <div className="flex items-start gap-4 w-full sm:w-auto">
+                      <div
+                        className={`p-2.5 rounded-xl flex-shrink-0 ${entry.type === "income"
+                          ? "bg-success-bg text-success-fg"
+                          : "bg-destructive/10 text-destructive"
+                          }`}
+                      >
+                        <CircleDollarSignIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center justify-between sm:justify-start gap-2 sm:gap-1">
+                          <p className="font-medium text-foreground mr-auto line-clamp-1">
+                            {entry.description || "No description"}
+                          </p>
+                          {/* Mobile-only amount display */}
+                          <div className="sm:hidden">
+                            <FinancialValue
+                              value={entry.amount}
+                              type={entry.type}
+                              currency={entry.currency}
+                              showSign={true}
+                              size="md"
+                            />
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground mt-1">
+                          {!groupByDate && (
+                            <div className="flex items-center gap-1">
+                              <CalendarIcon className="h-3.5 w-3.5 opacity-70" />
+                              <span>
+                                {(() => {
+                                  const entryDate = parseDatePreservingDay(entry.date);
+                                  return entryDate.toLocaleDateString("en-US", {
+                                    month: "short",
+                                    day: "numeric",
+                                    year: "numeric",
+                                  });
+                                })()}
+                              </span>
+                            </div>
+                          )}
+                          {entry.source && (
+                            <>
+                              {!groupByDate && <span className="hidden xs:inline">•</span>}
+                              <span className="capitalize">{entry.source.replace('_', ' ')}</span>
+                            </>
+                          )}
+                          {entry.currency && entry.currency !== currency && (
+                            <>
+                              <span className="hidden xs:inline">•</span>
+                              <span>{entry.currency}</span>
+                            </>
+                          )}
+                          {entry.reference_id && (
+                            <>
+                              <span className="hidden xs:inline">•</span>
+                              <span className="italic text-xs opacity-80 break-all max-w-[120px] truncate">
+                                ref: {entry.reference_id.substring(0, 12)}
+                                {entry.reference_id.length > 12 ? '...' : ''}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto mt-4 sm:mt-0">
+                      {/* Desktop-only amount display */}
+                      <div className="hidden sm:block">
+                        <FinancialValue
+                          value={entry.amount}
+                          type={entry.type}
+                          currency={entry.currency}
+                          showSign={true}
+                          size="lg"
+                        />
+                      </div>
+                      
+                      {/* Delete button with confirmation */}
+                      {showDeleteConfirm && confirmDelete === entry.id ? (
+                        <div className="flex items-center gap-1 ml-auto">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setConfirmDelete(null)}
+                            className="h-8 px-2 text-xs hover:bg-background"
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleDelete(entry.id)}
+                            disabled={deletingId === entry.id}
+                            className="h-8 px-3 text-xs"
+                          >
+                            {deletingId === entry.id ? (
+                              <Spinner size="xs" />
+                            ) : (
+                              "Confirm"
+                            )}
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="ml-auto sm:ml-4 hover:bg-destructive/10 hover:text-destructive h-8 w-8 p-0"
+                          onClick={() => handleDeleteConfirm(entry.id)}
+                          disabled={deletingId === entry.id}
+                          title="Delete transaction"
+                        >
+                          {deletingId === entry.id ? (
+                            <Spinner size="xs" />
+                          ) : (
+                            <TrashIcon className="h-4 w-4" />
+                          )}
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto mt-4 sm:mt-0">
-                <p
-                  className={`hidden sm:block text-lg font-semibold ${entry.type === "income"
-                    ? "financial-positive"
-                    : "financial-negative"
-                    }`}
-                >
-                  {entry.type === "income" ? "+" : "-"}
-                  {entry.currency === 'USD' ? '$' : entry.currency === 'EUR' ? '€' : '$'}
-                  {Number.parseFloat(entry.amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}
-                </p>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="ml-auto sm:ml-4 hover:bg-destructive/10 hover:text-destructive"
-                  onClick={() => handleDelete(entry.id)}
-                  disabled={deletingId === entry.id}
-                >
-                  {deletingId === entry.id ? (
-                    <div className="h-4 w-4 border-2 border-t-transparent rounded-full animate-spin"></div>
-                  ) : (
-                    <TrashIcon className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </CardContent>
     </Card>

@@ -1,34 +1,35 @@
 @import "tailwindcss";
 
 :root {
+  /* Base colors with improved contrast ratios */
   --background: 0 0% 100%;
-  --foreground: 210 15% 18%;
+  --foreground: 210 15% 15%; /* Slightly darker for better contrast */
   --card: 0 0% 100%;
-  --card-foreground: 210 15% 18%;
+  --card-foreground: 210 15% 15%;
   --popover: 0 0% 100%;
-  --popover-foreground: 210 15% 18%;
+  --popover-foreground: 210 15% 15%;
   --primary: 220 15% 15%;
-  --primary-foreground: 220 15% 95%;
+  --primary-foreground: 220 15% 98%;
   --secondary: 210 20% 96%;
-  --secondary-foreground: 210 20% 18%;
+  --secondary-foreground: 210 20% 15%; /* Improved contrast */
   --muted: 210 20% 96%;
-  --muted-foreground: 210 40% 40%;  /* Darker for better contrast */
-  --accent: 174 60% 50%;
-  --accent-foreground: 220 15% 95%;
+  --muted-foreground: 210 40% 35%; /* Better contrast for readability */
+  --accent: 174 70% 45%; /* More vibrant accent */
+  --accent-foreground: 220 15% 98%;
   
   /* Financial indicators - improved for clarity */
-  --positive: 142 70% 40%;  /* More saturated green */
+  --positive: 142 75% 38%;  /* More vibrant green */
   --positive-foreground: 0 0% 100%;
-  --destructive: 0 75% 50%; /* Brighter red for losses */
+  --destructive: 0 82% 48%; /* Brighter red for better visibility */
   --destructive-foreground: 0 0% 98%;
   
   /* Chart colors optimized for financial data */
   --chart-1: var(--positive);
   --chart-2: var(--destructive);
-  --chart-3: 200 80% 60%;
-  --chart-4: 260 70% 60%;
-  --chart-5: 30 80% 65%;
-  --border: 210 36% 96%;
+  --chart-3: 200 85% 60%;
+  --chart-4: 260 75% 60%;
+  --chart-5: 30 85% 65%;
+  --border: 210 36% 90%; /* Lighter border for better separation */
   --input: 210 36% 96%;
   --ring: var(--accent);
   --radius: 0.5rem;
@@ -36,62 +37,62 @@
   /* Filter specific colors */
   --filter-bg: 210 20% 98%;
   --filter-hover: 210 20% 94%;
-  --filter-active: 174 60% 96%;
+  --filter-active: 174 70% 94%;
   
   /* Alert & notification colors */
-  --success-bg: 142 60% 95%;
-  --success-fg: 142 70% 30%;
-  --warning-bg: 38 92% 95%;
-  --warning-fg: 38 92% 30%;
+  --success-bg: 142 70% 95%;
+  --success-fg: 142 75% 30%;
+  --warning-bg: 38 95% 95%;
+  --warning-fg: 38 95% 28%;
   --info-bg: 214 100% 97%;
-  --info-fg: 214 100% 35%;
+  --info-fg: 214 100% 32%;
 }
 
 .dark {
   /* Dark theme - optimized for financial data */
-  --background: 222 47% 5%;
+  --background: 222 47% 4%;
   --foreground: 210 40% 98%;
-  --card: 222 47% 8%;
+  --card: 222 47% 7%;
   --card-foreground: 210 40% 98%;
-  --popover: 222 47% 11%;
+  --popover: 222 47% 9%;
   --popover-foreground: 210 40% 98%;
   --primary: 210 40% 98%;
   --primary-foreground: 222 84% 5%;
   --secondary: 217 33% 17%;
   --secondary-foreground: 210 40% 98%;
   --muted: 217 33% 17%;
-  --muted-foreground: 215 20% 75%;  /* Lighter for better contrast */
-  --accent: 174 60% 50%;
+  --muted-foreground: 215 20% 80%; /* Lighter for better contrast in dark mode */
+  --accent: 174 70% 45%; /* Keep consistent with light mode */
   --accent-foreground: 210 40% 98%;
   
   /* Financial indicators for dark mode */
-  --positive: 142 70% 45%;
+  --positive: 142 75% 48%;
   --positive-foreground: 0 0% 10%;
-  --destructive: 0 84% 60%;
+  --destructive: 0 84% 65%;
   --destructive-foreground: 210 40% 98%;
   
   /* Chart colors for dark mode */
   --chart-1: var(--positive);
   --chart-2: var(--destructive);
-  --chart-3: 30 80% 55%;
-  --chart-4: 280 65% 60%;
-  --chart-5: 340 75% 55%;
-  --border: 217 33% 22%;
+  --chart-3: 30 85% 55%;
+  --chart-4: 280 70% 60%;
+  --chart-5: 340 80% 55%;
+  --border: 217 33% 20%;
   --input: 217 33% 17%;
-  --ring: 174 60% 50%;
+  --ring: 174 70% 45%;
   
   /* Filter specific colors */
-  --filter-bg: 222 47% 12%;
-  --filter-hover: 217 33% 19%;
-  --filter-active: 174 60% 20%;
+  --filter-bg: 222 47% 10%;
+  --filter-hover: 217 33% 17%;
+  --filter-active: 174 70% 18%;
   
   /* Alert & notification colors */
-  --success-bg: 142 70% 15%;
-  --success-fg: 142 70% 70%;
-  --warning-bg: 38 92% 15%;
-  --warning-fg: 38 92% 70%;
-  --info-bg: 214 100% 15%;
-  --info-fg: 214 90% 70%;
+  --success-bg: 142 70% 12%;
+  --success-fg: 142 75% 70%;
+  --warning-bg: 38 95% 12%;
+  --warning-fg: 38 95% 75%;
+  --info-bg: 214 100% 12%;
+  --info-fg: 214 90% 75%;
 }
 
 /* Global styles */
@@ -103,6 +104,7 @@ body {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
   transition: background-color 0.3s ease, color 0.3s ease;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11"; /* Typography improvements */
 }
 
 /* Enhanced input styling */
@@ -131,7 +133,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 /* Enhanced focus states */
 input:focus,
-button:focus {
+button:focus,
+select:focus,
+textarea:focus {
   outline: 2px solid hsl(var(--ring));
   outline-offset: 2px;
 }
@@ -139,33 +143,35 @@ button:focus {
 /* Improved scrollbar styling */
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px; /* For horizontal scrollbars */
 }
 
 ::-webkit-scrollbar-track {
   background: hsl(var(--muted));
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground));
+  background: hsl(var(--muted-foreground) / 0.5);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--foreground));
+  background: hsl(var(--foreground) / 0.5);
 }
 
 /* Selection styling */
 ::selection {
-  background: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
+  background: hsl(var(--accent) / 0.2);
+  color: hsl(var(--accent));
 }
 
 .dark ::selection {
-  background: hsl(212 72% 59%);
-  color: hsl(var(--primary-foreground));
+  background: hsl(var(--accent) / 0.3);
+  color: hsl(var(--accent-foreground));
 }
 
-/* Custom animations */
+/* Enhanced animations */
 @keyframes shimmer {
   0% {
     transform: translateX(-100%);
@@ -177,74 +183,37 @@ button:focus {
 
 .animate-shimmer {
   animation: shimmer 1.5s infinite;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
 }
 
-/* Improved button hover states */
-.dark button:hover {
-  transition: all 0.2s ease;
-}
-
-/* Enhanced card shadows for dark mode */
-.dark .shadow-sm {
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-}
-
-.dark .shadow-md {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
-}
-
-.dark .shadow-lg {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+.dark .animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
 }
 
 /* Financial data styling with enhanced contrast */
 .financial-positive {
   color: hsl(var(--positive));
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .financial-negative {
   color: hsl(var(--destructive));
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .financial-neutral {
   color: hsl(var(--foreground));
-}
-
-/* Filter component styling */
-.filter-button {
-  background-color: hsl(var(--filter-bg));
-  border: 1px solid hsl(var(--border));
-  transition: all 0.2s ease;
-}
-
-.filter-button:hover {
-  background-color: hsl(var(--filter-hover));
-}
-
-.filter-button:focus {
-  background-color: hsl(var(--filter-active));
-  border-color: hsl(var(--ring));
-}
-
-/* Typography classes for better readability */
-.text-balance {
-  text-wrap: balance;
-}
-
-.text-title {
-  color: hsl(var(--foreground));
-  font-weight: 600;
-}
-
-.text-subtitle {
-  color: hsl(var(--muted-foreground));
-  font-weight: 400;
-}
-
-.text-description {
-  color: hsl(var(--muted-foreground));
 }
 
 /* Badge styling */
@@ -270,10 +239,10 @@ button:focus {
   color: hsl(var(--info-fg));
 }
 
-/* Dialog styling improvements */
+/* Dialog/modal enhancements */
 [role="dialog"] {
   --dialog-shadow-light: 0px 10px 38px -10px rgba(22, 23, 24, 0.35), 0px 10px 20px -15px rgba(22, 23, 24, 0.2);
-  --dialog-shadow-dark: 0px 10px 38px -10px rgba(0, 0, 0, 0.6), 0px 10px 20px -15px rgba(0, 0, 0, 0.5);
+  --dialog-shadow-dark: 0px 10px 38px -10px rgba(0, 0, 0, 0.7), 0px 10px 20px -15px rgba(0, 0, 0, 0.6);
 }
 
 [role="dialog"] > [data-state="open"] {
@@ -288,20 +257,184 @@ button:focus {
   backdrop-filter: none;
 }
 
-/* Ensure modal content is never transparent */
+/* Solid backgrounds for modals and dropdown content */
 .dialog-content-solid {
   background-color: hsl(var(--card)) !important;
   border: 2px solid hsl(var(--border));
 }
 
-/* Ensure dropdown content is never transparent */
 [data-radix-select-content] {
   opacity: 1 !important;
   background-color: hsl(var(--popover)) !important;
   backdrop-filter: none !important;
+  border: 2px solid hsl(var(--border)) !important;
 }
 
-/* Add solid border to dropdowns */
+/* Form field appearance improvements */
+input, select, textarea {
+  font-feature-settings: "tnum";
+}
+
+/* Mobile specific enhancements */
+@media (max-width: 640px) {
+  .mobile-compact-text {
+    font-size: 0.875rem;
+  }
+  
+  .mobile-stack {
+    flex-direction: column;
+  }
+  
+  .mobile-full-width {
+    width: 100%;
+  }
+}
+
+/* Table improvements */
+table {
+  border-spacing: 0;
+  width: 100%;
+}
+
+th {
+  text-align: left;
+  font-weight: 600;
+  color: hsl(var(--muted-foreground));
+}
+
+td {
+  padding: 0.75rem 1rem;
+}
+
+tr {
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+/* Data visualization enhancements */
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Accessible focus outline that works on any background */
+.focus-ring:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px hsl(var(--background));
+}
+
+/* Skeleton loading styles */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted)) 25%, 
+    hsl(var(--muted) / 0.7) 50%, 
+    hsl(var(--muted)) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.dark [role="dialog"] > [data-state="open"] {
+  box-shadow: var(--dialog-shadow-dark);
+  background-color: hsl(var(--card));
+  backdrop-filter: none;
+}
+
+/* Solid backgrounds for modals and dropdown content */
+.dialog-content-solid {
+  background-color: hsl(var(--card)) !important;
+  border: 2px solid hsl(var(--border));
+}
+
 [data-radix-select-content] {
+  opacity: 1 !important;
+  background-color: hsl(var(--popover)) !important;
+  backdrop-filter: none !important;
   border: 2px solid hsl(var(--border)) !important;
+}
+
+/* Form field appearance improvements */
+input, select, textarea {
+  font-feature-settings: "tnum";
+}
+
+/* Mobile specific enhancements */
+@media (max-width: 640px) {
+  .mobile-compact-text {
+    font-size: 0.875rem;
+  }
+  
+  .mobile-stack {
+    flex-direction: column;
+  }
+  
+  .mobile-full-width {
+    width: 100%;
+  }
+}
+
+/* Table improvements */
+table {
+  border-spacing: 0;
+  width: 100%;
+}
+
+th {
+  text-align: left;
+  font-weight: 600;
+  color: hsl(var(--muted-foreground));
+}
+
+td {
+  padding: 0.75rem 1rem;
+}
+
+tr {
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+/* Data visualization enhancements */
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Accessible focus outline that works on any background */
+.focus-ring:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px hsl(var(--background));
+}
+
+/* Skeleton loading styles */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted)) 25%, 
+    hsl(var(--muted) / 0.7) 50%, 
+    hsl(var(--muted)) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }

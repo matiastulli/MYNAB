@@ -76,7 +76,7 @@ export const parseDatePreservingDay = (dateString) => {
     const date = new Date(dateString);
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
   } catch (error) {
-    console.error('Error parsing date   :', error);
+    console.error('Error parsing date:', error);
     return new Date();
   }
 };

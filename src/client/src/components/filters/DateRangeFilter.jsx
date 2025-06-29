@@ -68,7 +68,7 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoadin
     setTempRange(newRange);
   };
 
-  // Format dates for input fields - Replace with our utility function
+  // Format dates for input fields
   const formatDateForInputField = (date) => {
     return formatDateForInput(date);
   };
@@ -104,7 +104,6 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoadin
           size="sm"
           className={`h-8 bg-card border-border hover:bg-accent gap-1 text-xs sm:text-sm shadow-sm ${isLoading ? 'opacity-70 pointer-events-none' : ''}`}
           disabled={isLoading}
-          style={{ backgroundColor: 'hsl(var(--card))' }} // Force solid background
         >
           <CalendarIcon className={`h-3.5 w-3.5 text-accent ${isLoading ? 'animate-pulse' : ''}`} />
           <span className="hidden sm:inline font-medium text-foreground">Date Range</span>
@@ -117,10 +116,7 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoadin
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent 
-        className="w-80 p-4 bg-popover text-popover-foreground border-border shadow-lg dialog-content-solid"
-        style={{ backgroundColor: 'hsl(var(--popover))' }} // Force solid background
-      >
+      <PopoverContent className="w-80 p-4 bg-popover text-popover-foreground border-border shadow-lg dialog-content-solid">
         <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="datePreset" className="text-popover-foreground">
@@ -194,6 +190,10 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoadin
             </Button>
           </div>
         </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
       </PopoverContent>
     </Popover>
   );

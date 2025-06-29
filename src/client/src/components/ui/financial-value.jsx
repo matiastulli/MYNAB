@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 /**
- * A component to display financial values with consistent formatting
+ * An enhanced component to display financial values with consistent formatting and visual design
  * 
  * @param {Object} props
  * @param {number} props.value - The numeric value to display
@@ -21,21 +21,43 @@ export function FinancialValue({
 }) {
   const isPositive = type === "income";
   const isNegative = type === "outcome";
+  const isZero = value === 0;
 
-  // Get currency symbol
+  // Get currency symbol with added support for more currencies
   const getCurrencySymbol = (code) => {
-    switch (code) {
-      case "USD": return "$";
-      case "EUR": return "€";
-      case "GBP": return "£";
-      case "BRL": return "R$";
-      default: return "$"; // Default to $ for ARS and others
-    }
+    const symbols = {
+      USD: "$",
+      EUR: "€",
+      GBP: "£",
+      BRL: "R$",
+      ARS: "$",
+      JPY: "¥",
+      CNY: "¥",
+      INR: "₹",
+      MXN: "$",
+      CAD: "$"
+    };
+    return symbols[code] || "$";
   };
 
   // Format number with commas and decimal places
   const formatNumber = (num) => {
-    return Number(num).toLocaleString("en-US", { 
+    // For compact display of large numbers
+    if (compact && Math.abs(num) >= 1000000) {
+      return (Math.abs(num) / 1000000).toLocaleString("en-US", {
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1
+      }) + "M";
+    } 
+    
+    if (compact && Math.abs(num) >= 1000) {
+      return (Math.abs(num) / 1000).toLocaleString("en-US", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 1
+      }) + "k";
+    }
+
+    return Number(Math.abs(num)).toLocaleString("en-US", { 
       minimumFractionDigits: compact ? 0 : 2,
       maximumFractionDigits: 2
     });
@@ -43,19 +65,40 @@ export function FinancialValue({
 
   // Get CSS class based on type
   const getTypeClass = () => {
+    if (isZero) return "financial-neutral";
     if (isPositive) return "financial-positive";
     if (isNegative) return "financial-negative";
     return "financial-neutral";
   };
 
   return (
-    <span className={cn(getTypeClass(), className)}>
+    <span className={cn(getTypeClass(), "whitespace-nowrap", className)}>
       {showSign && isPositive && "+"}
       {showSign && isNegative && "-"}
       {getCurrencySymbol(currency)}
-      {formatNumber(Math.abs(value))}
-      {compact && currency !== "USD" && currency !== "ARS" && (
+      {formatNumber(value)}
+      {!compact && currency !== "USD" && currency !== "ARS" && (
         <span className="text-xs ml-1 opacity-75">{currency}</span>
+      )}
+    </span>
+  );
+}
+  return (
+    <span className={cn(
+      getTypeClass(), 
+      sizeClasses[size] || "text-base",
+      animate && "transition-all duration-300 ease-in-out",
+      className
+    )}>
+      {showSign && isPositive && "+"}
+      {showSign && isNegative && "-"}
+      {getCurrencySymbol(currency)}
+      {formatNumber(value)}
+      {!compact && currency !== "USD" && currency !== "ARS" && (
+        <span className="text-xs ml-1 opacity-75">{currency}</span>
+      )}
+      {compact && (currency !== "USD" && currency !== "ARS") && (
+        <span className="text-xs ml-0.5 opacity-75">{currency}</span>
       )}
     </span>
   );

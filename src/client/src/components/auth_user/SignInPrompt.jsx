@@ -10,10 +10,10 @@ export default function SignInPrompt({
   onSignInClick,
 }) {
   return (
-    <Card className="border-border bg-card backdrop-blur-sm shadow-sm">
+    <Card className="border-border bg-card dialog-content-solid shadow-sm" style={{ backgroundColor: 'hsl(var(--card))' }}>
       <CardContent className="p-12 text-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="p-4 rounded-full bg-muted">{icon}</div>
+          <div className="p-4 rounded-full bg-muted" style={{ backgroundColor: 'hsl(var(--muted))' }}>{icon}</div>
           <div className="max-w-sm">
             <h3 className="text-lg font-medium mb-2 text-foreground">
               {title}
@@ -24,7 +24,7 @@ export default function SignInPrompt({
           </div>
           <Button
             onClick={onSignInClick}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white border-0"
+            variant="success"
             size="lg"
           >
             {buttonText}

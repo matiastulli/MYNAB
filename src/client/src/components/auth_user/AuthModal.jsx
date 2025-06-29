@@ -24,10 +24,10 @@ export default function AuthModal({ onAuthenticated, onClose = () => { } }) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       onClick={handleOverlayClick}
     >
-      <div className="w-full max-w-md relative">
+      <div className="w-full max-w-md relative dialog-content-solid bg-card border-2 border-border rounded-lg shadow-lg">
         {/* Close button */}
         <button
           onClick={() => {
@@ -39,8 +39,8 @@ export default function AuthModal({ onAuthenticated, onClose = () => { } }) {
           <XIcon className="h-5 w-5 text-foreground" />
         </button>
 
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center gap-2 text-white">
+        <div className="text-center mb-6 pt-6">
+          <div className="inline-flex items-center gap-2 text-foreground">
             <WalletIcon className="h-6 w-6" />
             <span className="text-lg font-medium tracking-wider uppercase">
               MYNAB

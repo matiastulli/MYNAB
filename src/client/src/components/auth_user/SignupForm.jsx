@@ -91,7 +91,7 @@ export default function SignupForm({ onSignUp, onSwitchToLogin }) {
   }
 
   return (
-    <Card className="max-w-md mx-auto border-border bg-card backdrop-blur-sm">
+    <Card className="max-w-md mx-auto border-border bg-card dialog-content-solid shadow-lg" style={{ backgroundColor: 'hsl(var(--card))' }}>
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl font-medium text-foreground">Create an account</CardTitle>
         <CardDescription className="text-muted-foreground">Enter your information to create a MYNAB account</CardDescription>
@@ -107,6 +107,7 @@ export default function SignupForm({ onSignUp, onSwitchToLogin }) {
                   id="name" 
                   placeholder="John" 
                   className="pl-10 border-0 bg-muted focus:bg-background text-foreground placeholder:text-muted-foreground"
+                  style={{ backgroundColor: 'hsl(var(--muted))' }}
                   value={form.name}
                   onChange={handleChange}
                 />
@@ -120,6 +121,7 @@ export default function SignupForm({ onSignUp, onSwitchToLogin }) {
                   id="last_name" 
                   placeholder="Doe" 
                   className="pl-10 border-0 bg-muted focus:bg-background text-foreground placeholder:text-muted-foreground"
+                  style={{ backgroundColor: 'hsl(var(--muted))' }}
                   value={form.last_name}
                   onChange={handleChange}
                 />
@@ -136,6 +138,7 @@ export default function SignupForm({ onSignUp, onSwitchToLogin }) {
                 type="email" 
                 placeholder="john.doe@example.com" 
                 className="pl-10 border-0 bg-muted focus:bg-background text-foreground placeholder:text-muted-foreground"
+                style={{ backgroundColor: 'hsl(var(--muted))' }}
                 value={form.email}
                 onChange={handleChange}
               />
@@ -151,6 +154,7 @@ export default function SignupForm({ onSignUp, onSwitchToLogin }) {
                 type="password" 
                 placeholder="••••••••" 
                 className="pl-10 border-0 bg-muted focus:bg-background text-foreground placeholder:text-muted-foreground"
+                style={{ backgroundColor: 'hsl(var(--muted))' }}
                 value={form.password}
                 onChange={handleChange}
               />
@@ -169,6 +173,7 @@ export default function SignupForm({ onSignUp, onSwitchToLogin }) {
                 type="password" 
                 placeholder="••••••••" 
                 className="pl-10 border-0 bg-muted focus:bg-background text-foreground placeholder:text-muted-foreground"
+                style={{ backgroundColor: 'hsl(var(--muted))' }}
                 value={form.confirmPassword}
                 onChange={handleChange}
               />
@@ -176,7 +181,7 @@ export default function SignupForm({ onSignUp, onSwitchToLogin }) {
           </div>
           
           {error && (
-            <div className="p-3 rounded-md bg-red-50 dark:bg-red-900/40 text-red-600 dark:text-red-300 text-sm">
+            <div className="p-3 rounded-md bg-destructive/10 border border-destructive/30 text-destructive text-sm">
               {error}
             </div>
           )}
@@ -205,7 +210,7 @@ export default function SignupForm({ onSignUp, onSwitchToLogin }) {
               <button 
                 type="button"
                 onClick={onSwitchToLogin}
-                className="text-emerald-600 dark:text-emerald-400 hover:underline font-medium"
+                className="text-accent hover:underline font-medium"
               >
                 Sign in
               </button>

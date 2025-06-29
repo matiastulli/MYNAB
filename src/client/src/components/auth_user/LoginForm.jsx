@@ -56,7 +56,7 @@ export default function LoginForm({ onLogin, onSwitchToSignup }) {
   }
 
   return (
-    <Card className="max-w-md mx-auto border-border bg-card backdrop-blur-sm">
+    <Card className="max-w-md mx-auto border-border bg-card dialog-content-solid shadow-lg" style={{ backgroundColor: 'hsl(var(--card))' }}>
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl font-medium text-foreground">Welcome back</CardTitle>
         <CardDescription className="text-muted-foreground">Enter your credentials to access your account</CardDescription>
@@ -72,6 +72,7 @@ export default function LoginForm({ onLogin, onSwitchToSignup }) {
                 type="email"
                 placeholder="john.doe@example.com"
                 className="pl-10 border-0 bg-muted focus:bg-background text-foreground placeholder:text-muted-foreground"
+                style={{ backgroundColor: 'hsl(var(--muted))' }}
                 value={form.email}
                 onChange={handleChange}
               />
@@ -83,7 +84,7 @@ export default function LoginForm({ onLogin, onSwitchToSignup }) {
               <Label htmlFor="password" className="text-foreground">Password</Label>
               <button
                 type="button"
-                className="text-sm text-emerald-600 dark:text-emerald-400 hover:underline"
+                className="text-sm text-accent hover:underline"
               >
                 Forgot password?
               </button>
@@ -95,6 +96,7 @@ export default function LoginForm({ onLogin, onSwitchToSignup }) {
                 type="password"
                 placeholder="••••••••"
                 className="pl-10 border-0 bg-muted focus:bg-background text-foreground placeholder:text-muted-foreground"
+                style={{ backgroundColor: 'hsl(var(--muted))' }}
                 value={form.password}
                 onChange={handleChange}
               />
@@ -102,7 +104,7 @@ export default function LoginForm({ onLogin, onSwitchToSignup }) {
           </div>
 
           {error && (
-            <div className="p-3 rounded-md bg-red-50 dark:bg-red-900/40 text-red-600 dark:text-red-300 text-sm">
+            <div className="p-3 rounded-md bg-destructive/10 border border-destructive/30 text-destructive text-sm">
               {error}
             </div>
           )}
@@ -131,7 +133,7 @@ export default function LoginForm({ onLogin, onSwitchToSignup }) {
               <button
                 type="button"
                 onClick={onSwitchToSignup}
-                className="text-emerald-600 dark:text-emerald-400 hover:underline font-medium"
+                className="text-accent hover:underline font-medium"
               >
                 Sign up
               </button>

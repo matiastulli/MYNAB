@@ -1,35 +1,33 @@
 import SignInPrompt from "@/components/auth_user/SignInPrompt";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FinancialValue } from "@/components/ui/financial-value";
 import { Spinner } from "@/components/ui/spinner";
 import { parseDatePreservingDay } from "@/lib/dateUtils";
 import { format } from 'date-fns';
 import {
-    ArrowDownRightIcon,
-    ArrowRightIcon,
-    ArrowUpRightIcon,
-    BarChart2Icon,
-    CalendarIcon,
-    CircleDollarSignIcon,
-    LayoutDashboardIcon,
-    PieChartIcon,
-    TrendingDownIcon,
-    TrendingUpIcon
+  ArrowDownRightIcon,
+  ArrowUpRightIcon,
+  BarChart2Icon,
+  CalendarIcon,
+  CircleDollarSignIcon,
+  LayoutDashboardIcon,
+  PieChartIcon,
+  TrendingDownIcon,
+  TrendingUpIcon
 } from "lucide-react";
 
 // Import the recharts components for data visualization
 import {
-    Bar,
-    BarChart,
-    CartesianGrid,
-    Cell,
-    Pie,
-    PieChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis
 } from 'recharts';
 
 export default function Dashboard({
@@ -113,18 +111,22 @@ export default function Dashboard({
   return (
     <div className="space-y-6">
       <Card className="border-border bg-card backdrop-blur-sm shadow-sm overflow-hidden">
-        <CardHeader className="pb-2 border-b border-border">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg font-medium text-foreground flex items-center gap-2">
-              <LayoutDashboardIcon className="h-5 w-5 text-accent" />
-              Financial Overview
-            </CardTitle>
-            <div className="flex items-center text-xs bg-accent/10 text-accent px-1.5 py-0.5 rounded border border-accent/20">
-              <CalendarIcon className="h-3 w-3 mr-1" />
-              {dateRangeFormatted}
-            </div>
-          </div>
-        </CardHeader>
+        
+        <CardHeader className="pb-2">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
+          <div className="flex items-center gap-2">
+        <CardTitle className="text-lg font-medium text-foreground flex items-center gap-2">
+          <LayoutDashboardIcon className="h-5 w-5 text-accent" />
+          Dashboard
+        </CardTitle>
+        {/* Currency indicator - positioned next to the title */}
+        <div className="flex items-center text-xs bg-accent/10 text-accent px-1.5 py-0.5 rounded border border-accent/20">
+          <CircleDollarSignIcon className="h-3 w-3 mr-1" />
+          {currency}
+        </div>
+      </div>
+      </div>
+    </CardHeader>
 
         <CardContent className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -275,17 +277,6 @@ export default function Dashboard({
             </div>
           )}
           
-          <div className="p-4 border-t border-border">
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full border-dashed"
-              onClick={() => document.querySelector('[value="entries"]').click()}
-            >
-              View All Transactions
-              <ArrowRightIcon className="h-4 w-4 ml-2" />
-            </Button>
-          </div>
         </CardContent>
       </Card>
       

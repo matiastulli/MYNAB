@@ -81,6 +81,18 @@ auth_user_activity_log = Table(
     schema="mynab",
 )
 
+budget_transaction_category = Table(
+    "budget_transaction_category",
+    metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("category_key", String(50), nullable=False, unique=True),  # Matches the class constant keys
+    Column("category_name", String(100), nullable=False),
+    Column("description", String(255), nullable=True),
+    Column("created_at", DateTime, server_default=func.now(), nullable=False),
+    Column("updated_at", DateTime, server_default=func.now(), onupdate=func.now()),
+    schema="mynab",
+)
+
 # Budget entries: incomes or outcomes
 budget_entry = Table(
     "budget_entry",
@@ -93,6 +105,7 @@ budget_entry = Table(
     Column("source", String(50), nullable=True),  # e.g., 'icbc', 'mercado_pago', 'manual'
     Column("type", String(10), nullable=False),  # 'income' or 'outcome'
     Column("description", String(255), nullable=True),
+    Column("category_id", Integer, ForeignKey("mynab.budget_transaction_category.id"), nullable=True),
     Column("date", Date, nullable=False),
     Column("file_id", Integer, ForeignKey("mynab.files.id"), nullable=True),
     Column("created_at", DateTime, server_default=func.now(), nullable=False),

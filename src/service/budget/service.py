@@ -547,3 +547,13 @@ def _process_icbc_format(df: pd.DataFrame, file_id: int, bank_name: str, currenc
             continue
 
     return entries
+
+
+async def get_transaction_categories() -> List[Dict[str, Any]]:
+    """
+    Get all transaction categories for dropdown display in the client
+    Returns a list of categories with their IDs, keys, and names
+    """
+    stmt = select(budget_transaction_category)
+    categories = await fetch_all(stmt)
+    return categories

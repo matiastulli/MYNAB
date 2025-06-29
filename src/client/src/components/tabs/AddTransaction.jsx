@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toDateOnlyISOString } from "@/lib/dateUtils";
 import { api } from "@/services/api";
-import { CalendarIcon, CheckIcon, CircleDollarSignIcon, PlusCircleIcon, PlusIcon } from "lucide-react";
+import { CalendarIcon, CheckIcon, CircleDollarSignIcon, PlusCircleIcon, PlusIcon, TagIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function AddTransaction({
@@ -23,8 +23,33 @@ export default function AddTransaction({
     date: toDateOnlyISOString(new Date()),
     currency: defaultCurrency, // Use the passed in currency
     source: "manual",
-    reference_id: ""
+    reference_id: "",
+    category_id: null, // Add category_id field
   });
+
+  const [categories, setCategories] = useState([]);
+  const [loadingCategories, setLoadingCategories] = useState(false);
+
+  // Fetch categories when component mounts
+  useEffect(() => {
+    const fetchCategories = async () => {
+      if (isAuthenticated) {
+        setLoadingCategories(true);
+        try {
+          const response = await api.get("/budget/categories");
+          if (response && !response.error) {
+            setCategories(response);
+          }
+        } catch (error) {
+          console.error("Error fetching transaction categories:", error);
+        } finally {
+          setLoadingCategories(false);
+        }
+      }
+    };
+
+    fetchCategories();
+  }, [isAuthenticated]);
 
   // Update form when defaultCurrency changes
   useEffect(() => {
@@ -230,6 +255,55 @@ export default function AddTransaction({
                 Transactions are added in your selected currency filter
               </p>
             </div>
+          </div>
+
+          {/* Category field - Add this new section */}
+          <div className="space-y-2 w-full">
+            <Label htmlFor="category" className="text-sm font-medium text-foreground flex items-center gap-1.5">
+              <TagIcon className="h-4 w-4 opacity-70" />
+              Category <span className="text-xs text-muted-foreground">(Optional)</span>
+            </Label>
+            <Select 
+              value={form.category_id ? form.category_id.toString() : "none"} 
+              onValueChange={(value) => setForm({ 
+                ...form, 
+                category_id: value !== "none" ? parseInt(value) : null 
+              })}
+            >
+              <SelectTrigger
+                id="category"
+                className="w-full border-0 bg-muted focus:bg-background h-[42px] text-foreground placeholder:text-muted-foreground"
+              >
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent 
+                className="bg-popover border-2 border-border shadow-lg"
+                style={{ backgroundColor: 'hsl(var(--popover))' }}
+              >
+                <SelectItem value="none" className="text-popover-foreground">
+                  <div className="flex items-center gap-2">
+                    <span>No category</span>
+                  </div>
+                </SelectItem>
+                {loadingCategories ? (
+                  <div className="flex items-center justify-center py-2">
+                    <div className="h-4 w-4 border-2 border-t-transparent rounded-full animate-spin"></div>
+                    <span className="ml-2">Loading categories...</span>
+                  </div>
+                ) : (
+                  categories.map(category => (
+                    <SelectItem key={category.id} value={category.id.toString()} className="text-popover-foreground">
+                      <div className="flex items-center gap-2">
+                        <span>{category.category_name}</span>
+                      </div>
+                    </SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground mt-1">
+              Categorizing your transactions helps with budget analysis and tracking
+            </p>
           </div>
 
           <div className="space-y-2 w-full">

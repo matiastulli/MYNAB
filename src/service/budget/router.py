@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 
 from src.service.auth_user.dependencies import require_role
 from src.service.auth_user.schemas import JWTData
-from src.service.budget.schemas import BudgetEntryCreate, BudgetSummary, BudgetResponseWithMeta, BudgetResponse, FilesResponseWithMeta, FilesResponse
+from src.service.budget.schemas import BudgetEntryCreate, BudgetSummary, BudgetResponseWithMeta, BudgetResponse, FilesResponseWithMeta, FilesResponse, TransactionCategoryResponse
 from src.service.budget.service import (
     create_budget_entry,
     get_budget_summary,
@@ -15,7 +15,8 @@ from src.service.budget.service import (
     delete_file,
     process_bank_statement,
     create_file,
-    list_files
+    list_files,
+    get_transaction_categories
 )
 
 router = APIRouter()
@@ -227,3 +228,16 @@ async def remove_file(
         )
 
     return {"message": "File deleted successfully"}
+
+
+@router.get("/categories", response_model=List[TransactionCategoryResponse])
+async def get_categories(
+    jwt_data: JWTData = Depends(require_role([]))
+):
+    """
+    Get all transaction categories for dropdown selection in the client
+    
+    Returns a list of all available transaction categories with their IDs, keys, and display names
+    """
+    categories = await get_transaction_categories()
+    return categories

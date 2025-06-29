@@ -81,6 +81,19 @@ auth_user_activity_log = Table(
     schema="mynab",
 )
 
+files = Table(
+    "files",
+    metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("user_id", Integer, ForeignKey("mynab.auth_user.id"), nullable=False),
+    Column("file_name", String(255), nullable=True),
+    Column("file_base64", Text, nullable=True),
+    Column("currency", String(3), nullable=True, default="ARS"),
+    Column("created_at", DateTime, server_default=func.now(), nullable=False),
+    Column("updated_at", DateTime, server_default=func.now(), onupdate=func.now()),
+    schema="mynab",
+)
+
 budget_transaction_category = Table(
     "budget_transaction_category",
     metadata,
@@ -108,19 +121,6 @@ budget_entry = Table(
     Column("category_id", Integer, ForeignKey("mynab.budget_transaction_category.id"), nullable=True),
     Column("date", Date, nullable=False),
     Column("file_id", Integer, ForeignKey("mynab.files.id"), nullable=True),
-    Column("created_at", DateTime, server_default=func.now(), nullable=False),
-    Column("updated_at", DateTime, server_default=func.now(), onupdate=func.now()),
-    schema="mynab",
-)
-
-files = Table(
-    "files",
-    metadata,
-    Column("id", Integer, primary_key=True, autoincrement=True),
-    Column("user_id", Integer, ForeignKey("mynab.auth_user.id"), nullable=False),
-    Column("file_name", String(255), nullable=True),
-    Column("file_base64", Text, nullable=True),
-    Column("currency", String(3), nullable=True, default="ARS"),
     Column("created_at", DateTime, server_default=func.now(), nullable=False),
     Column("updated_at", DateTime, server_default=func.now(), onupdate=func.now()),
     schema="mynab",

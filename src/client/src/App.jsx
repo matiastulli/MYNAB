@@ -246,8 +246,8 @@ export default function App() {
     fetchDetails();
     fetchFiles();
 
-    // Switch to entries tab to show the imported transactions
-    setActiveTab("entries");
+    
+    setActiveTab("dashboard");
   };
 
   // Handle date range change from filter component

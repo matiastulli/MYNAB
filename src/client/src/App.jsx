@@ -1,7 +1,7 @@
 "use client"
 
 import AuthModal from "@/components/auth_user/AuthModal"
-import ProfileUpdateDialog from "@/components/auth_user/ProfileUpdateDialog"
+import ProfileUpdateDialog from "@/components/auth_user/ProfileDialog"
 import CurrencyFilter from "@/components/filters/CurrencyFilter"
 import DateRangeFilter from "@/components/filters/DateRangeFilter"
 import CurrencyNotification from "@/components/notifications/CurrencyNotification"
@@ -273,7 +273,12 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-[#121418] dark:to-[#191c22]">
-      {showAuthModal && <AuthModal onAuthenticated={handleAuthentication} />}
+      {showAuthModal === true && (
+        <AuthModal
+          onAuthenticated={handleAuthentication}
+          onClose={() => setShowAuthModal(false)}
+        />
+      )}
 
       <div className="max-w-5xl mx-auto px-3 py-4 md:px-6 md:py-12">
         {/* Header */}

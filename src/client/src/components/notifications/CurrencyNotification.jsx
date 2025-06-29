@@ -28,8 +28,8 @@ export default function CurrencyNotification({
   if (!show) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 max-w-md w-full transform transition-all duration-300 ease-in-out">
-      <div className="bg-white dark:bg-[#1e232a] rounded-lg shadow-lg border border-emerald-100 dark:border-emerald-800/30 p-4 flex items-start gap-3">
+    <div className="fixed top-6 inset-x-4 sm:inset-x-auto sm:right-6 sm:left-auto z-50 sm:max-w-md mx-auto sm:mx-0 transform transition-all duration-300 ease-in-out flex justify-center sm:justify-end">
+      <div className="bg-white dark:bg-[#1e232a] rounded-lg shadow-lg border border-emerald-100 dark:border-emerald-800/30 p-4 flex items-start gap-3 w-full sm:w-auto max-w-md">
         <div className="p-2 rounded-full bg-emerald-50 dark:bg-emerald-900/30">
           <CircleDollarSignIcon className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
         </div>

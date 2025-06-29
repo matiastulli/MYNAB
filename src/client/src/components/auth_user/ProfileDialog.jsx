@@ -7,7 +7,7 @@ import { api } from "@/services/api";
 import { AlertTriangleIcon, CheckCircleIcon, LogOutIcon, MoonIcon, SunIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export default function ProfileUpdateDialog({
+export default function ProfileDialog({
   open,
   onOpenChange,
   userData,

@@ -9,7 +9,7 @@ import { api } from "@/services/api";
 import { CalendarIcon, CheckIcon, CircleDollarSignIcon, PlusCircleIcon, PlusIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export default function ManualTransactionForm({
+export default function AddTransaction({
   isAuthenticated,
   onSignInClick,
   onTransactionAdded,

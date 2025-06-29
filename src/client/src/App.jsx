@@ -1,12 +1,12 @@
 "use client"
 
 import AuthModal from "@/components/auth_user/AuthModal"
-import ProfileUpdateDialog from "@/components/auth_user/ProfileDialog"
+import ProfileDialog from "@/components/auth_user/ProfileDialog"
 import CurrencyFilter from "@/components/filters/CurrencyFilter"
 import DateRangeFilter from "@/components/filters/DateRangeFilter"
 import CurrencyNotification from "@/components/notifications/CurrencyNotification"
 import ActivityList from "@/components/tabs/ActivityList"
-import ManualTransactionForm from "@/components/tabs/AddTransaction"
+import AddTransaction from "@/components/tabs/AddTransaction"
 import FilesList from "@/components/tabs/FilesList"
 import ImportFile from "@/components/tabs/ImportFile"
 import { Button } from "@/components/ui/button"
@@ -500,7 +500,7 @@ export default function App() {
 
           {/* Add New Transaction */}
           <TabsContent value="new" className="mt-6 focus-visible:outline-none">
-            <ManualTransactionForm
+            <AddTransaction
               isAuthenticated={isAuthenticated}
               defaultCurrency={currency} // Pass currency as defaultCurrency
               onSignInClick={() => setShowAuthModal(true)}
@@ -547,7 +547,7 @@ export default function App() {
         </Tabs>
 
         {/* Profile Update Dialog */}
-        <ProfileUpdateDialog
+        <ProfileDialog
           open={showProfileModal}
           onOpenChange={setShowProfileModal}
           userData={userData}

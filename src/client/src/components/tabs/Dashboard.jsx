@@ -177,7 +177,7 @@ export default function Dashboard({
                 {spendingData.length > 0 && (
                   <div className="mt-4 text-center lg:hidden">
                     <p className="text-sm text-muted-foreground">Total spending</p>
-                    <p className="text-xl font-semibold">
+                    <p className="text-xl font-semibold text-foreground">
                       {formatCurrency(summary.outcome)}
                     </p>
                   </div>
@@ -187,11 +187,11 @@ export default function Dashboard({
             
             {/* Categories list - displays differently on desktop vs mobile */}
             {spendingData.length > 0 && (
-              <div className="lg:w-1/2 mt-15 lg:mt-0">
+              <div className="lg:w-1/2 mt-8 lg:mt-0">
                 {/* Total spending amount - Desktop only */}
                 <div className="hidden lg:block mb-4">
                   <h3 className="text-sm font-medium text-muted-foreground mb-1">Total spending</h3>
-                  <p className="text-xl font-semibold">
+                  <p className="text-xl font-semibold text-foreground">
                     {formatCurrency(summary.outcome)}
                   </p>
                 </div>
@@ -205,9 +205,9 @@ export default function Dashboard({
                           className="w-3 h-3 rounded-full" 
                           style={{ backgroundColor: COLORS[index % COLORS.length] }} 
                         />
-                        <span className="font-medium">{category.name}</span>
+                        <span className="font-medium text-foreground">{category.name}</span>
                       </div>
-                      <span className="text-right font-semibold">
+                      <span className="text-right font-semibold text-foreground">
                         {formatCurrency(category.value)}
                       </span>
                     </div>

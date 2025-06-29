@@ -8,6 +8,9 @@ class TRANSACTION_CATEGORIES:
         r"transferencia salida",
         r"transferencia.*emitida",
         r"envio de dinero",
+        r"transf\.\s*mobile",
+        r"transferencia enviada",
+        r"transferencia realizada",
     ]
     TRANSFER_RECEIVED = [
         r"transferencia recibida",
@@ -15,6 +18,7 @@ class TRANSACTION_CATEGORIES:
         r"transferencia entrante",
         r"transferencia.*ingresada",
         r"ingreso por transferencia",
+        r"trans pag suel",
     ]
     SERVICE_PAYMENT = [
         r"pago de servicios",
@@ -26,6 +30,10 @@ class TRANSACTION_CATEGORIES:
         r"pago online de servicios",
         r"pago.*aysa",
         r"pago.*tarjeta SUBE",
+        r"pago.*google",
+        r"pago.*railway",
+        r"pago.*365",
+        r"^pago\s*$",
     ]
     CREDIT_CARD_PAYMENT = [
         r"pago tarjeta de credito",
@@ -60,6 +68,7 @@ class TRANSACTION_CATEGORIES:
         r"interes.*fondo",
         r"intereses ganados",
         r"acreditacion.*interes",
+        r"pago interes por saldo en cuenta",
     ]
     DEBIT_PURCHASE = [
         r"compra con tarjeta de debito",
@@ -68,6 +77,8 @@ class TRANSACTION_CATEGORIES:
         r"compra.*pos",
         r"compra.*mercado pago",
         r"debito en cuenta por consumo",
+        r"^cpa\.",
+        r"^consumo.*",
     ]
     DIRECT_DEBIT = [
         r"debito inmediato",
@@ -78,6 +89,7 @@ class TRANSACTION_CATEGORIES:
         r"debito directo",
         r"cbu debitado",
         r"adhesion debito automatico",
+        r"deb prea debin",
     ]
 
 

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { parseDatePreservingDay } from "@/lib/date-utils";
 import { api } from "@/services/api";
-import { ArrowDownIcon, ArrowUpIcon, BarChartIcon, CalendarIcon, CircleDollarSignIcon, FilterIcon, PlusCircleIcon, SearchIcon, TrashIcon } from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon, BarChartIcon, CalendarIcon, CircleDollarSignIcon, FilterIcon, SearchIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function ActivityList({
@@ -91,9 +91,6 @@ export default function ActivityList({
               <h3 className="text-lg font-medium mb-2 text-neutral-900 dark:text-white">
                 No {currency} transactions for {dateRangeFormatted}
               </h3>
-              <p className="text-neutral-500 dark:text-neutral-300 mb-4">
-                No transactions match your current filters
-              </p>
               
               {/* Currency filter notice */}
               <div className="flex items-center justify-center gap-2 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 rounded-md max-w-xs mx-auto mb-4">

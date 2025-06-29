@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import { ChevronDownIcon, CircleDollarSignIcon } from "lucide-react";
 import { useState } from "react";

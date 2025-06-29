@@ -92,15 +92,13 @@ export default function ManualTransactionForm({
         <PlusCircleIcon className="h-5 w-5 text-emerald-500" />
         Add Transaction
       </CardTitle>
+      {/* Currency indicator */}
+      <div className="flex items-center text-xs bg-blue-50/70 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded border border-blue-100 dark:border-blue-800/30">
+        <CircleDollarSignIcon className="h-3 w-3 mr-1" />
+        {defaultCurrency}
+      </div>
     </CardHeader>
     <CardContent className="p-6">
-      {/* Currency filter notice */}
-      <div className="flex items-center gap-2 px-4 py-2 bg-blue-50/80 dark:bg-blue-900/20 rounded-lg mb-6 border border-blue-100 dark:border-blue-800/30">
-        <CircleDollarSignIcon className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-        <p className="text-sm text-blue-700 dark:text-blue-200">
-          You're adding a <span className="font-semibold">{defaultCurrency}</span> transaction. Make sure this matches your bank's currency.
-        </p>
-      </div>
 
       {success ? (
         <div className="flex flex-col items-center py-8 gap-4">

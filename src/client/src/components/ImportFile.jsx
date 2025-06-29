@@ -156,18 +156,13 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
         <UploadIcon className="h-5 w-5 text-emerald-500" />
         Import Statements
       </CardTitle>
+      {/* Currency indicator */}
+      <div className="flex items-center text-xs bg-blue-50/70 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded border border-blue-100 dark:border-blue-800/30">
+        <CircleDollarSignIcon className="h-3 w-3 mr-1" />
+        {currency}
+      </div>
     </CardHeader>
     <CardContent className="p-6">
-      {/* Currency Notice Alert */}
-      <Alert className="mb-6 bg-blue-50/80 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 text-blue-800 dark:text-blue-300">
-        <div className="flex items-center gap-2">
-          <CircleDollarSignIcon className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-          <AlertTitle>Currency filter is set to {currency}</AlertTitle>
-        </div>
-        <AlertDescription className="text-blue-700 dark:text-blue-200 mt-1">
-          You're currently viewing {currency} transactions. Make sure the statement you're uploading contains transactions in this currency.
-        </AlertDescription>
-      </Alert>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2">

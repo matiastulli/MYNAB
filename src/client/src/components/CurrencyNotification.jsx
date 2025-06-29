@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import { CircleDollarSignIcon, XIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function CurrencyNotification({ 
   currency, 
@@ -38,7 +38,7 @@ export default function CurrencyNotification({
             Currency Changed to {currency}
           </h4>
           <p className="text-sm text-neutral-600 dark:text-neutral-300 mt-1">
-            You're now viewing {currency} transactions. Some transactions may not appear if they're in a different currency.
+            You're now viewing {currency} transactions.
           </p>
         </div>
         <button 

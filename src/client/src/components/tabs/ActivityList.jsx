@@ -1,4 +1,4 @@
-import SignInPrompt from "@/components/SignInPrompt";
+import SignInPrompt from "@/components/auth_user/SignInPrompt";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { parseDatePreservingDay } from "@/lib/date-utils";

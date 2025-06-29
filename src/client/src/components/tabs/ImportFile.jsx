@@ -1,4 +1,4 @@
-import SignInPrompt from "@/components/SignInPrompt"; // Import the reusable component
+import SignInPrompt from "@/components/auth_user/SignInPrompt";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -152,14 +152,18 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
   return (
   <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm">
     <CardHeader className="pb-2">
-      <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-        <UploadIcon className="h-5 w-5 text-emerald-500" />
-        Import Statements
-      </CardTitle>
-      {/* Currency indicator */}
-      <div className="flex items-center text-xs bg-blue-50/70 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded border border-blue-100 dark:border-blue-800/30">
-        <CircleDollarSignIcon className="h-3 w-3 mr-1" />
-        {currency}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
+          <div className="flex items-center gap-2">
+        <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+          <UploadIcon className="h-5 w-5 text-emerald-500" />
+          Import Statements
+        </CardTitle>
+        {/* Currency indicator - positioned next to the title */}
+        <div className="flex items-center text-xs bg-blue-50/70 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded border border-blue-100 dark:border-blue-800/30 w-fit ml-0 xs:ml-2">
+          <CircleDollarSignIcon className="h-3 w-3 mr-1" />
+          {currency}
+        </div>
+      </div>
       </div>
     </CardHeader>
     <CardContent className="p-6">

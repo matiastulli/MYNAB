@@ -1,4 +1,4 @@
-import SignInPrompt from "@/components/SignInPrompt";
+import SignInPrompt from "@/components/auth_user/SignInPrompt";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDateSafe } from "@/lib/date-utils";
@@ -52,7 +52,8 @@ export default function FilesList({
   return (
     <Card className="border-0 bg-white/80 dark:bg-[#1a1e24]/80 backdrop-blur-sm shadow-sm">
       <CardHeader className="pb-2">
-        <div className="flex flex-col xs:flex-row xs:items-center gap-2 xs:gap-0">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
+          <div className="flex items-center gap-2">
           <CardTitle className="text-lg font-medium text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
             <FolderIcon className="h-5 w-5 text-emerald-500" />
             Bank Statements
@@ -63,6 +64,7 @@ export default function FilesList({
             {currency}
           </div>
         </div>
+      </div>
       </CardHeader>
       <CardContent className="p-4 sm:p-6">
         <div className="space-y-4">
@@ -123,10 +125,6 @@ export default function FilesList({
                         <p className="font-medium text-neutral-900 dark:text-neutral-100 mr-1 text-sm sm:text-base">
                           {file.file_name || "Unnamed file"}
                         </p>
-                        {/* Currency tag - more compact on mobile */}
-                        <span className="text-xs px-1.5 py-0.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 rounded-sm">
-                          {currency}
-                        </span>
                       </div>
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 mt-1">
                         <div className="flex items-center gap-1">

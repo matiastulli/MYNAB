@@ -90,6 +90,21 @@ export default function Dashboard({
     }).format(value);
   };
 
+  // Custom tooltip component for better dark mode support
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-popover border border-border rounded-lg p-3 shadow-lg">
+          <p className="text-popover-foreground font-medium">{`${payload[0].name}`}</p>
+          <p className="text-popover-foreground">
+            <span className="font-semibold">{formatCurrency(payload[0].value)}</span>
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
+
   if (!isAuthenticated) {
     return (
       <SignInPrompt
@@ -145,16 +160,7 @@ export default function Dashboard({
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
-                      <Tooltip 
-                        formatter={(value) => formatCurrency(value)} 
-                        contentStyle={{ 
-                          backgroundColor: 'hsl(var(--card))', 
-                          borderRadius: '0.5rem', 
-                          border: '1px solid hsl(var(--border))',
-                          color: 'hsl(var(--foreground))'
-                        }}
-                        labelStyle={{ color: 'hsl(var(--foreground))' }}
-                      />
+                      <Tooltip content={<CustomTooltip />} />
                     </PieChart>
                   </ResponsiveContainer>
                 ) : (

@@ -1,14 +1,7 @@
 import SignInPrompt from "@/components/auth_user/SignInPrompt";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FinancialValue } from "@/components/ui/financial-value";
-import { Spinner } from "@/components/ui/spinner";
-import { parseDatePreservingDay } from "@/lib/dateUtils";
-import { format } from 'date-fns';
 import {
-  ArrowDownRightIcon,
-  ArrowUpRightIcon,
   BarChart2Icon,
-  CalendarIcon,
   CircleDollarSignIcon,
   LayoutDashboardIcon,
   PieChartIcon,
@@ -216,79 +209,6 @@ export default function Dashboard({
               </div>
             )}
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Recent transactions */}
-      <Card className="border-border bg-card backdrop-blur-sm shadow-sm">
-        <CardHeader className="pb-2 border-b border-border">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg font-medium text-foreground flex items-center gap-2">
-              <BarChart2Icon className="h-5 w-5 text-accent" />
-              Recent Transactions
-            </CardTitle>
-            <div className="flex items-center text-xs bg-accent/10 text-accent px-1.5 py-0.5 rounded border border-accent/20">
-              <CircleDollarSignIcon className="h-3 w-3 mr-1" />
-              {currency}
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          {isLoading ? (
-            <div className="py-8 flex justify-center">
-              <Spinner size="md" />
-            </div>
-          ) : recentEntries.length === 0 ? (
-            <div className="py-8 text-center">
-              <p className="text-muted-foreground">No recent transactions found</p>
-            </div>
-          ) : (
-            <div className="divide-y divide-border">
-              {recentEntries.map((entry) => (
-                <div
-                  key={entry.id}
-                  className="flex items-center justify-between p-4 hover:bg-accent/5 transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`p-2 rounded-full ${entry.amount >= 0
-                          ? "bg-success-bg text-success-fg"
-                          : "bg-destructive/10 text-destructive"
-                        }`}
-                    >
-                      {entry.amount >= 0 ? (
-                        <ArrowUpRightIcon className="h-4 w-4" />
-                      ) : (
-                        <ArrowDownRightIcon className="h-4 w-4" />
-                      )}
-                    </div>
-                    <div>
-                      <p className="font-medium text-foreground line-clamp-1">
-                        {entry.description || "No description"}
-                      </p>
-                      <div className="flex items-center text-xs text-muted-foreground mt-0.5">
-                        <CalendarIcon className="h-3 w-3 mr-1" />
-                        {(() => {
-                          const entryDate = parseDatePreservingDay(entry.date);
-                          return format(entryDate, "MMM d, yyyy");
-                        })()}
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <FinancialValue
-                      value={entry.amount}
-                      type={entry.type}
-                      currency={entry.currency}
-                      showSign={true}
-                      size="md"
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
         </CardContent>
       </Card>
 

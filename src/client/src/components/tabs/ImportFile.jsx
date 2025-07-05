@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { api } from "@/services/api";
-import { BanknotesIcon, CheckCircleIcon, CircleDollarSignIcon, CreditCardIcon, FileIcon, FileTextIcon, UploadCloudIcon, UploadIcon, XCircleIcon } from "lucide-react";
+import { BanknoteIcon, CheckCircleIcon, CircleDollarSignIcon, CreditCardIcon, FileIcon, FileTextIcon, UploadCloudIcon, UploadIcon, XCircleIcon } from "lucide-react";
 import { useState } from "react";
 
 export default function ImportFile({ onImportComplete, onImportSuccess, isAuthenticated, onSignInClick, currency }) {
@@ -138,7 +138,7 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
       case 'mercado_pago':
         return <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>;
       default:
-        return <BanknotesIcon className="h-3 w-3 text-muted-foreground" />;
+        return <BanknoteIcon className="h-3 w-3 text-muted-foreground" />;
     }
   };
 

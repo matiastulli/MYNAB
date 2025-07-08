@@ -33,9 +33,14 @@ export default function SignupForm({ onSignUp, onSwitchToLogin }) {
         if (value.length > 0 && value.length < 6) {
           errors.password = 'Password must be at least 6 characters'
         } else if (value.length >= 6) {
-          const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z0-9\W]).$/
-          if (!passwordRegex.test(value)) {
-            errors.password = 'Password needs uppercase, lowercase, and numbers/symbols'
+          const missingRequirements = []
+          if (!/[a-z]/.test(value)) missingRequirements.push('lowercase letter')
+          if (!/[A-Z]/.test(value)) missingRequirements.push('uppercase letter')
+          if (!/\d/.test(value)) missingRequirements.push('digit')
+          if (!/[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>\/?]/.test(value)) missingRequirements.push('special character')
+          
+          if (missingRequirements.length > 0) {
+            errors.password = `Password needs: ${missingRequirements.join(', ')}`
           } else {
             delete errors.password
           }
@@ -225,7 +230,7 @@ export default function SignupForm({ onSignUp, onSwitchToLogin }) {
             </div>
             <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-md p-3">
               <p className="text-xs text-blue-800 dark:text-blue-200">
-                <span className="font-medium">Password requirements:</span> 6+ characters with uppercase, lowercase, and numbers/symbols
+                <span className="font-medium">Password requirements:</span> 6+ characters with uppercase, lowercase, digit, and special character
               </p>
             </div>
           </div>

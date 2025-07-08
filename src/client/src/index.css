@@ -13,16 +13,16 @@
   --secondary: 210 20% 96%;
   --secondary-foreground: 210 20% 15%; /* Improved contrast */
   --muted: 210 20% 96%;
-  --muted-foreground: 210 40% 35%; /* Better contrast for readability */
-  --accent: 174 70% 45%; /* More vibrant accent */
-  --accent-foreground: 220 15% 98%;
-  
+  --muted-foreground: 210 40% 40%; /* Better contrast for readability */
+  --accent: 142 75% 35%; /* Much more vibrant green for better contrast */
+  --accent-foreground: 0 0% 100%; /* White text on green background */
+
   /* Financial indicators - improved for clarity */
-  --positive: 142 75% 38%;  /* More vibrant green */
+  --positive: 142 75% 35%; /* More vibrant green, same as accent */
   --positive-foreground: 0 0% 100%;
   --destructive: 0 82% 48%; /* Brighter red for better visibility */
   --destructive-foreground: 0 0% 98%;
-  
+
   /* Chart colors optimized for financial data */
   --chart-1: var(--positive);
   --chart-2: var(--destructive);
@@ -33,15 +33,15 @@
   --input: 210 36% 96%;
   --ring: var(--accent);
   --radius: 0.5rem;
-  
+
   /* Filter specific colors */
   --filter-bg: 210 20% 98%;
   --filter-hover: 210 20% 94%;
-  --filter-active: 174 70% 94%;
-  
+  --filter-active: 142 75% 92%; /* Light green background for active state */
+
   /* Alert & notification colors */
   --success-bg: 142 70% 95%;
-  --success-fg: 142 75% 30%;
+  --success-fg: 142 75% 25%; /* Darker green for better contrast */
   --warning-bg: 38 95% 95%;
   --warning-fg: 38 95% 28%;
   --info-bg: 214 100% 97%;
@@ -61,16 +61,16 @@
   --secondary: 217 33% 17%;
   --secondary-foreground: 210 40% 98%;
   --muted: 217 33% 17%;
-  --muted-foreground: 215 20% 80%; /* Lighter for better contrast in dark mode */
-  --accent: 174 70% 45%; /* Keep consistent with light mode */
-  --accent-foreground: 210 40% 98%;
-  
+  --muted-foreground: 215 20% 75%; /* Better contrast in dark mode */
+  --accent: 142 75% 50%; /* Slightly brighter green for dark mode */
+  --accent-foreground: 222 84% 5%; /* Dark text on green background */
+
   /* Financial indicators for dark mode */
-  --positive: 142 75% 48%;
-  --positive-foreground: 0 0% 10%;
+  --positive: 142 75% 50%;
+  --positive-foreground: 222 84% 5%;
   --destructive: 0 84% 65%;
   --destructive-foreground: 210 40% 98%;
-  
+
   /* Chart colors for dark mode */
   --chart-1: var(--positive);
   --chart-2: var(--destructive);
@@ -79,13 +79,13 @@
   --chart-5: 340 80% 55%;
   --border: 217 33% 20%;
   --input: 217 33% 17%;
-  --ring: 174 70% 45%;
-  
+  --ring: 142 75% 50%;
+
   /* Filter specific colors */
   --filter-bg: 222 47% 10%;
   --filter-hover: 217 33% 17%;
-  --filter-active: 174 70% 18%;
-  
+  --filter-active: 142 75% 15%; /* Dark green background for active state */
+
   /* Alert & notification colors */
   --success-bg: 142 70% 12%;
   --success-fg: 142 75% 70%;
@@ -108,27 +108,38 @@ body {
 }
 
 /* Enhanced input styling */
-input::placeholder {
-  color: hsl(var(--muted-foreground));
-  opacity: 0.7;
+input,
+select,
+textarea {
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--background));
 }
 
-.dark input::placeholder {
+input::placeholder {
   color: hsl(var(--muted-foreground));
   opacity: 0.8;
 }
 
-/* Better date input styling */
+.dark input::placeholder {
+  color: hsl(var(--muted-foreground));
+  opacity: 0.9;
+}
+
+/* Better date input styling for both themes */
+input[type="date"] {
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--background));
+}
+
 input[type="date"]::-webkit-calendar-picker-indicator {
-  opacity: 0;
-  position: absolute;
-  right: 0;
-  width: 100%;
+  opacity: 0.7;
   cursor: pointer;
+  filter: none;
 }
 
 .dark input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
+  opacity: 0.8;
 }
 
 /* Enhanced focus states */
@@ -239,40 +250,44 @@ textarea:focus {
   color: hsl(var(--info-fg));
 }
 
-/* Dialog/modal enhancements */
+/* Enhanced dialog/modal styling */
 [role="dialog"] {
-  --dialog-shadow-light: 0px 10px 38px -10px rgba(22, 23, 24, 0.35), 0px 10px 20px -15px rgba(22, 23, 24, 0.2);
-  --dialog-shadow-dark: 0px 10px 38px -10px rgba(0, 0, 0, 0.7), 0px 10px 20px -15px rgba(0, 0, 0, 0.6);
-}
-
-[role="dialog"] > [data-state="open"] {
-  box-shadow: var(--dialog-shadow-light);
-  background-color: hsl(var(--card));
-  backdrop-filter: none;
-}
-
-.dark [role="dialog"] > [data-state="open"] {
-  box-shadow: var(--dialog-shadow-dark);
-  background-color: hsl(var(--card));
-  backdrop-filter: none;
-}
-
-/* Solid backgrounds for modals and dropdown content */
-.dialog-content-solid {
   background-color: hsl(var(--card)) !important;
-  border: 2px solid hsl(var(--border));
+  border: 1px solid hsl(var(--border));
+  backdrop-filter: none !important;
 }
 
+/* Ensure select dropdowns have proper backgrounds */
 [data-radix-select-content] {
-  opacity: 1 !important;
   background-color: hsl(var(--popover)) !important;
+  border: 1px solid hsl(var(--border)) !important;
   backdrop-filter: none !important;
-  border: 2px solid hsl(var(--border)) !important;
+}
+
+[data-radix-popover-content] {
+  background-color: hsl(var(--popover)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  backdrop-filter: none !important;
 }
 
 /* Form field appearance improvements */
-input, select, textarea {
+input,
+select,
+textarea {
   font-feature-settings: "tnum";
+}
+
+/* Enhanced button styling */
+button:hover {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Better focus rings for accessibility */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
 }
 
 /* Mobile specific enhancements */
@@ -280,11 +295,11 @@ input, select, textarea {
   .mobile-compact-text {
     font-size: 0.875rem;
   }
-  
+
   .mobile-stack {
     flex-direction: column;
   }
-  
+
   .mobile-full-width {
     width: 100%;
   }
@@ -326,106 +341,7 @@ tr {
 
 /* Skeleton loading styles */
 .skeleton {
-  background: linear-gradient(
-    90deg,
-    hsl(var(--muted)) 25%, 
-    hsl(var(--muted) / 0.7) 50%, 
-    hsl(var(--muted)) 75%
-  );
-  background-size: 200% 100%;
-  animation: skeleton-loading 1.5s infinite;
-}
-
-@keyframes skeleton-loading {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
-.dark [role="dialog"] > [data-state="open"] {
-  box-shadow: var(--dialog-shadow-dark);
-  background-color: hsl(var(--card));
-  backdrop-filter: none;
-}
-
-/* Solid backgrounds for modals and dropdown content */
-.dialog-content-solid {
-  background-color: hsl(var(--card)) !important;
-  border: 2px solid hsl(var(--border));
-}
-
-[data-radix-select-content] {
-  opacity: 1 !important;
-  background-color: hsl(var(--popover)) !important;
-  backdrop-filter: none !important;
-  border: 2px solid hsl(var(--border)) !important;
-}
-
-/* Form field appearance improvements */
-input, select, textarea {
-  font-feature-settings: "tnum";
-}
-
-/* Mobile specific enhancements */
-@media (max-width: 640px) {
-  .mobile-compact-text {
-    font-size: 0.875rem;
-  }
-  
-  .mobile-stack {
-    flex-direction: column;
-  }
-  
-  .mobile-full-width {
-    width: 100%;
-  }
-}
-
-/* Table improvements */
-table {
-  border-spacing: 0;
-  width: 100%;
-}
-
-th {
-  text-align: left;
-  font-weight: 600;
-  color: hsl(var(--muted-foreground));
-}
-
-td {
-  padding: 0.75rem 1rem;
-}
-
-tr {
-  border-bottom: 1px solid hsl(var(--border));
-}
-
-/* Data visualization enhancements */
-.chart-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-/* Accessible focus outline that works on any background */
-.focus-ring:focus-visible {
-  outline: 2px solid hsl(var(--ring));
-  outline-offset: 2px;
-  box-shadow: 0 0 0 2px hsl(var(--background));
-}
-
-/* Skeleton loading styles */
-.skeleton {
-  background: linear-gradient(
-    90deg,
-    hsl(var(--muted)) 25%, 
-    hsl(var(--muted) / 0.7) 50%, 
-    hsl(var(--muted)) 75%
-  );
+  background: linear-gradient(90deg, hsl(var(--muted)) 25%, hsl(var(--muted) / 0.7) 50%, hsl(var(--muted)) 75%);
   background-size: 200% 100%;
   animation: skeleton-loading 1.5s infinite;
 }

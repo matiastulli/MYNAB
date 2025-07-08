@@ -1,7 +1,7 @@
-import { Slot } from "@radix-ui/react-slot";
-import { cva } from "class-variance-authority";
+import { Slot } from "@radix-ui/react-slot"
+import { cva } from "class-variance-authority"
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0",
@@ -13,16 +13,15 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground shadow-xs hover:bg-destructive/90 active:bg-destructive/95 focus-visible:ring-2 focus-visible:ring-destructive/20",
         outline:
-          "border border-input bg-background shadow-xs hover:bg-accent/10 hover:text-accent-foreground active:bg-accent/20 focus-visible:ring-2 focus-visible:ring-ring/30",
+          "border border-input bg-background shadow-xs hover:bg-accent/10 hover:text-accent-foreground hover:border-accent/50 active:bg-accent/20 focus-visible:ring-2 focus-visible:ring-ring/30 transition-all duration-200",
         secondary:
           "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80 active:bg-secondary/90 focus-visible:ring-2 focus-visible:ring-ring/30",
         ghost:
-          "hover:bg-accent/10 hover:text-accent-foreground active:bg-accent/20 focus-visible:ring-2 focus-visible:ring-ring/30",
+          "hover:bg-accent/10 hover:text-accent-foreground active:bg-accent/20 focus-visible:ring-2 focus-visible:ring-ring/30 transition-colors duration-200",
         link: "text-accent underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring/30",
         success:
           "bg-[hsl(var(--positive))] text-positive-foreground shadow-xs hover:bg-[hsl(var(--positive))]/90 active:bg-[hsl(var(--positive))]/95 focus-visible:ring-2 focus-visible:ring-[hsl(var(--positive))]/20",
-        info:
-          "bg-[hsl(var(--info-fg))] text-white shadow-xs hover:bg-[hsl(var(--info-fg))]/90 active:bg-[hsl(var(--info-fg))]/95 focus-visible:ring-2 focus-visible:ring-[hsl(var(--info-fg))]/20",
+        info: "bg-[hsl(var(--info-fg))] text-white shadow-xs hover:bg-[hsl(var(--info-fg))]/90 active:bg-[hsl(var(--info-fg))]/95 focus-visible:ring-2 focus-visible:ring-[hsl(var(--info-fg))]/20",
         warning:
           "bg-[hsl(var(--warning-fg))] text-white shadow-xs hover:bg-[hsl(var(--warning-fg))]/90 active:bg-[hsl(var(--warning-fg))]/95 focus-visible:ring-2 focus-visible:ring-[hsl(var(--warning-fg))]/20",
         "success-outline":
@@ -41,7 +40,7 @@ const buttonVariants = cva(
       },
       loading: {
         true: "relative text-transparent transition-none hover:text-transparent",
-      }
+      },
     },
     defaultVariants: {
       variant: "default",
@@ -51,22 +50,13 @@ const buttonVariants = cva(
       {
         loading: true,
         className: "pointer-events-none relative",
-      }
+      },
     ],
-  }
+  },
 )
 
-function Button({
-  className,
-  variant,
-  size,
-  loading = false,
-  asChild = false,
-  loadingText,
-  children,
-  ...props
-}) {
-  const Comp = asChild ? Slot : "button";
+function Button({ className, variant, size, loading = false, asChild = false, loadingText, children, ...props }) {
+  const Comp = asChild ? Slot : "button"
 
   return (
     <Comp
@@ -85,14 +75,7 @@ function Button({
             viewBox="0 0 24 24"
             aria-hidden="true"
           >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            ></circle>
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
             <path
               className="opacity-75"
               fill="currentColor"
@@ -103,8 +86,8 @@ function Button({
         </div>
       )}
     </Comp>
-  );
+  )
 }
 
-export { Button, buttonVariants };
+export { Button, buttonVariants }
 

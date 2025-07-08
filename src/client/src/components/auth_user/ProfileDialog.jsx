@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { isDarkModeActive, toggleTheme } from "@/lib/themeUtils";
 import { api } from "@/services/api";
-import { AlertTriangleIcon, CheckCircleIcon, LogOutIcon, MoonIcon, SunIcon } from "lucide-react";
+import { AlertTriangleIcon, CheckCircleIcon, LogOutIcon, MoonIcon, SunIcon, UserIcon, IdCardIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function ProfileDialog({
@@ -86,71 +86,73 @@ export default function ProfileDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-card text-card-foreground border-border shadow-lg dialog-content-solid">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-medium text-foreground">Your Profile</DialogTitle>
+      <DialogContent className="bg-card text-card-foreground border-2 border-border shadow-xl max-w-md">
+        <DialogHeader className="space-y-3">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-accent/10 border border-accent/20">
+              <UserIcon className="h-5 w-5 text-accent" />
+            </div>
+            <DialogTitle className="text-xl font-semibold text-foreground">Your Profile</DialogTitle>
+          </div>
           <DialogDescription className="text-muted-foreground">
             {(!userData?.national_id || userData?.national_id === "") ? (
-              <div className="flex items-start gap-2 mt-2 p-2 bg-warning-bg text-warning-fg border border-warning-fg/30 rounded-md">
-                <AlertTriangleIcon className="h-5 w-5 mt-0.5" />
-                <div>
-                  <p className="font-medium">CUIT Required</p>
-                  <p className="text-sm opacity-90">
+              <div className="flex items-start gap-3 mt-3 p-4 bg-amber-50 dark:bg-amber-950/20 border-2 border-amber-200 dark:border-amber-800 rounded-lg">
+                <AlertTriangleIcon className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5" />
+                <div className="space-y-1">
+                  <p className="font-semibold text-amber-900 dark:text-amber-100">CUIT Required</p>
+                  <p className="text-sm text-amber-800 dark:text-amber-200">
                     Adding your CUIT helps filter out personal transactions that shouldn't be counted in your budget.
                   </p>
                 </div>
               </div>
             ) : (
-              "Update your personal information below."
+              "Update your personal information and preferences below."
             )}
           </DialogDescription>
         </DialogHeader>
 
         {updateSuccess ? (
-          <div className="flex flex-col items-center py-8 gap-3">
-            <div className="p-3 bg-success-bg text-success-fg rounded-full">
-              <CheckCircleIcon className="h-8 w-8" />
+          <div className="flex flex-col items-center py-12 gap-4">
+            <div className="p-4 bg-green-100 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800 rounded-full">
+              <CheckCircleIcon className="h-8 w-8 text-green-600 dark:text-green-400" />
             </div>
-            <p className="text-lg font-medium text-foreground">Profile Updated</p>
+            <div className="text-center">
+              <p className="text-lg font-semibold text-foreground">Profile Updated!</p>
+              <p className="text-sm text-muted-foreground">Your changes have been saved successfully.</p>
+            </div>
           </div>
         ) : (
-          <form onSubmit={handleProfileUpdate} className="space-y-4">
-            <div className="space-y-2">
-              <Label
-                htmlFor="name"
-                className="text-sm font-medium text-foreground"
-              >
+          <form onSubmit={handleProfileUpdate} className="space-y-5">
+            <div className="space-y-3">
+              <Label htmlFor="name" className="text-sm font-semibold text-foreground">
                 First Name
               </Label>
               <Input
                 id="name"
                 value={profileForm.name}
                 onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
-                className="border-0 bg-muted focus:bg-background text-foreground placeholder:text-muted-foreground"
+                className="h-12 border-2 border-border bg-background focus:border-accent transition-all duration-200"
+                placeholder="Enter your first name"
                 required
               />
             </div>
 
-            <div className="space-y-2">
-              <Label
-                htmlFor="last_name"
-                className="text-sm font-medium text-foreground"
-              >
+            <div className="space-y-3">
+              <Label htmlFor="last_name" className="text-sm font-semibold text-foreground">
                 Last Name
               </Label>
               <Input
                 id="last_name"
                 value={profileForm.last_name}
                 onChange={(e) => setProfileForm({ ...profileForm, last_name: e.target.value })}
-                className="border-0 bg-muted focus:bg-background text-foreground placeholder:text-muted-foreground"
+                className="h-12 border-2 border-border bg-background focus:border-accent transition-all duration-200"
+                placeholder="Enter your last name"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label
-                htmlFor="national_id"
-                className="text-sm font-medium text-foreground flex items-center gap-1"
-              >
+            <div className="space-y-3">
+              <Label htmlFor="national_id" className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <IdCardIcon className="h-4 w-4" />
                 CUIT
                 {(!userData?.national_id || userData?.national_id === "") && (
                   <AlertTriangleIcon className="h-4 w-4 text-amber-500" />
@@ -164,30 +166,29 @@ export default function ProfileDialog({
                   const numericValue = e.target.value.replace(/[^0-9]/g, '');
                   setProfileForm({ ...profileForm, national_id: numericValue });
                 }}
-                className="border-0 bg-muted focus:bg-background text-foreground placeholder:text-muted-foreground"
+                className="h-12 border-2 border-border bg-background focus:border-accent transition-all duration-200"
                 placeholder="e.g. 20415436042"
                 inputMode="numeric"
                 pattern="[0-9]*"
               />
               <p className="text-xs text-muted-foreground">
-                Used to automatically filter out personal transactions.
+                Used to automatically filter out personal transactions from your budget analysis.
               </p>
             </div>
 
-            <DialogFooter className="flex flex-col sm:flex-row gap-2 pt-2 mt-2 border-t border-border">
+            <DialogFooter className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-border">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
-                className="w-full sm:w-auto"
+                className="w-full sm:w-auto h-10"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
-                variant="success"
                 disabled={isUpdating}
-                className="w-full sm:w-auto"
+                className="w-full sm:w-auto h-10 bg-accent hover:bg-accent/90 text-accent-foreground"
               >
                 {isUpdating ? (
                   <div className="flex items-center gap-2">
@@ -203,31 +204,33 @@ export default function ProfileDialog({
         )}
 
         {/* Theme toggle section */}
-        <div className="pt-4 mt-6 border-t border-border">
+        <div className="pt-4 border-t border-border">
           <Button
             type="button"
             variant="ghost"
             onClick={handleToggleTheme}
-            className="w-full flex items-center justify-center gap-2 text-foreground hover:bg-accent/10"
+            className="w-full flex items-center justify-center gap-2 text-foreground hover:bg-accent/10 h-12"
             title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
           >
             {isDarkMode ? (
-              <SunIcon className="h-4 w-4 text-warning-fg" />
+              <SunIcon className="h-5 w-5 text-yellow-500" />
             ) : (
-              <MoonIcon className="h-4 w-4 text-info-fg" />
+              <MoonIcon className="h-5 w-5 text-blue-500" />
             )}
-            {isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            <span className="font-medium">
+              {isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            </span>
           </Button>
         </div>
 
-        <div className="pt-4 mt-6 border-t border-border">
+        <div className="pt-4 border-t border-border">
           <Button
             type="button"
             variant="destructive"
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2"
+            className="w-full flex items-center justify-center gap-2 h-12 font-semibold"
           >
-            <LogOutIcon className="h-4 w-4" />
+            <LogOutIcon className="h-5 w-5" />
             Sign Out
           </Button>
         </div>

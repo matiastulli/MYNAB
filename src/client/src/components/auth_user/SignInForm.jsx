@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { api } from "@/services/api"
-import { AtSignIcon, KeyIcon, LogInIcon } from "lucide-react"
+import { AtSignIcon, KeyIcon, LogInIcon, AlertCircleIcon } from "lucide-react"
 import { useState } from "react"
 
 export default function SignInForm({ onLogin, onSwitchToSignup }) {
@@ -56,35 +56,46 @@ export default function SignInForm({ onLogin, onSwitchToSignup }) {
   }
 
   return (
-    <Card className="max-w-md mx-auto border-border bg-card dialog-content-solid shadow-lg" style={{ backgroundColor: 'hsl(var(--card))' }}>
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-medium text-foreground">Welcome back</CardTitle>
-        <CardDescription className="text-muted-foreground">Enter your credentials to access your account</CardDescription>
+    <Card className="max-w-md mx-auto border-2 border-border bg-card shadow-xl">
+      <CardHeader className="space-y-2 pb-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-accent/10 border border-accent/20">
+            <LogInIcon className="h-5 w-5 text-accent" />
+          </div>
+          <CardTitle className="text-2xl font-semibold text-foreground">Welcome Back</CardTitle>
+        </div>
+        <CardDescription className="text-muted-foreground">
+          Sign in to your MYNAB account to continue managing your finances
+        </CardDescription>
       </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-foreground">Email</Label>
+      <CardContent className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="space-y-3">
+            <Label htmlFor="email" className="text-sm font-semibold text-foreground">
+              Email Address
+            </Label>
             <div className="relative">
               <AtSignIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 id="email"
                 type="email"
-                placeholder="john.doe@example.com"
-                className="pl-10 border-0 bg-muted focus:bg-background text-foreground placeholder:text-muted-foreground"
-                style={{ backgroundColor: 'hsl(var(--muted))' }}
+                placeholder="Enter your email address"
+                className="pl-10 h-12 border-2 border-border bg-background focus:border-accent transition-all duration-200"
                 value={form.email}
                 onChange={handleChange}
+                required
               />
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label htmlFor="password" className="text-foreground">Password</Label>
+              <Label htmlFor="password" className="text-sm font-semibold text-foreground">
+                Password
+              </Label>
               <button
                 type="button"
-                className="text-sm text-accent hover:underline"
+                className="text-sm text-accent hover:text-accent/80 font-medium hover:underline transition-colors"
               >
                 Forgot password?
               </button>
@@ -94,48 +105,51 @@ export default function SignInForm({ onLogin, onSwitchToSignup }) {
               <Input
                 id="password"
                 type="password"
-                placeholder="••••••••"
-                className="pl-10 border-0 bg-muted focus:bg-background text-foreground placeholder:text-muted-foreground"
-                style={{ backgroundColor: 'hsl(var(--muted))' }}
+                placeholder="Enter your password"
+                className="pl-10 h-12 border-2 border-border bg-background focus:border-accent transition-all duration-200"
                 value={form.password}
                 onChange={handleChange}
+                required
               />
             </div>
           </div>
 
           {error && (
-            <div className="p-3 rounded-md bg-destructive/10 border border-destructive/30 text-destructive text-sm">
-              {error}
+            <div className="p-4 rounded-lg bg-red-50 dark:bg-red-950/20 border-2 border-red-200 dark:border-red-800">
+              <div className="flex items-center gap-2">
+                <AlertCircleIcon className="h-4 w-4 text-red-600 dark:text-red-400" />
+                <span className="text-sm font-medium text-red-900 dark:text-red-100">{error}</span>
+              </div>
             </div>
           )}
 
           <Button
             type="submit"
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+            className="w-full h-12 text-lg font-semibold bg-accent hover:bg-accent/90 text-accent-foreground transition-all duration-200 shadow-lg hover:shadow-xl"
             disabled={isLoading}
           >
             {isLoading ? (
               <div className="flex items-center gap-2">
-                <div className="h-4 w-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
-                Signing in...
+                <div className="h-4 w-4 border-2 border-accent-foreground border-t-transparent rounded-full animate-spin" />
+                Signing you in...
               </div>
             ) : (
               <>
-                <LogInIcon className="h-4 w-4 mr-2" />
+                <LogInIcon className="h-5 w-5 mr-2" />
                 Sign In
               </>
             )}
           </Button>
 
-          <div className="text-center mt-4">
+          <div className="text-center pt-2">
             <p className="text-sm text-muted-foreground">
               Don't have an account?{" "}
               <button
                 type="button"
                 onClick={onSwitchToSignup}
-                className="text-accent hover:underline font-medium"
+                className="text-accent hover:text-accent/80 font-semibold hover:underline transition-colors"
               >
-                Sign up
+                Create one now
               </button>
             </p>
           </div>

@@ -14,9 +14,7 @@ export default function AuthModal({ onAuthenticated, onClose = () => { } }) {
     onAuthenticated(userData)
   }
 
-  // Close when clicking outside the modal
   const handleOverlayClick = (e) => {
-    // Only close if clicking the backdrop directly
     if (e.target === e.currentTarget) {
       onClose()
     }
@@ -27,27 +25,29 @@ export default function AuthModal({ onAuthenticated, onClose = () => { } }) {
       className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       onClick={handleOverlayClick}
     >
-      <div className="w-full max-w-md relative dialog-content-solid bg-card border-2 border-border rounded-lg shadow-lg">
+      <div className="w-full max-w-md relative">
         {/* Close button */}
         <button
-          onClick={() => {
-            onClose()
-          }}
-          className="absolute -top-2 -right-2 bg-background border border-border rounded-full p-1 shadow-md hover:bg-accent transition-colors"
+          onClick={onClose}
+          className="absolute -top-3 -right-3 z-10 bg-background border-2 border-border rounded-full p-2 shadow-lg hover:bg-accent/10 transition-all duration-200"
           aria-label="Close"
         >
           <XIcon className="h-5 w-5 text-foreground" />
         </button>
 
-        <div className="text-center mb-6 pt-6">
-          <div className="inline-flex items-center gap-2 text-foreground">
-            <WalletIcon className="h-6 w-6" />
-            <span className="text-lg font-medium tracking-wider uppercase">
+        {/* Brand header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-3 bg-card border-2 border-border rounded-lg px-6 py-3 shadow-lg">
+            <div className="p-2 rounded-lg bg-accent/10 border border-accent/20">
+              <WalletIcon className="h-6 w-6 text-accent" />
+            </div>
+            <span className="text-2xl font-bold tracking-wider text-foreground">
               MYNAB
             </span>
           </div>
         </div>
 
+        {/* Form content */}
         {isLoginView ? (
           <SignInForm
             onLogin={handleLogin}

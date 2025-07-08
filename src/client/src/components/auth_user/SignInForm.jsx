@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { api } from "@/services/api"
-import { AtSignIcon, KeyIcon, LogInIcon, AlertCircleIcon } from "lucide-react"
+import { AlertCircleIcon, AtSignIcon, KeyIcon, LogInIcon } from "lucide-react"
 import { useState } from "react"
 
 export default function SignInForm({ onLogin, onSwitchToSignup }) {

@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { isDarkModeActive, toggleTheme } from "@/lib/themeUtils";
 import { api } from "@/services/api";
-import { AlertTriangleIcon, CheckCircleIcon, LogOutIcon, MoonIcon, SunIcon, UserIcon, IdCardIcon } from "lucide-react";
+import { AlertTriangleIcon, CheckCircleIcon, IdCardIcon, LogOutIcon, MoonIcon, SunIcon, UserIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function ProfileDialog({

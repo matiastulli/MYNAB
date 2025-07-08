@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { api } from "@/services/api"
-import { AtSignIcon, KeyIcon, UserIcon, UserPlusIcon, CheckCircleIcon, AlertCircleIcon } from "lucide-react"
+import { AlertCircleIcon, AtSignIcon, CheckCircleIcon, KeyIcon, UserIcon, UserPlusIcon } from "lucide-react"
 import { useState } from "react"
 
 export default function SignupForm({ onSignUp, onSwitchToLogin }) {
@@ -33,9 +33,9 @@ export default function SignupForm({ onSignUp, onSwitchToLogin }) {
         if (value.length > 0 && value.length < 6) {
           errors.password = 'Password must be at least 6 characters'
         } else if (value.length >= 6) {
-          const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z0-9\W]).*$/
+          const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z0-9\W]).$/
           if (!passwordRegex.test(value)) {
-            errors.password = 'Password must include lowercase, uppercase/number/special character'
+            errors.password = 'Password needs uppercase, lowercase, and numbers/symbols'
           } else {
             delete errors.password
           }
@@ -225,7 +225,7 @@ export default function SignupForm({ onSignUp, onSwitchToLogin }) {
             </div>
             <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-md p-3">
               <p className="text-xs text-blue-800 dark:text-blue-200">
-                <span className="font-medium">Password requirements:</span> Minimum 6 characters, include lowercase, uppercase/number/special character
+                <span className="font-medium">Password requirements:</span> 6+ characters with uppercase, lowercase, and numbers/symbols
               </p>
             </div>
           </div>

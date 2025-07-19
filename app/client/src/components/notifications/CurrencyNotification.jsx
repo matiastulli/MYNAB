@@ -9,7 +9,6 @@ export default function CurrencyNotification({
   const [show, setShow] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
   
-  // Handle visibility changes with animation
   useEffect(() => {
     if (isVisible) {
       setShow(true);
@@ -47,16 +46,33 @@ export default function CurrencyNotification({
       aria-live="polite"
     >
       <div 
-        className="bg-card dialog-content-solid rounded-lg shadow-lg border-2 border-border p-4 flex items-start gap-3 w-full sm:w-auto max-w-md"
+        className="rounded-lg shadow-xl border p-4 flex items-start gap-3 w-full sm:w-auto max-w-md"
+        style={{
+          backgroundColor: 'hsl(var(--card))',
+          borderColor: 'hsl(var(--border))',
+          color: 'hsl(var(--card-foreground))'
+        }}
       >
-        <div className="p-2 rounded-full bg-accent/20 text-accent">
+        <div 
+          className="p-2 rounded-full"
+          style={{
+            backgroundColor: 'hsl(var(--info-bg))',
+            color: 'hsl(var(--info-fg))'
+          }}
+        >
           <CircleDollarSignIcon className="h-5 w-5" />
         </div>
         <div className="flex-1">
-          <h4 className="font-medium text-foreground">
+          <h4 
+            className="font-medium"
+            style={{ color: 'hsl(var(--card-foreground))' }}
+          >
             Currency Changed to {currency}
           </h4>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p 
+            className="text-sm mt-1"
+            style={{ color: 'hsl(var(--muted-foreground))' }}
+          >
             You're now viewing {currency} transactions.
             {currency === "ARS" && " (Argentine Peso)"}
             {currency === "USD" && " (US Dollar)"}
@@ -66,7 +82,19 @@ export default function CurrencyNotification({
         </div>
         <button 
           onClick={handleClose}
-          className="text-muted-foreground hover:text-foreground p-1 rounded-full hover:bg-accent/10 focus:outline-none focus:ring-2 focus:ring-accent/30"
+          className="p-1 rounded-full focus:outline-none focus:ring-2 transition-colors"
+          style={{
+            color: 'hsl(var(--muted-foreground))',
+            focusRingColor: 'hsl(var(--ring))'
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.color = 'hsl(var(--foreground))';
+            e.target.style.backgroundColor = 'hsl(var(--muted))';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.color = 'hsl(var(--muted-foreground))';
+            e.target.style.backgroundColor = 'transparent';
+          }}
           aria-label="Close notification"
         >
           <XIcon className="h-4 w-4" />

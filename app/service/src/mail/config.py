@@ -31,11 +31,11 @@ class MailConfig(BaseModel):
     def from_env(cls) -> "MailConfig":
         """Create configuration from environment variables."""
         return cls(
-            smtp_username=os.getenv("MAIL_SMTP_USERNAME"),
-            smtp_password=os.getenv("MAIL_SMTP_PASSWORD"),
-            from_email=os.getenv("MAIL_FROM_EMAIL"),
-            from_name=os.getenv("MAIL_FROM_NAME", "MYNAB"),
-            template_dir=os.getenv("MAIL_TEMPLATE_DIR", "src/mail/templates")
+            smtp_username=os.getenv("ENV_MAIL_SMTP_USERNAME"),
+            smtp_password=os.getenv("ENV_MAIL_SMTP_PASSWORD"),
+            from_email=os.getenv("ENV_MAIL_FROM_EMAIL"),
+            from_name=os.getenv("ENV_MAIL_FROM_NAME", "MYNAB"),
+            template_dir=os.getenv("ENV_MAIL_TEMPLATE_DIR", "src/mail/templates")
         )
 
     @field_validator("smtp_username")

@@ -95,7 +95,8 @@ export default function PasswordlessSignupForm({ onSignUp, onSwitchToLogin }) {
         {
           name: form.name,
           last_name: form.last_name,
-          email: form.email
+          email: form.email,
+          id_role: 1
         }, 
         form.verification_code,
         form.email

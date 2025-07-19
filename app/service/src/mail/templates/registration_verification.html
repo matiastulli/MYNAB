@@ -5,28 +5,26 @@
 {% block header_title %}Complete Your Registration{% endblock %}
 
 {% block content %}
-    <h2>Welcome to MYNAB!</h2>
+    <h2>Welcome to MYNAB! 🎉</h2>
     
-    <p>Hello {{ user_name }},</p>
+    <p>Hello <strong>{{ user_name }}</strong>,</p>
     
-    <p>To complete your registration and activate your account, please verify your email address using the code below.</p>
-    
-    <p><strong>Your verification code:</strong></p>
+    <p>We're excited to have you join MYNAB! To complete your registration and activate your account, please verify your email address using the code below.</p>
     
     <div class="code-block">
         {{ verification_code }}
     </div>
     
-    <div class="alert alert-warning">
+    <div class="alert">
         <strong>⏰ Time Sensitive:</strong><br>
         This code will expire in <strong>{{ expiry_minutes }} minutes</strong> for your security.
     </div>
     
     <div class="divider"></div>
     
-    <p>If you have any questions during setup, our support team is here to help!</p>
+    <p>If you have any questions during setup, our support team is here to help at <a href="mailto:support@mynab.com" style="color: #22b573; text-decoration: none;">support@mynab.com</a></p>
     
-    <p style="margin-top: 24px;">
+    <p style="margin-top: 32px;">
         Best regards,<br>
         <strong>The MYNAB Team</strong>
     </p>

@@ -14,22 +14,6 @@ oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="/auth/users/tokens", auto_error=False)
 
 
-def create_temp_access_token(
-    *,
-    user: dict[str, Any],
-    expires_delta: timedelta = timedelta(minutes=auth_config.ENV_JWT_EXP),
-) -> str:
-    jwt_data = {
-        "sub": str(user["id"]),
-        "exp": datetime.utcnow() + expires_delta,
-        "name": user.get("name"),
-        "last_name": user.get("last_name"),
-        "temp_access": "false",
-    }
-
-    return jwt.encode(jwt_data, auth_config.ENV_JWT_SECRET, algorithm=auth_config.ENV_JWT_ALG)
-
-
 def create_access_token(
     *,
     user: dict[str, Any],

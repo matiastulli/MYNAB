@@ -42,8 +42,8 @@ async def sign_in_user(
 ) -> JSONResponse:
     user = await service.authenticate_user(sign_in_data)
 
-    refresh_token_value = await service.create_refresh_token_temp()
-    access_token = jwt.create_temp_access_token(user=user)
+    refresh_token_value = await service.create_refresh_token(user["id"])
+    access_token = jwt.create_access_token(user=user)
 
     response.set_cookie(
         **utils.get_refresh_token_settings(refresh_token_value))
@@ -263,8 +263,8 @@ async def passwordless_register(
             )
 
         # Create authentication tokens immediately
-        refresh_token_value = await service.create_refresh_token_temp()
-        access_token = jwt.create_temp_access_token(user=user_data)
+        refresh_token_value = await service.create_refresh_token(id_user=user_data["id"])
+        access_token = jwt.create_access_token(user=user_data)
 
         response.set_cookie(
             **utils.get_refresh_token_settings(refresh_token_value)
@@ -312,8 +312,8 @@ async def passwordless_login(
         user = await service.authenticate_passwordless_user(email)
 
         # Create tokens
-        refresh_token_value = await service.create_refresh_token_temp()
-        access_token = jwt.create_temp_access_token(user=user)
+        refresh_token_value = await service.create_refresh_token(id_user=user["id"])
+        access_token = jwt.create_access_token(user=user)
 
         response.set_cookie(
             **utils.get_refresh_token_settings(refresh_token_value)

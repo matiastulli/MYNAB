@@ -104,15 +104,6 @@ async def get_user_by_email(email: str) -> dict[str, Any] | None:
     return await fetch_one(select_query)
 
 
-async def create_refresh_token_temp(
-    *, refresh_token: str | None = None
-) -> str:
-    if not refresh_token:
-        refresh_token = utils.generate_random_alphanum(64)
-
-    return refresh_token
-
-
 async def create_refresh_token(
     *, id_user: int, refresh_token: str | None = None
 ) -> str:

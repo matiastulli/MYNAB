@@ -108,20 +108,18 @@ export default function PasswordlessSignupForm({ onSignUp, onSwitchToLogin }) {
         return
       }
 
-      // Then automatically log them in with the same code
-      const loginResponse = await api.auth.passwordless.login(form.email, form.verification_code)
-      
-      if (loginResponse.error) {
-        // Registration succeeded but login failed, show success message
-        setStep("success")
-      } else if (loginResponse.access_token) {
-        // Store token and user info
-        localStorage.setItem("token", loginResponse.access_token)
-        localStorage.setItem("refreshToken", loginResponse.refresh_token)
-        localStorage.setItem("userId", loginResponse.id_user)
+      // Registration now returns tokens directly!
+      if (registerResponse.access_token) {
+        // Store authentication data
+        localStorage.setItem("token", registerResponse.access_token)
+        localStorage.setItem("refreshToken", registerResponse.refresh_token)
+        localStorage.setItem("userId", registerResponse.id_user)
         
-        // Notify parent component
-        onSignUp(loginResponse)
+        // Notify parent component - seamless login!
+        onSignUp(registerResponse)
+      } else {
+        // Fallback to success page if tokens not received
+        setStep("success")
       }
     } catch (err) {
       setError("Registration failed: " + (err.message || "Unknown error"))

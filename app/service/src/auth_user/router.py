@@ -224,13 +224,14 @@ async def verify_verification_code(
         )
 
 
-@router.post("/passwordless/register", status_code=status.HTTP_201_CREATED, response_model=schemas.UserResponse)
+@router.post("/passwordless/register", status_code=status.HTTP_201_CREATED, response_model=schemas.AccessTokenResponse)
 async def passwordless_register(
     register_data: schemas.PasswordlessRegisterUser,
     verification_code: str,
-    email: str
+    email: str,
+    response: Response
 ) -> JSONResponse:
-    """Register a new user with passwordless authentication."""
+    """Register a new user with passwordless authentication and return tokens."""
     try:
         # First verify the code
         verification_record = await service.verify_code(
@@ -261,8 +262,21 @@ async def passwordless_register(
                 detail="User not created"
             )
 
-        user_response = schemas.UserResponse(**user_data)
-        return JSONResponse(status_code=status.HTTP_201_CREATED, content=user_response.model_dump())
+        # Create authentication tokens immediately
+        refresh_token_value = await service.create_refresh_token_temp()
+        access_token = jwt.create_temp_access_token(user=user_data)
+
+        response.set_cookie(
+            **utils.get_refresh_token_settings(refresh_token_value)
+        )
+
+        token_response = schemas.AccessTokenResponse(
+            id_user=user_data["id"],
+            access_token=access_token,
+            refresh_token=refresh_token_value,
+        )
+
+        return JSONResponse(status_code=status.HTTP_201_CREATED, content=token_response.model_dump())
 
     except HTTPException:
         raise

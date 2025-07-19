@@ -4,6 +4,7 @@ from sqlalchemy import (
     Column,
     DateTime,
     Date,
+    Delete,
     ForeignKey,
     Integer,
     LargeBinary,
@@ -168,6 +169,6 @@ async def fetch_all_sql(sql_query: str) -> List[Dict[str, Any]]:
         return [dict(zip(columns, row)) for row in rows]
 
 
-async def execute(select_query: Insert | Update) -> None:
+async def execute(select_query: Insert | Update | Delete) -> None:
     async with engine.begin() as conn:
         await conn.execute(select_query)

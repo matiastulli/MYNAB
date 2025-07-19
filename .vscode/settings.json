@@ -1,0 +1,32 @@
+{
+    "python.defaultInterpreterPath": "./app/service/venv/Scripts/python.exe",
+    "python.terminal.activateEnvironment": true,
+    "python.envFile": "${workspaceFolder}/app/service/.env",
+    "terminal.integrated.cwd": "${workspaceFolder}/app/service",
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/*.pyc": true,
+        "**/.pytest_cache": true,
+        "**/node_modules": true,
+        "**/.git": false
+    },
+    "python.analysis.extraPaths": [
+        "./app/service"
+    ],
+    "python.analysis.autoSearchPaths": true,
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": false,
+    "python.linting.flake8Enabled": true,
+    "python.formatting.provider": "black",
+    "python.testing.pytestEnabled": true,
+    "python.testing.pytestArgs": [
+        "app/service"
+    ],
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.python",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        }
+    }
+}

@@ -1,0 +1,104 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run FastAPI Server",
+            "type": "shell",
+            "command": "uvicorn",
+            "args": [
+                "src.main:app",
+                "--reload",
+                "--host", "0.0.0.0",
+                "--port", "8000"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/app/service",
+                "env": {
+                    "PYTHONPATH": "${workspaceFolder}/app/service"
+                }
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            },
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": [
+                    {
+                        "regexp": ".",
+                        "file": 1,
+                        "location": 2,
+                        "message": 3
+                    }
+                ],
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".",
+                    "endsPattern": ".*Application startup complete.*"
+                }
+            }
+        },
+        {
+            "label": "Install Python Dependencies",
+            "type": "shell",
+            "command": "pip",
+            "args": ["install", "-r", "requirements.txt"],
+            "options": {
+                "cwd": "${workspaceFolder}/app/service"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            }
+        },
+        {
+            "label": "Run Database Migrations",
+            "type": "shell",
+            "command": "alembic",
+            "args": ["upgrade", "head"],
+            "options": {
+                "cwd": "${workspaceFolder}/app/service"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            }
+        },
+        {
+            "label": "Create New Migration",
+            "type": "shell",
+            "command": "alembic",
+            "args": ["revision", "--autogenerate", "-m", "${input:migrationMessage}"],
+            "options": {
+                "cwd": "${workspaceFolder}/app/service"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            }
+        }
+    ],
+    "inputs": [
+        {
+            "id": "migrationMessage",
+            "description": "Migration message",
+            "default": "Auto-generated migration",
+            "type": "promptString"
+        }
+    ]
+}

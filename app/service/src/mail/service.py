@@ -29,11 +29,23 @@ class MailService:
         """Setup Jinja2 template environment."""
         if self.config.template_dir:
             template_path = Path(self.config.template_dir)
+            
+            # Try relative path first, then absolute
+            if not template_path.exists() and not template_path.is_absolute():
+                # Try resolving relative to the current working directory
+                template_path = Path.cwd() / self.config.template_dir
+            
             if template_path.exists():
                 self._template_env = Environment(
                     loader=FileSystemLoader(str(template_path)),
                     autoescape=True
                 )
+                logger.info(f"Template environment initialized with path: {template_path}")
+            else:
+                logger.warning(f"Template directory not found: {template_path}")
+                logger.warning(f"Current working directory: {Path.cwd()}")
+        else:
+            logger.warning("No template directory configured")
 
     def _get_smtp_connection(self) -> smtplib.SMTP:
         """Create and return authenticated SMTP connection."""

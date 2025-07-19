@@ -35,6 +35,29 @@ class RegisterUser(UserBase):
     id_role: int
 
 
+# Passwordless authentication schemas
+class PasswordlessRegisterUser(CustomModel):
+    name: str = Field(min_length=2, max_length=100)
+    last_name: str = Field(min_length=2, max_length=100)
+    email: EmailStr
+    id_role: int
+
+
+class SendVerificationCodeRequest(CustomModel):
+    email: EmailStr
+    code_type: str = Field(pattern="^(login|registration)$")
+
+
+class VerifyCodeRequest(CustomModel):
+    email: EmailStr
+    verification_code: str = Field(min_length=6, max_length=8)
+    code_type: str = Field(pattern="^(login|registration)$")
+
+
+class PasswordlessLoginRequest(CustomModel):
+    email: EmailStr
+
+
 class UpdateUser(CustomModel):
     name: str = Field(min_length=2, max_length=100)
     last_name: str = Field(min_length=2, max_length=100)
@@ -56,12 +79,20 @@ class AccessTokenResponse(CustomModel):
     refresh_token: str
 
 
+class VerificationCodeResponse(CustomModel):
+    success: bool
+    message: str
+    expires_in: Optional[int] = None  # Minutes until expiration
+
+
 class UserResponse(CustomModel):
     id: int
     name: str
     last_name: str
     national_id: Optional[str] = None
     email: EmailStr
+    auth_method: str
+    email_verified: bool
     id_role: int
     created_at: str
     updated_at: str

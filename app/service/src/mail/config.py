@@ -30,12 +30,15 @@ class MailConfig(BaseModel):
     @classmethod
     def from_env(cls) -> "MailConfig":
         """Create configuration from environment variables."""
+        # Default template directory relative to this file's location
+        default_template_dir = os.path.join(os.path.dirname(__file__), "templates")
+        
         return cls(
             smtp_username=os.getenv("ENV_MAIL_SMTP_USERNAME"),
             smtp_password=os.getenv("ENV_MAIL_SMTP_PASSWORD"),
             from_email=os.getenv("ENV_MAIL_FROM_EMAIL"),
             from_name=os.getenv("ENV_MAIL_FROM_NAME", "MYNAB"),
-            template_dir=os.getenv("ENV_MAIL_TEMPLATE_DIR", "src/mail/templates")
+            template_dir=os.getenv("ENV_MAIL_TEMPLATE_DIR", default_template_dir)
         )
 
     @field_validator("smtp_username")

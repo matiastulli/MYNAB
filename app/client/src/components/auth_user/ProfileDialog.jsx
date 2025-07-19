@@ -188,7 +188,11 @@ export default function ProfileDialog({
               <Button
                 type="submit"
                 disabled={isUpdating}
-                className="w-full sm:w-auto h-10 bg-accent hover:bg-accent/90 text-accent-foreground"
+                className="w-full sm:w-auto h-10 transition-all duration-200"
+                style={{
+                  backgroundColor: "hsl(var(--accent))",
+                  color: "hsl(var(--accent-foreground))"
+                }}
               >
                 {isUpdating ? (
                   <div className="flex items-center gap-2">

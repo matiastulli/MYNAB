@@ -332,8 +332,14 @@ export default function App() {
                 className="flex items-center gap-2 cursor-pointer bg-card hover:bg-accent rounded-lg px-3 py-1.5 transition-colors shadow-sm border border-border"
                 onClick={() => setShowProfileModal(true)}
               >
-                <div className="bg-emerald-100 dark:bg-emerald-900/30 rounded-full p-1">
-                  <UserIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-600 dark:text-emerald-400" />
+                <div 
+                  className="rounded-full p-1"
+                  style={{
+                    backgroundColor: "hsl(var(--success-bg))",
+                    color: "hsl(var(--success-fg))"
+                  }}
+                >
+                  <UserIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </div>
                 <span className="text-xs sm:text-sm font-medium text-card-foreground truncate max-w-[120px] sm:max-w-full">
                   {userData.name} {userData.last_name}
@@ -362,16 +368,29 @@ export default function App() {
                   <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Current Balance
                   </p>
-                  <p className={`text-2xl font-semibold mt-2 ${balance >= 0 
-                    ? "text-emerald-600 dark:text-emerald-400" 
-                    : "text-red-500 dark:text-red-400"}`}>
+                  <p 
+                    className="text-2xl font-semibold mt-2"
+                    style={{
+                      color: balance >= 0 
+                        ? "hsl(var(--success-fg))" 
+                        : "hsl(var(--destructive))"
+                    }}
+                  >
                     {currency === "EUR" ? "€" : "$"}
                     {Math.abs(balance).toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </p>
                 </div>
-                <div className={`p-3 rounded-full ${balance >= 0 
-                  ? "bg-emerald-50 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400" 
-                  : "bg-red-50 dark:bg-red-900/70 text-red-500 dark:text-red-400"}`}>
+                <div 
+                  className="p-3 rounded-full"
+                  style={{
+                    backgroundColor: balance >= 0 
+                      ? "hsl(var(--success-bg))" 
+                      : "hsl(var(--destructive) / 0.1)",
+                    color: balance >= 0 
+                      ? "hsl(var(--success-fg))" 
+                      : "hsl(var(--destructive))"
+                  }}
+                >
                   <WalletIcon className="h-6 w-6" />
                 </div>
               </div>
@@ -396,12 +415,21 @@ export default function App() {
                   <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Income
                   </p>
-                  <p className="text-2xl font-semibold mt-2 text-emerald-600 dark:text-emerald-400">
+                  <p 
+                    className="text-2xl font-semibold mt-2"
+                    style={{ color: "hsl(var(--success-fg))" }}
+                  >
                     {currency === "EUR" ? "€" : "$"}
                     {summary.income.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </p>
                 </div>
-                <div className="p-3 rounded-full bg-emerald-50 dark:bg-emerald-900/70 text-emerald-600 dark:text-emerald-400">
+                <div 
+                  className="p-3 rounded-full"
+                  style={{
+                    backgroundColor: "hsl(var(--success-bg))",
+                    color: "hsl(var(--success-fg))"
+                  }}
+                >
                   <TrendingUpIcon className="h-6 w-6" />
                 </div>
               </div>
@@ -426,12 +454,21 @@ export default function App() {
                   <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Expenses
                   </p>
-                  <p className="text-2xl font-semibold mt-2 text-red-500 dark:text-red-400">
+                  <p 
+                    className="text-2xl font-semibold mt-2"
+                    style={{ color: "hsl(var(--destructive))" }}
+                  >
                     {currency === "EUR" ? "€" : "$"}
                     {summary.outcome.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </p>
                 </div>
-                <div className="p-3 rounded-full bg-red-50 dark:bg-red-900/70 text-red-500 dark:text-red-400">
+                <div 
+                  className="p-3 rounded-full"
+                  style={{
+                    backgroundColor: "hsl(var(--destructive) / 0.1)",
+                    color: "hsl(var(--destructive))"
+                  }}
+                >
                   <TrendingDownIcon className="h-6 w-6" />
                 </div>
               </div>
@@ -451,35 +488,60 @@ export default function App() {
             <TabsList className="flex bg-card p-1.5 gap-x-1.5 rounded-xl shadow-sm border border-border overflow-x-auto max-w-full w-full sm:w-auto">
               <TabsTrigger
                 value="dashboard"
-                className="flex-1 sm:flex-none text-muted-foreground data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
+                className="flex-1 sm:flex-none text-muted-foreground rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
+                style={{
+                  '--active-color': 'hsl(var(--accent))',
+                  '--active-bg': 'hsl(var(--accent) / 0.1)'
+                }}
+                data-state={activeTab === "dashboard" ? "active" : "inactive"}
               >
                 <LayoutDashboardIcon className="h-4 w-4" />
                 <span className="hidden sm:inline-block ml-2">Dashboard</span>
               </TabsTrigger>
               <TabsTrigger
                 value="entries"
-                className="flex-1 sm:flex-none text-muted-foreground data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
+                className="flex-1 sm:flex-none text-muted-foreground rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
+                style={{
+                  '--active-color': 'hsl(var(--accent))',
+                  '--active-bg': 'hsl(var(--accent) / 0.1)'
+                }}
+                data-state={activeTab === "entries" ? "active" : "inactive"}
               >
                 <BarChartIcon className="h-4 w-4" />
                 <span className="hidden sm:inline-block ml-2">Activity</span>
               </TabsTrigger>
               <TabsTrigger
                 value="new"
-                className="flex-1 sm:flex-none text-muted-foreground data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
+                className="flex-1 sm:flex-none text-muted-foreground rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
+                style={{
+                  '--active-color': 'hsl(var(--accent))',
+                  '--active-bg': 'hsl(var(--accent) / 0.1)'
+                }}
+                data-state={activeTab === "new" ? "active" : "inactive"}
               >
                 <PlusCircleIcon className="h-4 w-4" />
                 <span className="hidden sm:inline-block ml-2">Add Transaction</span>
               </TabsTrigger>
               <TabsTrigger
                 value="import"
-                className="flex-1 sm:flex-none text-muted-foreground data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
+                className="flex-1 sm:flex-none text-muted-foreground rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
+                style={{
+                  '--active-color': 'hsl(var(--accent))',
+                  '--active-bg': 'hsl(var(--accent) / 0.1)'
+                }}
+                data-state={activeTab === "import" ? "active" : "inactive"}
               >
                 <UploadIcon className="h-4 w-4" />
                 <span className="hidden sm:inline-block ml-2">Import Statements</span>
               </TabsTrigger>
               <TabsTrigger
                 value="files"
-                className="flex-1 sm:flex-none text-muted-foreground data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/70 dark:data-[state=active]:bg-emerald-900/30 data-[state=active]:shadow-sm rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
+                className="flex-1 sm:flex-none text-muted-foreground rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
+                style={{
+                  '--active-color': 'hsl(var(--accent))',
+                  '--active-bg': 'hsl(var(--accent) / 0.1)'
+                }}
+                data-state={activeTab === "files" ? "active" : "inactive"}
               >
                 <FolderIcon className="h-4 w-4" />
                 <span className="hidden sm:inline-block ml-2">Bank Statements</span>

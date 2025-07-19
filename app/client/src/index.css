@@ -29,7 +29,7 @@
   --chart-3: 200 85% 60%;
   --chart-4: 260 75% 60%;
   --chart-5: 30 85% 65%;
-  --border: 210 36% 90%; /* Lighter border for better separation */
+  --border: 210 30% 70%; /* Darker border for better visibility */
   --input: 210 36% 96%;
   --ring: var(--accent);
   --radius: 0.5rem;

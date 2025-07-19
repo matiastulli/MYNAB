@@ -6,12 +6,13 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.middleware.cors import CORSMiddleware
 
-from src.logging import log_middleware
-from src.exceptions import BadRequest, PermissionDenied, NotAuthenticated
-from src.config import app_configs, settings
-from src.auth_user.router import router as auth_user_router
-from src.budget.router import router as budget_router
-from src.budget_transaction_category.router import router as budget_transaction_category_router
+from .logging import log_middleware
+from .exceptions import BadRequest, PermissionDenied, NotAuthenticated
+from .config import app_configs, settings
+from .auth_user.router import router as auth_user_router
+from .budget.router import router as budget_router
+from .budget_transaction_category.router import router as budget_transaction_category_router
+from .mail.router import router as mail_router
 
 load_dotenv()
 
@@ -96,3 +97,4 @@ async def healthcheck():
 app.include_router(auth_user_router, prefix="/auth", tags=["Auth"])
 app.include_router(budget_router, prefix="/budget", tags=["Budget"])
 app.include_router(budget_transaction_category_router, prefix="/budget-transaction-category", tags=["Budget Transaction Category"])
+app.include_router(mail_router, prefix="/mail", tags=["Mail"])

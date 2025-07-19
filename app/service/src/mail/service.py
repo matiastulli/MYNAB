@@ -193,13 +193,8 @@ class MailService:
         # Render HTML template
         html_body = self._render_template(f"{template_name}.html", context)
 
-        # Try to render text template, fallback to HTML if not found
-        try:
-            text_body = self._render_template(f"{template_name}.txt", context)
-        except MailTemplateError:
-            # Convert HTML to plain text as fallback
-            import re
-            text_body = re.sub(r'<[^>]+>', '', html_body)
+        import re
+        text_body = re.sub(r'<[^>]+>', '', html_body) 
 
         return self.send_email(
             to_emails=to_emails,

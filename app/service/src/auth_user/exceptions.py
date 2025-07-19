@@ -1,5 +1,5 @@
-from src.service.auth_user.constants import ERRORCODE
-from src.service.exceptions import BadRequest, NotAuthenticated, PermissionDenied
+from src.auth_user.constants import ERRORCODE
+from src.exceptions import BadRequest, NotAuthenticated, PermissionDenied
 
 
 class AuthRequired(NotAuthenticated):

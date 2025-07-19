@@ -3,7 +3,7 @@ import io
 import pdfplumber
 import re
 
-from src.service.budget_transaction_category.constants import TRANSACTION_CATEGORIES
+from src.budget_transaction_category.constants import TRANSACTION_CATEGORIES
 
 
 def extract_pdf_to_dataframe(file_bytes: bytes) -> pd.DataFrame:

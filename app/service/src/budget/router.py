@@ -4,10 +4,10 @@ from typing import List, Optional
 
 from fastapi.responses import JSONResponse
 
-from src.service.auth_user.dependencies import require_role
-from src.service.auth_user.schemas import JWTData
-from src.service.budget.schemas import BudgetEntryCreate, BudgetSummary, BudgetResponseWithMeta, BudgetResponse, FilesResponseWithMeta, FilesResponse
-from src.service.budget.service import (
+from src.auth_user.dependencies import require_role
+from src.auth_user.schemas import JWTData
+from src.budget.schemas import BudgetEntryCreate, BudgetSummary, BudgetResponseWithMeta, BudgetResponse, FilesResponseWithMeta, FilesResponse
+from src.budget.service import (
     create_budget_entry,
     get_budget_summary,
     get_budget_entries,

@@ -11,11 +11,12 @@ __pycache__/
 build/
 develop-eggs/
 dist/
+!app/client/dist/
 downloads/
 eggs/
 .eggs/
 lib/
-!src/client/src/lib/
+!app/client/src/lib/
 lib64/
 parts/
 sdist/

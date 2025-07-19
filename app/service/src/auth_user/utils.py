@@ -1,7 +1,7 @@
 from typing import Any
 
-from src.service.auth_user.config import auth_config
-from src.service.config import settings
+from src.auth_user.config import auth_config
+from src.config import settings
 
 
 def get_refresh_token_settings(

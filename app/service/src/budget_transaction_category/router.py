@@ -1,10 +1,10 @@
 from typing import List
 from fastapi import APIRouter, Depends
 
-from src.service.auth_user.dependencies import require_role
-from src.service.auth_user.schemas import JWTData
-from src.service.budget_transaction_category import schema
-from src.service.budget_transaction_category import service
+from src.auth_user.dependencies import require_role
+from src.auth_user.schemas import JWTData
+from src.budget_transaction_category import schema
+from src.budget_transaction_category import service
 
 
 router = APIRouter()

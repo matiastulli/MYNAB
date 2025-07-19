@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from typing import Dict, Any, List
 
-from src.service.database import fetch_all, budget_transaction_category
+from src.database import fetch_all, budget_transaction_category
 
 
 

@@ -2,7 +2,7 @@ from datetime import date, datetime
 from typing import Optional, List, Dict
 
 from pydantic import validator
-from src.service.models import CustomModel, convert_datetime_to_date
+from src.models import CustomModel, convert_datetime_to_date
 
 
 class Validators:

@@ -1,14 +1,28 @@
 # MYNAB
 
-**How to configure python project?**
+**How to configure Python project?**
 
     1- Install python 3.11.6
 
-    2- python -m venv venv
+    2- cd app/service
 
-    3- .\\venv\\Scripts\\activate
+    3- python -m venv venv
 
-    4- pip install -r requirements.txt
+    4- .\\venv\\Scripts\\activate
+
+    5- pip install -r requirements.txt
+
+    6- uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+
+**How to configure React project?**
+
+    1- Install Node.js (recommended version 16.x or higher)
+
+    2- cd app/client
+
+    3- npm install
+
+    4- npm run dev
 
 **Docker utils**
 
@@ -29,30 +43,8 @@
 
     Use to migrate orm changes in backend to database:
     
-        alembic init migrations
+    1- alembic init migrations
 
-    alembic revision --autogenerate -m "First Migration"
+    2- alembic revision --autogenerate -m "First Migration"
 
-    alembic upgrade head
-
-**How to configure React project?**
-
-    1- Navigate to the client directory:
-
-        ```bash
-        cd src/client
-        ```
-
-    2- Install Node.js (recommended version 16.x or higher)
-
-    3- Install dependencies:
-
-        ```bash
-        npm install
-        ```
-
-**How to wake up the project?**
-
-    service: uvicorn src.service.main:app --host 0.0.0.0 --port 8000 --reload
-
-    client: npm run dev
+    3- alembic upgrade head

@@ -6,11 +6,11 @@ import io
 import base64
 from loguru import logger
 
-from src.service.auth_user.service import get_user_by_id
-from src.service.budget.utils import extract_pdf_to_dataframe, identify_transaction_category
-from src.service.database import fetch_all, fetch_one, execute, budget_entry, files, budget_transaction_category
-from src.service.budget.schemas import BudgetEntryCreate, CategorySummary
-from src.service.budget_transaction_category.constants import CATEGORY_IDS
+from src.auth_user.service import get_user_by_id
+from src.budget.utils import extract_pdf_to_dataframe, identify_transaction_category
+from src.database import fetch_all, fetch_one, execute, budget_entry, files, budget_transaction_category
+from src.budget.schemas import BudgetEntryCreate, CategorySummary
+from src.budget_transaction_category.constants import CATEGORY_IDS
 
 
 async def create_budget_entry(user_id: int, entry: BudgetEntryCreate) -> None:

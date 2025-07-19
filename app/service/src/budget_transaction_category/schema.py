@@ -1,5 +1,5 @@
 from typing import Optional
-from src.service.models import CustomModel
+from src.models import CustomModel
 
 
 class TransactionCategoryResponse(CustomModel):

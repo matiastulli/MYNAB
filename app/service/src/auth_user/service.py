@@ -5,12 +5,12 @@ from typing import Any
 from pydantic import UUID4
 from sqlalchemy import insert, select, join, update
 
-from src.service import utils
-from src.service.auth_user.config import auth_config
-from src.service.auth_user.exceptions import InvalidCredentials
-from src.service.auth_user.schemas import RegisterUser, SignInUser, UpdateUser
-from src.service.auth_user.security import check_password, hash_password
-from src.service.database import auth_user, auth_user_role, auth_refresh_token, execute, fetch_one, fetch_all
+from src import utils
+from src.auth_user.config import auth_config
+from src.auth_user.exceptions import InvalidCredentials
+from src.auth_user.schemas import RegisterUser, SignInUser, UpdateUser
+from src.auth_user.security import check_password, hash_password
+from src.database import auth_user, auth_user_role, auth_refresh_token, execute, fetch_one, fetch_all
 
 
 async def create_user(user: RegisterUser) -> dict[str, Any] | None:

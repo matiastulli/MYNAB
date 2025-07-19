@@ -3,12 +3,12 @@ from typing import Any, List
 
 from fastapi import Cookie, Depends
 
-from src.service.auth_user.exceptions import EmailTaken, RefreshTokenNotValid, RoleRequired
-from src.service.auth_user.schemas import RegisterUser, JWTData
-from src.service.auth_user import service
+from src.auth_user.exceptions import EmailTaken, RefreshTokenNotValid, RoleRequired
+from src.auth_user.schemas import RegisterUser, JWTData
+from src.auth_user import service
 
-from src.service.auth_user.jwt import parse_jwt_user_data
-from src.service.constants import ROLES
+from src.auth_user.jwt import parse_jwt_user_data
+from src.constants import ROLES
 
 
 async def valid_user_create(user: RegisterUser) -> RegisterUser:

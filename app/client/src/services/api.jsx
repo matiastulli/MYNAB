@@ -47,15 +47,26 @@ export const api = {
     }
   },
   
-  post: async (endpoint, data) => {
+  post: async (endpoint, data, options = {}) => {
     try {
       // Ensure endpoint starts with a slash if it doesn't already
       const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
       
-      const response = await fetch(`${API_BASE_URL}${normalizedEndpoint}`, {
+      let url = `${API_BASE_URL}${normalizedEndpoint}`;
+      
+      // Handle query parameters if provided
+      if (options.params) {
+        const searchParams = new URLSearchParams();
+        Object.keys(options.params).forEach(key => {
+          searchParams.append(key, options.params[key]);
+        });
+        url += `?${searchParams.toString()}`;
+      }
+      
+      const response = await fetch(url, {
         method: 'POST',
         headers: getHeaders(),
-        body: JSON.stringify(data),
+        body: data ? JSON.stringify(data) : undefined,
       });
       
       if (!response.ok) {
@@ -66,7 +77,7 @@ export const api = {
           localStorage.removeItem('userId');
         }
         const error = await response.json();
-        return { error: error.error || 'API request failed' };
+        return { error: error.detail || error.error || 'API request failed' };
       }
       
       return response.json();
@@ -136,6 +147,42 @@ export const api = {
     
     signup: async (userData) => {
       return api.post('auth/signup', userData);
+    },
+
+    // Passwordless authentication methods
+    passwordless: {
+      sendCode: async (email, codeType) => {
+        return api.post('auth/passwordless/send-code', {
+          email,
+          code_type: codeType
+        });
+      },
+
+      verifyCode: async (email, code, codeType) => {
+        return api.post('auth/passwordless/verify-code', {
+          email,
+          verification_code: code,
+          code_type: codeType
+        });
+      },
+
+      register: async (userData, verificationCode, email) => {
+        return api.post('auth/passwordless/register', userData, {
+          params: {
+            verification_code: verificationCode,
+            email: email
+          }
+        });
+      },
+
+      login: async (email, verificationCode) => {
+        return api.post('auth/passwordless/login', null, {
+          params: {
+            email: email,
+            verification_code: verificationCode
+          }
+        });
+      }
     }
   },
   

@@ -2,8 +2,8 @@
 
 import { WalletIcon, XIcon } from "lucide-react"
 import { useState } from "react"
-import SignInForm from "./SignInForm"
-import SignupForm from "./SignupForm"
+import PasswordlessSignInForm from "./PasswordlessSignInForm"
+import PasswordlessSignupForm from "./PasswordlessSignupForm"
 
 export default function AuthModal({ onAuthenticated, onClose = () => {} }) {
   const [isLoginView, setIsLoginView] = useState(true)
@@ -58,9 +58,9 @@ export default function AuthModal({ onAuthenticated, onClose = () => {} }) {
 
         {/* Form content */}
         {isLoginView ? (
-          <SignInForm onLogin={handleLogin} onSwitchToSignup={() => setIsLoginView(false)} />
+          <PasswordlessSignInForm onLogin={handleLogin} onSwitchToSignup={() => setIsLoginView(false)} />
         ) : (
-          <SignupForm onSignUp={handleSignUp} onSwitchToLogin={() => setIsLoginView(true)} />
+          <PasswordlessSignupForm onSignUp={handleSignUp} onSwitchToLogin={() => setIsLoginView(true)} />
         )}
       </div>
     </div>

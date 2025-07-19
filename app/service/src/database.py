@@ -1,5 +1,6 @@
 from typing import Any, Dict, List
 from sqlalchemy import (
+    Boolean,
     Column,
     DateTime,
     Date,
@@ -48,7 +49,9 @@ auth_user = Table(
     Column("last_name", String(100), nullable=False),
     Column("national_id", String(20), nullable=True, unique=True),
     Column("email", String, nullable=False, unique=True),
-    Column("password", LargeBinary, nullable=False),
+    Column("password", LargeBinary, nullable=True),
+    Column("auth_method", String(20), nullable=False, server_default="password"),
+    Column("email_verified", Boolean, nullable=False, server_default="false"),
     Column("id_role", Integer, ForeignKey(
         "mynab.auth_user_role.id")),
     Column("created_at", DateTime, server_default=func.now(), nullable=False),
@@ -78,6 +81,24 @@ auth_user_activity_log = Table(
     Column("action", String(255)),
     Column("details", JSON),
     Column("timestamp", DateTime, server_default=func.now()),
+    schema="mynab",
+)
+
+# Email verification codes for passwordless authentication
+auth_email_verification = Table(
+    "auth_email_verification",
+    metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("email", String, nullable=False),
+    Column("verification_code", String(10), nullable=False),  # 6-8 digit code
+    Column("code_type", String(20), nullable=False),  # 'login', 'registration', 'password_reset'
+    Column("attempts", Integer, nullable=False, server_default="0"),  # Track failed attempts
+    Column("max_attempts", Integer, nullable=False, server_default="3"),  # Max attempts allowed
+    Column("expires_at", DateTime, nullable=False),
+    Column("used_at", DateTime, nullable=True),  # When the code was successfully used
+    Column("ip_address", String(45), nullable=True),  # Track IP for security
+    Column("user_agent", String(255), nullable=True),  # Track user agent for security
+    Column("created_at", DateTime, server_default=func.now(), nullable=False),
     schema="mynab",
 )
 

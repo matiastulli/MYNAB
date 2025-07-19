@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Registration Verification Code - MYNAB{% endblock %}
+
+{% block header_title %}Complete Your Registration{% endblock %}
+
+{% block content %}
+    <h2>Welcome to MYNAB!</h2>
+    
+    <p>Hello {{ user_name }},</p>
+    
+    <p>Thank you for choosing MYNAB! To complete your registration and activate your account, please verify your email address using the code below.</p>
+    
+    <div class="alert alert-success">
+        <strong>🎉 Almost Ready!</strong><br>
+        Your MYNAB account is almost set up. Just one more step to go!
+    </div>
+    
+    <p><strong>Your verification code:</strong></p>
+    
+    <div class="code-block">
+        {{ verification_code }}
+    </div>
+    
+    <div class="alert alert-warning">
+        <strong>⏰ Time Sensitive:</strong><br>
+        This code will expire in <strong>{{ expiry_minutes }} minutes</strong> for your security.
+    </div>
+    
+    <div class="divider"></div>
+    
+    <h3 style="color: var(--foreground); font-size: 16px; margin: 24px 0 16px 0;">How to complete your registration:</h3>
+    
+    <ol style="padding-left: 20px; margin: 16px 0;">
+        <li style="margin: 8px 0;">Go back to the MYNAB registration page</li>
+        <li style="margin: 8px 0;">Enter the verification code above</li>
+        <li style="margin: 8px 0;">Click "Verify Email"</li>
+        <li style="margin: 8px 0;">Start managing your budget!</li>
+    </ol>
+    
+    <div style="text-align: center; margin: 32px 0;">
+        <a href="{{ registration_url }}" class="button">Complete Registration</a>
+    </div>
+    
+    <div class="alert alert-info">
+        <strong>🔐 Passwordless Security:</strong><br>
+        Your account uses passwordless authentication for enhanced security. You'll receive verification codes via email for each login.
+    </div>
+    
+    <p class="muted">Registration attempt from IP: {{ ip_address }}</p>
+    
+    <p>If you have any questions during setup, our support team is here to help!</p>
+    
+    <p style="margin-top: 24px;">
+        Best regards,<br>
+        <strong>The MYNAB Team</strong>
+    </p>
+{% endblock %}
+
+{% block footer %}
+    <div class="social-links">
+        <a href="https://mynab.com">Website</a>
+        <a href="mailto:support@mynab.com">Support</a>
+        <a href="https://mynab.com/help">Help Center</a>
+    </div>
+    <p>© 2025 MYNAB. All rights reserved.</p>
+    <p class="muted">If you didn't create this account, please ignore this email or <a href="mailto:support@mynab.com" style="color: var(--muted-foreground);">contact support</a>.</p>
+{% endblock %}

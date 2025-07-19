@@ -42,9 +42,11 @@
 **To use Alembic, do**
 
     Use to migrate orm changes in backend to database:
+
+    1- cd app/service
     
-    1- alembic init migrations
+    2- alembic init migrations
 
-    2- alembic revision --autogenerate -m "First Migration"
+    3- alembic revision --autogenerate -m "First Migration"
 
-    3- alembic upgrade head
+    4- alembic upgrade head

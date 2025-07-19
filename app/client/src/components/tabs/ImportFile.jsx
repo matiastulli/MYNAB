@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { api } from "@/services/api";
-import { BanknoteIcon, CheckCircleIcon, CircleDollarSignIcon, CreditCardIcon, FileIcon, FileTextIcon, UploadCloudIcon, UploadIcon, XCircleIcon } from "lucide-react";
+import { CheckCircleIcon, CircleDollarSignIcon, FileIcon, FileTextIcon, UploadCloudIcon, UploadIcon, XCircleIcon } from "lucide-react";
 import { useState } from "react";
 
 export default function ImportFile({ onImportComplete, onImportSuccess, isAuthenticated, onSignInClick, currency }) {
@@ -129,19 +129,6 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
     return names[currency] || currency;
   };
 
-  const getBankIcon = (bankName) => {
-    switch(bankName) {
-      case 'santander_rio':
-        return <div className="w-3 h-3 bg-red-500 rounded-full"></div>;
-      case 'ICBC':
-        return <CreditCardIcon className="h-3 w-3 text-gray-600" />;
-      case 'mercado_pago':
-        return <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>;
-      default:
-        return <BanknoteIcon className="h-3 w-3 text-muted-foreground" />;
-    }
-  };
-
   // Bank-specific supported formats and their default currencies
   const bankFormats = {
     santander_rio: { format: ".xlsx", defaultCurrency: "ARS", description: "Excel format from online banking" },
@@ -207,6 +194,23 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
+
+            {/* Info Box */}
+            <div className="bg-blue-50 dark:bg-blue-950/20 border-2 border-blue-200 dark:border-blue-800 rounded-lg p-4">
+              <h4 className="font-semibold text-blue-900 dark:text-blue-100 flex items-center gap-2 mb-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Before importing your file
+              </h4>
+              <ul className="text-blue-800 dark:text-blue-200 text-sm leading-relaxed space-y-1">
+                <li>• Make sure your statement file matches the selected bank format</li>
+                <li>• Check that the file contains transaction data in the expected columns</li>
+                <li>• Duplicate transactions will be automatically detected and skipped</li>
+                <li>• All imported transactions will use the currency: <strong>{currency}</strong></li>
+              </ul>
+            </div>
+
             {/* Bank Selection */}
             <div className="space-y-3">
               <Label htmlFor="bank" className="text-sm font-semibold text-foreground">
@@ -228,17 +232,6 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
                       </div>
                     </div>
                   </SelectItem>
-                  <SelectItem value="ICBC" className="text-popover-foreground py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="p-1.5 rounded-full bg-gray-100 dark:bg-gray-900/20">
-                        <CreditCardIcon className="h-3 w-3 text-gray-600" />
-                      </div>
-                      <div>
-                        <div className="font-medium">ICBC</div>
-                        <div className="text-xs text-muted-foreground">CSV (.csv) format</div>
-                      </div>
-                    </div>
-                  </SelectItem>
                   <SelectItem value="mercado_pago" className="text-popover-foreground py-3">
                     <div className="flex items-center gap-3">
                       <div className="p-1.5 rounded-full bg-yellow-100 dark:bg-yellow-900/20">
@@ -247,6 +240,17 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
                       <div>
                         <div className="font-medium">Mercado Pago</div>
                         <div className="text-xs text-muted-foreground">PDF (.pdf) format</div>
+                      </div>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="ICBC" className="text-popover-foreground py-3">
+                    <div className="flex items-center gap-3">
+                      <div className="p-1.5 rounded-full bg-red-100 dark:bg-red-900/20">
+                        <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                      </div>
+                      <div>
+                        <div className="font-medium">ICBC</div>
+                        <div className="text-xs text-muted-foreground">CSV (.csv) format</div>
                       </div>
                     </div>
                   </SelectItem>
@@ -341,22 +345,6 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
                 <AlertDescription className="text-red-800 dark:text-red-200">{error}</AlertDescription>
               </Alert>
             )}
-
-            {/* Info Box */}
-            <div className="bg-blue-50 dark:bg-blue-950/20 border-2 border-blue-200 dark:border-blue-800 rounded-lg p-4">
-              <h4 className="font-semibold text-blue-900 dark:text-blue-100 flex items-center gap-2 mb-2">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Before importing your file
-              </h4>
-              <ul className="text-blue-800 dark:text-blue-200 text-sm leading-relaxed space-y-1">
-                <li>• Make sure your statement file matches the selected bank format</li>
-                <li>• Check that the file contains transaction data in the expected columns</li>
-                <li>• Duplicate transactions will be automatically detected and skipped</li>
-                <li>• All imported transactions will use the currency: <strong>{currency}</strong></li>
-              </ul>
-            </div>
 
             {/* Submit Button */}
             <Button

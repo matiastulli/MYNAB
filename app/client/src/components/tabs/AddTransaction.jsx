@@ -168,6 +168,20 @@ export default function AddTransaction({
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
+
+            {/* Info Box */}
+            <div className="bg-blue-50 dark:bg-blue-950/20 border-2 border-blue-200 dark:border-blue-800 rounded-lg p-4">
+              <h4 className="font-semibold text-blue-900 dark:text-blue-100 flex items-center gap-2 mb-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Setting an initial account balance
+              </h4>
+              <p className="text-blue-800 dark:text-blue-200 text-sm leading-relaxed">
+                If you're importing recent transactions but already had money in your account, add your starting balance as an "Income" transaction with the description "Initial Balance". This helps ensure your account balances match your real-world accounts.
+              </p>
+            </div>
+
             {/* Amount and Type Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="space-y-3">
@@ -262,7 +276,6 @@ export default function AddTransaction({
                 <Label htmlFor="category" className="text-sm font-semibold text-foreground flex items-center gap-2">
                   <TagIcon className="h-4 w-4 text-muted-foreground" />
                   Category
-                  <span className="text-xs text-muted-foreground font-normal">(Optional)</span>
                 </Label>
                 <Select 
                   value={form.category_id ? form.category_id.toString() : "none"} 
@@ -295,9 +308,6 @@ export default function AddTransaction({
                     )}
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-muted-foreground">
-                  Categorizing helps with budget analysis and spending insights
-                </p>
               </div>
             </div>
 
@@ -331,7 +341,6 @@ export default function AddTransaction({
             <div className="space-y-3">
               <Label htmlFor="reference_id" className="text-sm font-semibold text-foreground">
                 Reference ID
-                <span className="text-xs text-muted-foreground font-normal ml-1">(Optional)</span>
               </Label>
               <Input
                 id="reference_id"
@@ -340,19 +349,6 @@ export default function AddTransaction({
                 className="h-12 border-2 border-border bg-background focus:border-accent transition-all duration-200"
                 placeholder="Transaction reference, invoice number, etc."
               />
-            </div>
-
-            {/* Info Box */}
-            <div className="bg-blue-50 dark:bg-blue-950/20 border-2 border-blue-200 dark:border-blue-800 rounded-lg p-4">
-              <h4 className="font-semibold text-blue-900 dark:text-blue-100 flex items-center gap-2 mb-2">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Setting an initial account balance
-              </h4>
-              <p className="text-blue-800 dark:text-blue-200 text-sm leading-relaxed">
-                If you're importing recent transactions but already had money in your account, add your starting balance as an "Income" transaction with the description "Initial Balance". This helps ensure your account balances match your real-world accounts.
-              </p>
             </div>
 
             {/* Submit Button */}

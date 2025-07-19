@@ -30,7 +30,6 @@ export default function AddTransaction({
   const [loadingCategories, setLoadingCategories] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
-  const fetchingRef = useRef(false);
 
   useEffect(() => {
     const fetchCategories = async () => {

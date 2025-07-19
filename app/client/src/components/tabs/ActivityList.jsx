@@ -96,33 +96,6 @@ export default function ActivityList({
     });
   };
 
-  if (entries.length === 0) {
-    return (
-      <Card className="border-border bg-card shadow-sm">
-        <CardContent className="p-8 sm:p-12 text-center">
-          <div className="flex flex-col items-center gap-4">
-            <div className="p-4 rounded-full bg-muted text-muted-foreground">
-              <FilterIcon className="h-6 w-6" />
-            </div>
-            <div className="max-w-sm">
-              <h3 className="text-lg font-medium mb-2 text-foreground">
-                No {currency} transactions for {dateRangeFormatted}
-              </h3>
-              
-              {/* Currency filter notice */}
-              <div className="flex items-center justify-center gap-2 p-3 bg-info-bg text-info-fg rounded-md max-w-xs mx-auto mb-4">
-                <CircleDollarSignIcon className="h-4 w-4 flex-shrink-0" />
-                <p className="text-sm text-left">
-                  You're viewing <span className="font-semibold">{currency}</span> transactions only. Try changing the currency filter to see more.
-                </p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
   const groups = groupedEntries();
 
   const handleDeleteConfirm = (id) => {
@@ -162,6 +135,33 @@ export default function ActivityList({
         description="Track your spending and income by signing in to your account"
         onSignInClick={onSignInClick}
       />
+    );
+  }
+
+  if (entries.length === 0) {
+    return (
+      <Card className="border-border bg-card shadow-sm">
+        <CardContent className="p-8 sm:p-12 text-center">
+          <div className="flex flex-col items-center gap-4">
+            <div className="p-4 rounded-full bg-muted text-muted-foreground">
+              <FilterIcon className="h-6 w-6" />
+            </div>
+            <div className="max-w-sm">
+              <h3 className="text-lg font-medium mb-2 text-foreground">
+                No {currency} transactions for {dateRangeFormatted}
+              </h3>
+              
+              {/* Currency filter notice */}
+              <div className="flex items-center justify-center gap-2 p-3 bg-info-bg text-info-fg rounded-md max-w-xs mx-auto mb-4">
+                <CircleDollarSignIcon className="h-4 w-4 flex-shrink-0" />
+                <p className="text-sm text-left">
+                  You're viewing <span className="font-semibold">{currency}</span> transactions only. Try changing the currency filter to see more.
+                </p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
     

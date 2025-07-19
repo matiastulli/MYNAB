@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { api } from "@/services/api"
@@ -137,9 +137,6 @@ export default function SignupForm({ onSignUp, onSwitchToLogin }) {
           </div>
           <CardTitle className="text-2xl font-semibold text-foreground">Create Account</CardTitle>
         </div>
-        <CardDescription className="text-muted-foreground">
-          Join MYNAB and start managing your finances with ease
-        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -278,7 +275,11 @@ export default function SignupForm({ onSignUp, onSwitchToLogin }) {
           
           <Button 
             type="submit" 
-            className="w-full h-12 text-lg font-semibold bg-accent hover:bg-accent/90 text-accent-foreground transition-all duration-200 shadow-lg hover:shadow-xl"
+            className="w-full h-12 text-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
+            style={{
+              backgroundColor: "hsl(var(--accent))",
+              color: "hsl(var(--accent-foreground))"
+            }}
             disabled={isLoading || Object.keys(validationErrors).length > 0}
           >
             {isLoading ? (

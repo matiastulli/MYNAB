@@ -26,7 +26,11 @@ export default function SignInPrompt({
           </div>
           <Button
             onClick={onSignInClick}
-            className="bg-accent hover:bg-accent/90 text-accent-foreground px-8 py-2.5 h-12 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+            className="px-8 py-2.5 h-12 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+            style={{
+              backgroundColor: "hsl(var(--accent))",
+              color: "hsl(var(--accent-foreground))"
+            }}
           >
             {buttonText}
           </Button>

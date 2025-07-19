@@ -7,4 +7,4 @@ echo "Running Alembic upgrade..."
 alembic upgrade head
 
 echo "Starting Uvicorn..."
-uvicorn app.service.src.main:app --host 0.0.0.0 --port ${PORT}
+uvicorn src.main:app --host 0.0.0.0 --port ${PORT}

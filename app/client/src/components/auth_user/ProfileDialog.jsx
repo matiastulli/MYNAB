@@ -96,11 +96,11 @@ export default function ProfileDialog({
           </div>
           <DialogDescription className="text-muted-foreground">
             {(!userData?.national_id || userData?.national_id === "") ? (
-              <div className="flex items-start gap-3 mt-3 p-4 bg-amber-50 dark:bg-amber-950/20 border-2 border-amber-200 dark:border-amber-800 rounded-lg">
-                <AlertTriangleIcon className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5" />
+              <div className="flex items-start gap-3 mt-3 p-4 bg-[hsl(var(--warning-bg))] border-2 border-[hsl(var(--warning-fg)/0.2)] rounded-lg">
+                <AlertTriangleIcon className="h-5 w-5 text-[hsl(var(--warning-fg))] mt-0.5" />
                 <div className="space-y-1">
-                  <p className="font-semibold text-amber-900 dark:text-amber-100">CUIT Required</p>
-                  <p className="text-sm text-amber-800 dark:text-amber-200">
+                  <p className="font-semibold text-[hsl(var(--warning-fg))]">CUIT Required</p>
+                  <p className="text-sm text-[hsl(var(--warning-fg)/0.85)]">
                     Adding your CUIT helps filter out personal transactions that shouldn't be counted in your budget.
                   </p>
                 </div>

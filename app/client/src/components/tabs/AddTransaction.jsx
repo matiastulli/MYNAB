@@ -168,14 +168,14 @@ export default function AddTransaction({
           <form onSubmit={handleSubmit} className="space-y-6">
 
             {/* Info Box */}
-            <div className="bg-blue-50 dark:bg-blue-950/20 border-2 border-blue-200 dark:border-blue-800 rounded-lg p-4">
-              <h4 className="font-semibold text-blue-900 dark:text-blue-100 flex items-center gap-2 mb-2">
+            <div className="bg-[hsl(var(--info-bg))] border-2 border-[hsl(var(--info-fg)/0.2)] rounded-lg p-4">
+              <h4 className="font-semibold text-[hsl(var(--info-fg))] flex items-center gap-2 mb-2">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 Setting an initial account balance
               </h4>
-              <p className="text-blue-800 dark:text-blue-200 text-sm leading-relaxed">
+              <p className="text-[hsl(var(--info-fg)/0.85)] text-sm leading-relaxed">
                 If you're importing recent transactions but already had money in your account, add your starting balance as an "Income" transaction with the description "Initial Balance". This helps ensure your account balances match your real-world accounts.
               </p>
             </div>

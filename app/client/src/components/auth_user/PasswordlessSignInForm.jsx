@@ -128,14 +128,14 @@ export default function PasswordlessSignInForm({ onLogin, onSwitchToSignup }) {
               </div>
             </div>
 
-            <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+            <div className="bg-[hsl(var(--info-bg))] border border-[hsl(var(--info-fg)/0.2)] rounded-lg p-4">
               <div className="flex items-start gap-3">
-                <MailIcon className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
+                <MailIcon className="h-5 w-5 text-[hsl(var(--info-fg))] mt-0.5" />
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                  <p className="text-sm font-medium text-[hsl(var(--info-fg))]">
                     Passwordless Login
                   </p>
-                  <p className="text-xs text-blue-800 dark:text-blue-200">
+                  <p className="text-xs text-[hsl(var(--info-fg)/0.85)]">
                     We'll send you a secure verification code to sign in. No password needed!
                   </p>
                 </div>

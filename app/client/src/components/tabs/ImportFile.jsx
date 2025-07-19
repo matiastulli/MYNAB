@@ -193,14 +193,14 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
           <form onSubmit={handleSubmit} className="space-y-6">
 
             {/* Info Box */}
-            <div className="bg-blue-50 dark:bg-blue-950/20 border-2 border-blue-200 dark:border-blue-800 rounded-lg p-4">
-              <h4 className="font-semibold text-blue-900 dark:text-blue-100 flex items-center gap-2 mb-2">
+            <div className="bg-[hsl(var(--info-bg))] border-2 border-[hsl(var(--info-fg)/0.2)] rounded-lg p-4">
+              <h4 className="font-semibold text-[hsl(var(--info-fg))] flex items-center gap-2 mb-2">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 Before importing your file
               </h4>
-              <ul className="text-blue-800 dark:text-blue-200 text-sm leading-relaxed space-y-1">
+              <ul className="text-[hsl(var(--info-fg)/0.85)] text-sm leading-relaxed space-y-1">
                 <li>• Make sure your statement file matches the selected bank format</li>
                 <li>• Check that the file contains transaction data in the expected columns</li>
                 <li>• Duplicate transactions will be automatically detected and skipped</li>

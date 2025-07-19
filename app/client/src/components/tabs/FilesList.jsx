@@ -17,6 +17,21 @@ export default function FilesList({
   onPaginationChange,
   currency = "ARS"
 }) {
+
+  const getCurrencyName = (currency) => {
+    const names = {
+      'USD': 'US Dollar',
+      'EUR': 'Euro',
+      'BRL': 'Brazilian Real',
+      'ARS': 'Argentine Peso'
+    };
+    return names[currency] || currency;
+  };
+
+  const formatDate = (dateString) => {
+    return formatDateSafe(dateString, 'MMM dd, yyyy');
+  };
+
   const handleDeleteFile = async (fileId) => {
     if (!confirm("Are you sure you want to delete this file?")) return;
 
@@ -33,11 +48,6 @@ export default function FilesList({
     }
   };
 
-  // Update this function to use our safe date formatter
-  const formatDate = (dateString) => {
-    return formatDateSafe(dateString, 'MMM dd, yyyy');
-  };
-
   if (!isAuthenticated) {
     return (
       <SignInPrompt
@@ -46,22 +56,24 @@ export default function FilesList({
         onSignInClick={onSignInClick}
       />
     );
-  }
+  } 
 
   return (
-    <Card className="border-border bg-card backdrop-blur-sm shadow-sm">
-      <CardHeader className="pb-2">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
-          <div className="flex items-center gap-2">
-            <CardTitle className="text-lg font-medium text-foreground flex items-center gap-2">
+    <Card className="border-border bg-card backdrop-blur-sm shadow-lg">
+      <CardHeader className="pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-accent/10 border border-accent/20">
               <FolderIcon className="h-5 w-5 text-accent" />
+            </div>
+            <CardTitle className="text-xl font-semibold text-foreground">
               Bank Statements
             </CardTitle>
-            {/* Currency indicator - improved for mobile */}
-            <div className="flex items-center text-xs bg-accent/10 text-accent px-1.5 py-0.5 rounded border border-accent/20">
-              <CircleDollarSignIcon className="h-3 w-3 mr-1" />
-              {currency}
-            </div>
+          </div>
+          <div className="flex items-center gap-2 bg-accent/10 text-accent px-3 py-1.5 rounded-full border border-accent/20">
+            <CircleDollarSignIcon className="h-4 w-4" />
+            <span className="text-sm font-medium">{currency}</span>
+            <span className="text-xs opacity-75">({getCurrencyName(currency)})</span>
           </div>
         </div>
       </CardHeader>

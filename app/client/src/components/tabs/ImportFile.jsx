@@ -16,6 +16,21 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
+  const bankFormats = {
+    santander_rio: { format: ".xlsx", defaultCurrency: "ARS", description: "Excel format from online banking" },
+    ICBC: { format: ".csv", defaultCurrency: "ARS", description: "CSV export from ICBC portal" },
+    mercado_pago: { format: ".pdf", defaultCurrency: "ARS", description: "PDF statement download" }
+  };
+
+  const getCurrencyName = (currency) => {
+    const names = {
+      'USD': 'US Dollar',
+      'EUR': 'Euro',
+      'BRL': 'Brazilian Real',
+      'ARS': 'Argentine Peso'
+    };
+    return names[currency] || currency;
+  };
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -23,20 +38,6 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
     // Reset previous results when file changes
     setResult(null);
     setError(null);
-  };
-
-  // Function to convert file to Base64
-  const convertFileToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        // Remove the "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," prefix
-        const base64String = reader.result.split(',')[1];
-        resolve(base64String);
-      };
-      reader.onerror = (error) => reject(error);
-    });
   };
 
   const handleDragOver = (e) => {
@@ -58,6 +59,19 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
       setResult(null);
       setError(null);
     }
+  };
+
+  const convertFileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        // Remove the "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," prefix
+        const base64String = reader.result.split(',')[1];
+        resolve(base64String);
+      };
+      reader.onerror = (error) => reject(error);
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -117,23 +131,6 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
     } finally {
       setIsUploading(false);
     }
-  };
-
-  const getCurrencyName = (currency) => {
-    const names = {
-      'USD': 'US Dollar',
-      'EUR': 'Euro',
-      'BRL': 'Brazilian Real',
-      'ARS': 'Argentine Peso'
-    };
-    return names[currency] || currency;
-  };
-
-  // Bank-specific supported formats and their default currencies
-  const bankFormats = {
-    santander_rio: { format: ".xlsx", defaultCurrency: "ARS", description: "Excel format from online banking" },
-    ICBC: { format: ".csv", defaultCurrency: "ARS", description: "CSV export from ICBC portal" },
-    mercado_pago: { format: ".pdf", defaultCurrency: "ARS", description: "PDF statement download" }
   };
 
   const getSupportedFormatText = () => {
@@ -270,13 +267,12 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
                 Statement File *
               </Label>
               <div
-                className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 ${
-                  isDragging
-                    ? 'border-accent bg-accent/5 scale-[1.02]'
-                    : file 
+                className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 ${isDragging
+                  ? 'border-accent bg-accent/5 scale-[1.02]'
+                  : file
                     ? 'border-accent/50 bg-accent/5'
                     : 'border-border hover:border-accent/40 hover:bg-accent/5'
-                }`}
+                  }`}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}

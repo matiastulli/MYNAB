@@ -14,17 +14,16 @@ import { useEffect, useState } from "react";
 export default function ActivityList({
   isAuthenticated,
   entries = [],
-  dateRange,
   dateRangeFormatted,
   onSignInClick,
   onTransactionDeleted,
   isLoading = false,
-  currency = "ARS" // Add currency prop
+  currency = "ARS"
 }) {
   const [deletingId, setDeletingId] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredEntries, setFilteredEntries] = useState(entries);
-  const [sortDirection, setSortDirection] = useState(null); // null, 'asc', or 'desc'
+  const [sortDirection, setSortDirection] = useState(null);
   const [groupByDate, setGroupByDate] = useState(true);
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -64,6 +63,58 @@ export default function ActivityList({
     setGroupByDate(!groupByDate);
   };
 
+  const groupedEntries = () => {
+    if (!groupByDate) return { ungrouped: filteredEntries };
+    
+    return filteredEntries.reduce((groups, entry) => {
+      // Format the date as "YYYY-MM-DD" for grouping
+      const date = entry.date.split('T')[0];
+      if (!groups[date]) {
+        groups[date] = [];
+      }
+      groups[date].push(entry);
+      return groups;
+    }, {});
+  };
+
+  const formatDisplayDate = (dateString) => {
+    const date = parseDatePreservingDay(dateString);
+    return date.toLocaleDateString("en-US", {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  if (entries.length === 0) {
+    return (
+      <Card className="border-border bg-card shadow-sm">
+        <CardContent className="p-8 sm:p-12 text-center">
+          <div className="flex flex-col items-center gap-4">
+            <div className="p-4 rounded-full bg-muted text-muted-foreground">
+              <FilterIcon className="h-6 w-6" />
+            </div>
+            <div className="max-w-sm">
+              <h3 className="text-lg font-medium mb-2 text-foreground">
+                No {currency} transactions for {dateRangeFormatted}
+              </h3>
+              
+              {/* Currency filter notice */}
+              <div className="flex items-center justify-center gap-2 p-3 bg-info-bg text-info-fg rounded-md max-w-xs mx-auto mb-4">
+                <CircleDollarSignIcon className="h-4 w-4 flex-shrink-0" />
+                <p className="text-sm text-left">
+                  You're viewing <span className="font-semibold">{currency}</span> transactions only. Try changing the currency filter to see more.
+                </p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const groups = groupedEntries();
+
   const handleDeleteConfirm = (id) => {
     setConfirmDelete(id);
     setShowDeleteConfirm(true);
@@ -94,31 +145,6 @@ export default function ActivityList({
     }
   };
 
-  // Group entries by date if groupByDate is true
-  const groupedEntries = () => {
-    if (!groupByDate) return { ungrouped: filteredEntries };
-    
-    return filteredEntries.reduce((groups, entry) => {
-      // Format the date as "YYYY-MM-DD" for grouping
-      const date = entry.date.split('T')[0];
-      if (!groups[date]) {
-        groups[date] = [];
-      }
-      groups[date].push(entry);
-      return groups;
-    }, {});
-  };
-
-  // Format date for display
-  const formatDisplayDate = (dateString) => {
-    const date = parseDatePreservingDay(dateString);
-    return date.toLocaleDateString("en-US", {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
   if (!isAuthenticated) {
     return (
       <SignInPrompt
@@ -128,35 +154,6 @@ export default function ActivityList({
       />
     );
   }
-
-  if (entries.length === 0) {
-    return (
-      <Card className="border-border bg-card shadow-sm">
-        <CardContent className="p-8 sm:p-12 text-center">
-          <div className="flex flex-col items-center gap-4">
-            <div className="p-4 rounded-full bg-muted text-muted-foreground">
-              <FilterIcon className="h-6 w-6" />
-            </div>
-            <div className="max-w-sm">
-              <h3 className="text-lg font-medium mb-2 text-foreground">
-                No {currency} transactions for {dateRangeFormatted}
-              </h3>
-              
-              {/* Currency filter notice */}
-              <div className="flex items-center justify-center gap-2 p-3 bg-info-bg text-info-fg rounded-md max-w-xs mx-auto mb-4">
-                <CircleDollarSignIcon className="h-4 w-4 flex-shrink-0" />
-                <p className="text-sm text-left">
-                  You're viewing <span className="font-semibold">{currency}</span> transactions only. Try changing the currency filter to see more.
-                </p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const groups = groupedEntries();
 
   return (
     <Card className="border-border bg-card shadow-sm">

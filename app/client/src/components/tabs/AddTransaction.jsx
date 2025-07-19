@@ -30,8 +30,8 @@ export default function AddTransaction({
   const [loadingCategories, setLoadingCategories] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const fetchingRef = useRef(false);
 
-  // Fetch categories when component mounts
   useEffect(() => {
     const fetchCategories = async () => {
       if (isAuthenticated) {
@@ -52,7 +52,6 @@ export default function AddTransaction({
     fetchCategories();
   }, [isAuthenticated]);
 
-  // Update form when defaultCurrency changes
   useEffect(() => {
     setForm(prevForm => ({
       ...prevForm,

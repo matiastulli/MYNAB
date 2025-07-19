@@ -20,7 +20,7 @@ import {
   AlertTriangleIcon,
   BarChartIcon,
   FolderIcon,
-  LayoutDashboardIcon, // Add icon for dashboard
+  LayoutDashboardIcon,
   PlusCircleIcon,
   TrendingDownIcon,
   TrendingUpIcon,
@@ -76,9 +76,7 @@ export default function App() {
       setIsAuthenticated(isAuth);
 
       if (isAuth) {
-        // Fetch user profile
         fetchUserProfile();
-        // Fetch budget data
         fetchSummary();
         fetchDetails();
         fetchFiles();
@@ -494,17 +492,11 @@ export default function App() {
           <TabsContent value="dashboard" className="space-y-4 mt-6 focus-visible:outline-none">
             <Dashboard 
               isAuthenticated={isAuthenticated}
+              currency={currency}
               onSignInClick={() => setShowAuthModal(true)}
               summary={summary}
               entries={entries}
-              dateRange={dateRange}
-              dateRangeFormatted={dateRangeFormatted}
-              currency={currency}
               isLoading={summaryLoading || entriesLoading}
-              onTransactionDeleted={() => {
-                fetchSummary();
-                fetchDetails();
-              }}
             />
           </TabsContent>
 
@@ -512,11 +504,10 @@ export default function App() {
           <TabsContent value="entries" className="space-y-4 mt-6 focus-visible:outline-none">
             <ActivityList
               isAuthenticated={isAuthenticated}
-              entries={entries}
-              dateRange={dateRange}
-              dateRangeFormatted={dateRangeFormatted}
-              currency={currency} // Pass currency to ActivityList
+              currency={currency}
               onSignInClick={() => setShowAuthModal(true)}
+              entries={entries}
+              dateRangeFormatted={dateRangeFormatted}
               onTransactionDeleted={() => {
                 fetchSummary();
                 fetchDetails();
@@ -529,7 +520,7 @@ export default function App() {
           <TabsContent value="new" className="mt-6 focus-visible:outline-none">
             <AddTransaction
               isAuthenticated={isAuthenticated}
-              defaultCurrency={currency} // Pass currency as defaultCurrency
+              defaultCurrency={currency}
               onSignInClick={() => setShowAuthModal(true)}
               onTransactionAdded={() => {
                 fetchSummary();
@@ -542,6 +533,7 @@ export default function App() {
           <TabsContent value="import" className="mt-6 focus-visible:outline-none">
             <ImportFile
               isAuthenticated={isAuthenticated}
+              currency={currency}
               onSignInClick={() => setShowAuthModal(true)}
               onImportComplete={() => {
                 fetchSummary();
@@ -549,7 +541,6 @@ export default function App() {
               }}
               onImportSuccess={handleImportSuccess}
               className="max-w-2xl mx-auto"
-              currency={currency} // Pass currency to ImportFile
             />
           </TabsContent>
 
@@ -557,6 +548,7 @@ export default function App() {
           <TabsContent value="files" className="mt-6 focus-visible:outline-none">
             <FilesList
               isAuthenticated={isAuthenticated}
+              currency={currency}
               onSignInClick={() => setShowAuthModal(true)}
               onFileDeleted={() => {
                 fetchSummary();
@@ -568,7 +560,6 @@ export default function App() {
               error={filesError}
               pagination={pagination}
               onPaginationChange={handlePaginationChange}
-              currency={currency} // Pass currency to FilesList
             />
           </TabsContent>
         </Tabs>

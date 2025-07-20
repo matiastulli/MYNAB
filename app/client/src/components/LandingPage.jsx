@@ -93,9 +93,6 @@ export default function LandingPage({ onGetStarted }) {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-blue-500 rounded-lg flex items-center justify-center">
-                                <DollarSignIcon className="h-5 w-5 text-white" />
-                            </div>
                             <span className="text-xl font-bold text-foreground">MYNAB</span>
                         </div>
                         <Button onClick={handleGetStarted} className="bg-emerald-600 hover:bg-emerald-700 text-white">
@@ -128,7 +125,7 @@ export default function LandingPage({ onGetStarted }) {
 
                                 <div className="text-center p-4 bg-background rounded-lg border border-border hover:shadow-lg hover:border-emerald-300 transition-all duration-300 group">
                                     <div className="text-sm text-muted-foreground mb-2 flex items-center justify-center gap-1">
-                                        <DollarSignIcon className="h-4 w-4" />
+                                        <DollarSignIcon className="h-4 w-4 text-green-600" />
                                         Current Balance
                                     </div>
                                     <div className="text-2xl font-bold text-emerald-600 group-hover:scale-110 transition-transform duration-300">

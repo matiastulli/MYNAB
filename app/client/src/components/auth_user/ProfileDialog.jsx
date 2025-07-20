@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { isDarkModeActive, toggleTheme } from "@/lib/themeUtils";
@@ -86,8 +86,9 @@ export default function ProfileDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-card text-card-foreground border-2 border-border shadow-xl max-w-md" showClose={false}>
+      <DialogContent className="bg-card text-card-foreground border-2 border-border shadow-xl max-w-md">
         <DialogHeader className="pb-2">
+          <DialogTitle className="sr-only">Profile Settings</DialogTitle>
           <div className="flex flex-col items-center gap-1">
             <div className="flex items-center gap-2">
               <span className="p-1 rounded-md bg-accent/10 border border-accent/20">

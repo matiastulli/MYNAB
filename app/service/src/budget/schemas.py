@@ -47,6 +47,16 @@ class BudgetSummary(CustomModel):
     categories: Optional[Dict[str, List[CategorySummary]]] = None
 
 
+class CurrencySummary(CustomModel):
+    currency: str
+    income: float = 0.0
+    outcome: float = 0.0
+
+
+class BudgetSummaryByCurrency(CustomModel):
+    currencies: List[CurrencySummary]
+
+
 class Metadata(CustomModel):
     total_count: int
     limit: int

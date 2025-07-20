@@ -7,10 +7,11 @@ from fastapi.responses import JSONResponse
 
 from src.auth_user.dependencies import require_role
 from src.auth_user.schemas import JWTData
-from src.budget.schemas import BudgetEntryCreate, BudgetSummary, BudgetResponseWithMeta, BudgetResponse, FilesResponseWithMeta, FilesResponse
+from src.budget.schemas import BudgetEntryCreate, BudgetSummary, BudgetResponseWithMeta, BudgetResponse, FilesResponseWithMeta, FilesResponse, BudgetSummaryByCurrency
 from src.budget.service import (
     create_budget_entry,
     get_budget_summary,
+    get_budget_summary_by_currency,
     get_budget_entries,
     delete_budget_entry,
     delete_file,
@@ -198,6 +199,30 @@ async def get_monthly_summary(
         end_date = today
 
     summary = await get_budget_summary(jwt_data.id_user, start_date, end_date, currency)
+    return summary
+
+
+@router.get("/summary-by-currency", response_model=BudgetSummaryByCurrency)
+async def get_summary_by_currency(
+    jwt_data: JWTData = Depends(require_role([])),
+    start_date: Optional[date] = Query(None),
+    end_date: Optional[date] = Query(None),
+):
+    """
+    Get budget summary grouped by currency with income/outcome totals.
+    Only includes currencies that have transactions with non-zero income or outcome.
+
+    Example URL: {{ENV_URL}}/budget/summary-by-currency?start_date=2023-01-01&end_date=2023-01-31
+    """
+    today = date.today()
+
+    # Default to current month if no dates provided
+    if not start_date:
+        start_date = today.replace(day=1)
+    if not end_date:
+        end_date = today
+
+    summary = await get_budget_summary_by_currency(jwt_data.id_user, start_date, end_date)
     return summary
 
 

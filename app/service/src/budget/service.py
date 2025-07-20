@@ -102,6 +102,53 @@ async def get_budget_summary(user_id: int, start_date: date, end_date: date, cur
     }
 
 
+async def get_budget_summary_by_currency(user_id: int, start_date: date, end_date: date) -> Dict[str, Any]:
+    """
+    Get budget summary grouped by currency with income/outcome totals.
+    Only includes currencies that have transactions with non-zero income or outcome.
+    """
+    # Get summary by currency and type
+    currency_stmt = select(
+        budget_entry.c.currency,
+        budget_entry.c.type,
+        func.sum(budget_entry.c.amount).label("total")
+    ).where(
+        budget_entry.c.user_id == user_id,
+        budget_entry.c.date >= start_date,
+        budget_entry.c.date <= end_date
+    ).group_by(
+        budget_entry.c.currency,
+        budget_entry.c.type
+    )
+
+    currency_result = await fetch_all(currency_stmt)
+
+    # Process results into currency summaries
+    currency_data = {}
+
+    for row in currency_result:
+        currency = row["currency"]
+        entry_type = row["type"]
+        total = float(row["total"])
+
+        if currency not in currency_data:
+            currency_data[currency] = {"income": 0.0, "outcome": 0.0}
+
+        currency_data[currency][entry_type] = total
+
+    # Convert to list format and filter out currencies with both income and outcome as 0
+    currencies = []
+    for currency, data in currency_data.items():
+        if data["income"] != 0.0 or data["outcome"] != 0.0:
+            currencies.append({
+                "currency": currency,
+                "income": data["income"],
+                "outcome": data["outcome"]
+            })
+
+    return {"currencies": currencies}
+
+
 async def get_budget_entries(
     user_id: int,
     start_date: date,

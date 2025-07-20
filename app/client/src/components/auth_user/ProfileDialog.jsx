@@ -86,7 +86,7 @@ export default function ProfileDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-card text-card-foreground border-2 border-border shadow-xl max-w-md">
+      <DialogContent className="bg-card text-card-foreground border-2 border-border shadow-xl max-w-md" showClose={false}>
         <DialogHeader className="pb-2">
           <div className="flex flex-col items-center gap-1">
             <div className="flex items-center gap-2">

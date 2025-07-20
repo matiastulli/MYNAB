@@ -203,11 +203,14 @@ export default function PasswordlessSignInForm({ onLogin, onSwitchToSignup }) {
                   id="verification_code"
                   type="text"
                   placeholder="Enter 6-digit code"
-                  className="pl-10 h-12 border-2 border-border bg-background focus:border-accent transition-all duration-200 text-center text-lg tracking-wider font-mono"
+                  className="pl-10 h-14 border-2 border-accent/60 bg-background focus:border-accent focus:ring-2 focus:ring-accent/40 transition-all duration-200 text-center text-2xl tracking-[0.25em] font-semibold text-foreground shadow-sm"
+                  style={{ letterSpacing: '0.25em', fontFamily: 'Inter, Nunito, ui-sans-serif, system-ui, sans-serif' }}
                   value={form.verification_code}
                   onChange={handleChange}
                   maxLength={6}
                   required
+                  autoComplete="one-time-code"
+                  inputMode="numeric"
                 />
               </div>
               {codeExpiry && (

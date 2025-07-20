@@ -288,7 +288,7 @@ export default function App() {
         />
       )}
 
-      <div className="max-w-5xl mx-auto px-3 py-4 md:px-6 md:py-12">
+      <div className="max-w-7xl mx-auto px-3 py-4 md:px-6 md:py-12">
         {/* Header */}
         <header className="mb-6 md:mb-10">
           <div className="flex flex-row items-center justify-between gap-2 flex-wrap">

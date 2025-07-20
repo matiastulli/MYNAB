@@ -1,4 +1,3 @@
-import SignInPrompt from "@/components/auth_user/SignInPrompt";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -33,7 +32,7 @@ export default function AddTransaction({
 
   useEffect(() => {
     const fetchCategories = async () => {
-      if (isAuthenticated) {
+      
         setLoadingCategories(true);
         try {
           const response = await api.get("/budget-transaction-category/budget-transaction-category");
@@ -45,11 +44,10 @@ export default function AddTransaction({
         } finally {
           setLoadingCategories(false);
         }
-      }
     };
 
     fetchCategories();
-  }, [isAuthenticated]);
+  }, []);
 
   useEffect(() => {
     setForm(prevForm => ({
@@ -81,11 +79,6 @@ export default function AddTransaction({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!isAuthenticated) {
-      onSignInClick();
-      return;
-    }
-
     setIsSubmitting(true);
     try {
       const response = await api.post("/budget/entry", form);
@@ -113,16 +106,6 @@ export default function AddTransaction({
       setIsSubmitting(false);
     }
   };
-
-  if (!isAuthenticated) {
-    return (
-      <SignInPrompt
-        title="Sign in to add transactions"
-        description="You need to be signed in to add and track your transactions in MYNAB."
-        onSignInClick={onSignInClick}
-      />
-    );
-  }
 
   return (
     <Card className="border-border bg-card backdrop-blur-sm shadow-lg">

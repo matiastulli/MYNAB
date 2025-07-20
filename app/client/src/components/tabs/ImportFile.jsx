@@ -1,4 +1,3 @@
-import SignInPrompt from "@/components/auth_user/SignInPrompt";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -140,18 +139,6 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
     const bank = bankFormats[bankName];
     return `${bank.format} format - ${bank.description}`;
   };
-
-  // Use the SignInPrompt component for unauthenticated users
-  if (!isAuthenticated) {
-    return (
-      <SignInPrompt
-        title="Sign in to import transactions"
-        description="You need to be signed in to import your transactions from Excel, CSV or PDF files."
-        onSignInClick={onSignInClick}
-        icon={<UploadIcon className="h-6 w-6 text-neutral-400 dark:text-neutral-300" />}
-      />
-    );
-  }
 
   return (
     <Card className="border-border bg-card backdrop-blur-sm shadow-lg">

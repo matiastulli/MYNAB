@@ -1,5 +1,4 @@
 "use client"
-import SignInPrompt from "@/components/auth_user/SignInPrompt";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowDownIcon, ArrowUpIcon, TrendingUpIcon } from "lucide-react";
 
@@ -58,16 +57,6 @@ export default function CurrencyOverview({ currencySummary, dateRangeFormatted, 
   const currencies = currencySummary?.currencies || []
 
   if (currencies.length === 0) {
-      if (!isAuthenticated) {
-        return (
-          <SignInPrompt
-            title="Welcome to MYNAB"
-            description="Your personal finance manager with multi-currency support. "
-            onSignInClick={onSignInClick}
-          />
-        );
-      }
-
     return (
       <div className="text-center py-12">
         <div className="mb-4">

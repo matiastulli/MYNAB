@@ -1,5 +1,4 @@
 
-import SignInPrompt from "@/components/auth_user/SignInPrompt";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FinancialValue } from "@/components/ui/financial-value";
@@ -190,16 +189,6 @@ export default function ActivityList({
       setDeletingId(null);
     }
   };
-
-  if (!isAuthenticated) {
-    return (
-      <SignInPrompt
-        title="Sign in to view transactions"
-        description="Track your spending and income by signing in to your account"
-        onSignInClick={onSignInClick}
-      />
-    );
-  }
 
   if (entries.length === 0) {
     return (

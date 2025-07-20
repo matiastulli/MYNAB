@@ -1,4 +1,3 @@
-import SignInPrompt from "@/components/auth_user/SignInPrompt"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   BarChart2Icon,
@@ -99,16 +98,6 @@ export default function Dashboard({
       )
     }
     return null
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <SignInPrompt
-        title="Sign in to view your dashboard"
-        description="Track your spending and income by signing in to your account"
-        onSignInClick={onSignInClick}
-      />
-    )
   }
 
   return (

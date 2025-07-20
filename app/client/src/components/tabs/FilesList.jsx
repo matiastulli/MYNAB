@@ -1,4 +1,3 @@
-import SignInPrompt from "@/components/auth_user/SignInPrompt";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
@@ -47,16 +46,6 @@ export default function FilesList({
       console.error("Error deleting file:", err);
     }
   };
-
-  if (!isAuthenticated) {
-    return (
-      <SignInPrompt
-        title="Sign in to view your files"
-        description="You need to be signed in to view the list of your uploaded files."
-        onSignInClick={onSignInClick}
-      />
-    );
-  } 
 
   return (
     <Card className="border-border bg-card backdrop-blur-sm shadow-lg">

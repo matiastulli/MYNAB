@@ -100,28 +100,28 @@ export default function ActivityList({
 
   const handleExportXLSX = async () => {
     try {
-      // Use the actual date range objects from the general filter
-      const params = {
-        currency: currency
-      };
+      // Build query parameters manually
+      const params = new URLSearchParams();
+      params.append('currency', currency);
 
       // Add date range parameters if available
       if (dateRange) {
         if (dateRange.startDate) {
-          params.start_date = toDateOnlyISOString(dateRange.startDate);
+          params.append('start_date', toDateOnlyISOString(dateRange.startDate));
         }
         if (dateRange.endDate) {
-          params.end_date = toDateOnlyISOString(dateRange.endDate);
+          params.append('end_date', toDateOnlyISOString(dateRange.endDate));
         }
       }
 
       // Add pagination parameters to export all data
-      params.limit = 10000; // Large limit to get all transactions
-      params.offset = 0;
+      params.append('limit', '10000'); // Large limit to get all transactions
+      params.append('offset', '0');
 
-      const response = await api.get("/budget/export-xlsx", {
-        params
-      });
+      // Build the URL with query parameters
+      const url = `/budget/export-xlsx?${params.toString()}`;
+
+      const response = await api.get(url);
 
       if (response.error) {
         console.error("Export error:", response.error);
@@ -135,29 +135,18 @@ export default function ActivityList({
         return;
       }
 
-      // Convert base64 to blob
-      const binaryString = atob(response.file_data);
-      const bytes = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
-
-      const blob = new Blob([bytes], { 
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 
-      });
-      
       // Use filename from backend response
       const filename = response.filename || "transactions.xlsx";
       
-      // Create download link
-      const blobUrl = window.URL.createObjectURL(blob);
+      // Create data URL and download directly
+      const dataUrl = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${response.file_data}`;
+      
       const downloadLink = document.createElement("a");
-      downloadLink.href = blobUrl;
+      downloadLink.href = dataUrl;
       downloadLink.download = filename;
       document.body.appendChild(downloadLink);
       downloadLink.click();
       document.body.removeChild(downloadLink);
-      window.URL.revokeObjectURL(blobUrl);
       
       // Show success message with file info
       if (response.record_count) {

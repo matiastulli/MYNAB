@@ -71,7 +71,18 @@ def generate_xlsx(entries: List[Dict[str, Any]]) -> bytes:
         df = pd.DataFrame()
     else:
         df = pd.DataFrame(entries)
-    # Optionally, select/rename columns for export
+
+        # Select only the specified columns for export
+        columns_to_export = ['reference_id', 'amount',
+                             'currency', 'source', 'type', 'description', 'date']
+
+        # Filter to only include columns that exist in the dataframe
+        available_columns = [
+            col for col in columns_to_export if col in df.columns]
+
+        if available_columns:
+            df = df[available_columns]
+
     output = io.BytesIO()
     df.to_excel(output, index=False)
     return output.getvalue()

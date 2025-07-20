@@ -88,21 +88,6 @@ export default function LandingPage({ onGetStarted }) {
                 />
             )}
 
-            {/* Navigation */}
-            <nav className="border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <div className="flex items-center gap-2">
-                            <span className="text-xl font-bold text-foreground">MYNAB</span>
-                        </div>
-                        <Button onClick={handleGetStarted} className="bg-emerald-600 hover:bg-emerald-700 text-white">
-                            <LogInIcon className="h-4 w-4 mr-2" />
-                            Sign In
-                        </Button>
-                    </div>
-                </div>
-            </nav>
-
             {/* Hero Section */}
             <section className="py-24 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-4xl mx-auto text-center">
@@ -116,6 +101,17 @@ export default function LandingPage({ onGetStarted }) {
                                 Maybe You Need A Budget
                             </span>
                         </h1>
+                        
+                        {/* Login/Signup Button */}
+                        <div className="mb-16">
+                            <Button 
+                                onClick={handleGetStarted} 
+                                className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                            >
+                                <LogInIcon className="h-5 w-5 mr-2" />
+                                Get Started
+                            </Button>
+                        </div>
                         
                         {/* Financial Overview Example */}
                         <div className="mt-16 bg-card rounded-2xl shadow-xl border border-border p-8 max-w-2xl mx-auto transform hover:scale-105 transition-all duration-300">

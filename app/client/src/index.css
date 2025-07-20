@@ -1,9 +1,11 @@
 @import "tailwindcss";
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
 :root {
   /* Base colors with improved contrast ratios */
   --background: 0 0% 100%;
-  --foreground: 210 15% 15%; /* Slightly darker for better contrast */
+  --foreground: 210 15% 15%;
   --card: 0 0% 100%;
   --card-foreground: 210 15% 15%;
   --popover: 0 0% 100%;
@@ -11,33 +13,27 @@
   --primary: 220 15% 15%;
   --primary-foreground: 220 15% 98%;
   --secondary: 210 20% 96%;
-  --secondary-foreground: 210 20% 15%; /* Improved contrast */
+  --secondary-foreground: 210 20% 15%;
   --muted: 210 20% 96%;
-  --muted-foreground: 210 40% 40%; /* Better contrast for readability */
-  --accent: 142 75% 35%; /* Much more vibrant green for better contrast */
-  --accent-foreground: 0 0% 100%; /* White text on green background */
-
-  /* Financial indicators - improved for clarity */
-  --positive: 142 75% 35%; /* More vibrant green, same as accent */
+  --muted-foreground: 210 40% 40%;
+  --accent: 142 75% 35%;
+  --accent-foreground: 0 0% 100%;
+  --positive: 142 75% 35%;
   --positive-foreground: 0 0% 100%;
-  --destructive: 0 82% 48%; /* Brighter red for better visibility */
+  --destructive: 0 82% 48%;
   --destructive-foreground: 0 0% 98%;
-
-  /* Chart colors optimized for financial data */
   --chart-1: var(--positive);
   --chart-2: var(--destructive);
   --chart-3: 200 85% 60%;
   --chart-4: 260 75% 60%;
   --chart-5: 30 85% 65%;
-  --border: 210 30% 70%; /* Darker border for better visibility */
+  --border: 210 30% 70%;
   --input: 210 36% 96%;
   --ring: var(--accent);
   --radius: 0.5rem;
-
-  /* Filter specific colors */
   --filter-bg: 210 20% 98%;
   --filter-hover: 210 20% 94%;
-  --filter-active: 142 75% 92%; /* Light green background for active state */
+  --filter-active: 142 75% 92%;
 
   /* Alert & notification colors */
   --success-bg: 142 70% 95%;
@@ -47,6 +43,91 @@
   --info-bg: 214 100% 97%;
   --info-fg: 214 100% 32%;
 }
+
+html {
+  font-family: 'Inter', 'Nunito', ui-sans-serif, system-ui, sans-serif;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: inherit;
+  margin: 0;
+  padding: 0;
+  line-height: 1.75;
+}
+
+/* Minimalist card utility */
+.card {
+  background: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  border-radius: var(--radius);
+  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.04);
+  padding: 1.5rem;
+  border: 1px solid hsl(var(--border));
+}
+
+/* Minimalist button utility */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  border-radius: var(--radius);
+  padding: 0.5rem 1.25rem;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+.btn:hover, .btn:focus {
+  background: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+  outline: none;
+}
+
+/* Minimalist input utility */
+.input {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--input));
+  color: hsl(var(--foreground));
+  font-size: 1rem;
+  transition: border 0.15s, box-shadow 0.15s;
+}
+.input:focus {
+  border-color: hsl(var(--accent));
+  box-shadow: 0 0 0 2px hsl(var(--ring));
+  outline: none;
+}
+
+/* Remove default focus outlines for a cleaner look */
+*:focus {
+  outline: none;
+}
+
+/* Minimalist scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  background: hsl(var(--background));
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted));
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--border));
+}
+
 
 .dark {
   /* Dark theme - optimized for financial data */

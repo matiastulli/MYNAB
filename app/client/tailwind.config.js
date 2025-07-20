@@ -3,11 +3,26 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}", "*.{js,ts,jsx,tsx,mdx}"],
   darkMode: "class",
   theme: {
+    fontFamily: {
+      sans: ["Inter", "Nunito", "ui-sans-serif", "system-ui", "sans-serif"],
+    },
     extend: {
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      spacing: {
+        18: '4.5rem',
+        22: '5.5rem',
+      },
+      fontSize: {
+        'xs': ['0.75rem', { lineHeight: '1.5' }],
+        'sm': ['0.875rem', { lineHeight: '1.5' }],
+        'base': ['1rem', { lineHeight: '1.75' }],
+        'lg': ['1.125rem', { lineHeight: '2' }],
+        'xl': ['1.25rem', { lineHeight: '2.25' }],
+        '2xl': ['1.5rem', { lineHeight: '2.5' }],
       },
       colors: {
         background: "hsl(var(--background))",

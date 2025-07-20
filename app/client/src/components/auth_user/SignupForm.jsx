@@ -149,7 +149,7 @@ export default function SignupForm({ onSignUp, onSwitchToLogin }) {
                 <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input 
                   id="name" 
-                  placeholder="John" 
+                  placeholder="Olivia" 
                   className="pl-10 h-12 border-2 border-border bg-background focus:border-accent transition-all duration-200"
                   value={form.name}
                   onChange={handleChange}
@@ -165,7 +165,7 @@ export default function SignupForm({ onSignUp, onSwitchToLogin }) {
                 <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input 
                   id="last_name" 
-                  placeholder="Doe" 
+                  placeholder="Carter" 
                   className="pl-10 h-12 border-2 border-border bg-background focus:border-accent transition-all duration-200"
                   value={form.last_name}
                   onChange={handleChange}
@@ -184,7 +184,7 @@ export default function SignupForm({ onSignUp, onSwitchToLogin }) {
               <Input 
                 id="email" 
                 type="email" 
-                placeholder="john.doe@example.com" 
+                placeholder="olivia.carter@gmail.com" 
                 className={`pl-10 h-12 border-2 bg-background focus:border-accent transition-all duration-200 ${
                   validationErrors.email ? 'border-red-500' : 'border-border'
                 }`}

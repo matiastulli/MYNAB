@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { api } from "@/services/api"
-import { AlertCircleIcon, AtSignIcon, CheckCircleIcon, KeyIcon, MailIcon, ShieldCheckIcon, UserIcon, UserPlusIcon } from "lucide-react"
+import { AlertCircleIcon, AtSignIcon, CheckCircleIcon, KeyIcon, MailIcon, UserIcon, UserPlusIcon, WalletIcon } from "lucide-react"
 import { useState } from "react"
 
 export default function PasswordlessSignupForm({ onSignUp, onSwitchToLogin }) {
@@ -152,6 +152,9 @@ export default function PasswordlessSignupForm({ onSignUp, onSwitchToLogin }) {
     setError("")
   }
 
+  
+      
+
   if (step === "success") {
     return (
       <Card className="max-w-md mx-auto border-2 border-border bg-card shadow-xl">
@@ -184,18 +187,17 @@ export default function PasswordlessSignupForm({ onSignUp, onSwitchToLogin }) {
 
   return (
     <Card className="max-w-md mx-auto border-2 border-border bg-card shadow-xl">
-      <CardHeader className="space-y-2 pb-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-accent/10 border border-accent/20">
-            {step === "form" ? (
-              <UserPlusIcon className="h-5 w-5 text-accent" />
-            ) : (
-              <ShieldCheckIcon className="h-5 w-5 text-accent" />
-            )}
+        <CardHeader className="pb-2">
+        <div className="flex flex-col items-center gap-1">
+          <div className="flex items-center gap-2">
+            <span className="p-1 rounded-md bg-accent/10 border border-accent/20">
+              <WalletIcon className="h-5 w-5 text-accent" />
+            </span>
+            <span className="text-lg font-bold tracking-wider text-foreground">MYNAB</span>
           </div>
-          <CardTitle className="text-2xl font-semibold text-foreground">
+          <span className="text-sm font-normal text-muted-foreground mt-1">
             {step === "form" ? "Create Account" : "Verify Your Email"}
-          </CardTitle>
+          </span>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -210,7 +212,7 @@ export default function PasswordlessSignupForm({ onSignUp, onSwitchToLogin }) {
                   <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input 
                     id="name" 
-                    placeholder="John" 
+                    placeholder="Olivia" 
                     className="pl-10 h-12 border-2 border-border bg-background focus:border-accent transition-all duration-200"
                     value={form.name}
                     onChange={handleChange}
@@ -226,7 +228,7 @@ export default function PasswordlessSignupForm({ onSignUp, onSwitchToLogin }) {
                   <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input 
                     id="last_name" 
-                    placeholder="Doe" 
+                    placeholder="Carter" 
                     className="pl-10 h-12 border-2 border-border bg-background focus:border-accent transition-all duration-200"
                     value={form.last_name}
                     onChange={handleChange}
@@ -245,7 +247,7 @@ export default function PasswordlessSignupForm({ onSignUp, onSwitchToLogin }) {
                 <Input 
                   id="email" 
                   type="email" 
-                  placeholder="john.doe@example.com" 
+                  placeholder="olivia.carter@gmail.com" 
                   className={`pl-10 h-12 border-2 bg-background focus:border-accent transition-all duration-200 ${
                     validationErrors.email ? 'border-red-500' : 'border-border'
                   }`}

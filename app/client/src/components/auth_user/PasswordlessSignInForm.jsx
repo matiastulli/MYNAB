@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { api } from "@/services/api"
-import { AlertCircleIcon, AtSignIcon, CheckCircleIcon, KeyIcon, LogInIcon, MailIcon, ShieldCheckIcon } from "lucide-react"
+import { AlertCircleIcon, AtSignIcon, KeyIcon, LogInIcon, MailIcon, WalletIcon } from "lucide-react"
 import { useState } from "react"
 
 export default function PasswordlessSignInForm({ onLogin, onSwitchToSignup }) {
@@ -93,18 +93,17 @@ export default function PasswordlessSignInForm({ onLogin, onSwitchToSignup }) {
 
   return (
     <Card className="max-w-md mx-auto border-2 border-border bg-card shadow-xl">
-      <CardHeader className="space-y-2 pb-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-accent/10 border border-accent/20">
-            {step === "email" ? (
-              <LogInIcon className="h-5 w-5 text-accent" />
-            ) : (
-              <ShieldCheckIcon className="h-5 w-5 text-accent" />
-            )}
+      <CardHeader className="pb-2">
+        <div className="flex flex-col items-center gap-1">
+          <div className="flex items-center gap-2">
+            <span className="p-1 rounded-md bg-accent/10 border border-accent/20">
+              <WalletIcon className="h-5 w-5 text-accent" />
+            </span>
+            <span className="text-lg font-bold tracking-wider text-foreground">MYNAB</span>
           </div>
-          <CardTitle className="text-2xl font-semibold text-foreground">
-            {step === "email" ? "Welcome Back" : "Enter Your Code"}
-          </CardTitle>
+          <span className="text-sm font-normal text-muted-foreground mt-1">
+            {step === "email" ? "Sign in to your account" : "Enter verification code"}
+          </span>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -189,9 +188,6 @@ export default function PasswordlessSignInForm({ onLogin, onSwitchToSignup }) {
         ) : (
           <form onSubmit={handleVerifyAndLogin} className="space-y-5">
             <div className="text-center space-y-2">
-              <div className="p-3 rounded-full bg-green-100 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800 w-fit mx-auto">
-                <CheckCircleIcon className="h-6 w-6 text-green-600 dark:text-green-400" />
-              </div>
               <p className="text-sm text-muted-foreground">
                 We've sent a verification code to <strong className="text-foreground">{form.email}</strong>
               </p>

@@ -2,6 +2,7 @@ import pandas as pd
 import io
 import pdfplumber
 import re
+from typing import List, Dict, Any
 
 from src.budget_transaction_category.constants import TRANSACTION_CATEGORIES
 
@@ -63,3 +64,14 @@ def identify_transaction_category(description: str) -> str:
                 return category_attr
 
     return None
+
+
+def generate_xlsx(entries: List[Dict[str, Any]]) -> bytes:
+    if not entries:
+        df = pd.DataFrame()
+    else:
+        df = pd.DataFrame(entries)
+    # Optionally, select/rename columns for export
+    output = io.BytesIO()
+    df.to_excel(output, index=False)
+    return output.getvalue()

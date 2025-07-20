@@ -1,6 +1,9 @@
 from fastapi import APIRouter, Depends, status, Query, Body, HTTPException
 from datetime import date
+import io
 from typing import List, Optional
+from fastapi.responses import StreamingResponse
+from datetime import datetime
 
 from fastapi.responses import JSONResponse
 
@@ -15,8 +18,11 @@ from src.budget.service import (
     delete_file,
     process_bank_statement,
     create_file,
-    list_files
+    list_files,
+    get_entries_for_export
 )
+from src.budget.utils import generate_xlsx
+
 
 router = APIRouter()
 
@@ -48,7 +54,7 @@ async def post_file(
         "ICBC": [".csv"],
         "mercado_pago": [".pdf"]
     }
-    
+
     # Validate bank name first
     supported_banks = list(bank_formats.keys())
     if bank_name.lower() not in map(str.lower, supported_banks):
@@ -56,10 +62,11 @@ async def post_file(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Unsupported bank. Supported banks: {', '.join(supported_banks)}"
         )
-    
+
     # Get expected formats for the selected bank (case insensitive match)
-    expected_format = bank_formats[[k for k in bank_formats.keys() if k.lower() == bank_name.lower()][0]]
-    
+    expected_format = bank_formats[[
+        k for k in bank_formats.keys() if k.lower() == bank_name.lower()][0]]
+
     # Validate file type based on bank selection
     if not any(file_name.lower().endswith(ext.lower()) for ext in expected_format):
         raise HTTPException(
@@ -85,7 +92,7 @@ async def post_file(
 
     except Exception as e:
         error_msg = str(e)
-        
+
         # Provide more user-friendly error messages for common errors
         if "Excel file format cannot be determined" in error_msg:
             error_detail = f"Invalid Excel file format for {bank_name}. Please make sure you're uploading a valid Excel file (.xlsx) from {bank_name}."
@@ -93,7 +100,7 @@ async def post_file(
             error_detail = f"Could not extract data from the {bank_name} file. Please make sure you're uploading the correct file format."
         else:
             error_detail = f"Error processing file: {error_msg}"
-            
+
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=error_detail
@@ -182,7 +189,7 @@ async def get_monthly_summary(
 ):
     """
     Get budget summary with income/outcome totals and category breakdowns.
-    
+
     Example URL: {{ENV_URL}}/budget/summary?currency="ARS"&start_date=2023-01-01&end_date=2023-01-31
     """
     today = date.today()
@@ -227,3 +234,45 @@ async def remove_file(
         )
 
     return {"message": "File deleted successfully"}
+
+
+@router.get("/export-xlsx")
+async def export_xlsx(
+    jwt_data: JWTData = Depends(require_role([])),
+    currency: str = Query(...),
+    start_date: Optional[date] = Query(None),
+    end_date: Optional[date] = Query(None),
+    limit: Optional[int] = Query(
+        default=100, description="Number of items to return per page"),
+    offset: Optional[int] = Query(
+        default=0, description="Offset from the beginning of the result set"),
+):
+    """
+    Export all transactions as an .xlsx file for the given date range and currency.
+    """
+    today = date.today()
+
+    if not start_date:
+        start_date = today.replace(day=1)
+    if not end_date:
+        end_date = today
+
+    result = await get_budget_entries(
+        jwt_data.id_user,
+        start_date,
+        end_date,
+        limit,
+        offset,
+        currency
+    )
+
+    budgets_data = result["data"]
+
+    if not budgets_data:
+        return JSONResponse(status_code=status.HTTP_200_OK, content={"data": [], "metadata": result["metadata"]})
+
+    xlsx_bytes = generate_xlsx(budgets_data)
+
+    filename = f"mynab_{currency}_{start_date.strftime('%Y%m%d')}_{end_date.strftime('%Y%m%d')}.xlsx"
+    headers = {"Content-Disposition": f"attachment; filename=\"{filename}\""}
+    return StreamingResponse(io.BytesIO(xlsx_bytes), media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", headers=headers)

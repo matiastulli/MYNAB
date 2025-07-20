@@ -1,3 +1,4 @@
+
 import SignInPrompt from "@/components/auth_user/SignInPrompt";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -75,7 +76,7 @@ export default function ActivityList({
 
   const groupedEntries = () => {
     if (!groupByDate) return { ungrouped: filteredEntries };
-    
+
     return filteredEntries.reduce((groups, entry) => {
       // Format the date as "YYYY-MM-DD" for grouping
       const date = entry.date.split('T')[0];
@@ -96,12 +97,54 @@ export default function ActivityList({
     });
   };
 
+  const handleExportXLSX = async () => {
+    try {
+      let startDate = null;
+      let endDate = null;
+      if (dateRangeFormatted && dateRangeFormatted.includes("-")) {
+        const [start, end] = dateRangeFormatted.split("-").map(s => s.trim());
+        startDate = start;
+        endDate = end;
+      }
+
+      // Send as query params if available
+      const params = {};
+      if (startDate) params.start = startDate;
+      if (endDate) params.end = endDate;
+
+      const res = await api.get("/budget/export-xlsx", {
+        responseType: "blob",
+        params
+      }, true); // true = return full response (headers + data)
+      
+      let filename = "mynab_.xlsx";
+      if (res.headers && res.headers["content-disposition"]) {
+        const match = res.headers["content-disposition"].match(/filename="?([^";]+)"?/);
+        if (match && match[1]) {
+          filename = match[1];
+        }
+      }
+
+      const blob = new Blob([res.data || res], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      alert("Failed to download transactions.");
+    }
+  };
+
   const groups = groupedEntries();
 
   const handleDeleteConfirm = (id) => {
     setConfirmDelete(id);
     setShowDeleteConfirm(true);
-    
+
     // Auto-hide after 3 seconds
     setTimeout(() => {
       setShowDeleteConfirm(false);
@@ -112,7 +155,7 @@ export default function ActivityList({
     setDeletingId(id);
     setConfirmDelete(null);
     setShowDeleteConfirm(false);
-    
+
     try {
       const response = await api.delete(`/budget/entry/${id}`);
       if (!response.error) {
@@ -150,7 +193,7 @@ export default function ActivityList({
               <h3 className="text-lg font-medium mb-2 text-foreground">
                 No {currency} transactions for {dateRangeFormatted}
               </h3>
-              
+
               {/* Currency filter notice */}
               <div className="flex items-center justify-center gap-2 p-3 bg-info-bg text-info-fg rounded-md max-w-xs mx-auto mb-4">
                 <CircleDollarSignIcon className="h-4 w-4 flex-shrink-0" />
@@ -164,7 +207,9 @@ export default function ActivityList({
       </Card>
     );
   }
-    
+
+
+  // Download all transactions as .xlsx
 
   return (
     <Card className="border-border bg-card backdrop-blur-sm shadow-lg">
@@ -207,7 +252,7 @@ export default function ActivityList({
                       "Sort by Amount"
                 }
                 className={`h-9 px-3 rounded-lg ${sortDirection ? 'bg-accent/10 text-accent' :
-                    'text-muted-foreground hover:bg-muted'
+                  'text-muted-foreground hover:bg-muted'
                   }`}
               >
                 {sortDirection === 'asc' ? (
@@ -223,7 +268,7 @@ export default function ActivityList({
                 size="sm"
                 onClick={toggleGroupByDate}
                 title={groupByDate ? "Showing grouped by date" : "Showing all transactions"}
-                className={`h-9 px-3 rounded-lg ${groupByDate ? 'bg-accent/10 text-accent' : 
+                className={`h-9 px-3 rounded-lg ${groupByDate ? 'bg-accent/10 text-accent' :
                   'text-muted-foreground hover:bg-muted'}`}
               >
                 {groupByDate ? (
@@ -231,6 +276,17 @@ export default function ActivityList({
                 ) : (
                   <BarChartIcon className="h-4 w-4" />
                 )}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="ml-2 flex items-center gap-2"
+                onClick={handleExportXLSX}
+                title="Download all transactions as .xlsx"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" /></svg>
+                <span className="hidden sm:inline">Export .xlsx</span>
               </Button>
             </div>
           </div>
@@ -251,10 +307,10 @@ export default function ActivityList({
         <div className="divide-y divide-border">
           {Object.keys(groups).map(dateGroup => {
             const entriesForGroup = groups[dateGroup];
-            
+
             // Skip rendering if no entries (shouldn't happen, but just in case)
             if (!entriesForGroup || entriesForGroup.length === 0) return null;
-            
+
             return (
               <div key={dateGroup} className="divide-y divide-border/50">
                 {/* Date header (only if grouping by date) */}
@@ -352,7 +408,7 @@ export default function ActivityList({
                           size="lg"
                         />
                       </div>
-                      
+
                       {/* Delete button with confirmation */}
                       {showDeleteConfirm && confirmDelete === entry.id ? (
                         <div className="flex items-center gap-1 ml-auto">

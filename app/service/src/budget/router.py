@@ -281,7 +281,7 @@ async def export_xlsx(
 
     file_base64 = base64.b64encode(xlsx_bytes).decode('utf-8')
 
-    filename = f"mynab_{currency}_{start_date.strftime('%Y%m%d')}_{end_date.strftime('%Y%m%d')}.xlsx"
+    filename = f"MYNAB_{currency}_{start_date.strftime('%Y%m%d')}_{end_date.strftime('%Y%m%d')}.xlsx"
 
     return JSONResponse(
         status_code=status.HTTP_200_OK,

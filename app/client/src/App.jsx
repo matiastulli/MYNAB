@@ -570,6 +570,7 @@ export default function App() {
               onSignInClick={() => setShowAuthModal(true)}
               entries={entries}
               dateRangeFormatted={dateRangeFormatted}
+              dateRange={dateRange} // Pass the actual date range object
               onTransactionDeleted={() => {
                 fetchSummary();
                 fetchDetails();

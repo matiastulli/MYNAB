@@ -1,9 +1,7 @@
-from fastapi import APIRouter, Depends, status, Query, Body, HTTPException
 from datetime import date
-import io
 from typing import List, Optional
-from fastapi.responses import StreamingResponse
-from datetime import datetime
+from fastapi import APIRouter, Depends, status, Query, Body, HTTPException
+import base64
 
 from fastapi.responses import JSONResponse
 
@@ -18,8 +16,7 @@ from src.budget.service import (
     delete_file,
     process_bank_statement,
     create_file,
-    list_files,
-    get_entries_for_export
+    list_files
 )
 from src.budget.utils import generate_xlsx
 
@@ -249,6 +246,7 @@ async def export_xlsx(
 ):
     """
     Export all transactions as an .xlsx file for the given date range and currency.
+    Returns JSON with base64 encoded file and filename.
     """
     today = date.today()
 
@@ -269,10 +267,29 @@ async def export_xlsx(
     budgets_data = result["data"]
 
     if not budgets_data:
-        return JSONResponse(status_code=status.HTTP_200_OK, content={"data": [], "metadata": result["metadata"]})
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={
+                "message": "No transactions found for the specified criteria",
+                "file_data": None,
+                "filename": None,
+                "metadata": result["metadata"]
+            }
+        )
 
     xlsx_bytes = generate_xlsx(budgets_data)
 
+    file_base64 = base64.b64encode(xlsx_bytes).decode('utf-8')
+
     filename = f"mynab_{currency}_{start_date.strftime('%Y%m%d')}_{end_date.strftime('%Y%m%d')}.xlsx"
-    headers = {"Content-Disposition": f"attachment; filename=\"{filename}\""}
-    return StreamingResponse(io.BytesIO(xlsx_bytes), media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", headers=headers)
+
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={
+            "message": "File generated successfully",
+            "file_data": file_base64,
+            "filename": filename,
+            "file_size": len(xlsx_bytes),
+            "record_count": len(budgets_data)
+        }
+    )

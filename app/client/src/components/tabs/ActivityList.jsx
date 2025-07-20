@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FinancialValue } from "@/components/ui/financial-value";
 import { Spinner } from "@/components/ui/spinner";
-import { parseDatePreservingDay } from "@/lib/dateUtils";
+import { parseDatePreservingDay, toDateOnlyISOString } from "@/lib/dateUtils";
 import { api } from "@/services/api";
 import {
   ArrowDownIcon, ArrowUpIcon, BarChart2Icon, BarChartIcon, CalendarIcon,
@@ -16,6 +16,7 @@ export default function ActivityList({
   isAuthenticated,
   entries = [],
   dateRangeFormatted,
+  dateRange, // Add dateRange prop to get the actual date objects
   onSignInClick,
   onTransactionDeleted,
   isLoading = false,
@@ -99,43 +100,73 @@ export default function ActivityList({
 
   const handleExportXLSX = async () => {
     try {
-      let startDate = null;
-      let endDate = null;
-      if (dateRangeFormatted && dateRangeFormatted.includes("-")) {
-        const [start, end] = dateRangeFormatted.split("-").map(s => s.trim());
-        startDate = start;
-        endDate = end;
-      }
+      // Use the actual date range objects from the general filter
+      const params = {
+        currency: currency
+      };
 
-      // Send as query params if available
-      const params = {};
-      if (startDate) params.start = startDate;
-      if (endDate) params.end = endDate;
-
-      const res = await api.get("/budget/export-xlsx", {
-        responseType: "blob",
-        params
-      }, true); // true = return full response (headers + data)
-      
-      let filename = "mynab_.xlsx";
-      if (res.headers && res.headers["content-disposition"]) {
-        const match = res.headers["content-disposition"].match(/filename="?([^";]+)"?/);
-        if (match && match[1]) {
-          filename = match[1];
+      // Add date range parameters if available
+      if (dateRange) {
+        if (dateRange.startDate) {
+          params.start_date = toDateOnlyISOString(dateRange.startDate);
+        }
+        if (dateRange.endDate) {
+          params.end_date = toDateOnlyISOString(dateRange.endDate);
         }
       }
 
-      const blob = new Blob([res.data || res], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
+      // Add pagination parameters to export all data
+      params.limit = 10000; // Large limit to get all transactions
+      params.offset = 0;
+
+      const response = await api.get("/budget/export-xlsx", {
+        params
+      });
+
+      if (response.error) {
+        console.error("Export error:", response.error);
+        alert("Failed to download transactions: " + response.error);
+        return;
+      }
+
+      // Check if we have file data
+      if (!response.file_data) {
+        alert(response.message || "No transactions found for export");
+        return;
+      }
+
+      // Convert base64 to blob
+      const binaryString = atob(response.file_data);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+
+      const blob = new Blob([bytes], { 
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 
+      });
+      
+      // Use filename from backend response
+      const filename = response.filename || "transactions.xlsx";
+      
+      // Create download link
+      const blobUrl = window.URL.createObjectURL(blob);
+      const downloadLink = document.createElement("a");
+      downloadLink.href = blobUrl;
+      downloadLink.download = filename;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+      window.URL.revokeObjectURL(blobUrl);
+      
+      // Show success message with file info
+      if (response.record_count) {
+        console.log(`Successfully exported ${response.record_count} transactions to ${filename}`);
+      }
+      
     } catch (err) {
-      alert("Failed to download transactions.");
+      console.error("Export failed:", err);
+      alert("Failed to download transactions. Please try again.");
     }
   };
 

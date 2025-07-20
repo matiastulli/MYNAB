@@ -345,8 +345,10 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
             {/* Submit Button */}
             <Button
               type="submit"
+              variant="success"
+              size="xl"
               disabled={isUploading || !file || !bankName}
-              className="w-full h-14 text-lg font-semibold bg-accent hover:bg-accent/90 text-accent-foreground transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full text-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isUploading ? (
                 <div className="flex items-center justify-center gap-2">

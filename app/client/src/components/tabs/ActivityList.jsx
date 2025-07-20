@@ -169,22 +169,23 @@ export default function ActivityList({
   return (
     <Card className="border-border bg-card backdrop-blur-sm shadow-lg">
       <CardHeader className="pb-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-accent/10 border border-accent/20">
-              <BarChartIcon className="h-5 w-5 text-accent" />
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-accent/10 border border-accent/20">
+                <BarChartIcon className="h-5 w-5 text-accent" />
+              </div>
+              <CardTitle className="text-xl font-semibold text-foreground">
+                Activity
+              </CardTitle>
             </div>
-            <CardTitle className="text-xl font-semibold text-foreground">
-              Activity
-            </CardTitle>
+            <div className="flex items-center gap-2 bg-accent/10 text-accent px-3 py-1.5 rounded-full border border-accent/20">
+              <CircleDollarSignIcon className="h-4 w-4" />
+              <span className="text-sm font-medium">{currency}</span>
+              <span className="text-xs opacity-75">({getCurrencyName(currency)})</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2 bg-accent/10 text-accent px-3 py-1.5 rounded-full border border-accent/20">
-            <CircleDollarSignIcon className="h-4 w-4" />
-            <span className="text-sm font-medium">{currency}</span>
-            <span className="text-xs opacity-75">({getCurrencyName(currency)})</span>
-          </div>
-
-          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto mt-2">
             <div className="relative flex-1 sm:min-w-[240px]">
               <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
@@ -195,7 +196,6 @@ export default function ActivityList({
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-
             <div className="flex items-center gap-1">
               <Button
                 variant="ghost"
@@ -218,7 +218,6 @@ export default function ActivityList({
                   <span className="text-xs">Sort</span>
                 )}
               </Button>
-              
               <Button
                 variant="ghost"
                 size="sm"

@@ -352,7 +352,9 @@ export default function AddTransaction({
             {/* Submit Button */}
             <Button
               type="submit"
-              className="w-full h-14 text-lg font-semibold bg-accent hover:bg-accent/90 text-accent-foreground transition-all duration-200 shadow-lg hover:shadow-xl"
+              variant="success"
+              size="xl"
+              className="w-full text-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isSubmitting || !form.amount}
             >
               {isSubmitting ? (

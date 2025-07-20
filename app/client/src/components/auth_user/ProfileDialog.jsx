@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { isDarkModeActive, toggleTheme } from "@/lib/themeUtils";
@@ -87,12 +87,14 @@ export default function ProfileDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-card text-card-foreground border-2 border-border shadow-xl max-w-md">
-        <DialogHeader className="space-y-3">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-accent/10 border border-accent/20">
+        <DialogHeader className="pb-2">
+          <div className="flex flex-col items-center gap-1">
+            <div className="flex items-center gap-2">
+              <span className="p-1 rounded-md bg-accent/10 border border-accent/20">
               <UserIcon className="h-5 w-5 text-accent" />
+              </span>
+             <span className="text-lg font-bold tracking-wider text-foreground">MYNAB</span>
             </div>
-            <DialogTitle className="text-xl font-semibold text-foreground">Your Profile</DialogTitle>
           </div>
           <DialogDescription className="text-muted-foreground">
             {(!userData?.national_id || userData?.national_id === "") ? (

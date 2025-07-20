@@ -9,6 +9,7 @@ export default function CurrencyFilter({ selectedCurrency, onCurrencyChange }) {
   const [isOpen, setIsOpen] = useState(false)
 
   const currencies = [
+    { code: "ALL", name: "All Currencies", symbol: "💰" },
     { code: "ARS", name: "Argentine Peso", symbol: "$" },
     { code: "USD", name: "US Dollar", symbol: "$" },
     { code: "EUR", name: "Euro", symbol: "€" },

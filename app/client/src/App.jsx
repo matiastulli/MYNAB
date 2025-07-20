@@ -5,6 +5,7 @@ import ProfileDialog from "@/components/auth_user/ProfileDialog"
 import CurrencyFilter from "@/components/filters/CurrencyFilter"
 import DateRangeFilter from "@/components/filters/DateRangeFilter"
 import CurrencyNotification from "@/components/notifications/CurrencyNotification"
+import CurrencyOverview from "@/components/summary/CurrencyOverview"
 import SummaryCards from "@/components/summary/SummaryCards"
 import ActivityList from "@/components/tabs/ActivityList"
 import AddTransaction from "@/components/tabs/AddTransaction"
@@ -52,7 +53,10 @@ export default function App() {
   });
 
   // New currency state
-  const [currency, setCurrency] = useState("ARS");
+  const [currency, setCurrency] = useState("ALL");
+
+  // Add state for multi-currency summary
+  const [currencySummary, setCurrencySummary] = useState({ currencies: [] });
 
   // Add state for files loading and error
   const [filesLoading, setFilesLoading] = useState(false);
@@ -117,24 +121,31 @@ export default function App() {
   const fetchSummary = async () => {
     setSummaryLoading(true); // Start loading
     try {
-      // Format dates for API using our utility function
-      const startDateStr = toDateOnlyISOString(dateRange.startDate);
-      const endDateStr = toDateOnlyISOString(dateRange.endDate);
-      
-      // Use URL parameters for GET request
-      const params = new URLSearchParams();
-      params.append('start_date', startDateStr);
-      params.append('end_date', endDateStr);
-      params.append('currency', currency);
-      
-      const url = `/budget/summary?${params.toString()}`;
-      
-      const data = await api.get(url);
-      
-      if (!data.error) {
-        setSummary(data);
+      if (currency === "ALL") {
+        // Fetch multi-currency summary
+        await fetchCurrencySummary();
+        // Set default summary for compatibility
+        setSummary({ income: 0, outcome: 0, categories: [] });
       } else {
-        console.error("Error fetching summary:", data.error);
+        // Format dates for API using our utility function
+        const startDateStr = toDateOnlyISOString(dateRange.startDate);
+        const endDateStr = toDateOnlyISOString(dateRange.endDate);
+
+        // Use URL parameters for GET request
+        const params = new URLSearchParams();
+        params.append('start_date', startDateStr);
+        params.append('end_date', endDateStr);
+        params.append('currency', currency);
+
+        const url = `/budget/summary?${params.toString()}`;
+
+        const data = await api.get(url);
+
+        if (!data.error) {
+          setSummary(data);
+        } else {
+          console.error("Error fetching summary:", data.error);
+        }
       }
     } catch (error) {
       console.error("Failed to fetch summary:", error);
@@ -145,13 +156,46 @@ export default function App() {
     }
   };
 
+  const fetchCurrencySummary = async () => {
+    try {
+      // Format dates for API using our utility function
+      const startDateStr = toDateOnlyISOString(dateRange.startDate);
+      const endDateStr = toDateOnlyISOString(dateRange.endDate);
+
+      // Use URL parameters for GET request
+      const params = new URLSearchParams();
+      params.append('start_date', startDateStr);
+      params.append('end_date', endDateStr);
+
+      const url = `/budget/summary-by-currency?${params.toString()}`;
+
+      const data = await api.get(url);
+
+      if (!data.error) {
+        setCurrencySummary(data);
+      } else {
+        console.error("Error fetching currency summary:", data.error);
+        setCurrencySummary({ currencies: [] });
+      }
+    } catch (error) {
+      console.error("Failed to fetch currency summary:", error);
+      setCurrencySummary({ currencies: [] });
+    }
+  };
+
   const fetchDetails = async () => {
+    // Don't fetch details when in "ALL" currency mode
+    if (currency === "ALL") {
+      setEntries([]);
+      return;
+    }
+
     setEntriesLoading(true); // Start loading
     try {
       // Format dates for API using our utility function
       const startDateStr = toDateOnlyISOString(dateRange.startDate);
       const endDateStr = toDateOnlyISOString(dateRange.endDate);
-      
+
       // Use URL parameters for GET request
       const params = new URLSearchParams();
       params.append('start_date', startDateStr);
@@ -159,11 +203,11 @@ export default function App() {
       params.append('limit', pagination.limit);
       params.append('offset', pagination.offset);
       params.append('currency', currency);
-      
+
       const url = `/budget/details?${params.toString()}`;
-      
+
       const data = await api.get(url);
-      
+
       if (!data.error) {
         setEntries(data.data || []);
         setPagination({
@@ -183,6 +227,12 @@ export default function App() {
   };
 
   const fetchFiles = async () => {
+    // Don't fetch files when in "ALL" currency mode
+    if (currency === "ALL") {
+      setFiles([]);
+      return;
+    }
+
     setFilesLoading(true);
     setFilesError(null);
 
@@ -241,7 +291,7 @@ export default function App() {
     fetchDetails();
     fetchFiles();
 
-    
+
     setActiveTab("dashboard");
   };
 
@@ -257,6 +307,13 @@ export default function App() {
     setPrevCurrency(currency);
     setCurrency(newCurrency);
     setShowCurrencyNotification(true);
+  };
+
+  // Handle currency selection from overview
+  const handleCurrencySelect = (selectedCurrency) => {
+    handleCurrencyChange(selectedCurrency);
+    // Switch to dashboard tab when selecting a specific currency
+    setActiveTab("dashboard");
   };
 
   const handlePaginationChange = (newPagination) => {
@@ -290,13 +347,19 @@ export default function App() {
         <header className="mb-6 md:mb-10">
           <div className="flex flex-row items-center justify-between gap-2 flex-wrap">
             <div>
+
+
               <h1 className="text-xl sm:text-2xl font-medium tracking-tight text-foreground">
                 Budget Overview
               </h1>
               <div className="flex items-center gap-2 mt-1">
-                <p className="text-xs sm:text-sm text-muted-foreground">
-                  {dateRangeFormatted}
-                </p>
+                {isAuthenticated && (
+                  <p className="text-xs sm:text-sm text-muted-foreground">
+                    {dateRangeFormatted}
+                  </p>
+                )}
+
+
                 {isAuthenticated && (
                   <>
                     <DateRangeFilter
@@ -311,7 +374,7 @@ export default function App() {
                     />
                   </>
                 )}
-                
+
                 {/* Loading indicator animation */}
                 {(summaryLoading || entriesLoading) && (
                   <span className="flex items-center ml-1 animate-pulse">
@@ -329,7 +392,7 @@ export default function App() {
                 className="flex items-center gap-2 cursor-pointer bg-card hover:bg-accent rounded-lg px-3 py-1.5 transition-colors shadow-sm border border-border"
                 onClick={() => setShowProfileModal(true)}
               >
-                <div 
+                <div
                   className="rounded-full p-1"
                   style={{
                     backgroundColor: "hsl(var(--success-bg))",
@@ -351,158 +414,174 @@ export default function App() {
           </div>
         </header>
 
-        {/* Summary Cards */}
-        <SummaryCards 
-          summary={summary}
-          currency={currency}
-          dateRangeFormatted={dateRangeFormatted}
-          isLoading={summaryLoading}
-        />
+        {/* Summary Cards - only show for specific currencies, not for ALL */}
+        {currency !== "ALL" && (
+          <SummaryCards
+            summary={summary}
+            currency={currency}
+            dateRangeFormatted={dateRangeFormatted}
+            isLoading={summaryLoading}
+          />
+        )}
 
-        {/* Main Content */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-          <div className="flex justify-center w-full">
-            <TabsList className="flex bg-card p-1.5 gap-x-1.5 rounded-xl shadow-sm border border-border overflow-x-auto max-w-full w-full sm:w-auto">
-              <TabsTrigger
-                value="dashboard"
-                className="flex-1 sm:flex-none text-muted-foreground rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
-                style={{
-                  '--active-color': 'hsl(var(--accent))',
-                  '--active-bg': 'hsl(var(--accent) / 0.1)'
+        {/* Currency Overview - only show when ALL is selected */}
+        {currency === "ALL" && (
+          <CurrencyOverview
+            currencySummary={currencySummary}
+            dateRangeFormatted={dateRangeFormatted}
+            isLoading={summaryLoading}
+            onCurrencySelect={handleCurrencySelect}
+            isAuthenticated={isAuthenticated}
+            onSignInClick={() => setShowAuthModal(true)}
+          />
+        )}
+
+        {/* Main Content - only show for specific currencies, not for ALL */}
+        {currency !== "ALL" && (
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+            <div className="flex justify-center w-full">
+              <TabsList className="flex bg-card p-1.5 gap-x-1.5 rounded-xl shadow-sm border border-border overflow-x-auto max-w-full w-full sm:w-auto">
+                <TabsTrigger
+                  value="dashboard"
+                  className="flex-1 sm:flex-none text-muted-foreground rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
+                  style={{
+                    '--active-color': 'hsl(var(--accent))',
+                    '--active-bg': 'hsl(var(--accent) / 0.1)'
+                  }}
+                  data-state={activeTab === "dashboard" ? "active" : "inactive"}
+                >
+                  <LayoutDashboardIcon className="h-4 w-4" />
+                  <span className="hidden sm:inline-block ml-2">Dashboard</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="entries"
+                  className="flex-1 sm:flex-none text-muted-foreground rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
+                  style={{
+                    '--active-color': 'hsl(var(--accent))',
+                    '--active-bg': 'hsl(var(--accent) / 0.1)'
+                  }}
+                  data-state={activeTab === "entries" ? "active" : "inactive"}
+                >
+                  <BarChartIcon className="h-4 w-4" />
+                  <span className="hidden sm:inline-block ml-2">Activity</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="new"
+                  className="flex-1 sm:flex-none text-muted-foreground rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
+                  style={{
+                    '--active-color': 'hsl(var(--accent))',
+                    '--active-bg': 'hsl(var(--accent) / 0.1)'
+                  }}
+                  data-state={activeTab === "new" ? "active" : "inactive"}
+                >
+                  <PlusCircleIcon className="h-4 w-4" />
+                  <span className="hidden sm:inline-block ml-2">Add Transaction</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="import"
+                  className="flex-1 sm:flex-none text-muted-foreground rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
+                  style={{
+                    '--active-color': 'hsl(var(--accent))',
+                    '--active-bg': 'hsl(var(--accent) / 0.1)'
+                  }}
+                  data-state={activeTab === "import" ? "active" : "inactive"}
+                >
+                  <UploadIcon className="h-4 w-4" />
+                  <span className="hidden sm:inline-block ml-2">Import Statements</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="files"
+                  className="flex-1 sm:flex-none text-muted-foreground rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
+                  style={{
+                    '--active-color': 'hsl(var(--accent))',
+                    '--active-bg': 'hsl(var(--accent) / 0.1)'
+                  }}
+                  data-state={activeTab === "files" ? "active" : "inactive"}
+                >
+                  <FolderIcon className="h-4 w-4" />
+                  <span className="hidden sm:inline-block ml-2">Bank Statements</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+
+            {/* Dashboard Tab Content */}
+            <TabsContent value="dashboard" className="space-y-4 mt-6 focus-visible:outline-none">
+              <Dashboard
+                isAuthenticated={isAuthenticated}
+                currency={currency}
+                onSignInClick={() => setShowAuthModal(true)}
+                summary={summary}
+                entries={entries}
+                isLoading={summaryLoading || entriesLoading}
+              />
+            </TabsContent>
+
+            {/* Transactions List */}
+            <TabsContent value="entries" className="space-y-4 mt-6 focus-visible:outline-none">
+              <ActivityList
+                isAuthenticated={isAuthenticated}
+                currency={currency}
+                onSignInClick={() => setShowAuthModal(true)}
+                entries={entries}
+                dateRangeFormatted={dateRangeFormatted}
+                dateRange={dateRange} // Pass the actual date range object
+                onTransactionDeleted={() => {
+                  fetchSummary();
+                  fetchDetails();
                 }}
-                data-state={activeTab === "dashboard" ? "active" : "inactive"}
-              >
-                <LayoutDashboardIcon className="h-4 w-4" />
-                <span className="hidden sm:inline-block ml-2">Dashboard</span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="entries"
-                className="flex-1 sm:flex-none text-muted-foreground rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
-                style={{
-                  '--active-color': 'hsl(var(--accent))',
-                  '--active-bg': 'hsl(var(--accent) / 0.1)'
+                isLoading={entriesLoading}
+              />
+            </TabsContent>
+
+            {/* Add New Transaction */}
+            <TabsContent value="new" className="mt-6 focus-visible:outline-none">
+              <AddTransaction
+                isAuthenticated={isAuthenticated}
+                defaultCurrency={currency}
+                onSignInClick={() => setShowAuthModal(true)}
+                onTransactionAdded={() => {
+                  fetchSummary();
+                  fetchDetails();
                 }}
-                data-state={activeTab === "entries" ? "active" : "inactive"}
-              >
-                <BarChartIcon className="h-4 w-4" />
-                <span className="hidden sm:inline-block ml-2">Activity</span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="new"
-                className="flex-1 sm:flex-none text-muted-foreground rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
-                style={{
-                  '--active-color': 'hsl(var(--accent))',
-                  '--active-bg': 'hsl(var(--accent) / 0.1)'
+              />
+            </TabsContent>
+
+            {/* Import Transactions */}
+            <TabsContent value="import" className="mt-6 focus-visible:outline-none">
+              <ImportFile
+                isAuthenticated={isAuthenticated}
+                currency={currency}
+                onSignInClick={() => setShowAuthModal(true)}
+                onImportComplete={() => {
+                  fetchSummary();
+                  fetchDetails();
                 }}
-                data-state={activeTab === "new" ? "active" : "inactive"}
-              >
-                <PlusCircleIcon className="h-4 w-4" />
-                <span className="hidden sm:inline-block ml-2">Add Transaction</span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="import"
-                className="flex-1 sm:flex-none text-muted-foreground rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
-                style={{
-                  '--active-color': 'hsl(var(--accent))',
-                  '--active-bg': 'hsl(var(--accent) / 0.1)'
+                onImportSuccess={handleImportSuccess}
+                className="max-w-2xl mx-auto"
+              />
+            </TabsContent>
+
+            {/* Files List */}
+            <TabsContent value="files" className="mt-6 focus-visible:outline-none">
+              <FilesList
+                isAuthenticated={isAuthenticated}
+                currency={currency}
+                onSignInClick={() => setShowAuthModal(true)}
+                onFileDeleted={() => {
+                  fetchSummary();
+                  fetchDetails();
+                  fetchFiles();
                 }}
-                data-state={activeTab === "import" ? "active" : "inactive"}
-              >
-                <UploadIcon className="h-4 w-4" />
-                <span className="hidden sm:inline-block ml-2">Import Statements</span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="files"
-                className="flex-1 sm:flex-none text-muted-foreground rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
-                style={{
-                  '--active-color': 'hsl(var(--accent))',
-                  '--active-bg': 'hsl(var(--accent) / 0.1)'
-                }}
-                data-state={activeTab === "files" ? "active" : "inactive"}
-              >
-                <FolderIcon className="h-4 w-4" />
-                <span className="hidden sm:inline-block ml-2">Bank Statements</span>
-              </TabsTrigger>
-            </TabsList>
-          </div>
-
-
-          {/* Dashboard Tab Content */}
-          <TabsContent value="dashboard" className="space-y-4 mt-6 focus-visible:outline-none">
-            <Dashboard 
-              isAuthenticated={isAuthenticated}
-              currency={currency}
-              onSignInClick={() => setShowAuthModal(true)}
-              summary={summary}
-              entries={entries}
-              isLoading={summaryLoading || entriesLoading}
-            />
-          </TabsContent>
-
-          {/* Transactions List */}
-          <TabsContent value="entries" className="space-y-4 mt-6 focus-visible:outline-none">
-            <ActivityList
-              isAuthenticated={isAuthenticated}
-              currency={currency}
-              onSignInClick={() => setShowAuthModal(true)}
-              entries={entries}
-              dateRangeFormatted={dateRangeFormatted}
-              dateRange={dateRange} // Pass the actual date range object
-              onTransactionDeleted={() => {
-                fetchSummary();
-                fetchDetails();
-              }}
-              isLoading={entriesLoading}
-            />
-          </TabsContent>
-
-          {/* Add New Transaction */}
-          <TabsContent value="new" className="mt-6 focus-visible:outline-none">
-            <AddTransaction
-              isAuthenticated={isAuthenticated}
-              defaultCurrency={currency}
-              onSignInClick={() => setShowAuthModal(true)}
-              onTransactionAdded={() => {
-                fetchSummary();
-                fetchDetails();
-              }}
-            />
-          </TabsContent>
-
-          {/* Import Transactions */}
-          <TabsContent value="import" className="mt-6 focus-visible:outline-none">
-            <ImportFile
-              isAuthenticated={isAuthenticated}
-              currency={currency}
-              onSignInClick={() => setShowAuthModal(true)}
-              onImportComplete={() => {
-                fetchSummary();
-                fetchDetails();
-              }}
-              onImportSuccess={handleImportSuccess}
-              className="max-w-2xl mx-auto"
-            />
-          </TabsContent>
-
-          {/* Files List */}
-          <TabsContent value="files" className="mt-6 focus-visible:outline-none">
-            <FilesList
-              isAuthenticated={isAuthenticated}
-              currency={currency}
-              onSignInClick={() => setShowAuthModal(true)}
-              onFileDeleted={() => {
-                fetchSummary();
-                fetchDetails();
-                fetchFiles();
-              }}
-              files={files}
-              loading={filesLoading}
-              error={filesError}
-              pagination={pagination}
-              onPaginationChange={handlePaginationChange}
-            />
-          </TabsContent>
-        </Tabs>
+                files={files}
+                loading={filesLoading}
+                error={filesError}
+                pagination={pagination}
+                onPaginationChange={handlePaginationChange}
+              />
+            </TabsContent>
+          </Tabs>
+        )}
 
         {/* Profile Update Dialog */}
         <ProfileDialog
@@ -512,9 +591,9 @@ export default function App() {
           onProfileUpdated={fetchUserProfile}
           onLogout={handleLogout}
         />
-        
+
         {/* Currency change notification */}
-        <CurrencyNotification 
+        <CurrencyNotification
           currency={currency}
           isVisible={showCurrencyNotification}
           onClose={() => setShowCurrencyNotification(false)}

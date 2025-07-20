@@ -16,7 +16,7 @@ export default function ActivityList({
   isAuthenticated,
   entries = [],
   dateRangeFormatted,
-  dateRange, // Add dateRange prop to get the actual date objects
+  dateRange,
   onSignInClick,
   onTransactionDeleted,
   isLoading = false,

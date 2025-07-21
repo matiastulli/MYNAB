@@ -3,8 +3,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowDownIcon, ArrowUpIcon, TrendingUpIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-export default function CurrencyOverview({ currencySummary, dateRangeFormatted, isLoading, onCurrencySelect, isAuthenticated, onSignInClick }) {
+export default function CurrencyOverview({ currencySummary, dateRangeFormatted, isLoading, onCurrencySelect, onCurrencyImport, isAuthenticated, onSignInClick }) {
   const navigate = useNavigate()
+  
+  const handleCurrencyImport = (currencyCode) => {
+    if (onCurrencyImport) {
+      // Use the callback if provided (for scrolling behavior)
+      onCurrencyImport(currencyCode)
+    } else {
+      // Fallback to direct navigation
+      navigate(`/dashboard/import?currency=${currencyCode}`)
+    }
+  }
   
   if (isLoading) {
     return (
@@ -80,7 +90,7 @@ export default function CurrencyOverview({ currencySummary, dateRangeFormatted, 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-2xl mx-auto">
             {/* ARS Button */}
             <button
-              onClick={() => navigate('/dashboard/import?currency=ARS')}
+              onClick={() => handleCurrencyImport('ARS')}
               className="flex flex-col items-center gap-2 px-3 py-4 sm:px-4 sm:py-3 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
             >
               <span className="text-xl sm:text-lg font-bold">$</span>
@@ -89,7 +99,7 @@ export default function CurrencyOverview({ currencySummary, dateRangeFormatted, 
 
             {/* USD Button */}
             <button
-              onClick={() => navigate('/dashboard/import?currency=USD')}
+              onClick={() => handleCurrencyImport('USD')}
               className="flex flex-col items-center gap-2 px-3 py-4 sm:px-4 sm:py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
             >
               <span className="text-xl sm:text-lg font-bold">$</span>
@@ -98,7 +108,7 @@ export default function CurrencyOverview({ currencySummary, dateRangeFormatted, 
 
             {/* EUR Button */}
             <button
-              onClick={() => navigate('/dashboard/import?currency=EUR')}
+              onClick={() => handleCurrencyImport('EUR')}
               className="flex flex-col items-center gap-2 px-3 py-4 sm:px-4 sm:py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
             >
               <span className="text-xl sm:text-lg font-bold">€</span>
@@ -107,7 +117,7 @@ export default function CurrencyOverview({ currencySummary, dateRangeFormatted, 
 
             {/* BRL Button */}
             <button
-              onClick={() => navigate('/dashboard/import?currency=BRL')}
+              onClick={() => handleCurrencyImport('BRL')}
               className="flex flex-col items-center gap-2 px-3 py-4 sm:px-4 sm:py-3 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
             >
               <span className="text-xl sm:text-lg font-bold">R$</span>

@@ -25,7 +25,7 @@ import {
   UploadIcon,
   UserIcon
 } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useNavigate, useParams, useSearchParams } from "react-router-dom"
 
 export default function MainApp({ onLogout }) {
@@ -33,6 +33,9 @@ export default function MainApp({ onLogout }) {
   const params = useParams()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
+
+  // Ref for scrolling to tabs section
+  const tabsRef = useRef(null)
 
   // Application state variables
   const [summary, setSummary] = useState({ income: 0, outcome: 0, categories: [] })
@@ -336,6 +339,32 @@ export default function MainApp({ onLogout }) {
     handleCurrencyChange(selectedCurrency);
     setActiveTab("dashboard");
     updateURLWithFilters(dateRange, selectedCurrency, "dashboard");
+    
+    // Scroll to tabs section after currency selection
+    setTimeout(() => {
+      if (tabsRef.current) {
+        tabsRef.current.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+      }
+    }, 100); // Small delay to ensure state updates have completed
+  };
+
+  const handleCurrencyImport = (selectedCurrency) => {
+    handleCurrencyChange(selectedCurrency);
+    setActiveTab("import");
+    updateURLWithFilters(dateRange, selectedCurrency, "import");
+    
+    // Scroll to tabs section after currency selection
+    setTimeout(() => {
+      if (tabsRef.current) {
+        tabsRef.current.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+      }
+    }, 100); // Small delay to ensure state updates have completed
   };
 
   const handleTabChange = (newTab) => {
@@ -466,12 +495,13 @@ export default function MainApp({ onLogout }) {
             dateRangeFormatted={dateRangeFormatted}
             isLoading={summaryLoading}
             onCurrencySelect={handleCurrencySelect}
+            onCurrencyImport={handleCurrencyImport}
           />
         )}
 
         {/* Main Content - only show for specific currencies, not for ALL */}
         {currency !== "ALL" && (
-          <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-8">
+          <Tabs ref={tabsRef} value={activeTab} onValueChange={handleTabChange} className="space-y-8">
             <div className="flex justify-center w-full">
               <TabsList className="flex bg-card p-1.5 gap-x-1.5 rounded-xl shadow-sm border border-border overflow-x-auto max-w-full w-full sm:w-auto">
                 <TabsTrigger

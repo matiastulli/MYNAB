@@ -3,7 +3,6 @@
 import ProfileDialog from "@/components/auth_user/ProfileDialog"
 import CurrencyFilter from "@/components/filters/CurrencyFilter"
 import DateRangeFilter from "@/components/filters/DateRangeFilter"
-import CurrencyNotification from "@/components/notifications/CurrencyNotification"
 import CurrencyOverview from "@/components/summary/CurrencyOverview"
 import SummaryCards from "@/components/summary/SummaryCards"
 import ActivityList from "@/components/tabs/ActivityList"
@@ -87,10 +86,6 @@ export default function MainApp({ onLogout }) {
   // Add loading states for different data fetches
   const [summaryLoading, setSummaryLoading] = useState(false);
   const [entriesLoading, setEntriesLoading] = useState(false);
-
-  // New state for currency notification
-  const [showCurrencyNotification, setShowCurrencyNotification] = useState(false);
-  const [prevCurrency, setPrevCurrency] = useState(null);
 
   // Load user data and initial data on component mount
   useEffect(() => {
@@ -329,9 +324,7 @@ export default function MainApp({ onLogout }) {
   };
 
   const handleCurrencyChange = (newCurrency) => {
-    setPrevCurrency(currency);
     setCurrency(newCurrency);
-    setShowCurrencyNotification(true);
     updateURLWithFilters(dateRange, newCurrency, activeTab);
   };
 
@@ -642,13 +635,6 @@ export default function MainApp({ onLogout }) {
           userData={userData}
           onProfileUpdated={fetchUserProfile}
           onLogout={handleLogout}
-        />
-
-        {/* Currency change notification */}
-        <CurrencyNotification
-          currency={currency}
-          isVisible={showCurrencyNotification}
-          onClose={() => setShowCurrencyNotification(false)}
         />
       </div>
     </div>

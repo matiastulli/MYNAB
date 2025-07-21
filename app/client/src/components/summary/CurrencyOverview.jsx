@@ -8,45 +8,45 @@ export default function CurrencyOverview({ currencySummary, dateRangeFormatted, 
   
   if (isLoading) {
     return (
-      <div className="space-y-8 py-4">
+      <div className="space-y-6 py-4 px-4">
         {/* Loading Header */}
         <div className="text-center space-y-3">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500/10 to-blue-500/10 rounded-full mb-4 animate-pulse">
             <div className="w-8 h-8 bg-muted rounded"></div>
           </div>
           <div className="space-y-2">
-            <div className="h-8 bg-muted rounded-lg w-64 mx-auto"></div>
-            <div className="h-6 bg-muted rounded w-32 mx-auto"></div>
-            <div className="h-8 bg-muted rounded-full w-40 mx-auto"></div>
+            <div className="h-6 sm:h-8 bg-muted rounded-lg w-48 sm:w-64 mx-auto"></div>
+            <div className="h-4 sm:h-6 bg-muted rounded w-24 sm:w-32 mx-auto"></div>
+            <div className="h-6 sm:h-8 bg-muted rounded-full w-32 sm:w-40 mx-auto"></div>
           </div>
         </div>
 
         {/* Loading Cards */}
-        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 w-full max-w-6xl mx-auto">
           {[1, 2, 3].map((i) => (
             <Card key={i} className="animate-pulse">
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-muted rounded-lg"></div>
                   <div className="space-y-2">
-                    <div className="h-5 bg-muted rounded w-16"></div>
-                    <div className="h-4 bg-muted rounded w-24"></div>
+                    <div className="h-4 sm:h-5 bg-muted rounded w-12 sm:w-16"></div>
+                    <div className="h-3 sm:h-4 bg-muted rounded w-16 sm:w-24"></div>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="py-4 bg-muted/30 rounded-lg">
-                  <div className="h-4 bg-muted rounded w-20 mx-auto mb-2"></div>
-                  <div className="h-8 bg-muted rounded w-32 mx-auto"></div>
+                <div className="py-3 sm:py-4 bg-muted/30 rounded-lg">
+                  <div className="h-3 sm:h-4 bg-muted rounded w-16 sm:w-20 mx-auto mb-2"></div>
+                  <div className="h-6 sm:h-8 bg-muted rounded w-24 sm:w-32 mx-auto"></div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-3 bg-muted/20 rounded-lg">
-                    <div className="h-4 bg-muted rounded w-16 mx-auto mb-2"></div>
-                    <div className="h-6 bg-muted rounded w-20 mx-auto"></div>
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                  <div className="p-2 sm:p-3 bg-muted/20 rounded-lg">
+                    <div className="h-3 sm:h-4 bg-muted rounded w-12 sm:w-16 mx-auto mb-2"></div>
+                    <div className="h-4 sm:h-6 bg-muted rounded w-16 sm:w-20 mx-auto"></div>
                   </div>
-                  <div className="p-3 bg-muted/20 rounded-lg">
-                    <div className="h-4 bg-muted rounded w-16 mx-auto mb-2"></div>
-                    <div className="h-6 bg-muted rounded w-20 mx-auto"></div>
+                  <div className="p-2 sm:p-3 bg-muted/20 rounded-lg">
+                    <div className="h-3 sm:h-4 bg-muted rounded w-12 sm:w-16 mx-auto mb-2"></div>
+                    <div className="h-4 sm:h-6 bg-muted rounded w-16 sm:w-20 mx-auto"></div>
                   </div>
                 </div>
               </CardContent>
@@ -61,13 +61,13 @@ export default function CurrencyOverview({ currencySummary, dateRangeFormatted, 
 
   if (currencies.length === 0) {
     return (
-      <div className="text-center py-12 max-w-md mx-auto">
+      <div className="text-center py-8 px-4 max-w-full mx-auto">
         <div className="mb-6">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500/10 to-blue-500/10 rounded-full mb-4">
             <TrendingUpIcon className="h-8 w-8 text-emerald-600" />
           </div>
           <h3 className="text-xl font-semibold text-foreground mb-3">Start Your Financial Journey</h3>
-          <p className="text-muted-foreground mb-6">
+          <p className="text-muted-foreground mb-6 text-sm sm:text-base">
             Looks like there's nothing here yet. 
             Import your transactions to start discover your financial picture.
           </p>
@@ -77,48 +77,44 @@ export default function CurrencyOverview({ currencySummary, dateRangeFormatted, 
         <div className="space-y-4">
           <h4 className="text-sm font-medium text-foreground text-center">Choose Currency to Import</h4>
           
-          <div className="grid grid-cols-2 gap-3 max-w-md mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-2xl mx-auto">
             {/* ARS Button */}
             <button
               onClick={() => navigate('/dashboard/import?currency=ARS')}
-              className="flex flex-col items-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
+              className="flex flex-col items-center gap-2 px-3 py-4 sm:px-4 sm:py-3 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
             >
-              <span className="text-lg font-bold">$</span>
-              <span className="text-sm">ARS</span>
+              <span className="text-xl sm:text-lg font-bold">$</span>
+              <span className="text-xs sm:text-sm">ARS</span>
             </button>
 
             {/* USD Button */}
             <button
               onClick={() => navigate('/dashboard/import?currency=USD')}
-              className="flex flex-col items-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
+              className="flex flex-col items-center gap-2 px-3 py-4 sm:px-4 sm:py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
             >
-              <span className="text-lg font-bold">$</span>
-              <span className="text-sm">USD</span>
+              <span className="text-xl sm:text-lg font-bold">$</span>
+              <span className="text-xs sm:text-sm">USD</span>
             </button>
 
             {/* EUR Button */}
             <button
               onClick={() => navigate('/dashboard/import?currency=EUR')}
-              className="flex flex-col items-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
+              className="flex flex-col items-center gap-2 px-3 py-4 sm:px-4 sm:py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
             >
-              <span className="text-lg font-bold">€</span>
-              <span className="text-sm">EUR</span>
+              <span className="text-xl sm:text-lg font-bold">€</span>
+              <span className="text-xs sm:text-sm">EUR</span>
             </button>
 
             {/* BRL Button */}
             <button
               onClick={() => navigate('/dashboard/import?currency=BRL')}
-              className="flex flex-col items-center gap-2 px-4 py-3 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
+              className="flex flex-col items-center gap-2 px-3 py-4 sm:px-4 sm:py-3 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
             >
-              <span className="text-lg font-bold">R$</span>
-              <span className="text-sm">BRL</span>
+              <span className="text-xl sm:text-lg font-bold">R$</span>
+              <span className="text-xs sm:text-sm">BRL</span>
             </button>
           </div>
         </div>
-        
-        <p className="text-xs text-muted-foreground mt-4 text-center">
-          Support for CSV, Excel and PDF files
-        </p>
       </div>
     )
   }

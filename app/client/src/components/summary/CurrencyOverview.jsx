@@ -1,8 +1,11 @@
 "use client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowDownIcon, ArrowUpIcon, TrendingUpIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function CurrencyOverview({ currencySummary, dateRangeFormatted, isLoading, onCurrencySelect, isAuthenticated, onSignInClick }) {
+  const navigate = useNavigate()
+  
   if (isLoading) {
     return (
       <div className="space-y-8 py-4">
@@ -17,7 +20,7 @@ export default function CurrencyOverview({ currencySummary, dateRangeFormatted, 
             <div className="h-8 bg-muted rounded-full w-40 mx-auto"></div>
           </div>
         </div>
-        
+
         {/* Loading Cards */}
         <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
           {[1, 2, 3].map((i) => (
@@ -58,13 +61,30 @@ export default function CurrencyOverview({ currencySummary, dateRangeFormatted, 
 
   if (currencies.length === 0) {
     return (
-      <div className="text-center py-12">
-        <div className="mb-4">
-          <TrendingUpIcon className="h-12 w-12 text-muted-foreground mx-auto" />
+      <div className="text-center py-12 max-w-md mx-auto">
+        <div className="mb-6">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500/10 to-blue-500/10 rounded-full mb-4">
+            <TrendingUpIcon className="h-8 w-8 text-emerald-600" />
+          </div>
+          <h3 className="text-xl font-semibold text-foreground mb-3">Start Your Financial Journey</h3>
+          <p className="text-muted-foreground mb-6">
+            No transactions found for the selected date range. Begin tracking your finances by importing your transactions files.
+          </p>
         </div>
-        <h3 className="text-lg font-medium text-foreground mb-2">No transactions found</h3>
-        <p className="text-muted-foreground">
-          No transactions were found for the selected date range.
+
+        {/* Action Button */}
+        <button
+          onClick={() => navigate('/import?currency=ARS')}
+          className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
+        >
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+          </svg>
+          Import ARS Transactions
+        </button>
+        
+        <p className="text-xs text-muted-foreground mt-3">
+          Support for CSV, Excel and PDF
         </p>
       </div>
     )
@@ -84,7 +104,7 @@ export default function CurrencyOverview({ currencySummary, dateRangeFormatted, 
   const getCurrencyName = (currencyCode) => {
     const names = {
       ARS: "Argentine Peso",
-      USD: "US Dollar", 
+      USD: "US Dollar",
       EUR: "Euro",
       BRL: "Brazilian Real"
     }
@@ -126,14 +146,14 @@ export default function CurrencyOverview({ currencySummary, dateRangeFormatted, 
           const totalActivity = currencyData.income + currencyData.outcome
 
           return (
-            <Card 
-              key={currencyData.currency} 
+            <Card
+              key={currencyData.currency}
               className="group cursor-pointer hover:shadow-2xl transition-all duration-300 hover:scale-[1.03] border-border bg-gradient-to-br from-card to-card/80 backdrop-blur-sm relative overflow-hidden"
               onClick={() => onCurrencySelect(currencyData.currency)}
             >
               {/* Background Pattern */}
               <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              
+
               <CardHeader className="pb-4 relative">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -152,11 +172,10 @@ export default function CurrencyOverview({ currencySummary, dateRangeFormatted, 
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-                      isPositive 
-                        ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20' 
+                    <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${isPositive
+                        ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20'
                         : 'bg-red-500/10 text-red-600 border border-red-500/20'
-                    }`}>
+                      }`}>
                       {isPositive ? (
                         <ArrowUpIcon className="h-3 w-3" />
                       ) : (

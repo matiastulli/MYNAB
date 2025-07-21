@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toDateOnlyISOString } from "@/lib/dateUtils"
 import { setupSystemPreferenceListener } from "@/lib/themeUtils"
 import { api } from "@/services/api"
-import { endOfMonth, format, startOfMonth } from 'date-fns'
+import { endOfMonth, format, startOfMonth, parseISO } from 'date-fns'
 import {
     AlertTriangleIcon,
     BarChartIcon,
@@ -26,8 +26,14 @@ import {
     UserIcon
 } from "lucide-react"
 import { useEffect, useState } from "react"
+import { useParams, useNavigate, useSearchParams } from "react-router-dom"
 
 export default function MainApp({ onLogout }) {
+  // React Router hooks for URL management
+  const params = useParams()
+  const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
+
   // Application state variables
   const [summary, setSummary] = useState({ income: 0, outcome: 0, categories: [] })
   const [entries, setEntries] = useState([])
@@ -41,15 +47,32 @@ export default function MainApp({ onLogout }) {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");
 
-  // New date filter state
-  const [dateRange, setDateRange] = useState({
-    startDate: startOfMonth(new Date()),
-    endDate: endOfMonth(new Date()),
-    preset: 'current-month'
-  });
+  // Helper function to get date range from URL or default
+  const getInitialDateRange = () => {
+    const startDate = searchParams.get('startDate')
+    const endDate = searchParams.get('endDate')
+    const preset = searchParams.get('preset')
+    
+    if (startDate && endDate) {
+      return {
+        startDate: parseISO(startDate),
+        endDate: parseISO(endDate),
+        preset: preset || 'custom'
+      }
+    }
+    
+    return {
+      startDate: startOfMonth(new Date()),
+      endDate: endOfMonth(new Date()),
+      preset: 'current-month'
+    }
+  }
 
-  // New currency state
-  const [currency, setCurrency] = useState("ALL");
+  // New date filter state with URL initialization
+  const [dateRange, setDateRange] = useState(getInitialDateRange());
+
+  // New currency state with URL initialization
+  const [currency, setCurrency] = useState(params.currency || searchParams.get('currency') || "ALL");
 
   // Add state for multi-currency summary
   const [currencySummary, setCurrencySummary] = useState({ currencies: [] });
@@ -250,20 +273,74 @@ export default function MainApp({ onLogout }) {
     setActiveTab("dashboard");
   };
 
+  // Helper function to update URL with current filters
+  const updateURLWithFilters = (newDateRange = dateRange, newCurrency = currency, newTab = activeTab) => {
+    const params = new URLSearchParams()
+    
+    // Add date range to URL
+    if (newDateRange.preset !== 'current-month') {
+      params.set('startDate', toDateOnlyISOString(newDateRange.startDate))
+      params.set('endDate', toDateOnlyISOString(newDateRange.endDate))
+      params.set('preset', newDateRange.preset)
+    }
+    
+    // Add currency to URL
+    if (newCurrency !== 'ALL') {
+      params.set('currency', newCurrency)
+    }
+    
+    // Construct the path
+    let path = '/dashboard'
+    if (newTab !== 'dashboard') {
+      path += `/${newTab}`
+    }
+    
+    // Update the URL
+    const newURL = params.toString() ? `${path}?${params.toString()}` : path
+    navigate(newURL, { replace: true })
+  }
+
+  // Initialize state from URL parameters on mount
+  useEffect(() => {
+    const tabFromURL = params.tab || 'dashboard'
+    setActiveTab(tabFromURL)
+    
+    // Update currency from URL params
+    const currencyFromURL = params.currency || searchParams.get('currency') || 'ALL'
+    if (currencyFromURL !== currency) {
+      setCurrency(currencyFromURL)
+    }
+    
+    // Update date range from URL params
+    const urlDateRange = getInitialDateRange()
+    if (urlDateRange.startDate.getTime() !== dateRange.startDate.getTime() || 
+        urlDateRange.endDate.getTime() !== dateRange.endDate.getTime()) {
+      setDateRange(urlDateRange)
+    }
+  }, [params.tab, params.currency, searchParams])
+
   const handleDateRangeChange = (newRange) => {
     setDateRange(newRange);
     setPagination({ ...pagination, offset: 0 });
+    updateURLWithFilters(newRange, currency, activeTab);
   };
 
   const handleCurrencyChange = (newCurrency) => {
     setPrevCurrency(currency);
     setCurrency(newCurrency);
     setShowCurrencyNotification(true);
+    updateURLWithFilters(dateRange, newCurrency, activeTab);
   };
 
   const handleCurrencySelect = (selectedCurrency) => {
     handleCurrencyChange(selectedCurrency);
     setActiveTab("dashboard");
+    updateURLWithFilters(dateRange, selectedCurrency, "dashboard");
+  };
+
+  const handleTabChange = (newTab) => {
+    setActiveTab(newTab);
+    updateURLWithFilters(dateRange, currency, newTab);
   };
 
   const handlePaginationChange = (newPagination) => {
@@ -367,7 +444,7 @@ export default function MainApp({ onLogout }) {
 
         {/* Main Content - only show for specific currencies, not for ALL */}
         {currency !== "ALL" && (
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-8">
             <div className="flex justify-center w-full">
               <TabsList className="flex bg-card p-1.5 gap-x-1.5 rounded-xl shadow-sm border border-border overflow-x-auto max-w-full w-full sm:w-auto">
                 <TabsTrigger

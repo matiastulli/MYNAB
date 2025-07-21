@@ -4,6 +4,7 @@ import LandingPage from "@/components/LandingPage"
 import MainApp from "@/components/MainApp"
 import { api } from "@/services/api"
 import { useEffect, useState } from "react"
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -49,9 +50,51 @@ export default function App() {
   }
 
   // Route between landing page and main app based on authentication
-  return isAuthenticated ? (
-    <MainApp onLogout={handleLogout} />
-  ) : (
-    <LandingPage onGetStarted={handleAuthenticated} />
+  return (
+    <Router>
+      <Routes>
+        <Route 
+          path="/" 
+          element={
+            isAuthenticated ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <LandingPage onGetStarted={handleAuthenticated} />
+            )
+          } 
+        />
+        <Route 
+          path="/dashboard" 
+          element={
+            isAuthenticated ? (
+              <MainApp onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/dashboard/:tab" 
+          element={
+            isAuthenticated ? (
+              <MainApp onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/dashboard/:tab/:currency" 
+          element={
+            isAuthenticated ? (
+              <MainApp onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Router>
   )
 }

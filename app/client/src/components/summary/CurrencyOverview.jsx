@@ -121,22 +121,7 @@ export default function CurrencyOverview({ currencySummary, dateRangeFormatted, 
   }
 
   return (
-    <div className="space-y-8 py-4">
-      {/* Header Section */}
-      <div className="text-center space-y-3">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500/10 to-blue-500/10 rounded-full mb-4">
-          <TrendingUpIcon className="h-8 w-8 text-emerald-600" />
-        </div>
-        <h2 className="text-2xl md:text-3xl font-bold text-foreground bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
-          Multi-Currency Portfolio
-        </h2>
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-muted/50 rounded-full">
-          <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-          <span className="text-sm font-medium">
-            {currencies.length} Active {currencies.length === 1 ? 'Currency' : 'Currencies'}
-          </span>
-        </div>
-      </div>
+    <div className="space-y-8">
 
       {/* Currency Cards Grid */}
       <div className={`grid gap-6 ${getGridLayout()}`}>

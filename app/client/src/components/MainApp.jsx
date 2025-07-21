@@ -352,9 +352,39 @@ export default function MainApp({ onLogout }) {
   if (dateRange.preset === 'current-month') {
     dateRangeFormatted = format(new Date(), 'MMMM yyyy');
   } else if (dateRange.preset === 'custom') {
-    dateRangeFormatted = `${format(dateRange.startDate, 'MMM dd')} - ${format(dateRange.endDate, 'MMM dd, yyyy')}`;
+    // For custom ranges, show start and end dates
+    const startYear = dateRange.startDate.getFullYear();
+    const endYear = dateRange.endDate.getFullYear();
+    const startMonth = dateRange.startDate.getMonth();
+    const endMonth = dateRange.endDate.getMonth();
+    
+    if (startYear === endYear && startMonth === endMonth) {
+      // Same month and year - show just the month and year
+      dateRangeFormatted = format(dateRange.startDate, 'MMMM yyyy');
+    } else if (startYear === endYear) {
+      // Same year, different months - show "Jan 15 - Mar 20, 2025"
+      dateRangeFormatted = `${format(dateRange.startDate, 'MMM dd')} - ${format(dateRange.endDate, 'MMM dd, yyyy')}`;
+    } else {
+      // Different years - show "Dec 15, 2024 - Jan 20, 2025"
+      dateRangeFormatted = `${format(dateRange.startDate, 'MMM dd, yyyy')} - ${format(dateRange.endDate, 'MMM dd, yyyy')}`;
+    }
   } else {
-    dateRangeFormatted = `${format(dateRange.startDate, 'MMMM yyyy')}`;
+    // For preset ranges like "last-3-months", show the range nicely
+    const startYear = dateRange.startDate.getFullYear();
+    const endYear = dateRange.endDate.getFullYear();
+    const startMonth = dateRange.startDate.getMonth();
+    const endMonth = dateRange.endDate.getMonth();
+    
+    if (startYear === endYear && startMonth === endMonth) {
+      // Same month and year
+      dateRangeFormatted = format(dateRange.startDate, 'MMMM yyyy');
+    } else if (startYear === endYear) {
+      // Same year, different months - show "January - March 2025"
+      dateRangeFormatted = `${format(dateRange.startDate, 'MMMM')} - ${format(dateRange.endDate, 'MMMM yyyy')}`;
+    } else {
+      // Different years - show "December 2024 - January 2025"
+      dateRangeFormatted = `${format(dateRange.startDate, 'MMMM yyyy')} - ${format(dateRange.endDate, 'MMMM yyyy')}`;
+    }
   }
 
   return (
@@ -362,16 +392,11 @@ export default function MainApp({ onLogout }) {
       <div className="max-w-7xl mx-auto px-3 py-4 md:px-6 md:py-12">
         {/* Header */}
         <header className="mb-6 md:mb-10">
+          {/* Centered Date Title */}
+          
           <div className="flex flex-row items-center justify-between gap-2 flex-wrap">
             <div>
-              <h1 className="text-xl sm:text-2xl font-medium tracking-tight text-foreground">
-                Budget Overview
-              </h1>
               <div className="flex items-center gap-2 mt-1">
-                <p className="text-xs sm:text-sm text-muted-foreground">
-                  {dateRangeFormatted}
-                </p>
-
                 <DateRangeFilter
                   dateRange={dateRange}
                   onDateRangeChange={handleDateRangeChange}
@@ -419,6 +444,16 @@ export default function MainApp({ onLogout }) {
                 )}
               </div>
             )}
+          </div>
+          
+          <div className="text-center mb-6 mt-8">
+            <div className="inline-flex items-center justify-center gap-3 px-6 py-3 bg-gradient-to-r from-emerald-500/10 to-blue-500/10 rounded-2xl border border-emerald-500/20 backdrop-blur-sm">
+              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+              <h2 className="text-lg md:text-xl font-semibold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
+                {dateRangeFormatted}
+              </h2>
+              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+            </div>
           </div>
         </header>
 

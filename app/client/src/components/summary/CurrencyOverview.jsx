@@ -1,5 +1,6 @@
 "use client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getCurrencyName, getCurrencySymbol } from "@/lib/currencyUtils";
 import { ArrowDownIcon, ArrowUpIcon, TrendingUpIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -106,6 +107,15 @@ export default function CurrencyOverview({ currencySummary, dateRangeFormatted, 
               <span className="text-xs sm:text-sm">USD</span>
             </button>
 
+            {/* AUD Button */}
+            <button
+              onClick={() => handleCurrencyImport('AUD')}
+              className="flex flex-col items-center gap-2 px-3 py-4 sm:px-4 sm:py-3 bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
+            >
+              <span className="text-xl sm:text-lg font-bold">A$</span>
+              <span className="text-xs sm:text-sm">AUD</span>
+            </button>
+
             {/* EUR Button */}
             <button
               onClick={() => handleCurrencyImport('EUR')}
@@ -114,40 +124,10 @@ export default function CurrencyOverview({ currencySummary, dateRangeFormatted, 
               <span className="text-xl sm:text-lg font-bold">€</span>
               <span className="text-xs sm:text-sm">EUR</span>
             </button>
-
-            {/* BRL Button */}
-            <button
-              onClick={() => handleCurrencyImport('BRL')}
-              className="flex flex-col items-center gap-2 px-3 py-4 sm:px-4 sm:py-3 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
-            >
-              <span className="text-xl sm:text-lg font-bold">R$</span>
-              <span className="text-xs sm:text-sm">BRL</span>
-            </button>
           </div>
         </div>
       </div>
     )
-  }
-
-  // Get currency symbols
-  const getCurrencySymbol = (currencyCode) => {
-    const symbols = {
-      ARS: "$",
-      USD: "$",
-      EUR: "€",
-      BRL: "R$"
-    }
-    return symbols[currencyCode] || currencyCode
-  }
-
-  const getCurrencyName = (currencyCode) => {
-    const names = {
-      ARS: "Argentine Peso",
-      USD: "US Dollar",
-      EUR: "Euro",
-      BRL: "Brazilian Real"
-    }
-    return names[currencyCode] || currencyCode
   }
 
   // Determine grid layout based on number of currencies

@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { getCurrencyName } from "@/lib/currencyUtils"
 import {
   BarChart2Icon,
   CircleDollarSignIcon,
@@ -62,16 +63,6 @@ export default function Dashboard({
 
   // Chart colors
   const COLORS = ["#10B981", "#3B82F6", "#F59E0B", "#8B5CF6", "#EC4899", "#6B7280"]
-
-  const getCurrencyName = (currency) => {
-    const names = {
-      'USD': 'US Dollar',
-      'EUR': 'Euro',
-      'BRL': 'Brazilian Real',
-      'ARS': 'Argentine Peso'
-    };
-    return names[currency] || currency;
-  };
 
   // Format currency for display
   const formatCurrency = (value) => {

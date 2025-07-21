@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { getCurrencyName, getCurrencySymbol } from "@/lib/currencyUtils";
 import { toDateOnlyISOString } from "@/lib/dateUtils";
 import { api } from "@/services/api";
 import { CalendarIcon, CheckIcon, CircleDollarSignIcon, PlusCircleIcon, PlusIcon, TagIcon, TrendingDownIcon, TrendingUpIcon } from "lucide-react";
@@ -55,26 +56,6 @@ export default function AddTransaction({
       currency: defaultCurrency
     }));
   }, [defaultCurrency]);
-
-  const getCurrencySymbol = (currency) => {
-    const symbols = {
-      'USD': '$',
-      'EUR': '€', 
-      'BRL': 'R$',
-      'ARS': '$'
-    };
-    return symbols[currency] || '$';
-  };
-
-  const getCurrencyName = (currency) => {
-    const names = {
-      'USD': 'US Dollar',
-      'EUR': 'Euro',
-      'BRL': 'Brazilian Real',
-      'ARS': 'Argentine Peso'
-    };
-    return names[currency] || currency;
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();

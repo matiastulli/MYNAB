@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FinancialValue } from "@/components/ui/financial-value";
 import { Spinner } from "@/components/ui/spinner";
+import { getCurrencyName } from "@/lib/currencyUtils";
 import { parseDatePreservingDay, toDateOnlyISOString } from "@/lib/dateUtils";
 import { api } from "@/services/api";
 import {
@@ -49,16 +50,6 @@ export default function ActivityList({
 
     setFilteredEntries(result);
   }, [entries, searchTerm, sortDirection]);
-
-  const getCurrencyName = (currency) => {
-    const names = {
-      'USD': 'US Dollar',
-      'EUR': 'Euro',
-      'BRL': 'Brazilian Real',
-      'ARS': 'Argentine Peso'
-    };
-    return names[currency] || currency;
-  };
 
   const toggleSortDirection = () => {
     if (sortDirection === null) {

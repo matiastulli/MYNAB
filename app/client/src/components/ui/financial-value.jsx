@@ -1,3 +1,4 @@
+import { getCurrencySymbol } from "@/lib/currencyUtils";
 import { cn } from "@/lib/utils";
 
 /**
@@ -35,23 +36,6 @@ export function FinancialValue({
     lg: "text-lg",
     xl: "text-xl",
     "2xl": "text-2xl"
-  };
-
-  // Get currency symbol with added support for more currencies
-  const getCurrencySymbol = (code) => {
-    const symbols = {
-      USD: "$",
-      EUR: "€",
-      GBP: "£",
-      BRL: "R$",
-      ARS: "$",
-      JPY: "¥",
-      CNY: "¥",
-      INR: "₹",
-      MXN: "$",
-      CAD: "$"
-    };
-    return symbols[code] || "$";
   };
 
   // Format number with commas and decimal places

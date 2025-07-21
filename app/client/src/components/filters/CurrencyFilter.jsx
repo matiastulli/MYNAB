@@ -12,8 +12,8 @@ export default function CurrencyFilter({ selectedCurrency, onCurrencyChange }) {
     { code: "ALL", name: "All Currencies", symbol: "💰" },
     { code: "ARS", name: "Argentine Peso", symbol: "$" },
     { code: "USD", name: "US Dollar", symbol: "$" },
+    { code: "AUD", name: "Australian Dollar", symbol: "A$" },
     { code: "EUR", name: "Euro", symbol: "€" },
-    { code: "BRL", name: "Brazilian Real", symbol: "R$" },
   ]
 
   const selectedCurrencyInfo = currencies.find((c) => c.code === selectedCurrency) || currencies[0]

@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { getCurrencyName } from "@/lib/currencyUtils";
 import { api } from "@/services/api";
 import { CheckCircleIcon, CircleDollarSignIcon, FileIcon, FileTextIcon, UploadCloudIcon, UploadIcon, XCircleIcon } from "lucide-react";
 import { useState } from "react";
@@ -19,16 +20,6 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
     santander_rio: { format: ".xlsx", defaultCurrency: "ARS", description: "Excel format from online banking" },
     ICBC: { format: ".csv", defaultCurrency: "ARS", description: "CSV export from ICBC portal" },
     mercado_pago: { format: ".pdf", defaultCurrency: "ARS", description: "PDF statement download" }
-  };
-
-  const getCurrencyName = (currency) => {
-    const names = {
-      'USD': 'US Dollar',
-      'EUR': 'Euro',
-      'BRL': 'Brazilian Real',
-      'ARS': 'Argentine Peso'
-    };
-    return names[currency] || currency;
   };
 
   const handleFileChange = (e) => {

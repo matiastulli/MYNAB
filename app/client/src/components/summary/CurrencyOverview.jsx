@@ -74,7 +74,7 @@ export default function CurrencyOverview({ currencySummary, dateRangeFormatted, 
 
         {/* Action Button */}
         <button
-          onClick={() => navigate('/import?currency=ARS')}
+          onClick={() => navigate('/dashboard/import?currency=ARS')}
           className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
         >
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -4,7 +4,7 @@ import LandingPage from "@/components/LandingPage"
 import MainApp from "@/components/MainApp"
 import { api } from "@/services/api"
 import { useEffect, useState } from "react"
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
+import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-dom"
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)

@@ -15,18 +15,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toDateOnlyISOString } from "@/lib/dateUtils"
 import { setupSystemPreferenceListener } from "@/lib/themeUtils"
 import { api } from "@/services/api"
-import { endOfMonth, format, startOfMonth, parseISO } from 'date-fns'
+import { endOfMonth, format, parseISO, startOfMonth } from 'date-fns'
 import {
-    AlertTriangleIcon,
-    BarChartIcon,
-    FolderIcon,
-    LayoutDashboardIcon,
-    PlusCircleIcon,
-    UploadIcon,
-    UserIcon
+  AlertTriangleIcon,
+  BarChartIcon,
+  FolderIcon,
+  LayoutDashboardIcon,
+  PlusCircleIcon,
+  UploadIcon,
+  UserIcon
 } from "lucide-react"
 import { useEffect, useState } from "react"
-import { useParams, useNavigate, useSearchParams } from "react-router-dom"
+import { useNavigate, useParams, useSearchParams } from "react-router-dom"
 
 export default function MainApp({ onLogout }) {
   // React Router hooks for URL management

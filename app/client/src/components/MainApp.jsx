@@ -392,61 +392,53 @@ export default function MainApp({ onLogout }) {
       <div className="max-w-7xl mx-auto px-3 py-4 md:px-6 md:py-12">
         {/* Header */}
         <header className="mb-6 md:mb-10">
-          {/* Centered Date Title */}
-          
-          <div className="flex flex-row items-center justify-between gap-2 flex-wrap">
-            <div>
-              <div className="flex items-center gap-2 mt-1">
-                <DateRangeFilter
-                  dateRange={dateRange}
-                  onDateRangeChange={handleDateRangeChange}
-                  isLoading={summaryLoading || entriesLoading}
-                />
-                <CurrencyFilter
-                  selectedCurrency={currency}
-                  onCurrencyChange={handleCurrencyChange}
-                  isLoading={summaryLoading || entriesLoading}
-                />
+          {/* Controls Row */}
+          <div className="flex items-center justify-between gap-4 mb-8">
+            {/* Left side - Filters and Loading */}
+            <div className="flex items-center gap-3">
+              <DateRangeFilter
+                dateRange={dateRange}
+                onDateRangeChange={handleDateRangeChange}
+                isLoading={summaryLoading || entriesLoading}
+              />
+              <CurrencyFilter
+                selectedCurrency={currency}
+                onCurrencyChange={handleCurrencyChange}
+                isLoading={summaryLoading || entriesLoading}
+              />
 
-                {/* Loading indicator animation */}
-                {(summaryLoading || entriesLoading) && (
-                  <span className="flex items-center ml-1 animate-pulse">
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                  </span>
-                )}
-              </div>
+              {/* Loading indicator animation */}
+              {(summaryLoading || entriesLoading) && (
+                <div className="flex items-center">
+                  <svg className="animate-spin h-4 w-4 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </div>
+              )}
             </div>
 
+            {/* Right side - Profile */}
             {userData && (
               <div
-                className="flex items-center gap-2 cursor-pointer bg-card hover:bg-accent rounded-lg px-3 py-1.5 transition-colors shadow-sm border border-border"
+                className="flex items-center gap-2 cursor-pointer bg-background hover:bg-muted/50 rounded-lg px-3 py-2 transition-all duration-200 border border-border/60 hover:border-border shadow-sm"
                 onClick={() => setShowProfileModal(true)}
               >
-                <div
-                  className="rounded-full p-1"
-                  style={{
-                    backgroundColor: "hsl(var(--success-bg))",
-                    color: "hsl(var(--success-fg))"
-                  }}
-                >
-                  <UserIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <div className="w-6 h-6 rounded-full bg-gradient-to-r from-emerald-500 to-blue-500 flex items-center justify-center">
+                  <UserIcon className="h-3.5 w-3.5 text-white" />
                 </div>
-                <span className="text-xs sm:text-sm font-medium text-card-foreground truncate max-w-[120px] sm:max-w-full">
+                <span className="text-sm font-medium text-foreground">
                   {userData.name} {userData.last_name}
                 </span>
                 {(!userData.national_id || userData.national_id === "") && (
-                  <div className="flex items-center" title="Missing CUIT - required for transaction filtering">
-                    <AlertTriangleIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-500" />
-                  </div>
+                  <AlertTriangleIcon className="h-4 w-4 text-amber-500" title="Missing CUIT - required for transaction filtering" />
                 )}
               </div>
             )}
           </div>
           
-          <div className="text-center mb-6 mt-8">
+          {/* Centered Date Title */}
+          <div className="text-center">
             <div className="inline-flex items-center justify-center gap-3 px-6 py-3 bg-gradient-to-r from-emerald-500/10 to-blue-500/10 rounded-2xl border border-emerald-500/20 backdrop-blur-sm">
               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
               <h2 className="text-lg md:text-xl font-semibold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">

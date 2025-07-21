@@ -68,23 +68,56 @@ export default function CurrencyOverview({ currencySummary, dateRangeFormatted, 
           </div>
           <h3 className="text-xl font-semibold text-foreground mb-3">Start Your Financial Journey</h3>
           <p className="text-muted-foreground mb-6">
-            No transactions found for the selected date range. Begin tracking your finances by importing your transactions files.
+            Looks like there's nothing here yet. 
+            Import your transactions to start discover your financial picture.
           </p>
         </div>
 
-        {/* Action Button */}
-        <button
-          onClick={() => navigate('/dashboard/import?currency=ARS')}
-          className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
-        >
-          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-          </svg>
-          Import ARS Transactions
-        </button>
+        {/* Currency Import Options */}
+        <div className="space-y-4">
+          <h4 className="text-sm font-medium text-foreground text-center">Choose Currency to Import</h4>
+          
+          <div className="grid grid-cols-2 gap-3 max-w-md mx-auto">
+            {/* ARS Button */}
+            <button
+              onClick={() => navigate('/dashboard/import?currency=ARS')}
+              className="flex flex-col items-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
+            >
+              <span className="text-lg font-bold">$</span>
+              <span className="text-sm">ARS</span>
+            </button>
+
+            {/* USD Button */}
+            <button
+              onClick={() => navigate('/dashboard/import?currency=USD')}
+              className="flex flex-col items-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
+            >
+              <span className="text-lg font-bold">$</span>
+              <span className="text-sm">USD</span>
+            </button>
+
+            {/* EUR Button */}
+            <button
+              onClick={() => navigate('/dashboard/import?currency=EUR')}
+              className="flex flex-col items-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
+            >
+              <span className="text-lg font-bold">€</span>
+              <span className="text-sm">EUR</span>
+            </button>
+
+            {/* BRL Button */}
+            <button
+              onClick={() => navigate('/dashboard/import?currency=BRL')}
+              className="flex flex-col items-center gap-2 px-4 py-3 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
+            >
+              <span className="text-lg font-bold">R$</span>
+              <span className="text-sm">BRL</span>
+            </button>
+          </div>
+        </div>
         
-        <p className="text-xs text-muted-foreground mt-3">
-          Support for CSV, Excel and PDF
+        <p className="text-xs text-muted-foreground mt-4 text-center">
+          Support for CSV, Excel and PDF files
         </p>
       </div>
     )
@@ -137,12 +170,12 @@ export default function CurrencyOverview({ currencySummary, dateRangeFormatted, 
               onClick={() => onCurrencySelect(currencyData.currency)}
             >
               {/* Background Pattern */}
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
               <CardHeader className="pb-4 relative">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-emerald-500/20 to-blue-500/20 rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-accent/20 rounded-lg flex items-center justify-center">
                       <span className="text-lg font-bold text-foreground">
                         {getCurrencySymbol(currencyData.currency)}
                       </span>

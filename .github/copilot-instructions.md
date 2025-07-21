@@ -93,3 +93,37 @@ alembic upgrade head
 - Mail service config via `ENV_MAIL_*` variables
 - Database URL via `ENV_DATABASE_URL`
 - CORS settings through `ENV_CORS_*` variables
+
+## UI Design System
+
+### Responsive Design Principles
+- Mobile-first approach using Tailwind breakpoints
+- Adaptive layouts for different screen sizes:
+  - Stack layouts on mobile (`flex-col` to `flex-row`)
+  - Compact text on small screens (`text-sm` to `text-base`)
+  - Full-width containers on mobile (`w-full`)
+  - Responsive padding and margins (e.g., `p-3 sm:p-6`)
+- Responsive UI components in `components/ui/`
+- Consistent spacing using Tailwind's scale
+
+### Theme and Color System
+- Defined in `app/client/src/index.css`
+- CSS variables for consistent theming:
+```css
+:root {
+  --background: 0 0% 100%;
+  --foreground: 210 15% 15%;
+  --card: 0 0% 100%;
+  --muted: 210 20% 96%;
+  --accent: 142 75% 35%;
+  --positive: 142 75% 35%;
+  --destructive: 0 84% 65%;
+}
+```
+- Financial color coding:
+  - Positive values: Green (`--positive`)
+  - Negative values: Red (`--destructive`)
+  - Muted text: Gray (`--muted-foreground`)
+  - Charts: Custom palette (`--chart-1` through `--chart-5`)
+- Dark mode support with system preference sync
+- Enhanced accessibility with focus states and contrast ratios

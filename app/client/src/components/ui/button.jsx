@@ -9,15 +9,15 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 active:bg-primary/95 focus-visible:ring-2 focus-visible:ring-ring/30",
+          "bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] shadow-xs hover:bg-[hsl(var(--primary)/0.9)] active:bg-[hsl(var(--primary)/0.95)] focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring)/0.3)]",
         destructive:
-          "bg-destructive text-destructive-foreground shadow-xs hover:bg-destructive/90 active:bg-destructive/95 focus-visible:ring-2 focus-visible:ring-destructive/20",
+          "bg-[hsl(var(--destructive))] text-[hsl(var(--destructive-foreground))] shadow-xs hover:bg-[hsl(var(--destructive)/0.9)] active:bg-[hsl(var(--destructive)/0.95)] focus-visible:ring-2 focus-visible:ring-[hsl(var(--destructive)/0.2)]",
         outline:
-          "border border-input bg-background shadow-xs hover:bg-accent/10 hover:text-accent-foreground hover:border-accent/50 active:bg-accent/20 focus-visible:ring-2 focus-visible:ring-ring/30 transition-all duration-200",
+          "border border-[hsl(var(--input))] bg-[hsl(var(--background))] shadow-xs hover:bg-[hsl(var(--accent)/0.1)] hover:text-[hsl(var(--accent-foreground))] hover:border-[hsl(var(--accent)/0.5)] active:bg-[hsl(var(--accent)/0.2)] focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring)/0.3)] transition-all duration-200",
         secondary:
-          "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80 active:bg-secondary/90 focus-visible:ring-2 focus-visible:ring-ring/30",
+          "bg-[hsl(var(--secondary))] text-[hsl(var(--secondary-foreground))] shadow-xs hover:bg-[hsl(var(--secondary)/0.8)] active:bg-[hsl(var(--secondary)/0.9)] focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring)/0.3)]",
         ghost:
-          "hover:bg-accent/10 hover:text-accent-foreground active:bg-accent/20 focus-visible:ring-2 focus-visible:ring-ring/30 transition-colors duration-200",
+          "hover:bg-[hsl(var(--accent)/0.1)] hover:text-[hsl(var(--accent-foreground))] active:bg-[hsl(var(--accent)/0.2)] focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring)/0.3)] transition-colors duration-200",
         link: "text-accent underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-ring/30",
         success:
           "bg-[hsl(var(--positive))] text-positive-foreground shadow-xs hover:bg-[hsl(var(--positive))]/90 active:bg-[hsl(var(--positive))]/95 focus-visible:ring-2 focus-visible:ring-[hsl(var(--positive))]/20",

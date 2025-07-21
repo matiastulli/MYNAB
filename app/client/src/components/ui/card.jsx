@@ -5,11 +5,10 @@ function Card({ className, ...props }) {
     <div
       data-slot="card"
       className={cn(
-        "bg-card text-card-foreground border-border flex flex-col gap-6 rounded-xl border py-6 shadow-sm backdrop-blur-none",
+        "bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] border-[hsl(var(--border))] flex flex-col gap-6 rounded-xl border py-6 shadow-sm backdrop-blur-none",
         className,
       )}
       style={{
-        backgroundColor: "hsl(var(--card))",
         backgroundImage: "none",
       }}
       {...props}
@@ -35,7 +34,7 @@ function CardTitle({ className, ...props }) {
 }
 
 function CardDescription({ className, ...props }) {
-  return <div data-slot="card-description" className={cn("text-muted-foreground text-sm", className)} {...props} />
+  return <div data-slot="card-description" className={cn("text-[hsl(var(--muted-foreground))] text-sm", className)} {...props} />
 }
 
 function CardAction({ className, ...props }) {

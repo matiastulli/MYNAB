@@ -3,13 +3,13 @@ import { cva } from "class-variance-authority";
 import * as React from "react";
 
 const alertVariants = cva(
-  "relative w-full rounded-lg border border-border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground",
+  "relative w-full rounded-lg border border-[hsl(var(--border))] p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-[hsl(var(--foreground))]",
   {
     variants: {
       variant: {
-        default: "bg-background text-foreground",
+        default: "bg-[hsl(var(--background))] text-[hsl(var(--foreground))]",
         destructive:
-          "border-destructive/50 text-destructive [&>svg]:text-destructive bg-destructive/10",
+          "border-[hsl(var(--destructive)/0.5)] text-[hsl(var(--destructive))] [&>svg]:text-[hsl(var(--destructive))] bg-[hsl(var(--destructive)/0.1)]",
       },
     },
     defaultVariants: {

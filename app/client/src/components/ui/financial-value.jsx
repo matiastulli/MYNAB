@@ -71,7 +71,11 @@ export function FinancialValue({
 
   return (
     <span className={cn(
-      getTypeClass(),
+      {
+        'financial-neutral': 'text-[hsl(var(--foreground))]',
+        'financial-positive': 'text-[hsl(var(--positive))]',
+        'financial-negative': 'text-[hsl(var(--destructive))]'
+      }[getTypeClass()],
       sizeClasses[size] || "text-base",
       animate && "transition-all duration-300 ease-in-out",
       "whitespace-nowrap", 

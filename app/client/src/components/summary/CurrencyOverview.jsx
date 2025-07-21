@@ -104,7 +104,7 @@ export default function CurrencyOverview({
             {/* ARS Button */}
             <button
               onClick={() => handleCurrencyImport("ARS")}
-              className="flex flex-col items-center gap-2 px-3 py-4 sm:px-4 sm:py-3 bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--positive))] hover:from-[hsl(var(--accent))/0.9] hover:to-[hsl(var(--positive))/0.9] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 border border-[hsl(var(--accent))/0.2] backdrop-blur-sm"
+              className="flex flex-col items-center gap-2 px-3 py-4 sm:px-4 sm:py-3 bg-gradient-to-r from-[hsl(var(--chart-2))] to-[hsl(var(--chart-2))/0.8] hover:from-[hsl(var(--chart-2))/0.9] hover:to-[hsl(var(--chart-2))/0.7] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 border border-[hsl(var(--chart-3))/0.2] backdrop-blur-sm"
             >
               <span className="text-xl sm:text-lg font-bold">$</span>
               <span className="text-xs sm:text-sm">ARS</span>

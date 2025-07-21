@@ -10,7 +10,7 @@ function TabsList({ className, ...props }) {
   return (
     <TabsPrimitive.List
       data-slot="tabs-list"
-      className={cn("flex items-center justify-center rounded-xl p-1.5 text-muted-foreground bg-muted", className)}
+      className={cn("flex items-center justify-center rounded-xl p-1.5 text-[hsl(var(--muted-foreground))] bg-[hsl(var(--muted))]", className)}
       {...props}
     />
   )
@@ -21,9 +21,9 @@ function TabsTrigger({ className, ...props }) {
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
       className={cn(
-        "inline-flex items-center justify-center whitespace-nowrap rounded-lg px-4 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex items-center justify-center whitespace-nowrap rounded-lg px-4 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
         "data-[state=active]:bg-[hsl(var(--accent))] data-[state=active]:text-[hsl(var(--accent-foreground))] data-[state=active]:shadow-md data-[state=active]:font-semibold",
-        "hover:bg-accent/10 hover:text-accent-foreground",
+        "hover:bg-[hsl(var(--accent)/0.1)] hover:text-[hsl(var(--accent-foreground))]",
         className,
       )}
       {...props}

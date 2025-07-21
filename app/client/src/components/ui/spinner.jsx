@@ -23,11 +23,11 @@ export function Spinner({
   };
   
   const colorClasses = {
-    accent: "text-accent",
-    primary: "text-primary",
+    accent: "text-[hsl(var(--accent))]",
+    primary: "text-[hsl(var(--primary))]",
     positive: "text-[hsl(var(--positive))]",
-    destructive: "text-destructive",
-    foreground: "text-foreground"
+    destructive: "text-[hsl(var(--destructive))]",
+    foreground: "text-[hsl(var(--foreground))]"
   };
   
   const sizeClass = sizeClasses[size] || sizeClasses.md;

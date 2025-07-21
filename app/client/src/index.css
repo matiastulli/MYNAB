@@ -143,35 +143,36 @@ body {
   --secondary-foreground: 210 40% 98%;
   --muted: 217 33% 17%;
   --muted-foreground: 215 20% 75%; /* Better contrast in dark mode */
-  --accent: 142 75% 50%; /* Slightly brighter green for dark mode */
+  --accent: 142 75% 50%; /* Green accent */
   --accent-foreground: 222 84% 5%; /* Dark text on green background */
-
+  
   /* Financial indicators for dark mode */
-  --positive: 142 75% 50%;
+  --positive: 142 75% 50%; /* Keep green */
   --positive-foreground: 222 84% 5%;
-  --destructive: 0 84% 65%;
+  --destructive: 0 84% 65%; /* Keep red */
   --destructive-foreground: 210 40% 98%;
-
-  /* Chart colors for dark mode */
-  --chart-1: var(--positive);
-  --chart-2: var(--destructive);
-  --chart-3: 30 85% 55%;
-  --chart-4: 280 70% 60%;
-  --chart-5: 340 80% 55%;
+  
+  /* Chart colors for dark mode - replaced orange with blue */
+  --chart-1: var(--positive); /* Green */
+  --chart-2: var(--destructive); /* Red */
+  --chart-3: 214 85% 65%; /* Blue instead of orange */
+  --chart-4: 280 70% 60%; /* Purple */
+  --chart-5: 340 80% 55%; /* Pink */
+  
   --border: 217 33% 20%;
   --input: 217 33% 17%;
   --ring: 142 75% 50%;
-
+  
   /* Filter specific colors */
   --filter-bg: 222 47% 10%;
   --filter-hover: 217 33% 17%;
-  --filter-active: 142 75% 15%; /* Dark green background for active state */
-
-  /* Alert & notification colors */
-  --success-bg: 142 70% 12%;
+  --filter-active: 142 75% 15%; /* Keep dark green background for active state */
+  
+  /* Alert & notification colors - replaced yellow warning with blue */
+  --success-bg: 142 70% 12%; /* Keep green success */
   --success-fg: 142 75% 70%;
-  --warning-bg: 38 95% 12%;
-  --warning-fg: 38 95% 75%;
+  --warning-bg: 214 85% 12%; /* Blue instead of yellow/orange */
+  --warning-fg: 214 85% 75%; /* Blue text for warnings */
   --info-bg: 214 100% 12%;
   --info-fg: 214 90% 75%;
 }

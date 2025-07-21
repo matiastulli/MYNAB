@@ -29,12 +29,12 @@ export default function CurrencyFilter({ selectedCurrency, onCurrencyChange }) {
         <Button
           variant="outline"
           size="sm"
-          className="h-8 bg-card border-border hover:bg-accent gap-1 text-xs sm:text-sm shadow-sm"
+          className="h-8 bg-[hsl(var(--card))] border-[hsl(var(--border))] hover:bg-[hsl(var(--accent))] hover:text-[hsl(var(--accent-foreground))] gap-1 text-xs sm:text-sm shadow-sm"
         >
-          <CircleDollarSignIcon className="h-3.5 w-3.5 text-accent mr-1" />
-          <span className="font-medium text-foreground">{selectedCurrencyInfo.code}</span>
-          <span className="hidden sm:inline text-muted-foreground">currency</span>
-          <ChevronDownIcon className="h-3.5 w-3.5 text-muted-foreground" />
+          <CircleDollarSignIcon className="h-3.5 w-3.5 text-[hsl(var(--accent))] mr-1" />
+          <span className="font-medium text-[hsl(var(--foreground))]">{selectedCurrencyInfo.code}</span>
+          <span className="hidden sm:inline text-[hsl(var(--muted-foreground))]">currency</span>
+          <ChevronDownIcon className="h-3.5 w-3.5 text-[hsl(var(--muted-foreground))]" />
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -48,16 +48,16 @@ export default function CurrencyFilter({ selectedCurrency, onCurrencyChange }) {
               onClick={() => handleSelect(currency.code)}
               className={`w-full text-left px-3 py-1.5 rounded-md text-sm transition-colors ${
                 currency.code === selectedCurrency
-                  ? "bg-accent/20 text-accent font-medium"
-                  : "hover:bg-accent/10 text-popover-foreground"
+                  ? "bg-[hsl(var(--accent)/0.2)] text-[hsl(var(--accent))] font-medium"
+                  : "hover:bg-[hsl(var(--accent)/0.1)] text-[hsl(var(--popover-foreground))]"
               }`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="font-medium">{currency.code}</span>
-                  <span className="text-xs text-muted-foreground">{currency.name}</span>
+                  <span className="text-xs text-[hsl(var(--muted-foreground))]">{currency.name}</span>
                 </div>
-                <span className="text-popover-foreground font-semibold">{currency.symbol}</span>
+                <span className="text-[hsl(var(--popover-foreground))] font-semibold">{currency.symbol}</span>
               </div>
             </button>
           ))}

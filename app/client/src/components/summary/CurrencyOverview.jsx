@@ -28,13 +28,13 @@ export default function CurrencyOverview({
       <div className="space-y-6 py-4 px-4">
         {/* Loading Header */}
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500/10 to-blue-500/10 rounded-full mb-4 animate-pulse border border-emerald-500/20">
-            <div className="w-8 h-8 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 rounded animate-pulse"></div>
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[hsl(var(--accent))/0.1] to-[hsl(var(--chart-3))/0.1] rounded-full mb-4 animate-pulse border border-[hsl(var(--accent))/0.2]">
+            <div className="w-8 h-8 bg-gradient-to-r from-[hsl(var(--accent))/0.2] to-[hsl(var(--chart-3))/0.2] rounded animate-pulse"></div>
           </div>
           <div className="space-y-2">
-            <div className="h-6 sm:h-8 bg-gradient-to-r from-emerald-500/10 to-blue-500/10 rounded-lg w-48 sm:w-64 mx-auto animate-pulse"></div>
-            <div className="h-4 sm:h-6 bg-gradient-to-r from-emerald-500/10 to-blue-500/10 rounded w-24 sm:w-32 mx-auto animate-pulse"></div>
-            <div className="h-6 sm:h-8 bg-gradient-to-r from-emerald-500/10 to-blue-500/10 rounded-full w-32 sm:w-40 mx-auto animate-pulse"></div>
+            <div className="h-6 sm:h-8 bg-gradient-to-r from-[hsl(var(--accent))/0.1] to-[hsl(var(--chart-3))/0.1] rounded-lg w-48 sm:w-64 mx-auto animate-pulse"></div>
+            <div className="h-4 sm:h-6 bg-gradient-to-r from-[hsl(var(--accent))/0.1] to-[hsl(var(--chart-3))/0.1] rounded w-24 sm:w-32 mx-auto animate-pulse"></div>
+            <div className="h-6 sm:h-8 bg-gradient-to-r from-[hsl(var(--accent))/0.1] to-[hsl(var(--chart-3))/0.1] rounded-full w-32 sm:w-40 mx-auto animate-pulse"></div>
           </div>
         </div>
 
@@ -43,30 +43,30 @@ export default function CurrencyOverview({
           {[1, 2, 3].map((i) => (
             <Card
               key={i}
-              className="animate-pulse border border-emerald-500/10 bg-gradient-to-br from-emerald-500/5 to-blue-500/5"
+              className="animate-pulse border border-[hsl(var(--accent))/0.1] bg-gradient-to-br from-[hsl(var(--accent))/0.05] to-[hsl(var(--chart-3))/0.05]"
             >
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-r from-emerald-500/20 to-blue-500/20 rounded-lg animate-pulse"></div>
+                  <div className="w-10 h-10 bg-gradient-to-r from-[hsl(var(--accent))/0.2] to-[hsl(var(--chart-3))/0.2] rounded-lg animate-pulse"></div>
                   <div className="space-y-2">
-                    <div className="h-4 sm:h-5 bg-gradient-to-r from-emerald-500/10 to-blue-500/10 rounded w-12 sm:w-16 animate-pulse"></div>
-                    <div className="h-3 sm:h-4 bg-gradient-to-r from-emerald-500/10 to-blue-500/10 rounded w-16 sm:w-24 animate-pulse"></div>
+                    <div className="h-4 sm:h-5 bg-gradient-to-r from-[hsl(var(--accent))/0.1] to-[hsl(var(--chart-3))/0.1] rounded w-12 sm:w-16 animate-pulse"></div>
+                    <div className="h-3 sm:h-4 bg-gradient-to-r from-[hsl(var(--accent))/0.1] to-[hsl(var(--chart-3))/0.1] rounded w-16 sm:w-24 animate-pulse"></div>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="py-3 sm:py-4 bg-gradient-to-r from-emerald-500/5 to-blue-500/5 rounded-lg">
-                  <div className="h-3 sm:h-4 bg-gradient-to-r from-emerald-500/10 to-blue-500/10 rounded w-16 sm:w-20 mx-auto mb-2 animate-pulse"></div>
-                  <div className="h-6 sm:h-8 bg-gradient-to-r from-emerald-500/10 to-blue-500/10 rounded w-24 sm:w-32 mx-auto animate-pulse"></div>
+                <div className="py-3 sm:py-4 bg-gradient-to-r from-[hsl(var(--accent))/0.05] to-[hsl(var(--chart-3))/0.05] rounded-lg">
+                  <div className="h-3 sm:h-4 bg-gradient-to-r from-[hsl(var(--accent))/0.1] to-[hsl(var(--chart-3))/0.1] rounded w-16 sm:w-20 mx-auto mb-2 animate-pulse"></div>
+                  <div className="h-6 sm:h-8 bg-gradient-to-r from-[hsl(var(--accent))/0.1] to-[hsl(var(--chart-3))/0.1] rounded w-24 sm:w-32 mx-auto animate-pulse"></div>
                 </div>
                 <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                  <div className="p-2 sm:p-3 bg-emerald-500/5 rounded-lg">
-                    <div className="h-3 sm:h-4 bg-emerald-500/10 rounded w-12 sm:w-16 mx-auto mb-2 animate-pulse"></div>
-                    <div className="h-4 sm:h-6 bg-emerald-500/10 rounded w-16 sm:w-20 mx-auto animate-pulse"></div>
+                  <div className="p-2 sm:p-3 bg-[hsl(var(--positive))/0.05] rounded-lg">
+                    <div className="h-3 sm:h-4 bg-[hsl(var(--positive))/0.1] rounded w-12 sm:w-16 mx-auto mb-2 animate-pulse"></div>
+                    <div className="h-4 sm:h-6 bg-[hsl(var(--positive))/0.1] rounded w-16 sm:w-20 mx-auto animate-pulse"></div>
                   </div>
-                  <div className="p-2 sm:p-3 bg-red-500/5 rounded-lg">
-                    <div className="h-3 sm:h-4 bg-red-500/10 rounded w-12 sm:w-16 mx-auto mb-2 animate-pulse"></div>
-                    <div className="h-4 sm:h-6 bg-red-500/10 rounded w-16 sm:w-20 mx-auto animate-pulse"></div>
+                  <div className="p-2 sm:p-3 bg-[hsl(var(--destructive))/0.05] rounded-lg">
+                    <div className="h-3 sm:h-4 bg-[hsl(var(--destructive))/0.1] rounded w-12 sm:w-16 mx-auto mb-2 animate-pulse"></div>
+                    <div className="h-4 sm:h-6 bg-[hsl(var(--destructive))/0.1] rounded w-16 sm:w-20 mx-auto animate-pulse"></div>
                   </div>
                 </div>
               </CardContent>
@@ -83,20 +83,20 @@ export default function CurrencyOverview({
     return (
       <div className="text-center py-8 px-4 max-w-full mx-auto">
         <div className="mb-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500/10 to-blue-500/10 rounded-full mb-4 border border-emerald-500/20 backdrop-blur-sm">
-            <TrendingUpIcon className="h-8 w-8 text-emerald-600" />
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[hsl(var(--accent))/0.1] to-[hsl(var(--chart-3))/0.1] rounded-full mb-4 border border-[hsl(var(--accent))/0.2] backdrop-blur-sm">
+            <TrendingUpIcon className="h-8 w-8 text-[hsl(var(--accent))]" />
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3 bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
+          <h3 className="text-xl font-semibold text-[hsl(var(--foreground))] mb-3 bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] bg-clip-text text-transparent">
             Start Your Financial Journey
           </h3>
-          <p className="text-gray-600 dark:text-gray-300 mb-6 text-sm sm:text-base">
+          <p className="text-[hsl(var(--muted-foreground))] mb-6 text-sm sm:text-base">
             Looks like there's nothing here yet. Import your transactions to start discover your financial picture.
           </p>
         </div>
 
         {/* Currency Import Options */}
         <div className="space-y-4">
-          <h4 className="text-sm font-medium text-gray-900 dark:text-white text-center bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
+          <h4 className="text-sm font-medium text-[hsl(var(--foreground))] text-center bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] bg-clip-text text-transparent">
             Choose Currency to Import
           </h4>
 
@@ -104,7 +104,7 @@ export default function CurrencyOverview({
             {/* ARS Button */}
             <button
               onClick={() => handleCurrencyImport("ARS")}
-              className="flex flex-col items-center gap-2 px-3 py-4 sm:px-4 sm:py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 border border-emerald-500/20 backdrop-blur-sm"
+              className="flex flex-col items-center gap-2 px-3 py-4 sm:px-4 sm:py-3 bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--positive))] hover:from-[hsl(var(--accent))/0.9] hover:to-[hsl(var(--positive))/0.9] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 border border-[hsl(var(--accent))/0.2] backdrop-blur-sm"
             >
               <span className="text-xl sm:text-lg font-bold">$</span>
               <span className="text-xs sm:text-sm">ARS</span>
@@ -113,7 +113,7 @@ export default function CurrencyOverview({
             {/* USD Button */}
             <button
               onClick={() => handleCurrencyImport("USD")}
-              className="flex flex-col items-center gap-2 px-3 py-4 sm:px-4 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 border border-blue-500/20 backdrop-blur-sm"
+              className="flex flex-col items-center gap-2 px-3 py-4 sm:px-4 sm:py-3 bg-gradient-to-r from-[hsl(var(--chart-3))] to-[hsl(var(--chart-3))/0.8] hover:from-[hsl(var(--chart-3))/0.9] hover:to-[hsl(var(--chart-3))/0.7] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 border border-[hsl(var(--chart-3))/0.2] backdrop-blur-sm"
             >
               <span className="text-xl sm:text-lg font-bold">$</span>
               <span className="text-xs sm:text-sm">USD</span>
@@ -122,7 +122,7 @@ export default function CurrencyOverview({
             {/* AUD Button */}
             <button
               onClick={() => handleCurrencyImport("AUD")}
-              className="flex flex-col items-center gap-2 px-3 py-4 sm:px-4 sm:py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 border border-amber-500/20 backdrop-blur-sm"
+              className="flex flex-col items-center gap-2 px-3 py-4 sm:px-4 sm:py-3 bg-gradient-to-r from-[hsl(var(--chart-4))] to-[hsl(var(--chart-4))/0.8] hover:from-[hsl(var(--chart-4))/0.9] hover:to-[hsl(var(--chart-4))/0.7] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 border border-[hsl(var(--chart-4))/0.2] backdrop-blur-sm"
             >
               <span className="text-xl sm:text-lg font-bold">A$</span>
               <span className="text-xs sm:text-sm">AUD</span>
@@ -131,7 +131,7 @@ export default function CurrencyOverview({
             {/* EUR Button */}
             <button
               onClick={() => handleCurrencyImport("EUR")}
-              className="flex flex-col items-center gap-2 px-3 py-4 sm:px-4 sm:py-3 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 border border-purple-500/20 backdrop-blur-sm"
+              className="flex flex-col items-center gap-2 px-3 py-4 sm:px-4 sm:py-3 bg-gradient-to-r from-[hsl(var(--chart-5))] to-[hsl(var(--chart-5))/0.8] hover:from-[hsl(var(--chart-5))/0.9] hover:to-[hsl(var(--chart-5))/0.7] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 border border-[hsl(var(--chart-5))/0.2] backdrop-blur-sm"
             >
               <span className="text-xl sm:text-lg font-bold">€</span>
               <span className="text-xs sm:text-sm">EUR</span>
@@ -163,25 +163,25 @@ export default function CurrencyOverview({
           return (
             <Card
               key={currencyData.currency}
-              className="group cursor-pointer hover:shadow-2xl transition-all duration-300 hover:scale-[1.03] border border-emerald-500/10 bg-gradient-to-br from-emerald-500/5 to-blue-500/5 backdrop-blur-sm relative overflow-hidden"
+              className="group cursor-pointer hover:shadow-2xl transition-all duration-300 hover:scale-[1.03] border border-[hsl(var(--accent))/0.1] bg-gradient-to-br from-[hsl(var(--accent))/0.05] to-[hsl(var(--chart-3))/0.05] backdrop-blur-sm relative overflow-hidden"
               onClick={() => onCurrencySelect(currencyData.currency)}
             >
               {/* Background Pattern */}
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--accent))/0.05] to-[hsl(var(--chart-3))/0.05] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
               <CardHeader className="pb-4 relative">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-emerald-500/20 to-blue-500/20 rounded-xl flex items-center justify-center border border-emerald-500/20">
-                      <span className="text-lg font-bold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
+                    <div className="w-10 h-10 bg-gradient-to-br from-[hsl(var(--accent))/0.2] to-[hsl(var(--chart-3))/0.2] rounded-xl flex items-center justify-center border border-[hsl(var(--accent))/0.2]">
+                      <span className="text-lg font-bold bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] bg-clip-text text-transparent">
                         {getCurrencySymbol(currencyData.currency)}
                       </span>
                     </div>
                     <div>
-                      <CardTitle className="text-lg font-bold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
+                      <CardTitle className="text-lg font-bold bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] bg-clip-text text-transparent">
                         {currencyData.currency}
                       </CardTitle>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
+                      <p className="text-sm text-[hsl(var(--muted-foreground))]">
                         {getCurrencyName(currencyData.currency)}
                       </p>
                     </div>
@@ -190,8 +190,8 @@ export default function CurrencyOverview({
                     <div
                       className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium border backdrop-blur-sm ${
                         isPositive
-                          ? "bg-gradient-to-r from-emerald-500/10 to-emerald-600/10 text-emerald-600 border-emerald-500/20"
-                          : "bg-gradient-to-r from-red-500/10 to-red-600/10 text-red-600 border-red-500/20"
+                          ? "bg-gradient-to-r from-[hsl(var(--positive))/0.1] to-[hsl(var(--positive))/0.15] text-[hsl(var(--positive))] border-[hsl(var(--positive))/0.2]"
+                          : "bg-gradient-to-r from-[hsl(var(--destructive))/0.1] to-[hsl(var(--destructive))/0.15] text-[hsl(var(--destructive))] border-[hsl(var(--destructive))/0.2]"
                       }`}
                     >
                       {isPositive ? <ArrowUpIcon className="h-3 w-3" /> : <ArrowDownIcon className="h-3 w-3" />}
@@ -203,9 +203,9 @@ export default function CurrencyOverview({
 
               <CardContent className="space-y-4 relative">
                 {/* Main Balance Display */}
-                <div className="text-center py-4 bg-gradient-to-r from-emerald-500/5 to-blue-500/5 rounded-xl border border-emerald-500/10 backdrop-blur-sm">
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Net Balance</p>
-                  <p className={`text-2xl md:text-3xl font-bold ${isPositive ? "text-emerald-600" : "text-red-600"}`}>
+                <div className="text-center py-4 bg-gradient-to-r from-[hsl(var(--accent))/0.05] to-[hsl(var(--chart-3))/0.05] rounded-xl border border-[hsl(var(--accent))/0.1] backdrop-blur-sm">
+                  <p className="text-sm font-medium text-[hsl(var(--muted-foreground))] mb-1">Net Balance</p>
+                  <p className={`text-2xl md:text-3xl font-bold ${isPositive ? "text-[hsl(var(--positive))]" : "text-[hsl(var(--destructive))]"}`}>
                     {isPositive ? "+" : "-"}
                     {getCurrencySymbol(currencyData.currency)}
                     {Math.abs(balance).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -214,12 +214,12 @@ export default function CurrencyOverview({
 
                 {/* Income/Expenses Row */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-3 bg-gradient-to-r from-emerald-500/5 to-emerald-600/5 rounded-xl border border-emerald-500/10 backdrop-blur-sm">
+                  <div className="text-center p-3 bg-gradient-to-r from-[hsl(var(--positive))/0.05] to-[hsl(var(--positive))/0.1] rounded-xl border border-[hsl(var(--positive))/0.1] backdrop-blur-sm">
                     <div className="flex items-center justify-center mb-2">
-                      <ArrowUpIcon className="h-4 w-4 text-emerald-600 mr-1" />
-                      <span className="text-xs font-medium text-emerald-600 uppercase tracking-wide">Income</span>
+                      <ArrowUpIcon className="h-4 w-4 text-[hsl(var(--positive))] mr-1" />
+                      <span className="text-xs font-medium text-[hsl(var(--positive))] uppercase tracking-wide">Income</span>
                     </div>
-                    <p className="text-lg font-bold text-emerald-600">
+                    <p className="text-lg font-bold text-[hsl(var(--positive))]">
                       {getCurrencySymbol(currencyData.currency)}
                       {currencyData.income.toLocaleString("en-US", {
                         minimumFractionDigits: 2,
@@ -228,12 +228,12 @@ export default function CurrencyOverview({
                     </p>
                   </div>
 
-                  <div className="text-center p-3 bg-gradient-to-r from-red-500/5 to-red-600/5 rounded-xl border border-red-500/10 backdrop-blur-sm">
+                  <div className="text-center p-3 bg-gradient-to-r from-[hsl(var(--destructive))/0.05] to-[hsl(var(--destructive))/0.1] rounded-xl border border-[hsl(var(--destructive))/0.1] backdrop-blur-sm">
                     <div className="flex items-center justify-center mb-2">
-                      <ArrowDownIcon className="h-4 w-4 text-red-600 mr-1" />
-                      <span className="text-xs font-medium text-red-600 uppercase tracking-wide">Expenses</span>
+                      <ArrowDownIcon className="h-4 w-4 text-[hsl(var(--destructive))] mr-1" />
+                      <span className="text-xs font-medium text-[hsl(var(--destructive))] uppercase tracking-wide">Expenses</span>
                     </div>
-                    <p className="text-lg font-bold text-red-600">
+                    <p className="text-lg font-bold text-[hsl(var(--destructive))]">
                       {getCurrencySymbol(currencyData.currency)}
                       {currencyData.outcome.toLocaleString("en-US", {
                         minimumFractionDigits: 2,
@@ -244,9 +244,9 @@ export default function CurrencyOverview({
                 </div>
 
                 {/* Activity Indicator */}
-                <div className="flex items-center justify-between pt-3 border-t border-emerald-500/10">
-                  <span className="text-xs text-gray-600 dark:text-gray-300">Total Activity</span>
-                  <span className="text-xs font-medium bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
+                <div className="flex items-center justify-between pt-3 border-t border-[hsl(var(--accent))/0.1]">
+                  <span className="text-xs text-[hsl(var(--muted-foreground))]">Total Activity</span>
+                  <span className="text-xs font-medium bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] bg-clip-text text-transparent">
                     {getCurrencySymbol(currencyData.currency)}
                     {totalActivity.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
@@ -254,8 +254,8 @@ export default function CurrencyOverview({
 
                 {/* Click hint with arrow */}
                 <div className="flex items-center justify-center pt-2 opacity-60 group-hover:opacity-100 transition-opacity">
-                  <span className="text-xs text-gray-600 dark:text-gray-300 mr-2">View Details</span>
-                  <ArrowUpIcon className="h-3 w-3 text-emerald-600 rotate-45 group-hover:translate-x-1 transition-transform" />
+                  <span className="text-xs text-[hsl(var(--muted-foreground))] mr-2">View Details</span>
+                  <ArrowUpIcon className="h-3 w-3 text-[hsl(var(--accent))] rotate-45 group-hover:translate-x-1 transition-transform" />
                 </div>
               </CardContent>
             </Card>

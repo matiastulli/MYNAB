@@ -61,8 +61,15 @@ export default function Dashboard({
       ? [...categoriesData.outcome].sort((a, b) => b.amount - a.amount)[0]
       : null
 
-  // Chart colors
-  const COLORS = ["#10B981", "#3B82F6", "#F59E0B", "#8B5CF6", "#EC4899", "#6B7280"]
+  // Chart colors - using HSL values for better theme integration
+  const COLORS = [
+    "hsl(var(--chart-1))",
+    "hsl(var(--chart-2))",
+    "hsl(var(--chart-3))",
+    "hsl(var(--chart-4))",
+    "hsl(var(--chart-5))",
+    "hsl(var(--muted))"
+  ]
 
   // Format currency for display
   const formatCurrency = (value) => {
@@ -93,18 +100,18 @@ export default function Dashboard({
 
   return (
     <div className="space-y-6">
-      <Card className="border-border bg-card backdrop-blur-sm shadow-lg">
+      <Card className="border-[hsl(var(--border))] bg-[hsl(var(--card))] backdrop-blur-sm shadow-lg">
         <CardHeader className="pb-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-accent/10 border border-accent/20">
-                <LayoutDashboardIcon className="h-5 w-5 text-accent" />
+              <div className="p-2 rounded-lg bg-[hsl(var(--accent)/0.1)] border border-[hsl(var(--accent)/0.2)]">
+                <LayoutDashboardIcon className="h-5 w-5 text-[hsl(var(--accent))]" />
               </div>
-              <CardTitle className="text-xl font-semibold text-foreground">
+              <CardTitle className="text-xl font-semibold text-[hsl(var(--foreground))]">
                 Dashboard
               </CardTitle>
             </div>
-            <div className="flex items-center gap-2 bg-accent/10 text-accent px-3 py-1.5 rounded-full border border-accent/20">
+            <div className="flex items-center gap-2 bg-[hsl(var(--accent)/0.1)] text-[hsl(var(--accent))] px-3 py-1.5 rounded-full border border-[hsl(var(--accent)/0.2)]">
               <CircleDollarSignIcon className="h-4 w-4" />
               <span className="text-sm font-medium">{currency}</span>
               <span className="text-xs opacity-75">({getCurrencyName(currency)})</span>
@@ -191,18 +198,25 @@ export default function Dashboard({
 
       {/* Financial snapshot */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="border-border bg-card backdrop-blur-sm shadow-sm">
+        <Card className="border-[hsl(var(--border))] bg-[hsl(var(--card))] backdrop-blur-sm shadow-sm">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium text-muted-foreground">Monthly Balance</h3>
+              <h3 className="text-sm font-medium text-[hsl(var(--muted-foreground))]">Monthly Balance</h3>
               <div
-                className={`p-2 rounded-full ${balance >= 0 ? "bg-success-bg text-success-fg" : "bg-destructive/10 text-destructive"
-                  }`}
+                className={`p-2 rounded-full ${
+                  balance >= 0 
+                    ? "bg-[hsl(var(--positive)/0.1)] text-[hsl(var(--positive))]" 
+                    : "bg-[hsl(var(--destructive)/0.1)] text-[hsl(var(--destructive))]"
+                }`}
               >
                 {balance >= 0 ? <TrendingUpIcon className="h-4 w-4" /> : <TrendingDownIcon className="h-4 w-4" />}
               </div>
             </div>
-            <p className={`text-xl font-semibold ${balance >= 0 ? "text-success-fg" : "text-destructive"}`}>
+            <p className={`text-xl font-semibold ${
+              balance >= 0 
+                ? "text-[hsl(var(--positive))]" 
+                : "text-[hsl(var(--destructive))]"
+            }`}>
               {formatCurrency(balance)}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
@@ -211,18 +225,18 @@ export default function Dashboard({
           </CardContent>
         </Card>
 
-        <Card className="border-border bg-card backdrop-blur-sm shadow-sm">
+        <Card className="border-[hsl(var(--border))] bg-[hsl(var(--card))] backdrop-blur-sm shadow-sm">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium text-muted-foreground">Top Category</h3>
-              <div className="p-2 rounded-full bg-accent/10 text-accent">
+              <h3 className="text-sm font-medium text-[hsl(var(--muted-foreground))]">Top Category</h3>
+              <div className="p-2 rounded-full bg-[hsl(var(--accent)/0.1)] text-[hsl(var(--accent))]">
                 <PieChartIcon className="h-4 w-4" />
               </div>
             </div>
             {topExpenseCategory ? (
               <>
-                <p className="text-xl font-semibold text-foreground">{topExpenseCategory.name}</p>
-                <p className="text-xs text-muted-foreground mt-1">{formatCurrency(topExpenseCategory.amount)} spent</p>
+                <p className="text-xl font-semibold text-[hsl(var(--foreground))]">{topExpenseCategory.name}</p>
+                <p className="text-xs text-[hsl(var(--muted-foreground))] mt-1">{formatCurrency(topExpenseCategory.amount)} spent</p>
               </>
             ) : (
               <p className="text-sm text-muted-foreground">No categories available</p>
@@ -230,16 +244,16 @@ export default function Dashboard({
           </CardContent>
         </Card>
 
-        <Card className="border-border bg-card backdrop-blur-sm shadow-sm">
+        <Card className="border-[hsl(var(--border))] bg-[hsl(var(--card))] backdrop-blur-sm shadow-sm">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium text-muted-foreground">Transaction Count</h3>
-              <div className="p-2 rounded-full bg-accent/10 text-accent">
+              <h3 className="text-sm font-medium text-[hsl(var(--muted-foreground))]">Transaction Count</h3>
+              <div className="p-2 rounded-full bg-[hsl(var(--accent)/0.1)] text-[hsl(var(--accent))]">
                 <BarChart2Icon className="h-4 w-4" />
               </div>
             </div>
-            <p className="text-xl font-semibold text-foreground">{entries.length}</p>
-            <p className="text-xs text-muted-foreground mt-1">Transactions this period</p>
+            <p className="text-xl font-semibold text-[hsl(var(--foreground))]">{entries.length}</p>
+            <p className="text-xs text-[hsl(var(--muted-foreground))] mt-1">Transactions this period</p>
           </CardContent>
         </Card>
       </div>

@@ -157,15 +157,15 @@ export default function PasswordlessSignupForm({ onSignUp, onSwitchToLogin }) {
 
   if (step === "success") {
     return (
-      <Card className="max-w-md mx-auto border-2 border-border bg-card shadow-xl">
+      <Card className="max-w-md mx-auto border-2 border-[hsl(var(--border))] bg-[hsl(var(--card))] shadow-xl">
         <CardContent className="p-8">
           <div className="text-center space-y-4">
-            <div className="p-4 rounded-full bg-green-100 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800 w-fit mx-auto">
-              <CheckCircleIcon className="h-8 w-8 text-green-600 dark:text-green-400" />
+            <div className="p-4 rounded-full bg-[hsl(var(--positive)/0.1)] border-2 border-[hsl(var(--positive)/0.2)] w-fit mx-auto">
+              <CheckCircleIcon className="h-8 w-8 text-[hsl(var(--positive))]" />
             </div>
             <div className="space-y-2">
-              <h3 className="text-xl font-semibold text-foreground">Account Created!</h3>
-              <p className="text-sm text-muted-foreground">
+              <h3 className="text-xl font-semibold text-[hsl(var(--foreground))]">Account Created!</h3>
+              <p className="text-sm text-[hsl(var(--muted-foreground))]">
                 Your account has been successfully created. You can now sign in with your email address.
               </p>
             </div>
@@ -186,16 +186,16 @@ export default function PasswordlessSignupForm({ onSignUp, onSwitchToLogin }) {
   }
 
   return (
-    <Card className="max-w-md mx-auto border-2 border-border bg-card shadow-xl">
+    <Card className="max-w-md mx-auto border-2 border-[hsl(var(--border))] bg-[hsl(var(--card))] shadow-xl">
         <CardHeader className="pb-2">
         <div className="flex flex-col items-center gap-1">
           <div className="flex items-center gap-2">
-            <span className="p-1 rounded-md bg-accent/10 border border-accent/20">
-              <WalletIcon className="h-5 w-5 text-accent" />
+            <span className="p-1 rounded-md bg-[hsl(var(--accent)/0.1)] border border-[hsl(var(--accent)/0.2)]">
+              <WalletIcon className="h-5 w-5 text-[hsl(var(--accent))]" />
             </span>
-            <span className="text-lg font-bold tracking-wider text-foreground">MYNAB</span>
+            <span className="text-lg font-bold tracking-wider text-[hsl(var(--foreground))]">MYNAB</span>
           </div>
-          <span className="text-sm font-normal text-muted-foreground mt-1">
+          <span className="text-sm font-normal text-[hsl(var(--muted-foreground))] mt-1">
             {step === "form" ? "Create Account" : "Verify Your Email"}
           </span>
         </div>
@@ -205,15 +205,15 @@ export default function PasswordlessSignupForm({ onSignUp, onSwitchToLogin }) {
           <form onSubmit={handleSubmitForm} className="space-y-5">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-sm font-semibold text-foreground">
+                <Label htmlFor="name" className="text-sm font-semibold text-[hsl(var(--foreground))]">
                   First Name *
                 </Label>
                 <div className="relative">
-                  <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[hsl(var(--muted-foreground))]" />
                   <Input 
                     id="name" 
                     placeholder="Olivia" 
-                    className="pl-10 h-12 border-2 border-border bg-background focus:border-accent transition-all duration-200"
+                    className="pl-10 h-12 border-2 border-[hsl(var(--border))] bg-[hsl(var(--background))] focus:border-[hsl(var(--accent))] transition-all duration-200"
                     value={form.name}
                     onChange={handleChange}
                     required
@@ -221,15 +221,15 @@ export default function PasswordlessSignupForm({ onSignUp, onSwitchToLogin }) {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="last_name" className="text-sm font-semibold text-foreground">
+                <Label htmlFor="last_name" className="text-sm font-semibold text-[hsl(var(--foreground))]">
                   Last Name *
                 </Label>
                 <div className="relative">
-                  <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[hsl(var(--muted-foreground))]" />
                   <Input 
                     id="last_name" 
                     placeholder="Carter" 
-                    className="pl-10 h-12 border-2 border-border bg-background focus:border-accent transition-all duration-200"
+                    className="pl-10 h-12 border-2 border-[hsl(var(--border))] bg-[hsl(var(--background))] focus:border-[hsl(var(--accent))] transition-all duration-200"
                     value={form.last_name}
                     onChange={handleChange}
                     required
@@ -256,7 +256,7 @@ export default function PasswordlessSignupForm({ onSignUp, onSwitchToLogin }) {
                   required
                 />
                 {validationErrors.email && (
-                  <div className="flex items-center gap-1 mt-1 text-xs text-red-500">
+                  <div className="flex items-center gap-1 mt-1 text-xs text-[hsl(var(--destructive))]">
                     <AlertCircleIcon className="h-3 w-3" />
                     {validationErrors.email}
                   </div>
@@ -279,10 +279,10 @@ export default function PasswordlessSignupForm({ onSignUp, onSwitchToLogin }) {
             </div>
             
             {error && (
-              <div className="p-4 rounded-lg bg-red-50 dark:bg-red-950/20 border-2 border-red-200 dark:border-red-800">
+              <div className="p-4 rounded-lg bg-[hsl(var(--destructive)/0.05)] border-2 border-[hsl(var(--destructive)/0.2)]">
                 <div className="flex items-center gap-2">
-                  <AlertCircleIcon className="h-4 w-4 text-red-600 dark:text-red-400" />
-                  <span className="text-sm font-medium text-red-900 dark:text-red-100">{error}</span>
+                  <AlertCircleIcon className="h-4 w-4 text-[hsl(var(--destructive))]" />
+                  <span className="text-sm font-medium text-[hsl(var(--destructive))]">{error}</span>
                 </div>
               </div>
             )}
@@ -310,12 +310,12 @@ export default function PasswordlessSignupForm({ onSignUp, onSwitchToLogin }) {
             </Button>
             
             <div className="text-center pt-2">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-[hsl(var(--muted-foreground))]">
                 Already have an account?{" "}
                 <button 
                   type="button"
                   onClick={onSwitchToLogin}
-                  className="text-accent hover:text-accent/80 font-semibold hover:underline transition-colors"
+                  className="text-[hsl(var(--accent))] hover:text-[hsl(var(--accent)/0.8)] font-semibold hover:underline transition-colors"
                 >
                   Sign in instead
                 </button>
@@ -325,8 +325,8 @@ export default function PasswordlessSignupForm({ onSignUp, onSwitchToLogin }) {
         ) : (
           <form onSubmit={handleVerifyAndRegister} className="space-y-5">
             <div className="text-center space-y-2">
-              <div className="p-3 rounded-full bg-green-100 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800 w-fit mx-auto">
-                <CheckCircleIcon className="h-6 w-6 text-green-600 dark:text-green-400" />
+              <div className="p-3 rounded-full bg-[hsl(var(--positive)/0.1)] border-2 border-[hsl(var(--positive)/0.2)] w-fit mx-auto">
+                <CheckCircleIcon className="h-6 w-6 text-[hsl(var(--positive))]" />
               </div>
               <p className="text-sm text-muted-foreground">
                 We've sent a verification code to <strong className="text-foreground">{form.email}</strong>
@@ -334,16 +334,16 @@ export default function PasswordlessSignupForm({ onSignUp, onSwitchToLogin }) {
             </div>
 
             <div className="space-y-3">
-              <Label htmlFor="verification_code" className="text-sm font-semibold text-foreground">
+              <Label htmlFor="verification_code" className="text-sm font-semibold text-[hsl(var(--foreground))]">
                 Verification Code
               </Label>
               <div className="relative">
-                <KeyIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <KeyIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[hsl(var(--muted-foreground))]" />
                 <Input
                   id="verification_code"
                   type="text"
                   placeholder="Enter 6-digit code"
-                  className="pl-10 h-14 border-2 border-accent/60 bg-background focus:border-accent focus:ring-2 focus:ring-accent/40 transition-all duration-200 text-center text-lg sm:text-2xl tracking-[0.25em] font-semibold text-foreground shadow-sm"
+                  className="pl-10 h-14 border-2 border-[hsl(var(--accent)/0.6)] bg-[hsl(var(--background))] focus:border-[hsl(var(--accent))] focus:ring-2 focus:ring-[hsl(var(--accent)/0.4)] transition-all duration-200 text-center text-lg sm:text-2xl tracking-[0.25em] font-semibold text-[hsl(var(--foreground))] shadow-sm"
                   style={{ letterSpacing: '0.25em', fontFamily: 'Inter, Nunito, ui-sans-serif, system-ui, sans-serif' }}
                   value={form.verification_code}
                   onChange={handleChange}
@@ -396,7 +396,7 @@ export default function PasswordlessSignupForm({ onSignUp, onSwitchToLogin }) {
                 type="button"
                 variant="ghost"
                 onClick={handleResendCode}
-                className="w-full text-muted-foreground hover:text-foreground"
+                className="w-full text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
                 disabled={isLoading}
               >
                 Resend code
@@ -405,7 +405,7 @@ export default function PasswordlessSignupForm({ onSignUp, onSwitchToLogin }) {
                 type="button"
                 variant="ghost"
                 onClick={handleBackToForm}
-                className="w-full text-muted-foreground hover:text-foreground"
+                className="w-full text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
               >
                 Change information
               </Button>

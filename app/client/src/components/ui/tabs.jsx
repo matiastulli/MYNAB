@@ -22,7 +22,7 @@ function TabsTrigger({ className, ...props }) {
       data-slot="tabs-trigger"
       className={cn(
         "inline-flex items-center justify-center whitespace-nowrap rounded-lg px-4 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
-        "data-[state=active]:bg-accent data-[state=active]:text-accent-foreground data-[state=active]:shadow-md data-[state=active]:font-semibold",
+        "data-[state=active]:bg-[hsl(var(--accent))] data-[state=active]:text-[hsl(var(--accent-foreground))] data-[state=active]:shadow-md data-[state=active]:font-semibold",
         "hover:bg-accent/10 hover:text-accent-foreground",
         className,
       )}

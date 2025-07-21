@@ -120,6 +120,7 @@ alembic upgrade head
   --destructive: 0 84% 65%;
 }
 ```
+- Use hsl() syntax for colors
 - Financial color coding:
   - Positive values: Green (`--positive`)
   - Negative values: Red (`--destructive`)

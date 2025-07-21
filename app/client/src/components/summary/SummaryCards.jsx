@@ -12,15 +12,15 @@ export default function SummaryCards({
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
       {/* Balance Card */}
-      <Card className={`border-border bg-card backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow ${isLoading ? 'relative overflow-hidden' : ''}`}>
+      <Card className={`border-[hsl(var(--border))] bg-[hsl(var(--card))] backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow ${isLoading ? 'relative overflow-hidden' : ''}`}>
         <CardContent className="p-6">
           {isLoading && (
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-foreground/10 to-transparent animate-shimmer"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[hsl(var(--foreground))/0.1] to-transparent animate-shimmer"></div>
           )}
           
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <p className="text-xs font-medium text-[hsl(var(--muted-foreground))] uppercase tracking-wider">
                 Current Balance
               </p>
               <p 
@@ -50,8 +50,8 @@ export default function SummaryCards({
             </div>
           </div>
           
-          <div className="mt-4 pt-4 border-t border-border">
-            <p className="text-xs text-muted-foreground">
+          <div className="mt-4 pt-4 border-t border-[hsl(var(--border))]">
+            <p className="text-xs text-[hsl(var(--muted-foreground))]">
               {balance >= 0 ? "You're in good standing" : "Your expenses exceed income"}
             </p>
           </div>
@@ -59,15 +59,15 @@ export default function SummaryCards({
       </Card>
 
       {/* Income Card */}
-      <Card className={`border-border bg-card backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow ${isLoading ? 'relative overflow-hidden' : ''}`}>
+      <Card className={`border-[hsl(var(--border))] bg-[hsl(var(--card))] backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow ${isLoading ? 'relative overflow-hidden' : ''}`}>
         <CardContent className="p-6">
           {isLoading && (
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-foreground/10 to-transparent animate-shimmer"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[hsl(var(--foreground))/0.1] to-transparent animate-shimmer"></div>
           )}
           
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <p className="text-xs font-medium text-[hsl(var(--muted-foreground))] uppercase tracking-wider">
                 Income
               </p>
               <p 
@@ -89,8 +89,8 @@ export default function SummaryCards({
             </div>
           </div>
           
-          <div className="mt-4 pt-4 border-t border-border">
-            <p className="text-xs text-muted-foreground">
+          <div className="mt-4 pt-4 border-t border-[hsl(var(--border))]">
+            <p className="text-xs text-[hsl(var(--muted-foreground))]">
               Total income for {dateRangeFormatted}
             </p>
           </div>
@@ -98,15 +98,15 @@ export default function SummaryCards({
       </Card>
 
       {/* Expenses Card */}
-      <Card className={`border-border bg-card backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow ${isLoading ? 'relative overflow-hidden' : ''}`}>
+      <Card className={`border-[hsl(var(--border))] bg-[hsl(var(--card))] backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow ${isLoading ? 'relative overflow-hidden' : ''}`}>
         <CardContent className="p-6">
           {isLoading && (
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-foreground/10 to-transparent animate-shimmer"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[hsl(var(--foreground))/0.1] to-transparent animate-shimmer"></div>
           )}
           
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <p className="text-xs font-medium text-[hsl(var(--muted-foreground))] uppercase tracking-wider">
                 Expenses
               </p>
               <p 
@@ -128,8 +128,8 @@ export default function SummaryCards({
             </div>
           </div>
           
-          <div className="mt-4 pt-4 border-t border-border">
-            <p className="text-xs text-muted-foreground">
+          <div className="mt-4 pt-4 border-t border-[hsl(var(--border))]">
+            <p className="text-xs text-[hsl(var(--muted-foreground))]">
               Total expenses for {dateRangeFormatted}
             </p>
           </div>

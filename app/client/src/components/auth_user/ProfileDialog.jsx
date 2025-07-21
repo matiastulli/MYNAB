@@ -86,18 +86,18 @@ export default function ProfileDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-card text-card-foreground border-2 border-border shadow-xl max-w-md">
+      <DialogContent className="bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] border-2 border-[hsl(var(--border))] shadow-xl max-w-md">
         <DialogHeader className="pb-2">
           <DialogTitle className="sr-only">Profile Settings</DialogTitle>
           <div className="flex flex-col items-center gap-1">
             <div className="flex items-center gap-2">
-              <span className="p-1 rounded-md bg-accent/10 border border-accent/20">
-              <UserIcon className="h-5 w-5 text-accent" />
+              <span className="p-1 rounded-md bg-[hsl(var(--accent)/0.1)] border border-[hsl(var(--accent)/0.2)]">
+              <UserIcon className="h-5 w-5 text-[hsl(var(--accent))]" />
               </span>
-             <span className="text-lg font-bold tracking-wider text-foreground">MYNAB</span>
+             <span className="text-lg font-bold tracking-wider text-[hsl(var(--foreground))]">MYNAB</span>
             </div>
           </div>
-          <DialogDescription className="text-muted-foreground">
+          <DialogDescription className="text-[hsl(var(--muted-foreground))]">
             {(!userData?.national_id || userData?.national_id === "") ? (
               <div className="flex items-start gap-3 mt-3 p-4 bg-[hsl(var(--warning-bg))] border-2 border-[hsl(var(--warning-fg)/0.2)] rounded-lg">
                 <AlertTriangleIcon className="h-5 w-5 text-[hsl(var(--warning-fg))] mt-0.5" />
@@ -116,49 +116,49 @@ export default function ProfileDialog({
 
         {updateSuccess ? (
           <div className="flex flex-col items-center py-12 gap-4">
-            <div className="p-4 bg-green-100 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800 rounded-full">
-              <CheckCircleIcon className="h-8 w-8 text-green-600 dark:text-green-400" />
+            <div className="p-4 bg-[hsl(var(--positive)/0.1)] border-2 border-[hsl(var(--positive)/0.2)] rounded-full">
+              <CheckCircleIcon className="h-8 w-8 text-[hsl(var(--positive))]" />
             </div>
             <div className="text-center">
-              <p className="text-lg font-semibold text-foreground">Profile Updated!</p>
-              <p className="text-sm text-muted-foreground">Your changes have been saved successfully.</p>
+              <p className="text-lg font-semibold text-[hsl(var(--foreground))]">Profile Updated!</p>
+              <p className="text-sm text-[hsl(var(--muted-foreground))]">Your changes have been saved successfully.</p>
             </div>
           </div>
         ) : (
           <form onSubmit={handleProfileUpdate} className="space-y-5">
             <div className="space-y-3">
-              <Label htmlFor="name" className="text-sm font-semibold text-foreground">
+              <Label htmlFor="name" className="text-sm font-semibold text-[hsl(var(--foreground))]">
                 First Name
               </Label>
               <Input
                 id="name"
                 value={profileForm.name}
                 onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
-                className="h-12 border-2 border-border bg-background focus:border-accent transition-all duration-200"
+                className="h-12 border-2 border-[hsl(var(--border))] bg-[hsl(var(--background))] focus:border-[hsl(var(--accent))] transition-all duration-200"
                 placeholder="Enter your first name"
                 required
               />
             </div>
 
             <div className="space-y-3">
-              <Label htmlFor="last_name" className="text-sm font-semibold text-foreground">
+              <Label htmlFor="last_name" className="text-sm font-semibold text-[hsl(var(--foreground))]">
                 Last Name
               </Label>
               <Input
                 id="last_name"
                 value={profileForm.last_name}
                 onChange={(e) => setProfileForm({ ...profileForm, last_name: e.target.value })}
-                className="h-12 border-2 border-border bg-background focus:border-accent transition-all duration-200"
+                className="h-12 border-2 border-[hsl(var(--border))] bg-[hsl(var(--background))] focus:border-[hsl(var(--accent))] transition-all duration-200"
                 placeholder="Enter your last name"
               />
             </div>
 
             <div className="space-y-3">
-              <Label htmlFor="national_id" className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <Label htmlFor="national_id" className="text-sm font-semibold text-[hsl(var(--foreground))] flex items-center gap-2">
                 <IdCardIcon className="h-4 w-4" />
                 CUIT
                 {(!userData?.national_id || userData?.national_id === "") && (
-                  <AlertTriangleIcon className="h-4 w-4 text-amber-500" />
+                  <AlertTriangleIcon className="h-4 w-4 text-[hsl(var(--warning-fg))]" />
                 )}
               </Label>
               <Input
@@ -169,17 +169,17 @@ export default function ProfileDialog({
                   const numericValue = e.target.value.replace(/[^0-9]/g, '');
                   setProfileForm({ ...profileForm, national_id: numericValue });
                 }}
-                className="h-12 border-2 border-border bg-background focus:border-accent transition-all duration-200"
+                className="h-12 border-2 border-[hsl(var(--border))] bg-[hsl(var(--background))] focus:border-[hsl(var(--accent))] transition-all duration-200"
                 placeholder="e.g. 20415436042"
                 inputMode="numeric"
                 pattern="[0-9]*"
               />
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-[hsl(var(--muted-foreground))]">
                 Used to automatically filter out personal transactions from your budget analysis.
               </p>
             </div>
 
-            <DialogFooter className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-border">
+            <DialogFooter className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-[hsl(var(--border))]">
               <Button
                 type="button"
                 variant="outline"
@@ -216,13 +216,13 @@ export default function ProfileDialog({
             type="button"
             variant="ghost"
             onClick={handleToggleTheme}
-            className="w-full flex items-center justify-center gap-2 text-foreground hover:bg-accent/10 h-12"
+            className="w-full flex items-center justify-center gap-2 text-[hsl(var(--foreground))] hover:bg-[hsl(var(--accent)/0.1)] h-12"
             title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
           >
             {isDarkMode ? (
-              <SunIcon className="h-5 w-5 text-yellow-500" />
+              <SunIcon className="h-5 w-5 text-[hsl(48,95%,50%)]" />
             ) : (
-              <MoonIcon className="h-5 w-5 text-blue-500" />
+              <MoonIcon className="h-5 w-5 text-[hsl(217,91%,60%)]" />
             )}
             <span className="font-medium">
               {isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}

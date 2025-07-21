@@ -183,13 +183,13 @@ export default function ActivityList({
 
   if (entries.length === 0) {
     return (
-      <Card className="border-border bg-card shadow-sm">
+      <Card className="border-[hsl(var(--border))] bg-[hsl(var(--card))] shadow-sm">
         <CardContent className="p-8 sm:p-16 text-center">
           <div className="flex flex-col items-center gap-6 max-w-md mx-auto">
             {/* Enhanced Icon with gradient background */}
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full blur-xl"></div>
-              <div className="relative p-6 rounded-full bg-gradient-to-br from-muted to-muted/50 text-muted-foreground border border-border/50">
+              <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--info)/0.2)] to-[hsl(var(--accent)/0.2)] rounded-full blur-xl"></div>
+              <div className="relative p-6 rounded-full bg-gradient-to-br from-[hsl(var(--muted))] to-[hsl(var(--muted)/0.5)] text-[hsl(var(--muted-foreground))] border border-[hsl(var(--border)/0.5)]">
                 <FilterIcon className="h-8 w-8" />
               </div>
             </div>
@@ -197,22 +197,22 @@ export default function ActivityList({
             {/* Enhanced messaging */}
             <div className="space-y-4">
               <div>
-                <h3 className="text-xl font-semibold mb-2 text-foreground">
+                <h3 className="text-xl font-semibold mb-2 text-[hsl(var(--foreground))]">
                   No {currency} transactions found
                 </h3>
-                <p className="text-sm text-muted-foreground">
-                  for the period: <span className="font-medium text-foreground">{dateRangeFormatted}</span>
+                <p className="text-sm text-[hsl(var(--muted-foreground))]">
+                  for the period: <span className="font-medium text-[hsl(var(--foreground))]">{dateRangeFormatted}</span>
                 </p>
               </div>
 
               {/* Enhanced currency filter notice */}
-              <div className="bg-gradient-to-r from-info-bg/50 to-info-bg/30 border border-info-fg/20 rounded-lg p-4 space-y-3">
-                <div className="flex items-center justify-center gap-2 text-info-fg">
+              <div className="bg-gradient-to-r from-[hsl(var(--info-bg)/0.5)] to-[hsl(var(--info-bg)/0.3)] border border-[hsl(var(--info-fg)/0.2)] rounded-lg p-4 space-y-3">
+                <div className="flex items-center justify-center gap-2 text-[hsl(var(--info-fg))]">
                   <CircleDollarSignIcon className="h-5 w-5 flex-shrink-0" />
                   <span className="font-medium">Currency Filter Active</span>
                 </div>
-                <p className="text-sm text-info-fg/80 leading-relaxed">
-                  You're currently viewing <span className="font-semibold bg-info-fg/10 px-1.5 py-0.5 rounded text-info-fg">{currency}</span> transactions only.
+                <p className="text-sm text-[hsl(var(--info-fg)/0.8)] leading-relaxed">
+                  You're currently viewing <span className="font-semibold bg-[hsl(var(--info-fg)/0.1)] px-1.5 py-0.5 rounded text-[hsl(var(--info-fg))]">{currency}</span> transactions only.
                 </p>
               </div>
             </div>
@@ -280,7 +280,7 @@ export default function ActivityList({
             </div>
             
             {/* Control Buttons */}
-            <div className="flex items-center gap-2 bg-muted/30 p-1 rounded-lg border border-border/50">
+            <div className="flex items-center gap-2 bg-[hsl(var(--muted)/0.3)] p-1 rounded-lg border border-[hsl(var(--border)/0.5)]">
               <Button
                 variant="ghost"
                 size="sm"
@@ -290,8 +290,8 @@ export default function ActivityList({
                     sortDirection === 'desc' ? "Sorting: High to Low" :
                       "Sort by Amount"
                 }
-                className={`h-8 px-3 rounded-md transition-all duration-200 ${sortDirection ? 'bg-accent text-accent-foreground shadow-sm' :
-                  'text-muted-foreground hover:bg-background/50 hover:text-foreground'
+                className={`h-8 px-3 rounded-md transition-all duration-200 ${sortDirection ? 'bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))] shadow-sm' :
+                  'text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--background)/0.5)] hover:text-[hsl(var(--foreground))]'
                   }`}
               >
                 {sortDirection === 'asc' ? (
@@ -359,15 +359,15 @@ export default function ActivityList({
               <div key={dateGroup} className="divide-y divide-border/50">
                 {/* Enhanced Date header */}
                 {groupByDate && dateGroup !== 'ungrouped' && (
-                  <div className="sticky top-0 z-10 bg-gradient-to-r from-muted/90 to-muted/80 backdrop-blur-md border-b border-border/30 px-4 py-2.5 text-sm font-medium text-foreground">
+                  <div className="sticky top-0 z-10 bg-gradient-to-r from-[hsl(var(--muted)/0.9)] to-[hsl(var(--muted)/0.8)] backdrop-blur-md border-b border-[hsl(var(--border)/0.3)] px-4 py-2.5 text-sm font-medium text-[hsl(var(--foreground))]">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-accent rounded-full"></div>
-                        <CalendarIcon className="h-4 w-4 text-accent/80" />
+                        <div className="w-2 h-2 bg-[hsl(var(--accent))] rounded-full"></div>
+                        <CalendarIcon className="h-4 w-4 text-[hsl(var(--accent)/0.8)]" />
                         <span className="font-semibold">{formatDisplayDate(dateGroup)}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground bg-background/50 px-2 py-1 rounded-full">
+                        <span className="text-xs text-[hsl(var(--muted-foreground))] bg-[hsl(var(--background)/0.5)] px-2 py-1 rounded-full">
                           {entriesForGroup.length} transaction{entriesForGroup.length !== 1 ? 's' : ''}
                         </span>
                       </div>
@@ -379,13 +379,13 @@ export default function ActivityList({
                 {entriesForGroup.map((entry) => (
                   <div
                     key={entry.id}
-                    className="group flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-5 hover:bg-gradient-to-r hover:from-accent/5 hover:to-accent/3 transition-all duration-200 border-l-2 border-l-transparent hover:border-l-accent/30"
+                    className="group flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-5 hover:bg-gradient-to-r hover:from-[hsl(var(--accent)/0.05)] hover:to-[hsl(var(--accent)/0.03)] transition-all duration-200 border-l-2 border-l-transparent hover:border-l-[hsl(var(--accent)/0.3)]"
                   >
                     <div className="flex items-start gap-4 w-full sm:w-auto">
                       <div
                         className={`p-3 rounded-xl flex-shrink-0 transition-all duration-200 group-hover:scale-105 ${entry.type === "income"
-                          ? "bg-gradient-to-br from-emerald-100 to-emerald-50 text-emerald-700 border border-emerald-200 dark:from-emerald-900/30 dark:to-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800"
-                          : "bg-gradient-to-br from-red-100 to-red-50 text-red-700 border border-red-200 dark:from-red-900/30 dark:to-red-900/20 dark:text-red-400 dark:border-red-800"
+                          ? "bg-gradient-to-br from-[hsl(var(--positive)/0.1)] to-[hsl(var(--positive)/0.05)] text-[hsl(var(--positive))] border border-[hsl(var(--positive)/0.2)]"
+                          : "bg-gradient-to-br from-[hsl(var(--destructive)/0.1)] to-[hsl(var(--destructive)/0.05)] text-[hsl(var(--destructive))] border border-[hsl(var(--destructive)/0.2)]"
                           }`}
                       >
                         <CircleDollarSignIcon className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -410,7 +410,7 @@ export default function ActivityList({
                           {!groupByDate && (
                             <div className="flex items-center gap-1.5">
                               <CalendarIcon className="h-3.5 w-3.5 opacity-70" />
-                              <span>
+                              <span className="text-[hsl(var(--foreground))]">
                                 {(() => {
                                   const entryDate = parseDatePreservingDay(entry.date);
                                   return entryDate.toLocaleDateString("en-US", {
@@ -425,15 +425,15 @@ export default function ActivityList({
                           {entry.source && (
                             <div className="flex items-center gap-1">
                               {!groupByDate && <span className="hidden xs:inline text-muted-foreground/50">•</span>}
-                              <span className="capitalize bg-muted/50 px-2 py-0.5 rounded-full text-xs">
+                              <span className="capitalize bg-[hsl(var(--muted)/0.5)] px-2 py-0.5 rounded-full text-xs">
                                 {entry.source.replace('_', ' ')}
                               </span>
                             </div>
                           )}
                           {entry.currency && entry.currency !== currency && (
                             <div className="flex items-center gap-1">
-                              <span className="hidden xs:inline text-muted-foreground/50">•</span>
-                              <span className="bg-accent/10 text-accent px-2 py-0.5 rounded-full text-xs font-medium">
+                              <span className="hidden xs:inline text-[hsl(var(--muted-foreground)/0.5)]">•</span>
+                              <span className="bg-[hsl(var(--accent)/0.1)] text-[hsl(var(--accent))] px-2 py-0.5 rounded-full text-xs font-medium">
                                 {entry.currency}
                               </span>
                             </div>
@@ -491,7 +491,7 @@ export default function ActivityList({
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="ml-auto sm:ml-4 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400 h-8 w-8 p-0 rounded-lg transition-all duration-200 group-hover:opacity-100 opacity-0 sm:opacity-100"
+                          className="ml-auto sm:ml-4 hover:bg-[hsl(var(--destructive)/0.1)] hover:text-[hsl(var(--destructive))] h-8 w-8 p-0 rounded-lg transition-all duration-200 group-hover:opacity-100 opacity-0 sm:opacity-100"
                           onClick={() => handleDeleteConfirm(entry.id)}
                           disabled={deletingId === entry.id}
                           title="Delete transaction"

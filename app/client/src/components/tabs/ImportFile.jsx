@@ -132,18 +132,18 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
   };
 
   return (
-    <Card className="border-border bg-card backdrop-blur-sm shadow-lg">
+    <Card className="border-[hsl(var(--border))] bg-[hsl(var(--card))] backdrop-blur-sm shadow-lg">
       <CardHeader className="pb-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-accent/10 border border-accent/20">
-              <UploadIcon className="h-5 w-5 text-accent" />
+            <div className="p-2 rounded-lg bg-[hsl(var(--accent)/0.1)] border border-[hsl(var(--accent)/0.2)]">
+              <UploadIcon className="h-5 w-5 text-[hsl(var(--accent))]" />
             </div>
-            <CardTitle className="text-xl font-semibold text-foreground">
+            <CardTitle className="text-xl font-semibold text-[hsl(var(--card-foreground))]">
               Import Statements
             </CardTitle>
           </div>
-          <div className="flex items-center gap-2 bg-accent/10 text-accent px-3 py-1.5 rounded-full border border-accent/20">
+          <div className="flex items-center gap-2 bg-[hsl(var(--muted)/0.1)] text-[hsl(var(--muted-foreground))] px-3 py-1.5 rounded-full border border-[hsl(var(--muted)/0.2)]">
             <CircleDollarSignIcon className="h-4 w-4" />
             <span className="text-sm font-medium">{currency}</span>
             <span className="text-xs opacity-75">({getCurrencyName(currency)})</span>
@@ -154,16 +154,16 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
       <CardContent className="p-6 space-y-6">
         {result ? (
           <div className="flex flex-col items-center py-12 gap-6">
-            <div className="p-4 rounded-full bg-green-100 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800">
-              <CheckCircleIcon className="h-8 w-8 text-green-600 dark:text-green-400" />
+            <div className="p-4 rounded-full bg-[hsl(var(--positive)/0.1)] border-2 border-[hsl(var(--positive)/0.2)]">
+              <CheckCircleIcon className="h-8 w-8 text-[hsl(var(--positive))]" />
             </div>
             <div className="text-center space-y-2">
-              <h3 className="text-xl font-semibold text-foreground">Import Successful!</h3>
-              <p className="text-muted-foreground max-w-md">
+              <h3 className="text-xl font-semibold text-[hsl(var(--foreground))]">Import Successful!</h3>
+              <p className="text-[hsl(var(--muted-foreground))] max-w-md">
                 {result.message} - {result.count} transactions have been imported to your account.
               </p>
             </div>
-            <div className="text-center text-sm text-muted-foreground">
+            <div className="text-center text-sm text-[hsl(var(--muted-foreground))]">
               Redirecting to your transactions in a moment...
             </div>
           </div>
@@ -188,51 +188,51 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
 
             {/* Bank Selection */}
             <div className="space-y-3">
-              <Label htmlFor="bank" className="text-sm font-semibold text-foreground">
+              <Label htmlFor="bank" className="text-sm font-semibold text-[hsl(var(--foreground))]">
                 Select Bank *
               </Label>
               <Select value={bankName} onValueChange={setBankName}>
-                <SelectTrigger className="h-12 border-2 border-border bg-background focus:border-accent">
+                <SelectTrigger className="h-12 border-2 border-[hsl(var(--border))] bg-[hsl(var(--background))] focus:border-[hsl(var(--accent))]">
                   <SelectValue placeholder="Choose your bank or financial institution" />
                 </SelectTrigger>
-                <SelectContent className="bg-popover border-2 border-border shadow-xl">
-                  <SelectItem value="santander_rio" className="text-popover-foreground py-3">
+                <SelectContent className="bg-[hsl(var(--popover))] border-2 border-[hsl(var(--border))] shadow-xl">
+                  <SelectItem value="santander_rio" className="text-[hsl(var(--popover-foreground))] py-3">
                     <div className="flex items-center gap-3">
-                      <div className="p-1.5 rounded-full bg-red-100 dark:bg-red-900/20">
-                        <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                      <div className="p-1.5 rounded-full bg-[hsl(var(--destructive)/0.1)]">
+                        <div className="w-3 h-3 bg-[hsl(var(--destructive))] rounded-full"></div>
                       </div>
                       <div>
                         <div className="font-medium">Santander Rio</div>
-                        <div className="text-xs text-muted-foreground">Excel (.xlsx) format</div>
+                        <div className="text-xs text-[hsl(var(--muted-foreground))]">Excel (.xlsx) format</div>
                       </div>
                     </div>
                   </SelectItem>
-                  <SelectItem value="mercado_pago" className="text-popover-foreground py-3">
+                  <SelectItem value="mercado_pago" className="text-[hsl(var(--popover-foreground))] py-3">
                     <div className="flex items-center gap-3">
-                      <div className="p-1.5 rounded-full bg-yellow-100 dark:bg-yellow-900/20">
-                        <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                      <div className="p-1.5 rounded-full bg-[hsl(var(--warning)/0.1)]">
+                        <div className="w-3 h-3 bg-[hsl(var(--warning))] rounded-full"></div>
                       </div>
                       <div>
                         <div className="font-medium">Mercado Pago</div>
-                        <div className="text-xs text-muted-foreground">PDF (.pdf) format</div>
+                        <div className="text-xs text-[hsl(var(--muted-foreground))]">PDF (.pdf) format</div>
                       </div>
                     </div>
                   </SelectItem>
-                  <SelectItem value="ICBC" className="text-popover-foreground py-3">
+                  <SelectItem value="ICBC" className="text-[hsl(var(--popover-foreground))] py-3">
                     <div className="flex items-center gap-3">
-                      <div className="p-1.5 rounded-full bg-red-100 dark:bg-red-900/20">
-                        <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                      <div className="p-1.5 rounded-full bg-[hsl(var(--destructive)/0.1)]">
+                        <div className="w-3 h-3 bg-[hsl(var(--destructive))] rounded-full"></div>
                       </div>
                       <div>
                         <div className="font-medium">ICBC</div>
-                        <div className="text-xs text-muted-foreground">CSV (.csv) format</div>
+                        <div className="text-xs text-[hsl(var(--muted-foreground))]">CSV (.csv) format</div>
                       </div>
                     </div>
                   </SelectItem>
                 </SelectContent>
               </Select>
               {bankName && (
-                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <p className="text-xs text-[hsl(var(--muted-foreground))] flex items-center gap-1">
                   <FileTextIcon className="h-3 w-3" />
                   {getSupportedFormatText()}
                 </p>
@@ -241,15 +241,15 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
 
             {/* File Upload */}
             <div className="space-y-3">
-              <Label htmlFor="importFile" className="text-sm font-semibold text-foreground">
+              <Label htmlFor="importFile" className="text-sm font-semibold text-[hsl(var(--foreground))]">
                 Statement File *
               </Label>
               <div
                 className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 ${isDragging
-                  ? 'border-accent bg-accent/5 scale-[1.02]'
+                  ? 'border-[hsl(var(--accent))] bg-[hsl(var(--accent)/0.05)] scale-[1.02]'
                   : file
-                    ? 'border-accent/50 bg-accent/5'
-                    : 'border-border hover:border-accent/40 hover:bg-accent/5'
+                    ? 'border-[hsl(var(--accent)/0.5)] bg-[hsl(var(--accent)/0.05)]'
+                    : 'border-[hsl(var(--border))] hover:border-[hsl(var(--accent)/0.4)] hover:bg-[hsl(var(--accent)/0.05)]'
                   }`}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
@@ -257,21 +257,21 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
               >
                 {!file ? (
                   <div className="flex flex-col items-center space-y-4">
-                    <div className="p-4 rounded-full bg-accent/10 border border-accent/20">
-                      <UploadCloudIcon className="h-10 w-10 text-accent" />
+                    <div className="p-4 rounded-full bg-[hsl(var(--accent)/0.1)] border border-[hsl(var(--accent)/0.2)]">
+                      <UploadCloudIcon className="h-10 w-10 text-[hsl(var(--accent))]" />
                     </div>
                     <div className="space-y-2">
-                      <p className="text-lg font-medium text-foreground">
+                      <p className="text-lg font-medium text-[hsl(var(--foreground))]">
                         Drag & drop your statement file here
                       </p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-[hsl(var(--muted-foreground))]">
                         or click the button below to browse
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-[hsl(var(--muted-foreground))]">
                         {bankName ? getSupportedFormatText() : "Select a bank first to see supported formats"}
                       </p>
                     </div>
-                    <label htmlFor="importFile" className="cursor-pointer bg-accent hover:bg-accent/90 text-accent-foreground font-medium px-6 py-2.5 rounded-lg text-sm transition-all duration-200 shadow-md hover:shadow-lg">
+                    <label htmlFor="importFile" className="cursor-pointer bg-[hsl(var(--accent))] hover:bg-[hsl(var(--accent)/0.9)] text-[hsl(var(--accent-foreground))] font-medium px-6 py-2.5 rounded-lg text-sm transition-all duration-200 shadow-md hover:shadow-lg">
                       Browse Files
                     </label>
                     <Input
@@ -284,15 +284,15 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
                   </div>
                 ) : (
                   <div className="flex flex-col items-center gap-4">
-                    <div className="p-4 bg-accent/10 rounded-lg border border-accent/20">
-                      <FileIcon className="h-10 w-10 text-accent" />
+                    <div className="p-4 bg-[hsl(var(--accent)/0.1)] rounded-lg border border-[hsl(var(--accent)/0.2)]">
+                      <FileIcon className="h-10 w-10 text-[hsl(var(--accent))]" />
                     </div>
                     <div className="text-center space-y-1">
-                      <p className="font-semibold text-foreground text-lg">{file.name}</p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="font-semibold text-[hsl(var(--foreground))] text-lg">{file.name}</p>
+                      <p className="text-sm text-[hsl(var(--muted-foreground))]">
                         {(file.size / 1024).toFixed(2)} KB • {file.type || "Unknown format"}
                       </p>
-                      <div className="flex items-center justify-center gap-2 text-xs text-accent">
+                      <div className="flex items-center justify-center gap-2 text-xs text-[hsl(var(--accent))]">
                         <CheckCircleIcon className="h-3 w-3" />
                         <span>File ready for import</span>
                       </div>
@@ -302,7 +302,7 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
                       variant="outline"
                       size="sm"
                       onClick={() => setFile(null)}
-                      className="text-muted-foreground hover:text-foreground"
+                      className="text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
                     >
                       Choose Different File
                     </Button>
@@ -313,10 +313,10 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
 
             {/* Error Alert */}
             {error && (
-              <Alert variant="destructive" className="bg-red-50 dark:bg-red-950/20 border-2 border-red-200 dark:border-red-800 shadow-lg">
+              <Alert variant="destructive" className="bg-[hsl(var(--destructive)/0.05)] border-2 border-[hsl(var(--destructive)/0.2)] shadow-lg">
                 <XCircleIcon className="h-5 w-5" />
-                <AlertTitle className="text-red-900 dark:text-red-100 font-semibold">Import Failed</AlertTitle>
-                <AlertDescription className="text-red-800 dark:text-red-200">{error}</AlertDescription>
+                <AlertTitle className="text-[hsl(var(--destructive))] font-semibold">Import Failed</AlertTitle>
+                <AlertDescription className="text-[hsl(var(--destructive)/0.9)]">{error}</AlertDescription>
               </Alert>
             )}
 
@@ -330,7 +330,7 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
             >
               {isUploading ? (
                 <div className="flex items-center justify-center gap-2">
-                  <div className="h-5 w-5 border-2 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="h-5 w-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                   <span>Processing Import...</span>
                 </div>
               ) : (

@@ -89,18 +89,18 @@ export default function AddTransaction({
   };
 
   return (
-    <Card className="border-border bg-card backdrop-blur-sm shadow-lg">
+    <Card className="border-[hsl(var(--border))] bg-[hsl(var(--card))] backdrop-blur-sm shadow-lg">
       <CardHeader className="pb-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-accent/10 border border-accent/20">
-              <PlusCircleIcon className="h-5 w-5 text-accent" />
+            <div className="p-2 rounded-lg bg-[hsl(var(--accent)/0.1)] border border-[hsl(var(--accent)/0.2)]">
+              <PlusCircleIcon className="h-5 w-5 text-[hsl(var(--accent))]" />
             </div>
-            <CardTitle className="text-xl font-semibold text-foreground">
+            <CardTitle className="text-xl font-semibold text-[hsl(var(--foreground))]">
               Add Transaction
             </CardTitle>
           </div>
-          <div className="flex items-center gap-2 bg-accent/10 text-accent px-3 py-1.5 rounded-full border border-accent/20">
+          <div className="flex items-center gap-2 bg-[hsl(var(--accent)/0.1)] text-[hsl(var(--accent))] px-3 py-1.5 rounded-full border border-[hsl(var(--accent)/0.2)]">
             <CircleDollarSignIcon className="h-4 w-4" />
             <span className="text-sm font-medium">{defaultCurrency}</span>
             <span className="text-xs opacity-75">({getCurrencyName(defaultCurrency)})</span>
@@ -111,18 +111,18 @@ export default function AddTransaction({
       <CardContent className="p-6 space-y-6">
         {success ? (
           <div className="flex flex-col items-center py-12 gap-6">
-            <div className="p-4 rounded-full bg-green-100 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800">
-              <CheckIcon className="h-8 w-8 text-green-600 dark:text-green-400" />
+            <div className="p-4 rounded-full bg-[hsl(var(--positive)/0.1)] border-2 border-[hsl(var(--positive)/0.2)]">
+              <CheckIcon className="h-8 w-8 text-[hsl(var(--positive))]" />
             </div>
             <div className="text-center space-y-2">
-              <h3 className="text-xl font-semibold text-foreground">Transaction Added Successfully!</h3>
-              <p className="text-muted-foreground max-w-md">
+              <h3 className="text-xl font-semibold text-[hsl(var(--foreground))]">Transaction Added Successfully!</h3>
+              <p className="text-[hsl(var(--muted-foreground))] max-w-md">
                 Your transaction has been recorded and will appear in your transaction history.
               </p>
             </div>
             <Button
               onClick={() => setSuccess(false)}
-              className="bg-green-600 hover:bg-green-700 text-white px-6"
+              className="bg-[hsl(var(--positive))] hover:bg-[hsl(var(--positive)/0.9)] text-[hsl(var(--positive-foreground))] px-6"
             >
               <PlusIcon className="h-4 w-4 mr-2" />
               Add Another Transaction
@@ -176,21 +176,21 @@ export default function AddTransaction({
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
                   <SelectContent className="bg-popover border-2 border-border shadow-xl">
-                    <SelectItem value="outcome" className="text-popover-foreground py-3">
+                    <SelectItem value="outcome" className="text-[hsl(var(--popover-foreground))] py-3">
                       <div className="flex items-center gap-3">
-                        <div className="p-1.5 rounded-full bg-red-100 dark:bg-red-900/20">
-                          <TrendingDownIcon className="h-4 w-4 text-red-600 dark:text-red-400" />
+                        <div className="p-1.5 rounded-full bg-[hsl(var(--destructive)/0.1)]">
+                          <TrendingDownIcon className="h-4 w-4 text-[hsl(var(--destructive))]" />
                         </div>
                         <div>
                           <div className="font-medium">Expense</div>
-                          <div className="text-xs text-muted-foreground">Money going out</div>
+                          <div className="text-xs text-[hsl(var(--muted-foreground))]">Money going out</div>
                         </div>
                       </div>
                     </SelectItem>
-                    <SelectItem value="income" className="text-popover-foreground py-3">
+                    <SelectItem value="income" className="text-[hsl(var(--popover-foreground))] py-3">
                       <div className="flex items-center gap-3">
-                        <div className="p-1.5 rounded-full bg-green-100 dark:bg-green-900/20">
-                          <TrendingUpIcon className="h-4 w-4 text-green-600 dark:text-green-400" />
+                        <div className="p-1.5 rounded-full bg-[hsl(var(--positive)/0.1)]">
+                          <TrendingUpIcon className="h-4 w-4 text-[hsl(var(--positive))]" />
                         </div>
                         <div>
                           <div className="font-medium">Income</div>
@@ -249,20 +249,20 @@ export default function AddTransaction({
                   <SelectTrigger className="h-12 border-2 border-border bg-background focus:border-accent">
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
-                  <SelectContent className="bg-popover border-2 border-border shadow-xl">
-                    <SelectItem value="none" className="text-popover-foreground py-2">
-                      <span className="text-muted-foreground">No category</span>
+                  <SelectContent className="bg-[hsl(var(--popover))] border-2 border-[hsl(var(--border))] shadow-xl">
+                    <SelectItem value="none" className="text-[hsl(var(--popover-foreground))] py-2">
+                      <span className="text-[hsl(var(--muted-foreground))]">No category</span>
                     </SelectItem>
                     {loadingCategories ? (
                       <div className="flex items-center justify-center py-4">
-                        <div className="h-4 w-4 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
-                        <span className="ml-2 text-sm">Loading categories...</span>
+                        <div className="h-4 w-4 border-2 border-[hsl(var(--accent))] border-t-transparent rounded-full animate-spin"></div>
+                        <span className="ml-2 text-sm text-[hsl(var(--muted-foreground))]">Loading categories...</span>
                       </div>
                     ) : (
                       categories.map(category => (
-                        <SelectItem key={category.id} value={category.id.toString()} className="text-popover-foreground py-2">
+                        <SelectItem key={category.id} value={category.id.toString()} className="text-[hsl(var(--popover-foreground))] py-2">
                           <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-accent"></div>
+                            <div className="w-2 h-2 rounded-full bg-[hsl(var(--accent))]"></div>
                             <span>{category.category_name}</span>
                           </div>
                         </SelectItem>
@@ -279,17 +279,17 @@ export default function AddTransaction({
                 <CircleDollarSignIcon className="h-4 w-4 text-muted-foreground" />
                 Currency
               </Label>
-              <div className="flex items-center justify-between h-12 px-4 rounded-md border-2 border-border bg-muted/50">
+              <div className="flex items-center justify-between h-12 px-4 rounded-md border-2 border-[hsl(var(--border))] bg-[hsl(var(--muted)/0.5)]">
                 <div className="flex items-center gap-3">
-                  <span className="text-lg font-semibold">{getCurrencySymbol(defaultCurrency)}</span>
+                  <span className="text-lg font-semibold text-[hsl(var(--foreground))]">{getCurrencySymbol(defaultCurrency)}</span>
                   <div>
-                    <span className="font-medium">{defaultCurrency}</span>
-                    <span className="text-sm text-muted-foreground ml-2">
+                    <span className="font-medium text-[hsl(var(--foreground))]">{defaultCurrency}</span>
+                    <span className="text-sm text-[hsl(var(--muted-foreground))] ml-2">
                       {getCurrencyName(defaultCurrency)}
                     </span>
                   </div>
                 </div>
-                <span className="text-xs bg-accent/10 text-accent px-2 py-1 rounded-full border border-accent/20">
+                <span className="text-xs bg-[hsl(var(--accent)/0.1)] text-[hsl(var(--accent))] px-2 py-1 rounded-full border border-[hsl(var(--accent)/0.2)]">
                   Current Filter
                 </span>
               </div>

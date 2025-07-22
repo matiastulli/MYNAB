@@ -4,9 +4,7 @@ import {
   BarChart2Icon,
   CircleDollarSignIcon,
   LayoutDashboardIcon,
-  PieChartIcon,
-  TrendingDownIcon,
-  TrendingUpIcon,
+  PieChartIcon
 } from "lucide-react"
 
 // Import the recharts components for data visualization
@@ -197,34 +195,7 @@ export default function Dashboard({
       </Card>
 
       {/* Financial snapshot */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="border-[hsl(var(--border))] bg-[hsl(var(--card))] backdrop-blur-sm shadow-sm">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium text-[hsl(var(--muted-foreground))]">Monthly Balance</h3>
-              <div
-                className={`p-2 rounded-full ${
-                  balance >= 0 
-                    ? "bg-[hsl(var(--positive)/0.1)] text-[hsl(var(--positive))]" 
-                    : "bg-[hsl(var(--destructive)/0.1)] text-[hsl(var(--destructive))]"
-                }`}
-              >
-                {balance >= 0 ? <TrendingUpIcon className="h-4 w-4" /> : <TrendingDownIcon className="h-4 w-4" />}
-              </div>
-            </div>
-            <p className={`text-xl font-semibold ${
-              balance >= 0 
-                ? "text-[hsl(var(--positive))]" 
-                : "text-[hsl(var(--destructive))]"
-            }`}>
-              {formatCurrency(balance)}
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              {balance >= 0 ? "Positive balance" : "Negative balance"}
-            </p>
-          </CardContent>
-        </Card>
-
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card className="border-[hsl(var(--border))] bg-[hsl(var(--card))] backdrop-blur-sm shadow-sm">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">

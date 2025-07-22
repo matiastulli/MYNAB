@@ -172,18 +172,32 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
 
             {/* Info Box */}
             <div className="bg-[hsl(var(--info-bg))] border-2 border-[hsl(var(--info-fg)/0.2)] rounded-lg p-4">
-              <h4 className="font-semibold text-[hsl(var(--info-fg))] flex items-center gap-2 mb-2">
+              <h4 className="font-semibold text-[hsl(var(--info-fg))] flex items-center gap-2 mb-3">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                Before importing your file
+                Before Importing Your File
               </h4>
-              <ul className="text-[hsl(var(--info-fg)/0.85)] text-sm leading-relaxed space-y-1">
-                <li>• Make sure your statement file matches the selected bank format</li>
-                <li>• Check that the file contains transaction data in the expected columns</li>
-                <li>• Duplicate transactions will be automatically detected and skipped</li>
-                <li>• All imported transactions will use the currency: <strong>{currency}</strong></li>
-              </ul>
+              <div className="text-[hsl(var(--info-fg)/0.85)] text-sm space-y-3">
+                <p>Please check the following:</p>
+                <ul className="space-y-1.5 ml-1">
+                  <li className="flex items-start gap-2">
+                    <span className="select-none">•</span>
+                    <span>The file format uses the required by the bank you selected.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="select-none">•</span>
+                    <span>Transaction data is organized in the correct columns.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="select-none">•</span>
+                    <span>Transactions are in the correct currency: <strong>{currency}</strong>.</span>
+                  </li>
+                </ul>
+                <p className="text-[hsl(var(--info-fg)/0.75)] italic">
+                  Don't worry, we'll automatically skip any duplicate transactions between attached files.
+                </p>
+              </div>
             </div>
 
             {/* Bank Selection */}

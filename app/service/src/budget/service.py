@@ -625,7 +625,7 @@ def _process_comm_bank_format(df: pd.DataFrame, file_id: int, bank_name: str, cu
                 description = str(row["Description"]
                                   ).strip() or "CommBank Transaction"
                 # Reference ID: can be None or generated
-                reference_id = None
+                reference_id = f"{bank_name}_{description[:30]}_{date_val.strftime('%Y%m%d')}"
                 # Create entry
                 entries.append(BudgetEntryCreate(
                     reference_id=reference_id,

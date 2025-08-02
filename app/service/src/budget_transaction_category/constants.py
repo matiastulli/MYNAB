@@ -17,6 +17,7 @@ class TRANSACTION_CATEGORIES:
         r"transferencia.*ingresada",
         r"ingreso por transferencia",
         r"trans pag suel",
+        r"Fast Transfer From.*",
     ]
     SERVICE_PAYMENT = [
         r"pago de servicios",
@@ -105,6 +106,21 @@ class TRANSACTION_CATEGORIES:
     BANK_FEES = [
         r"international transaction fee",
     ]
+    TRANSPORTATION = [
+        r"pago.*transporte",
+        r"pago.*subte",
+        r"pago.*metro",
+        r"pago.*tren",
+        r"pago.*colectivo",
+        r"pago.*bus",
+        r"pago.*taxi",
+        r"pago.*uber",
+        r"pago.*cabify",
+        r"TRANSPORTFORNSW.*",
+        r"QANTAS AIRWAYS LIMITED.*",
+        r"WW METRO.*"
+        r"SKYBUS COACH SERVICES.*"
+    ]
 
 
 CATEGORY_IDS = {
@@ -118,4 +134,5 @@ CATEGORY_IDS = {
     "DEBIT_PURCHASE": 8,
     "DIRECT_DEBIT": 9,
     "BANK_FEES": 10,
+    "TRANSPORTATION": 11,
 }

@@ -328,7 +328,7 @@ async def process_bank_statement(user_id: int, file_id: int, bank_name: str, cur
         entries = _process_icbc_format(df, file_id, bank_name, currency)
 
     elif bank_name.lower() == "comm_bank":
-        df = pd.read_csv(io.BytesIO(file_bytes), encoding='utf-8')
+        df = pd.read_csv(io.BytesIO(file_bytes), encoding='utf-8', header=None)
 
         entries = _process_comm_bank_format(df, file_id, bank_name, currency)
 

@@ -20,6 +20,7 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
     santander_rio: { format: ".xlsx", defaultCurrency: "ARS", description: "Excel format from online banking" },
     ICBC: { format: ".csv", defaultCurrency: "ARS", description: "CSV export from ICBC portal" },
     mercado_pago: { format: ".pdf", defaultCurrency: "ARS", description: "PDF statement download" },
+    bbva: { format: ".xls", defaultCurrency: "ARS", description: "Excel format from BBVA" },
     comm_bank: { format: ".csv", defaultCurrency: "AUD", description: "CSV export from Commonwealth Bank" }
   };
 
@@ -241,6 +242,17 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
                       <div>
                         <div className="font-medium">ICBC</div>
                         <div className="text-xs text-[hsl(var(--muted-foreground))]">CSV (.csv) format</div>
+                      </div>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="bbva" className="text-[hsl(var(--popover-foreground))] py-3">
+                    <div className="flex items-center gap-3">
+                      <div className="p-1.5 rounded-full bg-[hsl(var(--accent)/0.1)]">
+                        <div className="w-3 h-3 bg-[hsl(var(--accent))] rounded-full"></div>
+                      </div>
+                      <div>
+                        <div className="font-medium">BBVA</div>
+                        <div className="text-xs text-[hsl(var(--muted-foreground))]">Excel (.xls) format</div>
                       </div>
                     </div>
                   </SelectItem>

@@ -327,6 +327,12 @@ async def process_bank_statement(user_id: int, file_id: int, bank_name: str, cur
 
         entries = _process_icbc_format(df, file_id, bank_name, currency)
 
+    elif bank_name.lower() == "bbva":
+        # Load into pandas DataFrame
+        df = pd.read_excel(io.BytesIO(file_bytes), engine='openpyxl')
+
+        entries = _process_bbva_format(df, file_id, bank_name, currency)
+
     elif bank_name.lower() == "comm_bank":
         df = pd.read_csv(io.BytesIO(file_bytes), encoding='utf-8', header=None)
 
@@ -599,6 +605,61 @@ def _process_icbc_format(df: pd.DataFrame, file_id: int, bank_name: str, currenc
         except Exception:
             continue
 
+    return entries
+
+
+def _process_bbva_format(df: pd.DataFrame, file_id: int, bank_name: str, currency: str) -> List[BudgetEntryCreate]:
+    """Process BBVA bank statement Excel file with headers on line 3 (index 2)"""
+    entries: List[BudgetEntryCreate] = []
+    try:
+        # Skip first two rows, set columns
+        df = df.iloc[2:].copy()
+        df.columns = ["Fecha", "Concepto", "Extra", "Importe", "Saldo"]
+        df = df.dropna(how="all")
+        for _, row in df.iterrows():
+            try:
+                # Parse date (format: d/m/Y)
+                date_val = pd.to_datetime(
+                    str(row["Fecha"]).strip(), format="%d/%m/%Y", errors="coerce")
+                if pd.isna(date_val):
+                    continue
+                # Description: Concepto + Extra (if present)
+                concepto = str(row["Concepto"]).strip(
+                ) if pd.notna(row["Concepto"]) else ""
+                extra = str(row["Extra"]).strip() if pd.notna(
+                    row["Extra"]) else ""
+                description = f"{concepto} {extra}".strip()
+                # Parse amount (Importe, with comma as decimal separator)
+                importe_str = str(row["Importe"]).replace(
+                    ".", "").replace(",", ".").strip()
+                try:
+                    amount = float(importe_str)
+                except Exception:
+                    continue
+                if amount == 0:
+                    continue
+                # Determine type
+                entry_type = "income" if amount > 0 else "outcome"
+                # Reference ID: use bank, description, date
+                reference_id = f"{bank_name}_{description[:30]}_{date_val.strftime('%Y%m%d')}"
+                # Create entry
+                entries.append(BudgetEntryCreate(
+                    reference_id=reference_id,
+                    date=date_val,
+                    amount=abs(amount),
+                    currency=currency,
+                    source=bank_name,
+                    description=description,
+                    type=entry_type,
+                    file_id=file_id,
+                    category_id=None  # Will be set in process_bank_statement
+                ))
+            except Exception as ex:
+                logger.error(f"Error processing BBVA statement row: {ex}")
+                continue
+    except Exception as ex:
+        logger.error(f"Error processing BBVA statement: {ex}")
+        return []
     return entries
 
 

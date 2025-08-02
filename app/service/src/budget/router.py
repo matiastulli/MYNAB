@@ -51,6 +51,7 @@ async def post_file(
         "santander_rio": [".xlsx"],
         "ICBC": [".csv"],
         "mercado_pago": [".pdf"],
+        "bbva": [".xls"],
         "comm_bank": [".csv"]
     }
 

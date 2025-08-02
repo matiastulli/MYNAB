@@ -224,8 +224,8 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
                   </SelectItem>
                   <SelectItem value="mercado_pago" className="text-[hsl(var(--popover-foreground))] py-3">
                     <div className="flex items-center gap-3">
-                      <div className="p-1.5 rounded-full bg-[hsl(var(--warning)/0.1)]">
-                        <div className="w-3 h-3 bg-[hsl(var(--warning))] rounded-full"></div>
+                      <div className="p-1.5 rounded-full bg-[hsl(48,100%,50%,0.15)]"> {/* gold/yellow bg */}
+                        <div className="w-3 h-3 bg-[hsl(48,100%,50%)] rounded-full"></div> {/* gold/yellow dot */}
                       </div>
                       <div>
                         <div className="font-medium">Mercado Pago</div>
@@ -246,8 +246,8 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
                   </SelectItem>
                   <SelectItem value="comm_bank" className="text-[hsl(var(--popover-foreground))] py-3">
                     <div className="flex items-center gap-3">
-                      <div className="p-1.5 rounded-full bg-[hsl(var(--info)/0.1)]">
-                        <div className="w-3 h-3 bg-[hsl(var(--info))] rounded-full"></div>
+                      <div className="p-1.5 rounded-full bg-[hsl(48,100%,50%,0.15)]"> {/* gold/yellow bg */}
+                        <div className="w-3 h-3 bg-[hsl(48,100%,50%)] rounded-full"></div> {/* gold/yellow dot */}
                       </div>
                       <div>
                         <div className="font-medium">CommBank</div>

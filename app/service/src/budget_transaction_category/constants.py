@@ -8,6 +8,7 @@ class TRANSACTION_CATEGORIES:
         r"transf\.\s*mobile",
         r"transferencia enviada",
         r"transferencia realizada",
+        r"transfer to .*commbank app",
     ]
     TRANSFER_RECEIVED = [
         r"transferencia recibida",
@@ -31,6 +32,8 @@ class TRANSACTION_CATEGORIES:
         r"pago.*railway",
         r"pago.*365",
         r"^pago\s*$",
+        r"www\.hostelworld\.com",
+        r"google \*couple joy",
     ]
     CREDIT_CARD_PAYMENT = [
         r"pago tarjeta de credito",
@@ -76,6 +79,17 @@ class TRANSACTION_CATEGORIES:
         r"debito en cuenta por consumo",
         r"^cpa\.",
         r"^consumo.*",
+        r"woolworths",
+        r"coles",
+        r"kmart",
+        r"mcdonalds",
+        r"the reject shop",
+        r"big w",
+        r"ww metro",
+        r"the nunnery",
+        r"kebab & noodles",
+        r"skybus coach services",
+        r"gm taxipay",
     ]
     DIRECT_DEBIT = [
         r"debito inmediato",
@@ -88,10 +102,11 @@ class TRANSACTION_CATEGORIES:
         r"adhesion debito automatico",
         r"deb prea debin",
     ]
+    BANK_FEES = [
+        r"international transaction fee",
+    ]
 
 
-# Map of category keys to database IDs
-# These should match the IDs in the budget_transaction_category table
 CATEGORY_IDS = {
     "TRANSFER_SENT": 1,
     "TRANSFER_RECEIVED": 2,
@@ -102,4 +117,5 @@ CATEGORY_IDS = {
     "INTEREST_INCOME": 7,
     "DEBIT_PURCHASE": 8,
     "DIRECT_DEBIT": 9,
+    "BANK_FEES": 10,
 }

@@ -638,7 +638,8 @@ def _process_comm_bank_format(df: pd.DataFrame, file_id: int, bank_name: str, cu
                     file_id=file_id,
                     category_id=None  # Will be set in process_bank_statement
                 ))
-            except Exception:
+            except Exception as ex:
+                logger.error(f"Error processing CommBank statement row: {ex}")
                 continue
     except Exception as ex:
         logger.error(f"Error processing CommBank statement: {ex}")

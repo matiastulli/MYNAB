@@ -19,7 +19,8 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
   const bankFormats = {
     santander_rio: { format: ".xlsx", defaultCurrency: "ARS", description: "Excel format from online banking" },
     ICBC: { format: ".csv", defaultCurrency: "ARS", description: "CSV export from ICBC portal" },
-    mercado_pago: { format: ".pdf", defaultCurrency: "ARS", description: "PDF statement download" }
+    mercado_pago: { format: ".pdf", defaultCurrency: "ARS", description: "PDF statement download" },
+    comm_bank: { format: ".csv", defaultCurrency: "AUD", description: "CSV export from Commonwealth Bank" }
   };
 
   const handleFileChange = (e) => {

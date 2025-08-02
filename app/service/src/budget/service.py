@@ -327,6 +327,11 @@ async def process_bank_statement(user_id: int, file_id: int, bank_name: str, cur
 
         entries = _process_icbc_format(df, file_id, bank_name, currency)
 
+    elif bank_name.lower() == "comm_bank":
+        df = pd.read_csv(io.BytesIO(file_bytes), encoding='utf-8')
+
+        entries = _process_comm_bank_format(df, file_id, bank_name, currency)
+
     user_data = await get_user_by_id(user_id)
 
     # Filter out unwanted transactions
@@ -594,4 +599,48 @@ def _process_icbc_format(df: pd.DataFrame, file_id: int, bank_name: str, currenc
         except Exception:
             continue
 
+    return entries
+
+
+def _process_comm_bank_format(df: pd.DataFrame, file_id: int, bank_name: str, currency: str) -> List[BudgetEntryCreate]:
+    """Process CommBank CSV file (no headers) into BudgetEntryCreate list"""
+    entries: List[BudgetEntryCreate] = []
+    try:
+        # Assign columns: Date, Amount, Description, Balance
+        df.columns = ["Date", "Amount", "Description", "Balance"]
+        for _, row in df.iterrows():
+            try:
+                # Parse date (format: d/m/Y)
+                date_val = pd.to_datetime(
+                    str(row["Date"]).strip(), format="%d/%m/%Y", errors="coerce")
+                if pd.isna(date_val):
+                    continue
+                # Parse amount
+                amount = pd.to_numeric(row["Amount"], errors="coerce")
+                if pd.isna(amount) or amount == 0:
+                    continue
+                # Determine type
+                entry_type = "income" if amount > 0 else "outcome"
+                # Description
+                description = str(row["Description"]
+                                  ).strip() or "CommBank Transaction"
+                # Reference ID: can be None or generated
+                reference_id = None
+                # Create entry
+                entries.append(BudgetEntryCreate(
+                    reference_id=reference_id,
+                    date=date_val,
+                    amount=abs(amount),
+                    currency=currency,
+                    source=bank_name,
+                    description=description,
+                    type=entry_type,
+                    file_id=file_id,
+                    category_id=None  # Will be set in process_bank_statement
+                ))
+            except Exception:
+                continue
+    except Exception as ex:
+        logger.error(f"Error processing CommBank statement: {ex}")
+        return []
     return entries

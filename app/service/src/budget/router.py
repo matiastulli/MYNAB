@@ -50,7 +50,8 @@ async def post_file(
     bank_formats = {
         "santander_rio": [".xlsx"],
         "ICBC": [".csv"],
-        "mercado_pago": [".pdf"]
+        "mercado_pago": [".pdf"],
+        "comm_bank": [".csv"]
     }
 
     # Validate bank name first

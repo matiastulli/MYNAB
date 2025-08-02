@@ -17,11 +17,11 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
   const [error, setError] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const bankFormats = {
-    santander_rio: { format: ".xlsx", defaultCurrency: "ARS", description: "Excel format from online banking" },
-    ICBC: { format: ".csv", defaultCurrency: "ARS", description: "CSV export from ICBC portal" },
-    mercado_pago: { format: ".pdf", defaultCurrency: "ARS", description: "PDF statement download" },
-    bbva: { format: ".xls", defaultCurrency: "ARS", description: "Excel format from BBVA" },
-    comm_bank: { format: ".csv", defaultCurrency: "AUD", description: "CSV export from Commonwealth Bank" }
+    santander_rio: { format: ".xlsx", supportedCurrencies: ["ARS", "USD"], description: "Excel format from online banking" },
+    ICBC: { format: ".csv", supportedCurrencies: ["ARS", "USD"], description: "CSV export from ICBC portal" },
+    mercado_pago: { format: ".pdf", supportedCurrencies: ["ARS"], description: "PDF statement download" },
+    bbva: { format: ".xls", supportedCurrencies: ["ARS"], description: "Excel format from BBVA" },
+    comm_bank: { format: ".csv", supportedCurrencies: ["AUD"], description: "CSV export from Commonwealth Bank" }
   };
 
   const handleFileChange = (e) => {
@@ -133,6 +133,11 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
     return `${bank.format} format - ${bank.description}`;
   };
 
+  // Filter banks by selected currency
+  const filteredBankKeys = Object.keys(bankFormats).filter(
+    (key) => bankFormats[key].supportedCurrencies.includes(currency)
+  );
+
   return (
     <Card className="border-[hsl(var(--border))] bg-[hsl(var(--card))] backdrop-blur-sm shadow-lg">
       <CardHeader className="pb-4">
@@ -212,61 +217,37 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
                   <SelectValue placeholder="Choose your bank or financial institution" />
                 </SelectTrigger>
                 <SelectContent className="bg-[hsl(var(--popover))] border-2 border-[hsl(var(--border))] shadow-xl">
-                  <SelectItem value="santander_rio" className="text-[hsl(var(--popover-foreground))] py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="p-1.5 rounded-full bg-[hsl(var(--destructive)/0.1)]">
-                        <div className="w-3 h-3 bg-[hsl(var(--destructive))] rounded-full"></div>
-                      </div>
-                      <div>
-                        <div className="font-medium">Santander Rio</div>
-                        <div className="text-xs text-[hsl(var(--muted-foreground))]">Excel (.xlsx) format</div>
-                      </div>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="mercado_pago" className="text-[hsl(var(--popover-foreground))] py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="p-1.5 rounded-full bg-[hsl(48,100%,50%,0.15)]"> {/* gold/yellow bg */}
-                        <div className="w-3 h-3 bg-[hsl(48,100%,50%)] rounded-full"></div> {/* gold/yellow dot */}
-                      </div>
-                      <div>
-                        <div className="font-medium">Mercado Pago</div>
-                        <div className="text-xs text-[hsl(var(--muted-foreground))]">PDF (.pdf) format</div>
-                      </div>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="ICBC" className="text-[hsl(var(--popover-foreground))] py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="p-1.5 rounded-full bg-[hsl(var(--destructive)/0.1)]">
-                        <div className="w-3 h-3 bg-[hsl(var(--destructive))] rounded-full"></div>
-                      </div>
-                      <div>
-                        <div className="font-medium">ICBC</div>
-                        <div className="text-xs text-[hsl(var(--muted-foreground))]">CSV (.csv) format</div>
-                      </div>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="bbva" className="text-[hsl(var(--popover-foreground))] py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="p-1.5 rounded-full bg-[hsl(var(--accent)/0.1)]">
-                        <div className="w-3 h-3 bg-[hsl(var(--accent))] rounded-full"></div>
-                      </div>
-                      <div>
-                        <div className="font-medium">BBVA</div>
-                        <div className="text-xs text-[hsl(var(--muted-foreground))]">Excel (.xls) format</div>
-                      </div>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="comm_bank" className="text-[hsl(var(--popover-foreground))] py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="p-1.5 rounded-full bg-[hsl(48,100%,50%,0.15)]"> {/* gold/yellow bg */}
-                        <div className="w-3 h-3 bg-[hsl(48,100%,50%)] rounded-full"></div> {/* gold/yellow dot */}
-                      </div>
-                      <div>
-                        <div className="font-medium">CommBank</div>
-                        <div className="text-xs text-[hsl(var(--muted-foreground))]">CSV (.csv) format</div>
-                      </div>
-                    </div>
-                  </SelectItem>
+                  {filteredBankKeys.length === 0 ? (
+                    <div className="text-[hsl(var(--muted-foreground))] px-4 py-3 text-sm">No banks available for this currency.</div>
+                  ) : (
+                    filteredBankKeys.map((key) => {
+                      const bank = bankFormats[key];
+                      let iconBg, iconDot;
+                      if (key === "santander_rio" || key === "ICBC") {
+                        iconBg = "bg-[hsl(var(--destructive)/0.1)]";
+                        iconDot = "bg-[hsl(var(--destructive))]";
+                      } else if (key === "bbva") {
+                        iconBg = "bg-[hsl(var(--accent)/0.1)]";
+                        iconDot = "bg-[hsl(var(--accent))]";
+                      } else if (key === "mercado_pago" || key === "comm_bank") {
+                        iconBg = "bg-[hsl(48,100%,50%,0.15)]";
+                        iconDot = "bg-[hsl(48,100%,50%)]";
+                      }
+                      return (
+                        <SelectItem key={key} value={key} className="text-[hsl(var(--popover-foreground))] py-3">
+                          <div className="flex items-center gap-3">
+                            <div className={`p-1.5 rounded-full ${iconBg}`}>
+                              <div className={`w-3 h-3 rounded-full ${iconDot}`}></div>
+                            </div>
+                            <div>
+                              <div className="font-medium">{key === "santander_rio" ? "Santander Rio" : key === "ICBC" ? "ICBC" : key === "mercado_pago" ? "Mercado Pago" : key === "bbva" ? "BBVA" : key === "comm_bank" ? "CommBank" : key}</div>
+                              <div className="text-xs text-[hsl(var(--muted-foreground))]">{bank.description}</div>
+                            </div>
+                          </div>
+                        </SelectItem>
+                      );
+                    })
+                  )}
                 </SelectContent>
               </Select>
               {bankName && (

@@ -329,7 +329,7 @@ async def process_bank_statement(user_id: int, file_id: int, bank_name: str, cur
 
     elif bank_name.lower() == "bbva":
         # Load into pandas DataFrame
-        df = pd.read_excel(io.BytesIO(file_bytes), engine='openpyxl')
+        df = pd.read_excel(io.BytesIO(file_bytes), header=2)
 
         entries = _process_bbva_format(df, file_id, bank_name, currency)
 
@@ -612,8 +612,6 @@ def _process_bbva_format(df: pd.DataFrame, file_id: int, bank_name: str, currenc
     """Process BBVA bank statement Excel file with headers on line 3 (index 2)"""
     entries: List[BudgetEntryCreate] = []
     try:
-        # Skip first two rows, set columns
-        df = df.iloc[2:].copy()
         df.columns = ["Fecha", "Concepto", "Extra", "Importe", "Saldo"]
         df = df.dropna(how="all")
         for _, row in df.iterrows():

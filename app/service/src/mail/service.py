@@ -1,50 +1,29 @@
-"""Resend mail service implementation."""
 import logging
 import base64
+import re
 from pathlib import Path
-from typing import List, Optional, Union, Dict, Any, TypedDict
+from typing import List, Optional, Union, Dict, Any
 from jinja2 import Environment, FileSystemLoader
 import resend
 
 from .config import MailConfig
 from .exceptions import MailSendError, MailTemplateError
 
-
-class EmailParams(TypedDict, total=False):
-    """Type definition for email parameters."""
-    from_: str
-    to: Union[str, List[str]]
-    subject: str
-    html: Optional[str]
-    text: Optional[str]
-    cc: Optional[Union[str, List[str]]]
-    bcc: Optional[Union[str, List[str]]]
-    attachments: Optional[List[Dict[str, str]]]
-
-
 logger = logging.getLogger(__name__)
 
 
 class MailService:
-    """Service for sending emails using Resend."""
-
     def __init__(self, config: MailConfig):
-        """Initialize mail service with configuration."""
         self.config = config
         self._template_env = None
         self._setup_templates()
         resend.api_key = config.api_key
 
     def _setup_templates(self) -> None:
-        """Setup Jinja2 template environment."""
         if self.config.template_dir:
             template_path = Path(self.config.template_dir)
-
-            # Try relative path first, then absolute
             if not template_path.exists() and not template_path.is_absolute():
-                # Try resolving relative to the current working directory
                 template_path = Path.cwd() / self.config.template_dir
-
             if template_path.exists():
                 self._template_env = Environment(
                     loader=FileSystemLoader(str(template_path)),
@@ -60,10 +39,8 @@ class MailService:
             logger.warning("No template directory configured")
 
     def _render_template(self, template_name: str, context: Dict[str, Any]) -> str:
-        """Render email template with context."""
         if not self._template_env:
             raise MailTemplateError("Template environment not configured")
-
         try:
             template = self._template_env.get_template(template_name)
             return template.render(context)
@@ -72,23 +49,15 @@ class MailService:
             raise MailTemplateError(f"Template rendering failed: {e}")
 
     def _encode_attachment(self, file_path: str) -> Dict[str, str]:
-        """Encode file for attachment."""
-        try:
-            file_path_obj = Path(file_path)
-            if not file_path_obj.exists():
-                raise MailSendError(f"Attachment file not found: {file_path}")
-
-            with open(file_path, 'rb') as file:
-                content = file.read()
-                encoded = base64.b64encode(content).decode('utf-8')
-                return {
-                    'content': encoded,
-                    'filename': file_path_obj.name
-                }
-
-        except Exception as e:
-            logger.error(f"Failed to encode attachment {file_path}: {e}")
-            raise MailSendError(f"Failed to encode attachment: {e}")
+        file_path_obj = Path(file_path)
+        if not file_path_obj.exists():
+            raise MailSendError(f"Attachment file not found: {file_path}")
+        with open(file_path_obj, 'rb') as f:
+            content = base64.b64encode(f.read()).decode('utf-8')
+        return {
+            'content': content,
+            'filename': file_path_obj.name
+        }
 
     def send_email(
         self,
@@ -100,78 +69,45 @@ class MailService:
         from_name: Optional[str] = None,
         cc_emails: Optional[Union[str, List[str]]] = None,
         bcc_emails: Optional[Union[str, List[str]]] = None,
-        attachments: Optional[List[str]] = None
+        reply_to: Optional[Union[str, List[str]]] = None,
+        attachments: Optional[List[str]] = None,
+        tags: Optional[List[Dict[str, str]]] = None
     ) -> bool:
-        """
-        Send an email using Resend.
-
-        Args:
-            to_emails: Recipient email(s)
-            subject: Email subject
-            body: Plain text body
-            html_body: HTML body (optional)
-            from_email: Sender email (defaults to config)
-            from_name: Sender name (defaults to config)
-            cc_emails: CC recipients (optional)
-            bcc_emails: BCC recipients (optional)
-            attachments: List of file paths to attach (optional)
-
-        Returns:
-            bool: True if email sent successfully
-
-        Raises:
-            MailSendError: If email sending fails
-        """
         try:
-            # Prepare email addresses
-            if isinstance(to_emails, str):
-                to_emails = [to_emails]
+            to_list = [to_emails] if isinstance(to_emails, str) else to_emails
+            sender = from_email or self.config.from_email
 
-            # Use default sender if not provided
-            sender_email = from_email or self.config.from_email
-            sender_name = from_name or self.config.from_name
-
-            # Prepare CC and BCC
-            if cc_emails and isinstance(cc_emails, str):
-                cc_emails = [cc_emails]
-            if bcc_emails and isinstance(bcc_emails, str):
-                bcc_emails = [bcc_emails]
-
-            # Prepare attachments if any
-            attachment_data = []
-            if attachments:
-                for file_path in attachments:
-                    attachment_data.append(self._encode_attachment(file_path))
-
-            # Prepare email data for Resend
-            send_params = {
-                "from": f"{sender_name} <{sender_email}>" if sender_name else sender_email,
-                "to": to_emails,
+            send_params: resend.Emails.SendParams = {
+                "from": sender,
+                "to": to_list,
                 "subject": subject,
-                "text": body
             }
 
             if html_body:
                 send_params["html"] = html_body
-
             if cc_emails:
-                send_params["cc"] = cc_emails
-
+                send_params["cc"] = [cc_emails] if isinstance(
+                    cc_emails, str) else cc_emails
             if bcc_emails:
-                send_params["bcc"] = bcc_emails
+                send_params["bcc"] = [bcc_emails] if isinstance(
+                    bcc_emails, str) else bcc_emails
+            if reply_to:
+                send_params["reply_to"] = [reply_to] if isinstance(
+                    reply_to, str) else reply_to
+            if tags:
+                send_params["tags"] = tags
+            if attachments:
+                send_params["attachments"] = [
+                    self._encode_attachment(p) for p in attachments]
 
-            if attachment_data:
-                send_params["attachments"] = attachment_data
-
-            # Send email using Resend
             response = resend.Emails.send(send_params)
 
             if response and response.get("id"):
                 logger.info(
-                    f"Email sent successfully to {', '.join(to_emails)} with ID: {response['id']}")
+                    f"Email sent successfully to {', '.join(to_list)}, ID: {response['id']}")
                 return True
             else:
-                raise MailSendError("No email ID returned from Resend")
+                raise MailSendError(f"Resend error: {response}")
 
         except Exception as e:
             logger.error(f"Failed to send email: {e}")
@@ -187,39 +123,23 @@ class MailService:
         from_name: Optional[str] = None,
         cc_emails: Optional[Union[str, List[str]]] = None,
         bcc_emails: Optional[Union[str, List[str]]] = None,
-        attachments: Optional[List[str]] = None
+        reply_to: Optional[Union[str, List[str]]] = None,
+        attachments: Optional[List[str]] = None,
+        tags: Optional[List[Dict[str, str]]] = None
     ) -> bool:
-        """
-        Send an email using a template.
+        html = self._render_template(f"{template_name}.html", context)
 
-        Args:
-            to_emails: Recipient email(s)
-            subject: Email subject
-            template_name: Name of the template file (without extension)
-            context: Template context variables
-            from_email: Sender email (defaults to config)
-            from_name: Sender name (defaults to config)
-            cc_emails: CC recipients (optional)
-            bcc_emails: BCC recipients (optional)
-            attachments: List of file paths to attach (optional)
-
-        Returns:
-            bool: True if email sent successfully
-        """
-        # Render HTML template
-        html_body = self._render_template(f"{template_name}.html", context)
-
-        import re
-        text_body = re.sub(r'<[^>]+>', '', html_body)
-
+        text = re.sub(r'<[^>]+>', '', html)
         return self.send_email(
             to_emails=to_emails,
             subject=subject,
-            body=text_body,
-            html_body=html_body,
+            body=text,
+            html_body=html,
             from_email=from_email,
             from_name=from_name,
             cc_emails=cc_emails,
             bcc_emails=bcc_emails,
-            attachments=attachments
+            reply_to=reply_to,
+            attachments=attachments,
+            tags=tags
         )

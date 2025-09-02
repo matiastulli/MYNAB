@@ -1,13 +1,10 @@
-"""Gmail mail service implementation."""
-import smtplib
+"""Resend mail service implementation."""
 import logging
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.mime.base import MIMEBase
-from email import encoders
+import base64
 from pathlib import Path
 from typing import List, Optional, Union, Dict, Any
 from jinja2 import Environment, FileSystemLoader
+import resend
 
 from .config import MailConfig
 from .exceptions import MailSendError, MailTemplateError
@@ -17,60 +14,38 @@ logger = logging.getLogger(__name__)
 
 
 class MailService:
-    """Service for sending emails using Gmail SMTP."""
+    """Service for sending emails using Resend."""
 
     def __init__(self, config: MailConfig):
         """Initialize mail service with configuration."""
         self.config = config
         self._template_env = None
         self._setup_templates()
+        resend.api_key = config.api_key
 
     def _setup_templates(self) -> None:
         """Setup Jinja2 template environment."""
         if self.config.template_dir:
             template_path = Path(self.config.template_dir)
-            
+
             # Try relative path first, then absolute
             if not template_path.exists() and not template_path.is_absolute():
                 # Try resolving relative to the current working directory
                 template_path = Path.cwd() / self.config.template_dir
-            
+
             if template_path.exists():
                 self._template_env = Environment(
                     loader=FileSystemLoader(str(template_path)),
                     autoescape=True
                 )
-                logger.info(f"Template environment initialized with path: {template_path}")
+                logger.info(
+                    f"Template environment initialized with path: {template_path}")
             else:
-                logger.warning(f"Template directory not found: {template_path}")
+                logger.warning(
+                    f"Template directory not found: {template_path}")
                 logger.warning(f"Current working directory: {Path.cwd()}")
         else:
             logger.warning("No template directory configured")
-
-    def _get_smtp_connection(self) -> smtplib.SMTP:
-        """Create and return authenticated SMTP connection."""
-        try:
-            # Create SMTP connection
-            smtp = smtplib.SMTP(self.config.smtp_server, self.config.smtp_port)
-
-            # Enable TLS if configured
-            if self.config.use_tls:
-                smtp.starttls()
-
-            # Authenticate
-            smtp.login(self.config.smtp_username, self.config.smtp_password)
-
-            return smtp
-
-        except smtplib.SMTPAuthenticationError as e:
-            logger.error(f"SMTP authentication failed: {e}")
-            raise MailSendError(f"Authentication failed: {e}")
-        except smtplib.SMTPConnectError as e:
-            logger.error(f"SMTP connection failed: {e}")
-            raise MailSendError(f"Connection failed: {e}")
-        except Exception as e:
-            logger.error(f"SMTP setup failed: {e}")
-            raise MailSendError(f"SMTP setup failed: {e}")
 
     def _render_template(self, template_name: str, context: Dict[str, Any]) -> str:
         """Render email template with context."""
@@ -83,6 +58,25 @@ class MailService:
         except Exception as e:
             logger.error(f"Template rendering failed: {e}")
             raise MailTemplateError(f"Template rendering failed: {e}")
+
+    def _encode_attachment(self, file_path: str) -> Dict[str, str]:
+        """Encode file for attachment."""
+        try:
+            file_path_obj = Path(file_path)
+            if not file_path_obj.exists():
+                raise MailSendError(f"Attachment file not found: {file_path}")
+
+            with open(file_path, 'rb') as file:
+                content = file.read()
+                encoded = base64.b64encode(content).decode('utf-8')
+                return {
+                    'content': encoded,
+                    'filename': file_path_obj.name
+                }
+
+        except Exception as e:
+            logger.error(f"Failed to encode attachment {file_path}: {e}")
+            raise MailSendError(f"Failed to encode attachment: {e}")
 
     def send_email(
         self,
@@ -97,7 +91,7 @@ class MailService:
         attachments: Optional[List[str]] = None
     ) -> bool:
         """
-        Send an email using Gmail SMTP.
+        Send an email using Resend.
 
         Args:
             to_emails: Recipient email(s)
@@ -121,53 +115,51 @@ class MailService:
             if isinstance(to_emails, str):
                 to_emails = [to_emails]
 
-            if cc_emails and isinstance(cc_emails, str):
-                cc_emails = [cc_emails]
-
-            if bcc_emails and isinstance(bcc_emails, str):
-                bcc_emails = [bcc_emails]
-
             # Use default sender if not provided
             sender_email = from_email or self.config.from_email
             sender_name = from_name or self.config.from_name
 
-            # Create message
-            msg = MIMEMultipart('alternative')
-            msg['Subject'] = subject
-            msg['From'] = f"{sender_name} <{sender_email}>" if sender_name else sender_email
-            msg['To'] = ', '.join(to_emails)
+            # Prepare CC and BCC
+            if cc_emails and isinstance(cc_emails, str):
+                cc_emails = [cc_emails]
+            if bcc_emails and isinstance(bcc_emails, str):
+                bcc_emails = [bcc_emails]
 
-            if cc_emails:
-                msg['Cc'] = ', '.join(cc_emails)
-
-            # Add text body
-            text_part = MIMEText(body, 'plain', 'utf-8')
-            msg.attach(text_part)
-
-            # Add HTML body if provided
-            if html_body:
-                html_part = MIMEText(html_body, 'html', 'utf-8')
-                msg.attach(html_part)
-
-            # Add attachments if provided
+            # Prepare attachments if any
+            attachment_data = []
             if attachments:
                 for file_path in attachments:
-                    self._add_attachment(msg, file_path)
+                    attachment_data.append(self._encode_attachment(file_path))
 
-            # Prepare recipient list
-            all_recipients = to_emails[:]
+            # Prepare email data
+            email_data = {
+                "from": f"{sender_name} <{sender_email}>" if sender_name else sender_email,
+                "to": to_emails,
+                "subject": subject,
+                "text": body,
+            }
+
+            if html_body:
+                email_data["html"] = html_body
+
             if cc_emails:
-                all_recipients.extend(cc_emails)
+                email_data["cc"] = cc_emails
+
             if bcc_emails:
-                all_recipients.extend(bcc_emails)
+                email_data["bcc"] = bcc_emails
 
-            # Send email
-            with self._get_smtp_connection() as smtp:
-                smtp.send_message(msg, from_addr=sender_email,
-                                  to_addrs=all_recipients)
+            if attachment_data:
+                email_data["attachments"] = attachment_data
 
-            logger.info(f"Email sent successfully to {', '.join(to_emails)}")
-            return True
+            # Send email using Resend
+            response = resend.Emails.send(email_data)
+
+            if response and response.get("id"):
+                logger.info(
+                    f"Email sent successfully to {', '.join(to_emails)} with ID: {response['id']}")
+                return True
+            else:
+                raise MailSendError("No email ID returned from Resend")
 
         except Exception as e:
             logger.error(f"Failed to send email: {e}")
@@ -206,7 +198,7 @@ class MailService:
         html_body = self._render_template(f"{template_name}.html", context)
 
         import re
-        text_body = re.sub(r'<[^>]+>', '', html_body) 
+        text_body = re.sub(r'<[^>]+>', '', html_body)
 
         return self.send_email(
             to_emails=to_emails,
@@ -219,25 +211,3 @@ class MailService:
             bcc_emails=bcc_emails,
             attachments=attachments
         )
-
-    def _add_attachment(self, msg: MIMEMultipart, file_path: str) -> None:
-        """Add file attachment to email message."""
-        try:
-            file_path_obj = Path(file_path)
-            if not file_path_obj.exists():
-                raise MailSendError(f"Attachment file not found: {file_path}")
-
-            with open(file_path, 'rb') as attachment:
-                part = MIMEBase('application', 'octet-stream')
-                part.set_payload(attachment.read())
-
-            encoders.encode_base64(part)
-            part.add_header(
-                'Content-Disposition',
-                f'attachment; filename= {file_path_obj.name}'
-            )
-            msg.attach(part)
-
-        except Exception as e:
-            logger.error(f"Failed to add attachment {file_path}: {e}")
-            raise MailSendError(f"Failed to add attachment: {e}")

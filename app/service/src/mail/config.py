@@ -6,16 +6,10 @@ from .exceptions import MailConfigurationError
 
 
 class MailConfig(BaseModel):
-    """Configuration for mail service using Gmail SMTP."""
+    """Configuration for mail service using Resend."""
 
-    # Gmail SMTP settings
-    smtp_server: str = "smtp.gmail.com"
-    smtp_port: int = 587
-    use_tls: bool = True
-
-    # Authentication
-    smtp_username: Optional[str] = None
-    smtp_password: Optional[str] = None
+    # Resend API key
+    api_key: Optional[str] = None
 
     # Default sender
     from_email: Optional[str] = None
@@ -31,28 +25,22 @@ class MailConfig(BaseModel):
     def from_env(cls) -> "MailConfig":
         """Create configuration from environment variables."""
         # Default template directory relative to this file's location
-        default_template_dir = os.path.join(os.path.dirname(__file__), "templates")
-        
+        default_template_dir = os.path.join(
+            os.path.dirname(__file__), "templates")
+
         return cls(
-            smtp_username=os.getenv("ENV_MAIL_SMTP_USERNAME"),
-            smtp_password=os.getenv("ENV_MAIL_SMTP_PASSWORD"),
+            api_key=os.getenv("ENV_RESEND_API_KEY"),
             from_email=os.getenv("ENV_MAIL_FROM_EMAIL"),
             from_name=os.getenv("ENV_MAIL_FROM_NAME", "MYNAB"),
-            template_dir=os.getenv("ENV_MAIL_TEMPLATE_DIR", default_template_dir)
+            template_dir=os.getenv(
+                "ENV_MAIL_TEMPLATE_DIR", default_template_dir)
         )
 
-    @field_validator("smtp_username")
+    @field_validator("api_key")
     @classmethod
-    def validate_username(cls, v: str) -> str:
+    def validate_api_key(cls, v: str) -> str:
         if not v:
-            raise MailConfigurationError("SMTP username is required")
-        return v
-
-    @field_validator("smtp_password")
-    @classmethod
-    def validate_password(cls, v: str) -> str:
-        if not v:
-            raise MailConfigurationError("SMTP password is required")
+            raise MailConfigurationError("Resend API key is required")
         return v
 
     @field_validator("from_email")

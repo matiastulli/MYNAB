@@ -13,6 +13,7 @@ export default function CurrencyFilter({ selectedCurrency, onCurrencyChange }) {
     { code: "ARS", name: "Argentine Peso", symbol: "$" },
     { code: "USD", name: "US Dollar", symbol: "$" },
     { code: "AUD", name: "Australian Dollar", symbol: "A$" },
+    { code: "GBP", name: "British Pound", symbol: "£" },
     { code: "EUR", name: "Euro", symbol: "€" },
   ]
 

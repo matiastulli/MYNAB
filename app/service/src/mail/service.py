@@ -2,12 +2,24 @@
 import logging
 import base64
 from pathlib import Path
-from typing import List, Optional, Union, Dict, Any
+from typing import List, Optional, Union, Dict, Any, TypedDict
 from jinja2 import Environment, FileSystemLoader
 import resend
 
 from .config import MailConfig
 from .exceptions import MailSendError, MailTemplateError
+
+
+class EmailParams(TypedDict, total=False):
+    """Type definition for email parameters."""
+    from_: str
+    to: Union[str, List[str]]
+    subject: str
+    html: Optional[str]
+    text: Optional[str]
+    cc: Optional[Union[str, List[str]]]
+    bcc: Optional[Union[str, List[str]]]
+    attachments: Optional[List[Dict[str, str]]]
 
 
 logger = logging.getLogger(__name__)
@@ -131,28 +143,28 @@ class MailService:
                 for file_path in attachments:
                     attachment_data.append(self._encode_attachment(file_path))
 
-            # Prepare email data
-            email_data = {
+            # Prepare email data for Resend
+            send_params = {
                 "from": f"{sender_name} <{sender_email}>" if sender_name else sender_email,
                 "to": to_emails,
                 "subject": subject,
-                "text": body,
+                "text": body
             }
 
             if html_body:
-                email_data["html"] = html_body
+                send_params["html"] = html_body
 
             if cc_emails:
-                email_data["cc"] = cc_emails
+                send_params["cc"] = cc_emails
 
             if bcc_emails:
-                email_data["bcc"] = bcc_emails
+                send_params["bcc"] = bcc_emails
 
             if attachment_data:
-                email_data["attachments"] = attachment_data
+                send_params["attachments"] = attachment_data
 
             # Send email using Resend
-            response = resend.Emails.send(email_data)
+            response = resend.Emails.send(send_params)
 
             if response and response.get("id"):
                 logger.info(

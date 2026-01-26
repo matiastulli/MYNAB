@@ -5,8 +5,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { formatDateForInput, parseDatePreservingDay } from "@/lib/dateUtils"
-import { endOfMonth, startOfMonth, subMonths } from "date-fns"
+import { formatDateForInput } from "@/lib/dateUtils"
+import { endOfMonth, isValid, lastDayOfMonth, parseISO, startOfMonth, subMonths } from "date-fns"
 import { CalendarIcon, ChevronDownIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 
@@ -66,26 +66,47 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoadin
   }
 
   const handleStartDateChange = (e) => {
-    const date = parseDatePreservingDay(e.target.value)
-    setTempRange({
-      ...tempRange,
+    const raw = e.target.value // expected "YYYY-MM-DD"
+    const date = parseDateFromInput(raw)
+    if (!date) return
+    setTempRange((prev) => ({
+      ...prev,
       startDate: date,
-      preset: "custom", // Switch to custom when manually selecting dates
-    })
+      preset: "custom",
+    }))
   }
 
   const handleEndDateChange = (e) => {
-    const date = parseDatePreservingDay(e.target.value)
-    setTempRange({
-      ...tempRange,
+    const raw = e.target.value
+    const date = parseDateFromInput(raw)
+    if (!date) return
+    setTempRange((prev) => ({
+      ...prev,
       endDate: date,
-      preset: "custom", // Switch to custom when manually selecting dates
-    })
+      preset: "custom",
+    }))
   }
 
   const handleApply = () => {
     onDateRangeChange(tempRange)
     setIsOpen(false)
+  }
+
+  // Robust ISO (YYYY-MM-DD) parser. Returns a Date or null for invalid input.
+  function parseDateFromInput(value) {
+    if (!value || typeof value !== "string") return null
+    const parsed = parseISO(value)
+    if (!isValid(parsed)) return null
+    const year = parsed.getFullYear()
+    const month = parsed.getMonth() // 0-based
+    const day = parsed.getDate()
+    const constructed = new Date(year, month, day)
+    if (!isValid(constructed)) return null
+    if (constructed.getMonth() !== month) {
+      const last = lastDayOfMonth(new Date(year, month, 1))
+      return new Date(year, month, last.getDate())
+    }
+    return constructed
   }
 
   return (

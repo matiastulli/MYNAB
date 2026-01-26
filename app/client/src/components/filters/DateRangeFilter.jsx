@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { formatDateForInput } from "@/lib/dateUtils"
-import { endOfMonth, isValid, lastDayOfMonth, parseISO, startOfMonth, subMonths } from "date-fns"
+import { endOfMonth, lastDayOfMonth, startOfMonth, subMonths } from "date-fns"
 import { CalendarIcon, ChevronDownIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 
@@ -92,20 +92,37 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoadin
     setIsOpen(false)
   }
 
-  // Robust ISO (YYYY-MM-DD) parser. Returns a Date or null for invalid input.
+  // Robust manual parser for YYYY-MM-DD format. Returns a Date or null for invalid input.
+  // This avoids timezone issues with parseISO and handles incomplete typing gracefully.
   function parseDateFromInput(value) {
     if (!value || typeof value !== "string") return null
-    const parsed = parseISO(value)
-    if (!isValid(parsed)) return null
-    const year = parsed.getFullYear()
-    const month = parsed.getMonth() // 0-based
-    const day = parsed.getDate()
-    const constructed = new Date(year, month, day)
-    if (!isValid(constructed)) return null
-    if (constructed.getMonth() !== month) {
-      const last = lastDayOfMonth(new Date(year, month, 1))
-      return new Date(year, month, last.getDate())
+    
+    // Must be exactly YYYY-MM-DD format
+    const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+    if (!match) return null
+    
+    const [, yearStr, monthStr, dayStr] = match
+    const year = parseInt(yearStr, 10)
+    const month = parseInt(monthStr, 10) // 1-12
+    const day = parseInt(dayStr, 10)
+    
+    // Basic range checks
+    if (month < 1 || month > 12 || day < 1 || day > 31) return null
+    
+    // Construct date (month is 0-indexed in JS Date constructor)
+    const constructed = new Date(year, month - 1, day)
+    
+    // Verify the date is valid (month/day didn't overflow)
+    if (constructed.getMonth() !== month - 1 || constructed.getFullYear() !== year) {
+      return null
     }
+    
+    // If day overflowed (e.g., Feb 30), cap to last valid day of month
+    if (constructed.getDate() !== day) {
+      const last = lastDayOfMonth(new Date(year, month - 1, 1))
+      return new Date(year, month - 1, last.getDate())
+    }
+    
     return constructed
   }
 

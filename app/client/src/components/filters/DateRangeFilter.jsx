@@ -17,6 +17,10 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoadin
     endDate: dateRange.endDate,
     preset: dateRange.preset,
   })
+  
+  // Track raw input values separately to allow free typing
+  const [startDateInput, setStartDateInput] = useState(formatDateForInput(dateRange.startDate))
+  const [endDateInput, setEndDateInput] = useState(formatDateForInput(dateRange.endDate))
 
   useEffect(() => {
     // Update local state when props change
@@ -25,6 +29,8 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoadin
       endDate: dateRange.endDate,
       preset: dateRange.preset,
     })
+    setStartDateInput(formatDateForInput(dateRange.startDate))
+    setEndDateInput(formatDateForInput(dateRange.endDate))
   }, [dateRange])
 
   const handlePresetChange = (preset) => {
@@ -58,33 +64,36 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoadin
     }
 
     setTempRange(newRange)
-  }
-
-  // Format dates for input fields
-  const formatDateForInputField = (date) => {
-    return formatDateForInput(date)
+    setStartDateInput(formatDateForInput(newRange.startDate))
+    setEndDateInput(formatDateForInput(newRange.endDate))
   }
 
   const handleStartDateChange = (e) => {
-    const raw = e.target.value // expected "YYYY-MM-DD"
+    const raw = e.target.value
+    setStartDateInput(raw) // Always update the input display
+    
     const date = parseDateFromInput(raw)
-    if (!date) return
-    setTempRange((prev) => ({
-      ...prev,
-      startDate: date,
-      preset: "custom",
-    }))
+    if (date) {
+      setTempRange((prev) => ({
+        ...prev,
+        startDate: date,
+        preset: "custom",
+      }))
+    }
   }
 
   const handleEndDateChange = (e) => {
     const raw = e.target.value
+    setEndDateInput(raw) // Always update the input display
+    
     const date = parseDateFromInput(raw)
-    if (!date) return
-    setTempRange((prev) => ({
-      ...prev,
-      endDate: date,
-      preset: "custom",
-    }))
+    if (date) {
+      setTempRange((prev) => ({
+        ...prev,
+        endDate: date,
+        preset: "custom",
+      }))
+    }
   }
 
   const handleApply = () => {
@@ -93,7 +102,6 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoadin
   }
 
   // Robust manual parser for YYYY-MM-DD format. Returns a Date or null for invalid input.
-  // This avoids timezone issues with parseISO and handles incomplete typing gracefully.
   function parseDateFromInput(value) {
     if (!value || typeof value !== "string") return null
     
@@ -192,7 +200,7 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoadin
               <Input
                 id="startDate"
                 type="date"
-                value={formatDateForInputField(tempRange.startDate)}
+                value={startDateInput}
                 onChange={handleStartDateChange}
                 className="border-[hsl(var(--border))] bg-[hsl(var(--background))] text-[hsl(var(--foreground))] placeholder:text-[hsl(var(--muted-foreground))] h-9"
               />
@@ -204,9 +212,9 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoadin
               <Input
                 id="endDate"
                 type="date"
-                value={formatDateForInputField(tempRange.endDate)}
+                value={endDateInput}
                 onChange={handleEndDateChange}
-                min={formatDateForInputField(tempRange.startDate)}
+                min={startDateInput}
                 className="border-[hsl(var(--border))] bg-[hsl(var(--background))] text-[hsl(var(--foreground))] placeholder:text-[hsl(var(--muted-foreground))] h-9"
               />
             </div>

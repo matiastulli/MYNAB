@@ -1,52 +1,44 @@
-# MYNAB
+# 💰 MYNAB - Maybe You Need A Budget
 
-**How to configure Python project?**
+A modern, feature-rich personal budgeting application built with **FastAPI** backend and **React** frontend. MYNAB helps you track expenses, manage multiple currencies, and take control of your finances.
 
-    1- Install python 3.11.6
+---
 
-    2- cd app/service
+## 🎯 Features
 
-    3- python -m venv venv
+- 📊 **Multi-Currency Support** - Manage finances across multiple currencies simultaneously
+- 💳 **Transaction Management** - Track income and expenses with automatic categorization
+- 📁 **Bank Statement Import** - Support for multiple bank formats (ICBC, Santander Rio, MercadoPago)
+- 🔐 **Secure Authentication** - Passwordless authentication with JWT tokens
+- 🎨 **Modern UI** - Responsive design with light/dark theme support
+- 📱 **PWA Ready** - Install as a web application on your device
+- 🔄 **Real-time Updates** - Stay synchronized with your budget in real-time
 
-    4- .\\venv\\Scripts\\activate
+---
 
-    5- pip install -r requirements.txt
+## 📸 Screenshots
 
-    6- uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+### Dashboard - Multi-Currency Overview
+View all your currencies at a glance with summary cards showing net balance, income, and expenses.
 
-**How to configure React project?**
+![Multi-Currency Dashboard](docs/images/all_currencies.png)
 
-    1- Install Node.js (recommended version 16.x or higher)
+### Dashboard - Currency-Specific View
+Zoom into a specific currency with detailed financial metrics and performance indicators.
 
-    2- cd app/client
+![ARS Dashboard](docs/images/ars.png)
 
-    3- npm install
+### Activity Tracking
+Monitor your transactions with a detailed activity log filtered by currency.
 
-    4- npm run dev
+![ARS Activity](docs/images/ars_activity.png)
 
-**Docker utils**
+### Detailed Dashboard
+Explore comprehensive spending breakdowns and financial summaries for any currency.
 
-    To get expose ip (inet) from Ubuntu:
-    
-        apt install net-tools
-        ifconfig
+![ARS Detailed Dashboard](docs/images/ars_dashboard.png)
 
-    To inspect the Docker container for the mynab-services-1 image, use the following command:
+### User Profile
+Manage your account settings and personal information.
 
-        docker inspect mynab-services-1
-
-    Send a GET request to the healthcheck endpoint:
-
-        curl http://localhost:8000/healthcheck
-
-**To use Alembic, do**
-
-    Use to migrate orm changes in backend to database:
-
-    1- cd app/service
-    
-    2- alembic init migrations
-
-    3- alembic revision --autogenerate -m "First Migration"
-
-    4- alembic upgrade head
+![User Profile](docs/images/profile.png)

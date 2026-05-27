@@ -53,7 +53,6 @@ async def post_file(
         "mercado_pago": [".pdf"],
         "bbva": [".xls"],
         "comm_bank": [".csv"],
-        "balanz": [".xlsx"],
         "revolut": [".csv"],
     }
 

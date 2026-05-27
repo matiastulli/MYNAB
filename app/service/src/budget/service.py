@@ -338,10 +338,6 @@ async def process_bank_statement(user_id: int, file_id: int, bank_name: str, cur
 
         entries = _process_comm_bank_format(df, file_id, bank_name, currency)
 
-    elif bank_name.lower() == "balanz":
-        df = pd.read_excel(io.BytesIO(file_bytes), header=None)
-        entries = _process_balanz_format(df, file_id, bank_name, currency)
-
     elif bank_name.lower() == "revolut":
         df = pd.read_csv(io.BytesIO(file_bytes), encoding='utf-8')
         entries = _process_revolut_format(df, file_id, bank_name, currency)
@@ -711,79 +707,6 @@ def _process_comm_bank_format(df: pd.DataFrame, file_id: int, bank_name: str, cu
     except Exception as ex:
         logger.error(f"Error processing CommBank statement: {ex}")
         return []
-    return entries
-
-
-def _process_balanz_format(df: pd.DataFrame, file_id: int, bank_name: str, currency: str) -> List[BudgetEntryCreate]:
-    """Process Balanz Capital brokerage statement (Excel, row 0 = header)."""
-    entries: List[BudgetEntryCreate] = []
-
-    CURRENCY_MAP = {
-        "dólares": "USD",
-        "pesos": "ARS",
-        "us dollar (cable)": "USD",
-        "dólares c.v. 7000": "USD",
-    }
-
-    VALID_STATUSES = {"ejecutada", "finalizada"}
-
-    INCOME_KEYWORDS = ("venta", "rescate", "depósito", "transferencia")
-    OUTCOME_KEYWORDS = ("compra", "suscripción", "canje")
-
-    try:
-        df = df.iloc[1:].copy()
-        df.columns = range(len(df.columns))
-        df = df.dropna(how="all")
-
-        for _, row in df.iterrows():
-            try:
-                estado = str(row[1]).strip().lower()
-                if estado not in VALID_STATUSES:
-                    continue
-
-                moneda_raw = str(row[4]).strip().lower()
-                mapped_currency = CURRENCY_MAP.get(moneda_raw)
-                if mapped_currency != currency:
-                    continue
-
-                monto = pd.to_numeric(row[9], errors="coerce")
-                if pd.isna(monto) or monto <= 0 or monto == -1:
-                    continue
-
-                date_raw = pd.to_datetime(str(row[5]).strip(), errors="coerce")
-                if pd.isna(date_raw):
-                    continue
-
-                operacion = str(row[0]).strip()
-                ticker = str(row[3]).strip() if pd.notna(row[3]) and str(row[3]).strip() not in ("", "nan", "NaN") else None
-                description = f"{operacion} - {ticker}" if ticker else operacion
-                reference_id = str(row[2]).strip()
-
-                operacion_lower = operacion.lower()
-                if any(k in operacion_lower for k in INCOME_KEYWORDS):
-                    entry_type = "income"
-                elif any(k in operacion_lower for k in OUTCOME_KEYWORDS):
-                    entry_type = "outcome"
-                else:
-                    entry_type = "outcome"
-
-                entries.append(BudgetEntryCreate(
-                    reference_id=reference_id,
-                    date=date_raw,
-                    amount=abs(float(monto)),
-                    currency=currency,
-                    source=bank_name,
-                    description=description,
-                    type=entry_type,
-                    file_id=file_id,
-                    category_id=None
-                ))
-            except Exception:
-                continue
-    except Exception as ex:
-        logger.error(f"Error processing Balanz statement: {ex}")
-        return []
-
     return entries
 
 

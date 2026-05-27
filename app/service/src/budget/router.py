@@ -52,7 +52,8 @@ async def post_file(
         "ICBC": [".csv"],
         "mercado_pago": [".pdf"],
         "bbva": [".xls"],
-        "comm_bank": [".csv"]
+        "comm_bank": [".csv"],
+        "balanz": [".xlsx"],
     }
 
     # Validate bank name first

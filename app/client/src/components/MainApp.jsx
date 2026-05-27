@@ -46,7 +46,13 @@ export default function MainApp({ onLogout }) {
     offset: 0,
     total: 0
   });
+  const [filesPagination, setFilesPagination] = useState({
+    limit: 25,
+    offset: 0,
+    total: 0
+  });
   const paginationOffsetInitialized = useRef(false);
+  const filesPaginationOffsetInitialized = useRef(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");
 
@@ -116,6 +122,14 @@ export default function MainApp({ onLogout }) {
     }
     fetchDetails();
   }, [pagination.offset]);
+
+  useEffect(() => {
+    if (!filesPaginationOffsetInitialized.current) {
+      filesPaginationOffsetInitialized.current = true;
+      return;
+    }
+    fetchFiles();
+  }, [filesPagination.offset]);
 
   // Setup system preference listener for theme changes
   useEffect(() => {
@@ -237,8 +251,8 @@ export default function MainApp({ onLogout }) {
 
     try {
       const params = new URLSearchParams();
-      params.append('limit', pagination.limit);
-      params.append('offset', pagination.offset);
+      params.append('limit', filesPagination.limit);
+      params.append('offset', filesPagination.offset);
       params.append('currency', currency);
 
       const url = `/budget/files?${params.toString()}`;
@@ -246,10 +260,10 @@ export default function MainApp({ onLogout }) {
 
       if (!response.error) {
         setFiles(response.data || []);
-        setPagination({
-          ...pagination,
+        setFilesPagination(prev => ({
+          ...prev,
           total: response.metadata?.total_count || 0
-        });
+        }));
       } else {
         setFilesError(response.error);
         setFiles([]);
@@ -335,6 +349,7 @@ export default function MainApp({ onLogout }) {
   const handleCurrencyChange = (newCurrency) => {
     setCurrency(newCurrency);
     setPagination(prev => ({ ...prev, offset: 0 }));
+    setFilesPagination(prev => ({ ...prev, offset: 0 }));
     updateURLWithFilters(dateRange, newCurrency, activeTab);
   };
 
@@ -377,6 +392,10 @@ export default function MainApp({ onLogout }) {
 
   const handlePaginationChange = (newPagination) => {
     setPagination(newPagination);
+  };
+
+  const handleFilesPaginationChange = (newPagination) => {
+    setFilesPagination(newPagination);
   };
 
   // Get formatted date range for display
@@ -633,8 +652,8 @@ export default function MainApp({ onLogout }) {
                 files={files}
                 loading={filesLoading}
                 error={filesError}
-                pagination={pagination}
-                onPaginationChange={handlePaginationChange}
+                pagination={filesPagination}
+                onPaginationChange={handleFilesPaginationChange}
               />
             </TabsContent>
           </Tabs>

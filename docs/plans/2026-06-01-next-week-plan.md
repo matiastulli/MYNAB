@@ -92,7 +92,7 @@ Stabilize MYNAB by restoring a clean validation baseline, closing obvious API se
    - Tests cover duplicate detection for same bank reference and user scoping.
    - Tests cover at least one parser normalization path.
    - Tests cover transaction category matching or `CATEGORY_IDS` consistency.
-   - Test command is documented in the PR or plan follow-up.
+   - Test command is documented in the PR or plan follow-up: `.venv/bin/python -m unittest discover -s tests` from `app/service/`.
    Likely files:
    - new test files under `app/service/`
    - `app/service/requirements.txt` if pytest dependencies are missing

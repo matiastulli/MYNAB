@@ -166,22 +166,12 @@ export const api = {
         });
       },
 
-      register: async (userData, verificationCode, email) => {
-        return api.post('auth/passwordless/register', userData, {
-          params: {
-            verification_code: verificationCode,
-            email: email
-          }
-        });
+      register: async (userData, verificationCode) => {
+        return api.post('auth/passwordless/register', { ...userData, verification_code: verificationCode });
       },
 
       login: async (email, verificationCode) => {
-        return api.post('auth/passwordless/login', null, {
-          params: {
-            email: email,
-            verification_code: verificationCode
-          }
-        });
+        return api.post('auth/passwordless/login', { email, verification_code: verificationCode });
       }
     }
   },

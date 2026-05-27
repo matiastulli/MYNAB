@@ -129,10 +129,12 @@ async def send_verification_code(
             try:
                 await service.authenticate_passwordless_user(request.email)
             except service.InvalidCredentials:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="User not found or not registered for passwordless authentication"
+                response = schemas.VerificationCodeResponse(
+                    success=True,
+                    message="Verification code sent successfully",
+                    expires_in=5
                 )
+                return JSONResponse(status_code=status.HTTP_200_OK, content=response.model_dump())
 
         # Create verification code
         code_data = await service.create_verification_code(
@@ -227,16 +229,14 @@ async def verify_verification_code(
 @router.post("/passwordless/register", status_code=status.HTTP_201_CREATED, response_model=schemas.AccessTokenResponse)
 async def passwordless_register(
     register_data: schemas.PasswordlessRegisterUser,
-    verification_code: str,
-    email: str,
     response: Response
 ) -> JSONResponse:
     """Register a new user with passwordless authentication and return tokens."""
     try:
         # First verify the code
         verification_record = await service.verify_code(
-            email=email,
-            code=verification_code,
+            email=register_data.email,
+            code=register_data.verification_code,
             code_type="registration"
         )
 
@@ -244,13 +244,6 @@ async def passwordless_register(
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid or expired verification code"
-            )
-
-        # Ensure emails match
-        if register_data.email != email:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Email mismatch"
             )
 
         # Create the user
@@ -289,16 +282,15 @@ async def passwordless_register(
 
 @router.post("/passwordless/login", response_model=schemas.AccessTokenResponse)
 async def passwordless_login(
-    email: str,
-    verification_code: str,
+    request: schemas.PasswordlessLoginCredentials,
     response: Response
 ) -> JSONResponse:
     """Login with passwordless authentication."""
     try:
         # First verify the code
         verification_record = await service.verify_code(
-            email=email,
-            code=verification_code,
+            email=request.email,
+            code=request.verification_code,
             code_type="login"
         )
 
@@ -309,7 +301,7 @@ async def passwordless_login(
             )
 
         # Authenticate the user
-        user = await service.authenticate_passwordless_user(email)
+        user = await service.authenticate_passwordless_user(request.email)
 
         # Create tokens
         refresh_token_value = await service.create_refresh_token(id_user=user["id"])

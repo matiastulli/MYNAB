@@ -53,7 +53,6 @@ async def create_user(user: RegisterUser) -> dict[str, Any] | None:
 
 
 async def update_user(id_user: int, user: UpdateUser) -> dict[str, Any] | None:
-
     update_query = (
         update(auth_user)
         .where(auth_user.c.id == id_user)
@@ -64,10 +63,27 @@ async def update_user(id_user: int, user: UpdateUser) -> dict[str, Any] | None:
                 "national_id": user.national_id,
             }
         )
-        .returning(auth_user)
+        .returning(auth_user.c.id)
     )
 
-    return await fetch_one(update_query)
+    result = await fetch_one(update_query)
+    if result is None:
+        return None
+
+    select_query = select(
+        auth_user.c.id,
+        auth_user.c.name,
+        auth_user.c.last_name,
+        auth_user.c.national_id,
+        auth_user.c.email,
+        auth_user.c.id_role,
+        auth_user.c.auth_method,
+        auth_user.c.email_verified,
+        auth_user.c.created_at,
+        auth_user.c.updated_at
+    ).where(auth_user.c.id == result['id'])
+
+    return await fetch_one(select_query)
 
 
 async def get_user_by_id(id_user: int) -> dict[str, Any] | None:
@@ -206,7 +222,7 @@ async def create_verification_code(
 
     # Generate new code
     verification_code = generate_verification_code()
-    expires_at = datetime.now() + timedelta(minutes=15)  # 15 minutes expiry
+    expires_at = datetime.now() + timedelta(minutes=expiry_minutes)
     
     insert_query = insert(auth_email_verification).values(
         email=email,
@@ -227,22 +243,9 @@ async def create_verification_code(
 
 
 async def verify_code(email: str, code: str, code_type: str) -> dict[str, Any] | None:
-    """
-    Verify a verification code.
-
-    Args:
-        email: User's email address
-        code: The verification code to check
-        code_type: Type of code ('login', 'registration')
-
-    Returns:
-        Dict with verification result or None if invalid
-    """
-    # Find the verification code
     select_query = select(auth_email_verification).where(
         and_(
             auth_email_verification.c.email == email,
-            auth_email_verification.c.verification_code == code,
             auth_email_verification.c.code_type == code_type,
             auth_email_verification.c.used_at.is_(None),
             auth_email_verification.c.expires_at > datetime.now()
@@ -252,29 +255,21 @@ async def verify_code(email: str, code: str, code_type: str) -> dict[str, Any] |
     verification_record = await fetch_one(select_query)
 
     if not verification_record:
-        # Increment failed attempts
-        update_query = update(auth_email_verification).where(
-            and_(
-                auth_email_verification.c.email == email,
-                auth_email_verification.c.code_type == code_type,
-                auth_email_verification.c.used_at.is_(None)
-            )
-        ).values(
-            attempts=auth_email_verification.c.attempts + 1
-        )
-        await execute(update_query)
         return None
 
-    # Check if max attempts exceeded
     if verification_record['attempts'] >= verification_record['max_attempts']:
         return None
 
-    # Mark code as used
+    if verification_record['verification_code'] != code:
+        update_query = update(auth_email_verification).where(
+            auth_email_verification.c.id == verification_record['id']
+        ).values(attempts=auth_email_verification.c.attempts + 1)
+        await execute(update_query)
+        return None
+
     update_query = update(auth_email_verification).where(
         auth_email_verification.c.id == verification_record['id']
-    ).values(
-        used_at=datetime.now()
-    )
+    ).values(used_at=datetime.now())
     await execute(update_query)
 
     return verification_record

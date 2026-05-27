@@ -55,7 +55,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 @app.exception_handler(Exception)
 async def generic_exception_handler(request: Request, exc: Exception):
     logger.error(f"Generic error occurred at {request.url}: {exc}")
-    return JSONResponse(status_code=500, content={"error": f"Generic error at {request.url.path}: {exc}"})
+    return JSONResponse(status_code=500, content={"error": "Internal server error"})
 
 
 @app.exception_handler(BadRequest)

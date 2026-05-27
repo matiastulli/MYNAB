@@ -41,6 +41,7 @@ class PasswordlessRegisterUser(CustomModel):
     last_name: str = Field(min_length=2, max_length=100)
     email: EmailStr
     id_role: int
+    verification_code: str = Field(min_length=6, max_length=8)
 
 
 class SendVerificationCodeRequest(CustomModel):
@@ -56,6 +57,11 @@ class VerifyCodeRequest(CustomModel):
 
 class PasswordlessLoginRequest(CustomModel):
     email: EmailStr
+
+
+class PasswordlessLoginCredentials(CustomModel):
+    email: EmailStr
+    verification_code: str = Field(min_length=6, max_length=8)
 
 
 class UpdateUser(CustomModel):

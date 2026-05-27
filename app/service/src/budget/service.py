@@ -166,7 +166,7 @@ async def get_budget_entries(
     ]
 
     # Count query to get total records
-    count_query = select(func.count()).select_from(budget_entry)
+    count_query = select(func.count()).select_from(budget_entry).where(and_(*conditions))
     total_count_result = await fetch_one(count_query)
     total_count = total_count_result['count_1'] if total_count_result else 0
 

@@ -86,7 +86,7 @@ export default function ProfileDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] border-2 border-[hsl(var(--border))] shadow-xl max-w-md">
+      <DialogContent className="bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] border-2 border-[hsl(var(--border))] shadow-xl max-w-md" onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader className="pb-2">
           <DialogTitle className="sr-only">Profile Settings</DialogTitle>
           <div className="flex flex-col items-center gap-1">

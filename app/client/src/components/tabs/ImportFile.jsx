@@ -151,7 +151,7 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
               Import Statements
             </CardTitle>
           </div>
-          <div className="flex items-center gap-2 bg-[hsl(var(--muted)/0.1)] text-[hsl(var(--muted-foreground))] px-3 py-1.5 rounded-full border border-[hsl(var(--muted)/0.2)]">
+          <div className="flex items-center gap-2 bg-[hsl(var(--accent)/0.1)] text-[hsl(var(--accent))] px-3 py-1.5 rounded-full border border-[hsl(var(--accent)/0.2)]">
             <CircleDollarSignIcon className="h-4 w-4" />
             <span className="text-sm font-medium">{currency}</span>
             <span className="text-xs opacity-75">({getCurrencyName(currency)})</span>

@@ -232,8 +232,8 @@ export default function ActivityList({
   // Download all transactions as .xlsx
 
   return (
-    <Card className="border-border bg-card backdrop-blur-sm shadow-lg overflow-hidden">
-      <CardHeader className="pb-4 bg-gradient-to-r from-card to-card/80">
+    <Card className="border-[hsl(var(--border))] bg-[hsl(var(--card))] shadow-sm overflow-hidden">
+      <CardHeader className="pb-4">
         <div className="flex flex-col gap-3">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-3">

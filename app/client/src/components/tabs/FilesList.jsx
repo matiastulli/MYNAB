@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { formatDateSafe } from "@/lib/dateUtils";
+import { getCurrencyName } from "@/lib/currencyUtils";
 import { api } from "@/services/api";
 import { CalendarIcon, CircleDollarSignIcon, FileIcon, FolderIcon, TrashIcon } from "lucide-react";
 
@@ -16,16 +17,6 @@ export default function FilesList({
   onPaginationChange,
   currency = "ARS"
 }) {
-
-  const getCurrencyName = (currency) => {
-    const names = {
-      'USD': 'US Dollar',
-      'EUR': 'Euro',
-      'BRL': 'Brazilian Real',
-      'ARS': 'Argentine Peso'
-    };
-    return names[currency] || currency;
-  };
 
   const formatDate = (dateString) => {
     return formatDateSafe(dateString, 'MMM dd, yyyy');

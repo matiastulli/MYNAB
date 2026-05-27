@@ -590,71 +590,80 @@ export default function MainApp({ onLogout }) {
             </div>
 
             {/* Dashboard Tab Content */}
-            <TabsContent value="dashboard" className="space-y-4 mt-6 focus-visible:outline-none">
-              <Dashboard
-                currency={currency}
-                summary={summary}
-                entries={entries}
-                isLoading={summaryLoading || entriesLoading}
-              />
+            <TabsContent value="dashboard" className="mt-6 focus-visible:outline-none">
+              <div className="w-full max-w-7xl mx-auto">
+                <Dashboard
+                  currency={currency}
+                  summary={summary}
+                  entries={entries}
+                  isLoading={summaryLoading || entriesLoading}
+                />
+              </div>
             </TabsContent>
 
             {/* Transactions List */}
-            <TabsContent value="entries" className="space-y-4 mt-6 focus-visible:outline-none">
-              <ActivityList
-                currency={currency}
-                entries={entries}
-                dateRangeFormatted={dateRangeFormatted}
-                dateRange={dateRange}
-                onTransactionDeleted={() => {
-                  fetchSummary();
-                  fetchDetails();
-                }}
-                isLoading={entriesLoading}
-                pagination={pagination}
-                onPaginationChange={handlePaginationChange}
-              />
+            <TabsContent value="entries" className="mt-6 focus-visible:outline-none">
+              <div className="w-full max-w-7xl mx-auto">
+                <ActivityList
+                  currency={currency}
+                  entries={entries}
+                  dateRangeFormatted={dateRangeFormatted}
+                  dateRange={dateRange}
+                  onTransactionDeleted={() => {
+                    fetchSummary();
+                    fetchDetails();
+                  }}
+                  isLoading={entriesLoading}
+                  pagination={pagination}
+                  onPaginationChange={handlePaginationChange}
+                />
+              </div>
             </TabsContent>
 
             {/* Add New Transaction */}
             <TabsContent value="new" className="mt-6 focus-visible:outline-none">
-              <AddTransaction
-                defaultCurrency={currency}
-                onTransactionAdded={() => {
-                  fetchSummary();
-                  fetchDetails();
-                }}
-              />
+              <div className="w-full max-w-7xl mx-auto">
+                <AddTransaction
+                  defaultCurrency={currency}
+                  onTransactionAdded={() => {
+                    fetchSummary();
+                    fetchDetails();
+                  }}
+                />
+              </div>
             </TabsContent>
 
             {/* Import Transactions */}
             <TabsContent value="import" className="mt-6 focus-visible:outline-none">
-              <ImportFile
-                currency={currency}
-                onImportComplete={() => {
-                  fetchSummary();
-                  fetchDetails();
-                }}
-                onImportSuccess={handleImportSuccess}
-                className="max-w-2xl mx-auto"
-              />
+              <div className="w-full max-w-7xl mx-auto">
+                <ImportFile
+                  currency={currency}
+                  onImportComplete={() => {
+                    fetchSummary();
+                    fetchDetails();
+                  }}
+                  onImportSuccess={handleImportSuccess}
+                />
+              </div>
             </TabsContent>
 
             {/* Files List */}
             <TabsContent value="files" className="mt-6 focus-visible:outline-none">
-              <FilesList
-                currency={currency}
-                onFileDeleted={() => {
-                  fetchSummary();
-                  fetchDetails();
-                  fetchFiles();
-                }}
-                files={files}
-                loading={filesLoading}
-                error={filesError}
-                pagination={filesPagination}
-                onPaginationChange={handleFilesPaginationChange}
-              />
+              <div className="w-full max-w-7xl mx-auto">
+                <FilesList
+                  currency={currency}
+                  onFileDeleted={() => {
+                    fetchSummary();
+                    fetchDetails();
+                    fetchFiles();
+                  }}
+                  files={files}
+                  loading={filesLoading}
+                  error={filesError}
+                  pagination={filesPagination}
+                  onPaginationChange={handleFilesPaginationChange}
+                />
+              </div>
             </TabsContent>
           </Tabs>
         )}

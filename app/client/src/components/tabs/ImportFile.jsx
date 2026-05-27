@@ -23,6 +23,7 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
     bbva: { format: ".xls", supportedCurrencies: ["ARS"], description: "Excel format from BBVA" },
     comm_bank: { format: ".csv", supportedCurrencies: ["AUD"], description: "CSV export from Commonwealth Bank" },
     balanz: { format: ".xlsx", supportedCurrencies: ["USD", "ARS"], description: "Excel export from Balanz Capital" },
+    revolut: { format: ".csv", supportedCurrencies: ["AUD", "EUR", "USD", "GBP"], description: "CSV export from Revolut" },
   };
 
   const handleFileChange = (e) => {
@@ -230,7 +231,7 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
                       } else if (key === "bbva") {
                         iconBg = "bg-[hsl(var(--accent)/0.1)]";
                         iconDot = "bg-[hsl(var(--accent))]";
-                      } else if (key === "mercado_pago" || key === "comm_bank" || key === "balanz") {
+                      } else if (key === "mercado_pago" || key === "comm_bank" || key === "balanz" || key === "revolut") {
                         iconBg = "bg-[hsl(48,100%,50%,0.15)]";
                         iconDot = "bg-[hsl(48,100%,50%)]";
                       }
@@ -241,7 +242,7 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
                               <div className={`w-3 h-3 rounded-full ${iconDot}`}></div>
                             </div>
                             <div>
-                              <div className="font-medium">{key === "santander_rio" ? "Santander Rio" : key === "ICBC" ? "ICBC" : key === "mercado_pago" ? "Mercado Pago" : key === "bbva" ? "BBVA" : key === "comm_bank" ? "CommBank" : key === "balanz" ? "Balanz Capital" : key}</div>
+                              <div className="font-medium">{key === "santander_rio" ? "Santander Rio" : key === "ICBC" ? "ICBC" : key === "mercado_pago" ? "Mercado Pago" : key === "bbva" ? "BBVA" : key === "comm_bank" ? "CommBank" : key === "balanz" ? "Balanz Capital" : key === "revolut" ? "Revolut" : key}</div>
                               <div className="text-xs text-[hsl(var(--muted-foreground))]">{bank.description}</div>
                             </div>
                           </div>

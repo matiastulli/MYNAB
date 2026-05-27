@@ -54,6 +54,7 @@ async def post_file(
         "bbva": [".xls"],
         "comm_bank": [".csv"],
         "balanz": [".xlsx"],
+        "revolut": [".csv"],
     }
 
     # Validate bank name first

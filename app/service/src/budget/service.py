@@ -342,6 +342,10 @@ async def process_bank_statement(user_id: int, file_id: int, bank_name: str, cur
         df = pd.read_excel(io.BytesIO(file_bytes), header=None)
         entries = _process_balanz_format(df, file_id, bank_name, currency)
 
+    elif bank_name.lower() == "revolut":
+        df = pd.read_csv(io.BytesIO(file_bytes), encoding='utf-8')
+        entries = _process_revolut_format(df, file_id, bank_name, currency)
+
     user_data = await get_user_by_id(user_id)
 
     # Filter out unwanted transactions
@@ -778,6 +782,61 @@ def _process_balanz_format(df: pd.DataFrame, file_id: int, bank_name: str, curre
                 continue
     except Exception as ex:
         logger.error(f"Error processing Balanz statement: {ex}")
+        return []
+
+    return entries
+
+
+def _process_revolut_format(df: pd.DataFrame, file_id: int, bank_name: str, currency: str) -> List[BudgetEntryCreate]:
+    """Process Revolut CSV export (Spanish locale column names)."""
+    entries: List[BudgetEntryCreate] = []
+
+    try:
+        df = df.dropna(how="all")
+
+        for _, row in df.iterrows():
+            try:
+                if str(row.get("Estado", "")).strip().upper() != "COMPLETADO":
+                    continue
+
+                divisa = str(row.get("Divisa", "")).strip()
+                if divisa != currency:
+                    continue
+
+                importe = pd.to_numeric(row.get("Importe"), errors="coerce")
+                if pd.isna(importe) or importe == 0:
+                    continue
+
+                comision = pd.to_numeric(row.get("Comisión", 0), errors="coerce")
+                if pd.isna(comision):
+                    comision = 0.0
+
+                date_raw = pd.to_datetime(str(row.get("Fecha de inicio", "")).strip(), errors="coerce")
+                if pd.isna(date_raw):
+                    continue
+
+                description = str(row.get("Descripción", "")).strip() or "Revolut transaction"
+                tipo = str(row.get("Tipo", "")).strip()
+                reference_id = f"{tipo}_{date_raw.strftime('%Y%m%d%H%M%S')}_{description[:20]}"
+
+                entry_type = "income" if importe > 0 else "outcome"
+                amount = abs(float(importe)) + float(comision)
+
+                entries.append(BudgetEntryCreate(
+                    reference_id=reference_id,
+                    date=date_raw,
+                    amount=amount,
+                    currency=currency,
+                    source=bank_name,
+                    description=description,
+                    type=entry_type,
+                    file_id=file_id,
+                    category_id=None
+                ))
+            except Exception:
+                continue
+    except Exception as ex:
+        logger.error(f"Error processing Revolut statement: {ex}")
         return []
 
     return entries

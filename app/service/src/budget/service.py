@@ -739,15 +739,14 @@ def _process_revolut_format(df: pd.DataFrame, file_id: int, bank_name: str, curr
                     continue
 
                 description = str(row.get("Descripción", "")).strip() or "Revolut transaction"
-                tipo = str(row.get("Tipo", "")).strip()
-                reference_id = f"{tipo}_{date_raw.strftime('%Y%m%d%H%M%S')}_{description[:20]}"
+                reference_id = f"revolut_{date_raw.strftime('%Y%m%d%H%M%S')}_{description[:21]}"
 
                 entry_type = "income" if importe > 0 else "outcome"
                 amount = abs(float(importe)) + float(comision)
 
                 entries.append(BudgetEntryCreate(
                     reference_id=reference_id,
-                    date=date_raw,
+                    date=date_raw.date(),
                     amount=amount,
                     currency=currency,
                     source=bank_name,

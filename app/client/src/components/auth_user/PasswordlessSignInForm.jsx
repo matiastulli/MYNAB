@@ -68,7 +68,6 @@ export default function PasswordlessSignInForm({ onLogin, onSwitchToSignup }) {
       } else if (response.access_token) {
         // Store authentication data
         localStorage.setItem("token", response.access_token)
-        localStorage.setItem("refreshToken", response.refresh_token)
         localStorage.setItem("userId", response.id_user)
 
         // Notify parent component

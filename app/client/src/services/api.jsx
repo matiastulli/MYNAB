@@ -52,7 +52,6 @@ const attemptRefresh = async () => {
 
 const handleUnauthorized = () => {
   localStorage.removeItem('token');
-  localStorage.removeItem('refreshToken');
   localStorage.removeItem('userId');
   window.location.href = '/';
 };
@@ -288,7 +287,6 @@ export const api = {
   // Logout user
   logout: () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
     localStorage.removeItem('userId');
   }
 };

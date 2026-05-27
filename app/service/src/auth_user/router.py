@@ -18,6 +18,15 @@ mail_service = MailService(mail_config)
 
 router = APIRouter()
 
+
+def _verification_code_sent_response() -> JSONResponse:
+    response = schemas.VerificationCodeResponse(
+        success=True,
+        message="If the email is eligible, a verification code will be sent",
+        expires_in=5
+    )
+    return JSONResponse(status_code=status.HTTP_200_OK, content=response.model_dump())
+
 # region Password
 
 
@@ -132,22 +141,14 @@ async def send_verification_code(
         if request.code_type == "registration":
             existing_user = await service.get_user_by_email(request.email)
             if existing_user:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="User already exists"
-                )
+                return _verification_code_sent_response()
 
         # For login, check if user exists and is passwordless
         elif request.code_type == "login":
             try:
                 await service.authenticate_passwordless_user(request.email)
             except service.InvalidCredentials:
-                response = schemas.VerificationCodeResponse(
-                    success=True,
-                    message="Verification code sent successfully",
-                    expires_in=5
-                )
-                return JSONResponse(status_code=status.HTTP_200_OK, content=response.model_dump())
+                return _verification_code_sent_response()
 
         # Create verification code
         code_data = await service.create_verification_code(

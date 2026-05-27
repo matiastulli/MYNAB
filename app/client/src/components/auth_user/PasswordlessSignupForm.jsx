@@ -112,7 +112,6 @@ export default function PasswordlessSignupForm({ onSignUp, onSwitchToLogin }) {
       if (registerResponse.access_token) {
         // Store authentication data
         localStorage.setItem("token", registerResponse.access_token)
-        localStorage.setItem("refreshToken", registerResponse.refresh_token)
         localStorage.setItem("userId", registerResponse.id_user)
         
         // Notify parent component - seamless login!

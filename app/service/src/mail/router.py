@@ -2,6 +2,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from loguru import logger
 
+from src.auth_user.dependencies import require_role
+from src.auth_user.schemas import JWTData
+from src.constants import ROLES
+
 from .service import MailService
 from .dependencies import get_mail_service
 from .exceptions import MailSendError, MailTemplateError
@@ -12,7 +16,8 @@ router = APIRouter()
 @router.post("/send-template", response_model=EmailResponse)
 async def send_template_email(
     request: SendTemplateEmailRequest,
-    mail_service: MailService = Depends(get_mail_service)
+    mail_service: MailService = Depends(get_mail_service),
+    _jwt_data: JWTData = Depends(require_role([ROLES.ADMIN])),
 ) -> EmailResponse:
     """Send an email using a template."""
     try:

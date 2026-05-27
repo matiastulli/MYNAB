@@ -110,3 +110,11 @@ There is no session/ORM abstraction — queries are built with SQLAlchemy `selec
 ### Deployment
 
 Both services are deployed on Railway. `Dockerfile.client` builds the Vite SPA; `Dockerfile.service` installs Python deps and runs `entrypoint.sh` (runs Alembic then Uvicorn). The `ENV_ENVIRONMENT` flag controls whether OpenAPI docs are exposed (`LOCAL`/`STAGING` show docs; `PRODUCTION` hides them).
+
+---
+
+## Team Workflow
+
+Features follow a PM → Engineer pipeline. See [`.claude/WORKFLOW.md`](.claude/WORKFLOW.md) for the full process.
+
+**Short version**: user describes a goal → main Claude spawns **PM agent** to produce a scoped plan → main Claude spawns **Engineer agent** with that plan → main Claude reports back. Agents cannot spawn each other; all coordination goes through the main Claude instance.

@@ -42,10 +42,11 @@ export default function MainApp({ onLogout }) {
   const [files, setFiles] = useState([])
   const [userData, setUserData] = useState(null)
   const [pagination, setPagination] = useState({
-    limit: 50,
+    limit: 25,
     offset: 0,
     total: 0
   });
+  const paginationOffsetInitialized = useRef(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");
 
@@ -107,6 +108,14 @@ export default function MainApp({ onLogout }) {
     fetchDetails();
     fetchFiles();
   }, [currency]);
+
+  useEffect(() => {
+    if (!paginationOffsetInitialized.current) {
+      paginationOffsetInitialized.current = true;
+      return;
+    }
+    fetchDetails();
+  }, [pagination.offset]);
 
   // Setup system preference listener for theme changes
   useEffect(() => {
@@ -325,6 +334,7 @@ export default function MainApp({ onLogout }) {
 
   const handleCurrencyChange = (newCurrency) => {
     setCurrency(newCurrency);
+    setPagination(prev => ({ ...prev, offset: 0 }));
     updateURLWithFilters(dateRange, newCurrency, activeTab);
   };
 
@@ -582,6 +592,8 @@ export default function MainApp({ onLogout }) {
                   fetchDetails();
                 }}
                 isLoading={entriesLoading}
+                pagination={pagination}
+                onPaginationChange={handlePaginationChange}
               />
             </TabsContent>
 

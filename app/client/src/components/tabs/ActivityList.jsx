@@ -20,7 +20,9 @@ export default function ActivityList({
   onSignInClick,
   onTransactionDeleted,
   isLoading = false,
-  currency = "ARS"
+  currency = "ARS",
+  pagination = { limit: 25, offset: 0, total: 0 },
+  onPaginationChange = () => {}
 }) {
   const [deletingId, setDeletingId] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -50,6 +52,10 @@ export default function ActivityList({
 
     setFilteredEntries(result);
   }, [entries, searchTerm, sortDirection]);
+
+  useEffect(() => {
+    onPaginationChange({ ...pagination, offset: 0 });
+  }, [searchTerm]);
 
   const toggleSortDirection = () => {
     if (sortDirection === null) {
@@ -242,7 +248,10 @@ export default function ActivityList({
                   Transaction Activity
                 </CardTitle>
                 <p className="text-sm text-muted-foreground mt-0.5">
-                  {filteredEntries.length} transaction{filteredEntries.length !== 1 ? 's' : ''} found
+                  {pagination.total} transaction{pagination.total !== 1 ? 's' : ''}
+                  {searchTerm && filteredEntries.length !== entries.length && (
+                    <span className="text-xs opacity-70"> ({filteredEntries.length} matching search)</span>
+                  )}
                 </p>
               </div>
             </div>
@@ -510,6 +519,37 @@ export default function ActivityList({
             );
           })}
         </div>
+
+        {pagination.total > pagination.limit && (
+          <div className="flex items-center justify-between px-4 py-3 border-t border-border bg-muted/20">
+            <p className="text-sm text-muted-foreground">
+              {pagination.offset + 1}–{Math.min(pagination.offset + pagination.limit, pagination.total)} of {pagination.total}
+            </p>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onPaginationChange({ ...pagination, offset: pagination.offset - pagination.limit })}
+                disabled={pagination.offset === 0}
+                className="h-8 px-3 text-sm"
+              >
+                Previous
+              </Button>
+              <span className="text-sm text-muted-foreground px-1">
+                Page {Math.floor(pagination.offset / pagination.limit) + 1} of {Math.ceil(pagination.total / pagination.limit)}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onPaginationChange({ ...pagination, offset: pagination.offset + pagination.limit })}
+                disabled={pagination.offset + pagination.limit >= pagination.total}
+                className="h-8 px-3 text-sm"
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

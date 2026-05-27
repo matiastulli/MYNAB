@@ -8,6 +8,7 @@ from pydantic import UUID4
 from sqlalchemy import insert, select, join, update, delete, and_
 
 from src import utils
+from src.auth_user import jwt
 from src.auth_user.config import auth_config
 from src.auth_user.exceptions import InvalidCredentials
 from src.auth_user.schemas import RegisterUser, SignInUser, UpdateUser, PasswordlessRegisterUser
@@ -153,6 +154,17 @@ async def expire_refresh_token(refresh_token_uuid: UUID4) -> None:
     )
 
     await execute(update_query)
+
+
+async def refresh_access_token(db_refresh_token: dict) -> tuple[str, str]:
+    user = await get_user_by_id(db_refresh_token["id_user"])
+    if user is None:
+        raise InvalidCredentials()
+
+    await expire_refresh_token(db_refresh_token["uuid"])
+    new_refresh_token = await create_refresh_token(id_user=user["id"])
+    new_access_token = jwt.create_access_token(user=user)
+    return new_access_token, new_refresh_token
 
 
 async def authenticate_user(auth_data: SignInUser) -> dict[str, Any]:

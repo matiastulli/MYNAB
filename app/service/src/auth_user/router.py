@@ -99,6 +99,19 @@ async def logout_user(
     )
     return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "Logout successful"})
 
+
+@router.post("/refresh")
+async def refresh_tokens(
+    response: Response,
+    refresh_token: dict[str, Any] = Depends(dependencies.valid_refresh_token),
+) -> JSONResponse:
+    new_access_token, new_refresh_token = await service.refresh_access_token(refresh_token)
+    response.set_cookie(**utils.get_refresh_token_settings(new_refresh_token))
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={"access_token": new_access_token},
+    )
+
 # endregion Password
 
 # region Passwordless

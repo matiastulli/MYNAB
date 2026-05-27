@@ -1,5 +1,5 @@
 {
-    "python.defaultInterpreterPath": "./app/service/venv/Scripts/python.exe",
+    "python.defaultInterpreterPath": "",
     "python.terminal.activateEnvironment": true,
     "python.envFile": "${workspaceFolder}/app/service/.env",
     "terminal.integrated.cwd": "${workspaceFolder}/app/service",

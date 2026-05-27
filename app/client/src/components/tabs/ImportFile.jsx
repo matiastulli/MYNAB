@@ -97,6 +97,7 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
       const resultData = {
         message: response.message || "Import successful",
         count: response.imported_count || 0,
+        skipped: response.skipped_count || 0,
       };
 
       setResult(resultData);
@@ -168,7 +169,8 @@ export default function ImportFile({ onImportComplete, onImportSuccess, isAuthen
             <div className="text-center space-y-2">
               <h3 className="text-xl font-semibold text-[hsl(var(--foreground))]">Import Successful!</h3>
               <p className="text-[hsl(var(--muted-foreground))] max-w-md">
-                {result.message} - {result.count} transactions have been imported to your account.
+                {result.count} transactions imported
+                {result.skipped > 0 ? `, ${result.skipped} skipped (duplicates)` : ""}.
               </p>
             </div>
             <div className="text-center text-sm text-[hsl(var(--muted-foreground))]">

@@ -84,11 +84,12 @@ async def post_file(
 
     try:
         # Process bank statement in the service layer
-        entry_count = await process_bank_statement(jwt_data.id_user, file_id, bank_name, currency, file_content)
+        imported_count, skipped_count = await process_bank_statement(jwt_data.id_user, file_id, bank_name, currency, file_content)
 
         return {
-            "message": f"Successfully imported {entry_count} transactions from {bank_name}",
-            "imported_count": entry_count
+            "message": f"Successfully imported {imported_count} transactions from {bank_name}",
+            "imported_count": imported_count,
+            "skipped_count": skipped_count,
         }
 
     except Exception as e:

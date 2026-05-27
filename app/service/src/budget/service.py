@@ -298,7 +298,20 @@ async def list_files(user_id: int, limit: int, offset: int, currency: str) -> di
     }
 
 
-async def process_bank_statement(user_id: int, file_id: int, bank_name: str, currency: str, file_content: str) -> int:
+async def _get_existing_reference_ids(user_id: int, reference_ids: list[str]) -> set[str]:
+    if not reference_ids:
+        return set()
+    stmt = select(budget_entry.c.reference_id).where(
+        and_(
+            budget_entry.c.user_id == user_id,
+            budget_entry.c.reference_id.in_(reference_ids)
+        )
+    )
+    rows = await fetch_all(stmt)
+    return {row["reference_id"] for row in rows}
+
+
+async def process_bank_statement(user_id: int, file_id: int, bank_name: str, currency: str, file_content: str) -> tuple[int, int]:
     """
     Process bank statements from different banks and add entries to the database
     Returns the number of entries imported
@@ -367,13 +380,35 @@ async def process_bank_statement(user_id: int, file_id: int, bank_name: str, cur
 
         filtered_entries.append(entry)
 
-    # Save filtered entries to database
-    entry_count = 0
-    for entry in filtered_entries:
-        await create_budget_entry(user_id, entry)
-        entry_count += 1
+    # Duplicate detection
+    candidate_reference_ids = [e.reference_id for e in filtered_entries]
+    existing_ids = await _get_existing_reference_ids(user_id, candidate_reference_ids)
 
-    return entry_count
+    new_entries = [e for e in filtered_entries if e.reference_id not in existing_ids]
+    skipped_count = len(filtered_entries) - len(new_entries)
+
+    # Bulk insert all new entries in a single statement
+    if new_entries:
+        rows = [
+            {
+                "user_id": user_id,
+                "reference_id": e.reference_id,
+                "amount": e.amount,
+                "type": e.type,
+                "currency": e.currency,
+                "source": e.source,
+                "description": e.description,
+                "category_id": e.category_id if e.category_id else None,
+                "date": e.date,
+                "file_id": e.file_id if e.file_id else None,
+                "created_at": datetime.utcnow(),
+                "updated_at": datetime.utcnow(),
+            }
+            for e in new_entries
+        ]
+        await execute(insert(budget_entry).values(rows))
+
+    return len(new_entries), skipped_count
 
 
 def _process_santander_rio_format(df: pd.DataFrame, file_id: int, bank_name: str, currency: str) -> List[BudgetEntryCreate]:

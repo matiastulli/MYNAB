@@ -596,6 +596,7 @@ export default function MainApp({ onLogout }) {
                   currency={currency}
                   summary={summary}
                   entries={entries}
+                  totalTransactions={pagination.total}
                   isLoading={summaryLoading || entriesLoading}
                 />
               </div>

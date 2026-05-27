@@ -15,6 +15,7 @@ export default function Dashboard({
   onSignInClick,
   summary = { income: 0, outcome: 0, categories: { income: [], outcome: [] } },
   entries = [],
+  totalTransactions = 0,
   currency = "ARS",
   isLoading = false,
 }) {
@@ -223,7 +224,7 @@ export default function Dashboard({
                 <BarChart2Icon className="h-4 w-4" />
               </div>
             </div>
-            <p className="text-xl font-semibold text-[hsl(var(--foreground))]">{entries.length}</p>
+            <p className="text-xl font-semibold text-[hsl(var(--foreground))]">{totalTransactions}</p>
             <p className="text-xs text-[hsl(var(--muted-foreground))] mt-1">Transactions this period</p>
           </CardContent>
         </Card>

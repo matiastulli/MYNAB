@@ -212,7 +212,7 @@ export default function MainApp({ onLogout }) {
         setEntries(data.data || []);
         setPagination({
           ...pagination,
-          total: data.pagination?.total || 0
+          total: data.metadata?.total_count || 0
         });
       } else {
         console.error("Error fetching details:", data.error);

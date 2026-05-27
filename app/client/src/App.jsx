@@ -22,7 +22,7 @@ export default function App() {
   }, [])
 
   // Handle successful authentication from landing page
-  const handleAuthenticated = (authData) => {
+  const handleAuthenticated = () => {
     setIsAuthenticated(true)
   }
 

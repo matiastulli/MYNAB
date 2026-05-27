@@ -7,8 +7,6 @@ import { api } from "@/services/api";
 import { CalendarIcon, CircleDollarSignIcon, FileIcon, FolderIcon, TrashIcon } from "lucide-react";
 
 export default function FilesList({
-  isAuthenticated,
-  onSignInClick,
   onFileDeleted,
   files = [],
   loading = false,

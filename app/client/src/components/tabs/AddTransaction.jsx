@@ -10,8 +10,6 @@ import { CalendarIcon, CheckIcon, CircleDollarSignIcon, PlusCircleIcon, PlusIcon
 import { useEffect, useState } from "react";
 
 export default function AddTransaction({
-  isAuthenticated,
-  onSignInClick,
   onTransactionAdded,
   defaultCurrency = "ARS"
 }) {

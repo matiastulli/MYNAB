@@ -31,7 +31,7 @@ export default function MainApp({ onLogout }) {
   // React Router hooks for URL management
   const params = useParams()
   const navigate = useNavigate()
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams] = useSearchParams()
 
   // Ref for scrolling to tabs section
   const tabsRef = useRef(null)
@@ -287,7 +287,7 @@ export default function MainApp({ onLogout }) {
     onLogout();
   };
 
-  const handleImportSuccess = (result) => {
+  const handleImportSuccess = () => {
     fetchSummary();
     fetchDetails();
     fetchFiles();

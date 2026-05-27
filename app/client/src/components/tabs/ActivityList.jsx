@@ -13,11 +13,9 @@ import {
 import { useEffect, useState } from "react";
 
 export default function ActivityList({
-  isAuthenticated,
   entries = [],
   dateRangeFormatted,
   dateRange,
-  onSignInClick,
   onTransactionDeleted,
   isLoading = false,
   currency = "ARS",

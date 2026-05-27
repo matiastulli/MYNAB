@@ -6,12 +6,9 @@ import { useNavigate } from "react-router-dom"
 
 export default function CurrencyOverview({
   currencySummary,
-  dateRangeFormatted,
   isLoading,
   onCurrencySelect,
   onCurrencyImport,
-  isAuthenticated,
-  onSignInClick,
 }) {
   const navigate = useNavigate()
 

@@ -11,17 +11,11 @@ import {
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts"
 
 export default function Dashboard({
-  isAuthenticated,
-  onSignInClick,
   summary = { income: 0, outcome: 0, categories: { income: [], outcome: [] } },
-  entries = [],
   totalTransactions = 0,
   currency = "ARS",
   isLoading = false,
 }) {
-  // Calculate balance
-  const balance = summary.income - summary.outcome
-
   // Extract categories for visualization - ensure backward compatibility
   const categoriesData = summary.categories || { income: [], outcome: [] }
 
@@ -80,7 +74,7 @@ export default function Dashboard({
   }
 
   // Custom tooltip component for better dark mode support
-  const CustomTooltip = ({ active, payload, label }) => {
+  const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       return (
         <div

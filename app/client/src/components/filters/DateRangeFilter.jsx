@@ -41,11 +41,12 @@ export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoadin
         newRange.startDate = startOfMonth(new Date())
         newRange.endDate = endOfMonth(new Date())
         break
-      case "last-month":
+      case "last-month": {
         const lastMonth = subMonths(new Date(), 1)
         newRange.startDate = startOfMonth(lastMonth)
         newRange.endDate = endOfMonth(lastMonth)
         break
+      }
       case "last-3-months":
         newRange.startDate = startOfMonth(subMonths(new Date(), 2))
         newRange.endDate = endOfMonth(new Date())

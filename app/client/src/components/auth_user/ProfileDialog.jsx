@@ -179,19 +179,19 @@ export default function ProfileDialog({
               </p>
             </div>
 
-            <DialogFooter className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-[hsl(var(--border))]">
+            <DialogFooter className="flex flex-row gap-3 pt-4 border-t border-[hsl(var(--border))]">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
-                className="w-full sm:w-auto h-10"
+                className="flex-1 h-11"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={isUpdating}
-                className="w-full sm:w-auto h-10 transition-all duration-200"
+                className="flex-1 h-11 transition-all duration-200"
                 style={{
                   backgroundColor: "hsl(var(--accent))",
                   color: "hsl(var(--accent-foreground))"

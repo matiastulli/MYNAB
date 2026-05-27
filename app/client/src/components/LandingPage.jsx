@@ -106,7 +106,7 @@ export default function LandingPage({ onGetStarted }) {
                         <div className="mb-12 sm:mb-16">
                             <Button 
                                 onClick={handleGetStarted} 
-                                className="bg-[hsl(var(--accent))] hover:bg-[hsl(var(--accent))/0.9] text-[hsl(var(--accent-foreground))] px-6 sm:px-8 py-2.5 sm:py-3 text-base sm:text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                                className="bg-[hsl(var(--accent))] hover:bg-[hsl(var(--accent))]/90 text-[hsl(var(--accent-foreground))] px-6 sm:px-8 py-2.5 sm:py-3 text-base sm:text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                             >
                                 <LogInIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                                 Get Started

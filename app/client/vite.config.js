@@ -17,7 +17,8 @@ export default defineConfig({
         name: 'MYNAB - Budget Tracker',
         short_name: 'MYNAB',
         description: 'Track your personal finances and budget with MYNAB',
-        theme_color: '#121418',
+        theme_color: '#0d0f12',
+        background_color: '#0d0f12',
         icons: [
           {
             src: 'favicon-16x16.png',

@@ -107,7 +107,7 @@ async def google_sign_in_route(
     request: GoogleSignInRequest,
     response: Response,
 ) -> JSONResponse:
-    user = await service.google_sign_in(request.id_token)
+    user = await service.google_sign_in(request.access_token)
     refresh_token_value = await service.create_refresh_token(id_user=user["id"])
     access_token = jwt.create_access_token(user=user)
     response.set_cookie(**utils.get_refresh_token_settings(refresh_token_value))

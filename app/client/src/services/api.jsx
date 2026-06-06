@@ -245,7 +245,7 @@ export const api = {
   // Authentication specific methods
   auth: {
     googleSignIn: async (idToken) => {
-      return api.post('auth/google', { id_token: idToken });
+      return api.post('auth/google', { access_token: idToken });
     },
   },
 

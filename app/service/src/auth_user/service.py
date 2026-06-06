@@ -5,8 +5,7 @@ from typing import Any, Optional
 from pydantic import UUID4
 from sqlalchemy import insert, select, join, update, delete
 
-from google.oauth2 import id_token as google_id_token
-from google.auth.transport import requests as google_requests
+import requests as http_requests
 
 from src import utils
 from src.auth_user import jwt
@@ -197,17 +196,22 @@ async def get_user_roles(user_id: int) -> dict[str, Any]:
     return result
 
 
-async def google_sign_in(id_token_str: str) -> dict[str, Any]:
+async def google_sign_in(access_token: str) -> dict[str, Any]:
     try:
-        id_info = google_id_token.verify_oauth2_token(
-            id_token_str,
-            google_requests.Request(),
-            auth_config.GOOGLE_CLIENT_ID,
+        resp = http_requests.get(
+            "https://www.googleapis.com/oauth2/v3/userinfo",
+            headers={"Authorization": f"Bearer {access_token}"},
+            timeout=10,
         )
+        if resp.status_code != 200:
+            raise InvalidCredentials()
+        id_info = resp.json()
+    except InvalidCredentials:
+        raise
     except Exception:
         raise InvalidCredentials()
 
-    google_sub = id_info["sub"]
+    google_sub = id_info.get("sub", "")
     email = id_info.get("email", "")
     name = id_info.get("given_name") or id_info.get("name", "").split(" ")[0] or "User"
     last_name = id_info.get("family_name") or (id_info.get("name", "").split(" ", 1)[1] if " " in id_info.get("name", "") else "")

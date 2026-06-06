@@ -36,7 +36,7 @@ class RegisterUser(UserBase):
 
 
 class GoogleSignInRequest(CustomModel):
-    id_token: str
+    access_token: str
 
 
 class UpdateUser(CustomModel):

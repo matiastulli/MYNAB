@@ -80,7 +80,7 @@ export default function LandingPage({ onGetStarted }) {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[hsl(var(--background))] via-[hsl(var(--background))] to-[hsl(var(--muted))]">
+        <div className="h-screen overflow-hidden bg-gradient-to-br from-[hsl(var(--background))] via-[hsl(var(--background))] to-[hsl(var(--muted))]">
             {showAuthModal && (
                 <AuthModal
                     onAuthenticated={handleAuthentication}
@@ -89,10 +89,10 @@ export default function LandingPage({ onGetStarted }) {
             )}
 
             {/* Hero Section */}
-            <section className="py-24 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-4xl mx-auto text-center">
-                    <div className="mb-12">
-                        <div className="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-accent/20 to-accent/10 rounded-full mb-6 sm:mb-8 shadow-lg">
+            <section className="h-full flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8">
+                <div className="max-w-4xl w-full mx-auto text-center">
+                    <div className="mb-6 sm:mb-8">
+                        <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-accent/20 to-accent/10 rounded-full mb-4 sm:mb-6 shadow-lg">
                             <DollarSignIcon className="h-10 w-10 sm:h-12 sm:w-12 text-[hsl(var(--accent))]" />
                         </div>
                         <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-[hsl(var(--foreground))] mb-6 sm:mb-8 leading-tight">
@@ -103,7 +103,7 @@ export default function LandingPage({ onGetStarted }) {
                         </h1>
                         
                         {/* Login/Signup Button */}
-                        <div className="mb-12 sm:mb-16">
+                        <div className="mb-6 sm:mb-8">
                             <Button 
                                 onClick={handleGetStarted} 
                                 className="bg-[hsl(var(--accent))] hover:bg-[hsl(var(--accent))]/90 text-[hsl(var(--accent-foreground))] px-6 sm:px-8 py-2.5 sm:py-3 text-base sm:text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
@@ -114,7 +114,7 @@ export default function LandingPage({ onGetStarted }) {
                         </div>
                         
                         {/* Financial Overview Example */}
-                        <div className="mt-12 sm:mt-16 bg-[hsl(var(--card))] rounded-2xl shadow-xl border border-[hsl(var(--border))] p-6 sm:p-8 max-w-2xl mx-auto transform hover:scale-105 transition-all duration-300">
+                        <div className="mt-6 sm:mt-8 bg-[hsl(var(--card))] rounded-2xl shadow-xl border border-[hsl(var(--border))] p-6 sm:p-8 max-w-2xl mx-auto transform hover:scale-105 transition-all duration-300">
                             <h3 className="text-base sm:text-lg font-semibold text-[hsl(var(--foreground))] mb-4 sm:mb-6 text-center">Your Financial Overview</h3>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                                 <div className="text-center p-3 sm:p-4 bg-[hsl(var(--background))] rounded-lg border border-[hsl(var(--border))] hover:shadow-lg hover:border-[hsl(var(--accent))/0.3] transition-all duration-300 group">

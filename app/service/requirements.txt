@@ -13,6 +13,7 @@ dnspython==2.7.0
 email_validator==2.2.0
 et_xmlfile==2.0.0
 fastapi==0.104.1
+google-auth==2.40.3
 greenlet==3.2.3
 h11==0.16.0
 idna==3.10

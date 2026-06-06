@@ -2,6 +2,7 @@ import { initializeTheme, setupSystemPreferenceListener } from '@/lib/themeUtils
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { registerSW } from 'virtual:pwa-register'
+import { GoogleOAuthProvider } from '@react-oauth/google'
 import App from './App.jsx'
 import './index.css'
 
@@ -23,8 +24,10 @@ const updateSW = registerSW({
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <div className="min-w-[320px] w-full">
-      <App />
-    </div>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+      <div className="min-w-[320px] w-full">
+        <App />
+      </div>
+    </GoogleOAuthProvider>
   </React.StrictMode>,
 )

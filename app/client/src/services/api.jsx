@@ -244,39 +244,9 @@ export const api = {
 
   // Authentication specific methods
   auth: {
-    signin: async (credentials) => {
-      return api.post('auth/signin', credentials);
+    googleSignIn: async (idToken) => {
+      return api.post('auth/google', { id_token: idToken });
     },
-
-    signup: async (userData) => {
-      return api.post('auth/signup', userData);
-    },
-
-    // Passwordless authentication methods
-    passwordless: {
-      sendCode: async (email, codeType) => {
-        return api.post('auth/passwordless/send-code', {
-          email,
-          code_type: codeType
-        });
-      },
-
-      verifyCode: async (email, code, codeType) => {
-        return api.post('auth/passwordless/verify-code', {
-          email,
-          verification_code: code,
-          code_type: codeType
-        });
-      },
-
-      register: async (userData, verificationCode) => {
-        return api.post('auth/passwordless/register', { ...userData, verification_code: verificationCode });
-      },
-
-      login: async (email, verificationCode) => {
-        return api.post('auth/passwordless/login', { email, verification_code: verificationCode });
-      }
-    }
   },
 
   // Check if user is authenticated

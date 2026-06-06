@@ -11,5 +11,7 @@ class AuthConfig(BaseSettings):
 
     SECURE_COOKIES: bool = True
 
+    GOOGLE_CLIENT_ID: str
+
 
 auth_config = AuthConfig()

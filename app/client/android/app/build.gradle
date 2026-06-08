@@ -21,7 +21,7 @@ plugins {
 }
 
 def twaManifest = [
-    applicationId: 'app.mynab.pwa',
+    applicationId: 'com.mynab.app',
     hostName: 'mynab.app', // The domain being opened in the TWA.
     launchUrl: '/', // The start path for the TWA. Must be relative to the domain.
     name: 'MYNAB - Budget Tracker', // The application name.
@@ -52,13 +52,13 @@ def twaManifest = [
 
 android {
     compileSdkVersion 36
-    namespace "app.mynab.pwa"
+    namespace "com.mynab.app"
     defaultConfig {
-        applicationId "app.mynab.pwa"
+        applicationId "com.mynab.app"
         minSdkVersion 21
         targetSdkVersion 35
-        versionCode 4
-        versionName "1.0.0.0"
+        versionCode 7
+        versionName "1.0.0.2"
 
         // The name for the application
         resValue "string", "appName", twaManifest.name

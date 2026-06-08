@@ -1,5 +1,5 @@
 {
-  "packageId": "app.mynab.pwa",
+  "packageId": "com.mynab.app",
   "host": "mynab.app",
   "name": "MYNAB - Budget Tracker",
   "launcherName": "MYNAB",
@@ -21,8 +21,8 @@
     "path": "android.keystore",
     "alias": "mynab-key"
   },
-  "appVersionName": "1.0.0.0",
-  "appVersionCode": 4,
+  "appVersionName": "1.0.0.2",
+  "appVersionCode": 7,
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://mynab.app/manifest.webmanifest",
@@ -42,5 +42,5 @@
   "additionalTrustedOrigins": [],
   "retainedBundles": [],
   "displayOverride": [],
-  "appVersion": "1.0.0.0"
+  "appVersion": "1.0.0.2"
 }

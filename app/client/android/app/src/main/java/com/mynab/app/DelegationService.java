@@ -1,4 +1,4 @@
-package app.mynab.pwa;
+package com.mynab.app;
 
 
 

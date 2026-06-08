@@ -35,10 +35,6 @@ export default function App() {
           setIsAuthenticated(false)
         }
       } else {
-        const newToken = await api.attemptRefresh()
-        if (newToken) {
-          setIsAuthenticated(true)
-        }
         setIsLoading(false)
       }
     }
@@ -84,30 +80,17 @@ export default function App() {
             )
           }
         />
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <MainApp onLogout={handleLogout} />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard/:tab"
-          element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <MainApp onLogout={handleLogout} />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard/:tab/:currency"
-          element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <MainApp onLogout={handleLogout} />
-            </ProtectedRoute>
-          }
-        />
+        {["/dashboard", "/dashboard/:tab", "/dashboard/:tab/:currency"].map(path => (
+          <Route
+            key={path}
+            path={path}
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <MainApp onLogout={handleLogout} />
+              </ProtectedRoute>
+            }
+          />
+        ))}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

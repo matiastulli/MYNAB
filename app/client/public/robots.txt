@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mynab.app/sitemap.xml

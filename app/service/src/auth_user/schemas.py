@@ -1,38 +1,9 @@
-import re
 from typing import Optional
 from datetime import datetime
 
-from pydantic import EmailStr, Field, field_validator, validator
+from pydantic import EmailStr, Field, validator
 
 from src.models import CustomModel, convert_datetime_to_date
-
-STRONG_PASSWORD_PATTERN = re.compile(
-    r"^(?=.*[\d])(?=.*[!@#$%^&*])[\w!@#$%^&*]{6,128}$")
-
-
-class UserBase(CustomModel):
-    email: EmailStr
-    password: str = Field(min_length=6, max_length=128)
-
-    @field_validator("password", mode="after")
-    @classmethod
-    def valid_password(cls, password: str) -> str:
-        if not re.match(STRONG_PASSWORD_PATTERN, password):
-            raise ValueError(
-                "Password must contain at least "
-                "one lower character, "
-                "one upper character, "
-                "digit or "
-                "special symbol"
-            )
-
-        return password
-
-
-class RegisterUser(UserBase):
-    name: str = Field(min_length=2, max_length=100)
-    last_name: str = Field(min_length=2, max_length=100)
-    id_role: int
 
 
 class GoogleSignInRequest(CustomModel):
@@ -43,10 +14,6 @@ class UpdateUser(CustomModel):
     name: str = Field(min_length=2, max_length=100)
     last_name: str = Field(min_length=2, max_length=100)
     national_id: Optional[str] = Field(min_length=6, max_length=20)
-
-
-class SignInUser(UserBase):
-    pass
 
 
 class JWTData(CustomModel):

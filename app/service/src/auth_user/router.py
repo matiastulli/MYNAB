@@ -10,41 +10,6 @@ from src.constants import ROLES
 router = APIRouter()
 
 
-@router.post("/register", status_code=status.HTTP_201_CREATED, response_model=schemas.UserResponse)
-async def register_user(
-    register_data: schemas.RegisterUser = Depends(
-        dependencies.valid_user_create)
-) -> JSONResponse:
-    user_data = await service.create_user(register_data)
-
-    if user_data is None:
-        raise HTTPException(status_code=404, detail="User not created")
-
-    user_response = schemas.UserResponse(**user_data)
-    return JSONResponse(status_code=status.HTTP_201_CREATED, content=user_response.model_dump())
-
-
-@router.post("/signin", response_model=schemas.AccessTokenResponse)
-async def sign_in_user(
-    sign_in_data: schemas.SignInUser,
-    response: Response
-) -> JSONResponse:
-    user = await service.authenticate_user(sign_in_data)
-
-    refresh_token_value = await service.create_refresh_token(user["id"])
-    access_token = jwt.create_access_token(user=user)
-
-    response.set_cookie(
-        **utils.get_refresh_token_settings(refresh_token_value))
-
-    token_response = schemas.AccessTokenResponse(
-        id_user=user["id"],
-        access_token=access_token,
-        refresh_token=refresh_token_value,
-    )
-    return JSONResponse(status_code=status.HTTP_200_OK, content=token_response.model_dump())
-
-
 @router.get("/profile", response_model=schemas.UserResponse)
 async def get_profile(
     jwt_data: JWTData = Depends(require_role([]))

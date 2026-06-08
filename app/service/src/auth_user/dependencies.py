@@ -3,19 +3,12 @@ from typing import Any, List
 
 from fastapi import Cookie, Depends
 
-from src.auth_user.exceptions import EmailTaken, RefreshTokenNotValid, RoleRequired
-from src.auth_user.schemas import RegisterUser, JWTData
+from src.auth_user.exceptions import RefreshTokenNotValid, RoleRequired
+from src.auth_user.schemas import JWTData
 from src.auth_user import service
 
 from src.auth_user.jwt import parse_jwt_user_data
 from src.constants import ROLES
-
-
-async def valid_user_create(user: RegisterUser) -> RegisterUser:
-    if await service.get_user_by_email(user.email):
-        raise EmailTaken()
-
-    return user
 
 
 async def valid_refresh_token(
@@ -48,9 +41,3 @@ def require_role(required_roles: List[ROLES]):
             raise RoleRequired()
         return jwt_data
     return role_checker
-
-
-def get_current_user():
-    async def current_user(jwt_data: JWTData = Depends(parse_jwt_user_data)):
-        return jwt_data
-    return current_user

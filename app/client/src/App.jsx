@@ -1,10 +1,12 @@
 "use client"
 
+import React from "react"
 import LandingPage from "@/components/LandingPage"
-import MainApp from "@/components/MainApp"
 import { api } from "@/services/api"
 import { useEffect, useState } from "react"
 import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-dom"
+
+const MainApp = React.lazy(() => import('@/components/MainApp'))
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -53,45 +55,63 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route 
-          path="/" 
+        <Route
+          path="/"
           element={
             isAuthenticated ? (
               <Navigate to="/dashboard" replace />
             ) : (
               <LandingPage onGetStarted={handleAuthenticated} />
             )
-          } 
+          }
         />
-        <Route 
-          path="/dashboard" 
+        <Route
+          path="/dashboard"
           element={
             isAuthenticated ? (
-              <MainApp onLogout={handleLogout} />
+              <React.Suspense fallback={
+                <div className="flex items-center justify-center h-screen">
+                  <div className="w-8 h-8 rounded-full border-2 border-[hsl(var(--accent))] border-t-transparent animate-spin" />
+                </div>
+              }>
+                <MainApp onLogout={handleLogout} />
+              </React.Suspense>
             ) : (
               <Navigate to="/" replace />
             )
-          } 
+          }
         />
-        <Route 
-          path="/dashboard/:tab" 
+        <Route
+          path="/dashboard/:tab"
           element={
             isAuthenticated ? (
-              <MainApp onLogout={handleLogout} />
+              <React.Suspense fallback={
+                <div className="flex items-center justify-center h-screen">
+                  <div className="w-8 h-8 rounded-full border-2 border-[hsl(var(--accent))] border-t-transparent animate-spin" />
+                </div>
+              }>
+                <MainApp onLogout={handleLogout} />
+              </React.Suspense>
             ) : (
               <Navigate to="/" replace />
             )
-          } 
+          }
         />
-        <Route 
-          path="/dashboard/:tab/:currency" 
+        <Route
+          path="/dashboard/:tab/:currency"
           element={
             isAuthenticated ? (
-              <MainApp onLogout={handleLogout} />
+              <React.Suspense fallback={
+                <div className="flex items-center justify-center h-screen">
+                  <div className="w-8 h-8 rounded-full border-2 border-[hsl(var(--accent))] border-t-transparent animate-spin" />
+                </div>
+              }>
+                <MainApp onLogout={handleLogout} />
+              </React.Suspense>
             ) : (
               <Navigate to="/" replace />
             )
-          } 
+          }
         />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

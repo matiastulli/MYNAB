@@ -4,7 +4,12 @@
       "Bash(alembic revision *)",
       "Bash(npm install *)",
       "Bash(npm run *)",
-      "Bash(python -c \"from src.auth_user.router import router; print\\('OK'\\)\")"
+      "Bash(python -c \"from src.auth_user.router import router; print\\('OK'\\)\")",
+      "Bash(ln -s /Users/juanmatiastulli/Code/MYNAB/app/client/node_modules /Users/juanmatiastulli/Code/MYNAB/.claude/worktrees/agent-ac3dba1d717723746/app/client/node_modules)",
+      "Bash(python -c \"from src.auth_user import router, service, schemas, dependencies\")",
+      "Bash(ENV_JWT_ALG=HS256 ENV_JWT_SECRET=test_secret GOOGLE_CLIENT_ID=test python -c \"from src.auth_user import router, service, schemas, dependencies; print\\('OK'\\)\")",
+      "Bash(ENV_JWT_ALG=HS256 ENV_JWT_SECRET=test_secret GOOGLE_CLIENT_ID=test ENV_DATABASE_URL=postgresql+asyncpg://user:pass@localhost/db python -c \"from src.auth_user import router, service, schemas, dependencies; print\\('OK'\\)\")",
+      "Bash(ENV_JWT_ALG=HS256 ENV_JWT_SECRET=test_secret GOOGLE_CLIENT_ID=test ENV_DATABASE_URL=postgresql+asyncpg://user:pass@localhost/db ENV_CORS_ORIGINS='[\"http://localhost:5173\"]' ENV_CORS_HEADERS='[\"*\"]' ENV_ENVIRONMENT=LOCAL python -c 'from src.auth_user import router, service, schemas, dependencies; print\\('\\\\''OK'\\\\''\\)')"
     ]
   }
 }

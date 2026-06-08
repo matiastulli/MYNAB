@@ -1,9 +1,9 @@
 import uuid
 from datetime import datetime, timedelta
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import UUID4
-from sqlalchemy import insert, select, join, update, delete
+from sqlalchemy import insert, select, join, update
 
 import requests as http_requests
 
@@ -11,46 +11,8 @@ from src import utils
 from src.auth_user import jwt
 from src.auth_user.config import auth_config
 from src.auth_user.exceptions import InvalidCredentials
-from src.auth_user.schemas import RegisterUser, SignInUser, UpdateUser, GoogleSignInRequest
-from src.auth_user.security import check_password, hash_password
+from src.auth_user.schemas import UpdateUser, GoogleSignInRequest
 from src.database import auth_user, auth_user_role, auth_refresh_token, execute, fetch_one
-
-
-async def create_user(user: RegisterUser) -> dict[str, Any] | None:
-    insert_query = (
-        insert(auth_user)
-        .values(
-            {
-                "name": user.name,
-                "last_name": user.last_name,
-                "email": user.email,
-                "password": hash_password(user.password),
-                "id_role": user.id_role,
-            }
-        )
-        .returning(auth_user)
-    )
-
-    inserted_user = await fetch_one(insert_query)
-
-    if inserted_user is None:
-        return None
-
-    select_query = select(
-        auth_user.c.id,
-        auth_user.c.name.label('name'),
-        auth_user.c.last_name,
-        auth_user.c.email,
-        auth_user.c.id_role,
-        auth_user.c.auth_method,
-        auth_user.c.email_verified,
-        auth_user.c.created_at,
-        auth_user.c.updated_at
-    ).where(
-        auth_user.c.id == inserted_user['id']
-    )
-
-    return await fetch_one(select_query)
 
 
 async def update_user(id_user: int, user: UpdateUser) -> dict[str, Any] | None:
@@ -104,23 +66,6 @@ async def get_user_by_id(id_user: int) -> dict[str, Any] | None:
     return await fetch_one(select_query)
 
 
-async def get_user_by_email(email: str) -> dict[str, Any] | None:
-    select_query = select(
-        auth_user.c.id,
-        auth_user.c.name,
-        auth_user.c.last_name,
-        auth_user.c.email,
-        auth_user.c.password,
-        auth_user.c.id_role,
-        auth_user.c.auth_method,
-        auth_user.c.email_verified,
-        auth_user.c.created_at,
-        auth_user.c.updated_at
-    ).where(auth_user.c.email == email)
-
-    return await fetch_one(select_query)
-
-
 async def create_refresh_token(
     *, id_user: int, refresh_token: str | None = None
 ) -> str:
@@ -165,17 +110,6 @@ async def refresh_access_token(db_refresh_token: dict) -> tuple[str, str]:
     new_refresh_token = await create_refresh_token(id_user=user["id"])
     new_access_token = jwt.create_access_token(user=user)
     return new_access_token, new_refresh_token
-
-
-async def authenticate_user(auth_data: SignInUser) -> dict[str, Any]:
-    user = await get_user_by_email(auth_data.email)
-    if not user:
-        raise InvalidCredentials()
-
-    if not check_password(auth_data.password, user["password"]):
-        raise InvalidCredentials()
-
-    return user
 
 
 async def get_user_roles(user_id: int) -> dict[str, Any]:

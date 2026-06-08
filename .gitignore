@@ -1,5 +1,7 @@
 # Claude
 .claude/worktrees/
+.claude/settings.json
+.claude/settings.local.json
 
 # Bubblewrap / Android build
 app/client/android/android.keystore

@@ -90,19 +90,14 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-          'vendor-charts': ['recharts'],
-          'vendor-icons': ['lucide-react'],
-          'vendor-radix': [
-            '@radix-ui/react-dialog',
-            '@radix-ui/react-label',
-            '@radix-ui/react-popover',
-            '@radix-ui/react-select',
-            '@radix-ui/react-slot',
-            '@radix-ui/react-tabs',
-          ],
-          'vendor-date': ['date-fns'],
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return
+          if (id.includes('recharts')) return 'vendor-charts'
+          if (id.includes('lucide-react')) return 'vendor-icons'
+          if (id.includes('date-fns')) return 'vendor-date'
+          if (id.includes('@radix-ui')) return 'vendor-radix'
+          if (id.includes('react')) return 'vendor-react'
+          return 'vendor'
         },
       },
     },

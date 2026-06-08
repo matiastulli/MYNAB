@@ -245,7 +245,7 @@ export default function MainApp({ onLogout }) {
       {/* Main content */}
       <div className="flex-1 min-w-0">
         <div className="px-4 py-6 pb-28 md:pb-10 md:px-8 md:py-10">
-          <header className="mb-6 md:mb-8">
+          <header className="mb-4 md:mb-6">
             <div className="text-center">
               <DateRangeFilter
                 isLoading={summaryLoading || entriesLoading}

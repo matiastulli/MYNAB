@@ -1,7 +1,7 @@
 "use client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { getCurrencyName, getCurrencySymbol } from "@/lib/currencyUtils"
-import { ArrowDownIcon, ArrowUpIcon, TrendingUpIcon } from "lucide-react"
+import { ArrowDownIcon, ArrowUpIcon } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 
 export default function CurrencyOverview({
@@ -78,17 +78,13 @@ export default function CurrencyOverview({
 
   if (currencies.length === 0) {
     return (
-      <div className="text-center py-8 px-4 max-w-full mx-auto">
-        <div className="mb-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[hsl(var(--accent))/0.1] to-[hsl(var(--chart-3))/0.1] rounded-full mb-4 border border-[hsl(var(--accent))/0.2] backdrop-blur-sm">
-            <TrendingUpIcon className="h-8 w-8 text-[hsl(var(--accent))]" />
-          </div>
-          <h3 className="text-xl font-semibold text-[hsl(var(--foreground))] mb-3 bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] bg-clip-text text-transparent">
+      <div className="text-center py-2 px-4 max-w-full mx-auto">
+        <div className="mb-4">
+  
+          <h3 className="text-xl font-semibold text-[hsl(var(--foreground))] mb-2 bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] bg-clip-text text-transparent">
             Start Your Financial Journey
           </h3>
-          <p className="text-[hsl(var(--muted-foreground))] mb-6 text-sm sm:text-base">
-            Looks like there's nothing here yet. Import your transactions to start discover your financial picture.
-          </p>
+          
         </div>
 
         {/* Currency Import Options */}

@@ -40,6 +40,11 @@ export default function MainApp({ onLogout }) {
   const tabsRef = useRef(null)
   const [showProfileModal, setShowProfileModal] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [showExitToast, setShowExitToast] = useState(false)
+  const activeTabRef = useRef(activeTab)
+  const currencyRef = useRef(currency)
+  const exitPending = useRef(false)
+  const exitTimer = useRef(null)
 
   const {
     summary,
@@ -76,6 +81,49 @@ export default function MainApp({ onLogout }) {
     const cleanup = setupSystemPreferenceListener();
     return cleanup;
   }, []);
+
+  // Keep refs in sync so the popstate handler never has a stale closure
+  useEffect(() => { activeTabRef.current = activeTab }, [activeTab])
+  useEffect(() => { currencyRef.current = currency }, [currency])
+
+  // Android/TWA hardware back button handler
+  useEffect(() => {
+    window.history.pushState({ mynab: true }, '')
+
+    const handlePopState = () => {
+      const isHome = currencyRef.current === 'ALL' || activeTabRef.current === 'dashboard'
+
+      if (!isHome) {
+        handleTabChange('dashboard')
+        window.history.pushState({ mynab: true }, '')
+        return
+      }
+
+      if (exitPending.current) {
+        // Second press within window — let the app close
+        clearTimeout(exitTimer.current)
+        exitPending.current = false
+        setShowExitToast(false)
+        return
+      }
+
+      // First press on home — show toast, hold exit for 2 s
+      window.history.pushState({ mynab: true }, '')
+      exitPending.current = true
+      setShowExitToast(true)
+      exitTimer.current = setTimeout(() => {
+        exitPending.current = false
+        setShowExitToast(false)
+      }, 2000)
+    }
+
+    window.addEventListener('popstate', handlePopState)
+    return () => {
+      window.removeEventListener('popstate', handlePopState)
+      clearTimeout(exitTimer.current)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [handleTabChange])
 
   const handleLogout = () => {
     api.logout();
@@ -204,6 +252,13 @@ export default function MainApp({ onLogout }) {
           </div>
         )}
       </aside>
+
+      {/* Exit toast — shown on first back press when already on home */}
+      <div className={`md:hidden fixed bottom-24 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 ${showExitToast ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}>
+        <div className="px-5 py-2.5 rounded-2xl bg-[hsl(var(--foreground)/0.88)] backdrop-blur-xl text-[hsl(var(--background))] text-sm font-medium whitespace-nowrap shadow-xl">
+          Press back again to exit
+        </div>
+      </div>
 
       {/* Mobile floating bottom bar */}
       <div className="md:hidden fixed bottom-4 left-4 right-4 z-50">

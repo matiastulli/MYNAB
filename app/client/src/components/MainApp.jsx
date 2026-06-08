@@ -23,14 +23,17 @@ import {
   ChevronRightIcon,
   CircleDollarSignIcon,
   DollarSignIcon,
+  DownloadIcon,
   FolderIcon,
   LayoutDashboardIcon,
   PlusCircleIcon,
   UploadIcon,
-  UserIcon
+  UserIcon,
+  XIcon
 } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { useNavigate, useParams, useSearchParams } from "react-router-dom"
+import { usePWAInstall } from "@/hooks/usePWAInstall"
 
 export default function MainApp({ onLogout }) {
   const params = useParams()
@@ -41,6 +44,7 @@ export default function MainApp({ onLogout }) {
   const [showProfileModal, setShowProfileModal] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [showExitToast, setShowExitToast] = useState(false)
+  const { canInstall, handleInstall, handleDismiss } = usePWAInstall()
   const activeTabRef = useRef(activeTab)
   const currencyRef = useRef(currency)
   const exitPending = useRef(false)
@@ -305,6 +309,28 @@ export default function MainApp({ onLogout }) {
       {/* Main content */}
       <div className="flex-1 min-w-0">
         <div className="px-4 py-6 pb-28 md:pb-10 md:px-8 md:py-10">
+
+          {/* PWA install banner */}
+          {canInstall && (
+            <div className="mb-4 flex items-center gap-3 px-4 py-3 rounded-[var(--glass-radius-sm)] bg-[hsl(var(--accent)/0.1)] border border-[hsl(var(--accent)/0.25)] backdrop-blur-xl">
+              <DownloadIcon className="h-4 w-4 text-[hsl(var(--accent))] shrink-0" />
+              <span className="flex-1 text-sm text-[hsl(var(--foreground))]">Install MYNAB for a faster, offline-ready experience.</span>
+              <button
+                onClick={handleInstall}
+                className="shrink-0 text-xs font-semibold text-[hsl(var(--accent))] hover:underline"
+              >
+                Install
+              </button>
+              <button
+                onClick={handleDismiss}
+                className="shrink-0 p-0.5 rounded text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors"
+                aria-label="Dismiss"
+              >
+                <XIcon className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          )}
+
           <header className="mb-4 md:mb-6">
             <div className="text-center">
               <DateRangeFilter

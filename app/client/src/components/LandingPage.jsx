@@ -5,10 +5,12 @@ import { api } from '@/services/api'
 import { setupSystemPreferenceListener } from "@/lib/themeUtils"
 import {
     DollarSignIcon,
+    DownloadIcon,
     TrendingDownIcon,
     TrendingUpIcon
 } from "lucide-react"
 import { useEffect, useState } from "react"
+import { usePWAInstall } from "@/hooks/usePWAInstall"
 
 function GoogleLogo() {
     return (
@@ -24,6 +26,7 @@ function GoogleLogo() {
 export default function LandingPage({ onGetStarted }) {
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState(null)
+    const { canInstall, handleInstall } = usePWAInstall()
     const [animatedValues, setAnimatedValues] = useState({
         balance: 0,
         income: 0,
@@ -140,6 +143,19 @@ export default function LandingPage({ onGetStarted }) {
                             </button>
                         </div>
                         
+                        {/* PWA install prompt */}
+                        {canInstall && (
+                            <div className="flex justify-center mb-4">
+                                <button
+                                    onClick={handleInstall}
+                                    className="flex items-center gap-2 h-10 px-5 rounded-lg bg-[hsl(var(--accent)/0.12)] border border-[hsl(var(--accent)/0.3)] text-[hsl(var(--accent))] text-sm font-medium hover:bg-[hsl(var(--accent)/0.2)] transition-all duration-150"
+                                >
+                                    <DownloadIcon className="h-4 w-4" />
+                                    Install App
+                                </button>
+                            </div>
+                        )}
+
                         {/* Financial Overview Example */}
                         <div className="mt-6 sm:mt-8 bg-[hsl(var(--card))] rounded-2xl shadow-xl border border-[hsl(var(--border))] p-6 sm:p-8 max-w-2xl mx-auto transform hover:scale-105 transition-all duration-300">
                             <h2 className="text-base sm:text-lg font-semibold text-[hsl(var(--foreground))] mb-4 sm:mb-6 text-center">Your Financial Overview</h2>

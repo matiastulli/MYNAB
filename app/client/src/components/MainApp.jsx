@@ -11,10 +11,10 @@ import Dashboard from "@/components/tabs/Dashboard"
 import FilesList from "@/components/tabs/FilesList"
 import ImportFile from "@/components/tabs/ImportFile"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { toDateOnlyISOString } from "@/lib/dateUtils"
 import { setupSystemPreferenceListener } from "@/lib/themeUtils"
 import { api } from "@/services/api"
-import { endOfMonth, format, parseISO, startOfMonth } from 'date-fns'
+import { useDashboardData } from "@/hooks/useDashboardData"
+import { DashboardProvider } from "@/contexts/DashboardContext"
 import {
   AlertTriangleIcon,
   BarChartIcon,
@@ -28,437 +28,91 @@ import { useEffect, useRef, useState } from "react"
 import { useNavigate, useParams, useSearchParams } from "react-router-dom"
 
 export default function MainApp({ onLogout }) {
-  // React Router hooks for URL management
   const params = useParams()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
 
-  // Ref for scrolling to tabs section
   const tabsRef = useRef(null)
-
-  // Application state variables
-  const [summary, setSummary] = useState({ income: 0, outcome: 0, categories: [] })
-  const [entries, setEntries] = useState([])
-  const [files, setFiles] = useState([])
-  const [userData, setUserData] = useState(null)
-  const [pagination, setPagination] = useState({
-    limit: 25,
-    offset: 0,
-    total: 0
-  });
-  const [filesPagination, setFilesPagination] = useState({
-    limit: 25,
-    offset: 0,
-    total: 0
-  });
-  const paginationOffsetInitialized = useRef(false);
-  const filesPaginationOffsetInitialized = useRef(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
-  const [activeTab, setActiveTab] = useState("dashboard");
 
-  // Helper function to get date range from URL or default
-  const getInitialDateRange = () => {
-    const startDate = searchParams.get('startDate')
-    const endDate = searchParams.get('endDate')
-    const preset = searchParams.get('preset')
-    
-    if (startDate && endDate) {
-      return {
-        startDate: parseISO(startDate),
-        endDate: parseISO(endDate),
-        preset: preset || 'custom'
-      }
-    }
-    
-    return {
-      startDate: startOfMonth(new Date()),
-      endDate: endOfMonth(new Date()),
-      preset: 'current-month'
-    }
-  }
+  const {
+    summary,
+    entries,
+    files,
+    userData,
+    currencySummary,
+    categories,
+    currency,
+    dateRange,
+    activeTab,
+    pagination,
+    filesPagination,
+    summaryLoading,
+    entriesLoading,
+    filesLoading,
+    filesError,
+    fetchSummary,
+    fetchDetails,
+    fetchFiles,
+    fetchUserProfile,
+    handleCurrencyChange,
+    handleDateRangeChange,
+    handleCurrencySelect: hookHandleCurrencySelect,
+    handleCurrencyImport: hookHandleCurrencyImport,
+    handleTabChange,
+    handlePaginationChange,
+    handleFilesPaginationChange,
+    handleImportSuccess,
+    dateRangeFormatted,
+  } = useDashboardData({ params, searchParams, navigate })
 
-  // New date filter state with URL initialization
-  const [dateRange, setDateRange] = useState(getInitialDateRange());
-
-  // New currency state with URL initialization
-  const [currency, setCurrency] = useState(params.currency || searchParams.get('currency') || "ALL");
-
-  // Add state for multi-currency summary
-  const [currencySummary, setCurrencySummary] = useState({ currencies: [] });
-
-  // Add state for files loading and error
-  const [filesLoading, setFilesLoading] = useState(false);
-  const [filesError, setFilesError] = useState(null);
-
-  // Add loading states for different data fetches
-  const [summaryLoading, setSummaryLoading] = useState(false);
-  const [entriesLoading, setEntriesLoading] = useState(false);
-
-  // Load user data and initial data on component mount
-  useEffect(() => {
-    fetchUserProfile();
-    fetchSummary();
-    fetchDetails();
-    fetchFiles();
-  }, []);
-
-  // Add effect to reload data when date range changes
-  useEffect(() => {
-    fetchSummary();
-    fetchDetails();
-  }, [dateRange.startDate, dateRange.endDate]);
-
-  // Add effect to reload data when currency changes
-  useEffect(() => {
-    fetchSummary();
-    fetchDetails();
-    fetchFiles();
-  }, [currency]);
-
-  useEffect(() => {
-    if (!paginationOffsetInitialized.current) {
-      paginationOffsetInitialized.current = true;
-      return;
-    }
-    fetchDetails();
-  }, [pagination.offset]);
-
-  useEffect(() => {
-    if (!filesPaginationOffsetInitialized.current) {
-      filesPaginationOffsetInitialized.current = true;
-      return;
-    }
-    fetchFiles();
-  }, [filesPagination.offset]);
-
-  // Setup system preference listener for theme changes
   useEffect(() => {
     const cleanup = setupSystemPreferenceListener();
     return cleanup;
   }, []);
 
-  const fetchUserProfile = async () => {
-    const profile = await api.get("/auth/profile");
-
-    if (!profile.error) {
-      setUserData(profile);
-    }
-  };
-
-  const fetchSummary = async () => {
-    setSummaryLoading(true);
-    try {
-      if (currency === "ALL") {
-        await fetchCurrencySummary();
-        setSummary({ income: 0, outcome: 0, categories: [] });
-      } else {
-        const startDateStr = toDateOnlyISOString(dateRange.startDate);
-        const endDateStr = toDateOnlyISOString(dateRange.endDate);
-        
-        const params = new URLSearchParams();
-        params.append('start_date', startDateStr);
-        params.append('end_date', endDateStr);
-        params.append('currency', currency);
-        
-        const url = `/budget/summary?${params.toString()}`;
-        const data = await api.get(url);
-        
-        if (!data.error) {
-          setSummary(data);
-        } else {
-          console.error("Error fetching summary:", data.error);
-        }
-      }
-    } catch (error) {
-      console.error("Failed to fetch summary:", error);
-      setSummary({ income: 0, outcome: 0, categories: [] });
-    } finally {
-      setSummaryLoading(false);
-    }
-  };
-
-  const fetchCurrencySummary = async () => {
-    try {
-      const startDateStr = toDateOnlyISOString(dateRange.startDate);
-      const endDateStr = toDateOnlyISOString(dateRange.endDate);
-      
-      const params = new URLSearchParams();
-      params.append('start_date', startDateStr);
-      params.append('end_date', endDateStr);
-      
-      const url = `/budget/summary-by-currency?${params.toString()}`;
-      const data = await api.get(url);
-      
-      if (!data.error) {
-        setCurrencySummary(data);
-      } else {
-        console.error("Error fetching currency summary:", data.error);
-        setCurrencySummary({ currencies: [] });
-      }
-    } catch (error) {
-      console.error("Failed to fetch currency summary:", error);
-      setCurrencySummary({ currencies: [] });
-    }
-  };
-
-  const fetchDetails = async () => {
-    if (currency === "ALL") {
-      setEntries([]);
-      return;
-    }
-
-    setEntriesLoading(true);
-    try {
-      const startDateStr = toDateOnlyISOString(dateRange.startDate);
-      const endDateStr = toDateOnlyISOString(dateRange.endDate);
-      
-      const params = new URLSearchParams();
-      params.append('start_date', startDateStr);
-      params.append('end_date', endDateStr);
-      params.append('limit', pagination.limit);
-      params.append('offset', pagination.offset);
-      params.append('currency', currency);
-      
-      const url = `/budget/details?${params.toString()}`;
-      const data = await api.get(url);
-      
-      if (!data.error) {
-        setEntries(data.data || []);
-        setPagination({
-          ...pagination,
-          total: data.metadata?.total_count || 0
-        });
-      } else {
-        console.error("Error fetching details:", data.error);
-        setEntries([]);
-      }
-    } catch (error) {
-      console.error("Failed to fetch details:", error);
-      setEntries([]);
-    } finally {
-      setEntriesLoading(false);
-    }
-  };
-
-  const fetchFiles = async () => {
-    if (currency === "ALL") {
-      setFiles([]);
-      return;
-    }
-
-    setFilesLoading(true);
-    setFilesError(null);
-
-    try {
-      const params = new URLSearchParams();
-      params.append('limit', filesPagination.limit);
-      params.append('offset', filesPagination.offset);
-      params.append('currency', currency);
-
-      const url = `/budget/files?${params.toString()}`;
-      const response = await api.get(url);
-
-      if (!response.error) {
-        setFiles(response.data || []);
-        setFilesPagination(prev => ({
-          ...prev,
-          total: response.metadata?.total_count || 0
-        }));
-      } else {
-        setFilesError(response.error);
-        setFiles([]);
-      }
-    } catch (err) {
-      setFilesError("Failed to load files. Please try again.");
-      console.error("Error fetching files:", err);
-    } finally {
-      setFilesLoading(false);
-    }
-  };
-
   const handleLogout = () => {
     api.logout();
-    // Clear local state
-    setUserData(null);
-    setSummary({ income: 0, outcome: 0, categories: [] });
-    setEntries([]);
-    setFiles([]);
-    // Call parent logout handler to return to landing page
     onLogout();
   };
 
-  const handleImportSuccess = () => {
-    fetchSummary();
-    fetchDetails();
-    fetchFiles();
-    setActiveTab("dashboard");
-  };
-
-  // Helper function to update URL with current filters
-  const updateURLWithFilters = (newDateRange = dateRange, newCurrency = currency, newTab = activeTab) => {
-    const params = new URLSearchParams()
-    
-    // Add date range to URL
-    if (newDateRange.preset !== 'current-month') {
-      params.set('startDate', toDateOnlyISOString(newDateRange.startDate))
-      params.set('endDate', toDateOnlyISOString(newDateRange.endDate))
-      params.set('preset', newDateRange.preset)
-    }
-    
-    // Add currency to URL
-    if (newCurrency !== 'ALL') {
-      params.set('currency', newCurrency)
-    }
-    
-    // Construct the path
-    let path = '/dashboard'
-    if (newTab !== 'dashboard') {
-      path += `/${newTab}`
-    }
-    
-    // Update the URL
-    const newURL = params.toString() ? `${path}?${params.toString()}` : path
-    navigate(newURL, { replace: true })
-  }
-
-  // Initialize state from URL parameters on mount
-  useEffect(() => {
-    const tabFromURL = params.tab || 'dashboard'
-    setActiveTab(tabFromURL)
-    
-    // Update currency from URL params
-    const currencyFromURL = params.currency || searchParams.get('currency') || 'ALL'
-    if (currencyFromURL !== currency) {
-      setCurrency(currencyFromURL)
-    }
-    
-    // Update date range from URL params
-    const urlDateRange = getInitialDateRange()
-    if (urlDateRange.startDate.getTime() !== dateRange.startDate.getTime() || 
-        urlDateRange.endDate.getTime() !== dateRange.endDate.getTime()) {
-      setDateRange(urlDateRange)
-    }
-  }, [params.tab, params.currency, searchParams])
-
-  const handleDateRangeChange = (newRange) => {
-    setDateRange(newRange);
-    setPagination({ ...pagination, offset: 0 });
-    updateURLWithFilters(newRange, currency, activeTab);
-  };
-
-  const handleCurrencyChange = (newCurrency) => {
-    setCurrency(newCurrency);
-    setPagination(prev => ({ ...prev, offset: 0 }));
-    setFilesPagination(prev => ({ ...prev, offset: 0 }));
-    updateURLWithFilters(dateRange, newCurrency, activeTab);
-  };
-
   const handleCurrencySelect = (selectedCurrency) => {
-    handleCurrencyChange(selectedCurrency);
-    setActiveTab("dashboard");
-    updateURLWithFilters(dateRange, selectedCurrency, "dashboard");
-    
-    // Scroll to tabs section after currency selection
+    hookHandleCurrencySelect(selectedCurrency);
     setTimeout(() => {
       if (tabsRef.current) {
-        tabsRef.current.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start' 
-        });
+        tabsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-    }, 100); // Small delay to ensure state updates have completed
+    }, 100);
   };
 
   const handleCurrencyImport = (selectedCurrency) => {
-    handleCurrencyChange(selectedCurrency);
-    setActiveTab("import");
-    updateURLWithFilters(dateRange, selectedCurrency, "import");
-    
-    // Scroll to tabs section after currency selection
+    hookHandleCurrencyImport(selectedCurrency);
     setTimeout(() => {
       if (tabsRef.current) {
-        tabsRef.current.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start' 
-        });
+        tabsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-    }, 100); // Small delay to ensure state updates have completed
+    }, 100);
   };
-
-  const handleTabChange = (newTab) => {
-    setActiveTab(newTab);
-    updateURLWithFilters(dateRange, currency, newTab);
-  };
-
-  const handlePaginationChange = (newPagination) => {
-    setPagination(newPagination);
-  };
-
-  const handleFilesPaginationChange = (newPagination) => {
-    setFilesPagination(newPagination);
-  };
-
-  // Get formatted date range for display
-  let dateRangeFormatted;
-  if (dateRange.preset === 'current-month') {
-    dateRangeFormatted = format(new Date(), 'MMMM yyyy');
-  } else if (dateRange.preset === 'custom') {
-    // For custom ranges, show start and end dates
-    const startYear = dateRange.startDate.getFullYear();
-    const endYear = dateRange.endDate.getFullYear();
-    const startMonth = dateRange.startDate.getMonth();
-    const endMonth = dateRange.endDate.getMonth();
-    
-    if (startYear === endYear && startMonth === endMonth) {
-      // Same month and year - show just the month and year
-      dateRangeFormatted = format(dateRange.startDate, 'MMMM yyyy');
-    } else if (startYear === endYear) {
-      // Same year, different months - show "Jan 15 - Mar 20, 2025"
-      dateRangeFormatted = `${format(dateRange.startDate, 'MMM dd')} - ${format(dateRange.endDate, 'MMM dd, yyyy')}`;
-    } else {
-      // Different years - show "Dec 15, 2024 - Jan 20, 2025"
-      dateRangeFormatted = `${format(dateRange.startDate, 'MMM dd, yyyy')} - ${format(dateRange.endDate, 'MMM dd, yyyy')}`;
-    }
-  } else {
-    // For preset ranges like "last-3-months", show the range nicely
-    const startYear = dateRange.startDate.getFullYear();
-    const endYear = dateRange.endDate.getFullYear();
-    const startMonth = dateRange.startDate.getMonth();
-    const endMonth = dateRange.endDate.getMonth();
-    
-    if (startYear === endYear && startMonth === endMonth) {
-      // Same month and year
-      dateRangeFormatted = format(dateRange.startDate, 'MMMM yyyy');
-    } else if (startYear === endYear) {
-      // Same year, different months - show "January - March 2025"
-      dateRangeFormatted = `${format(dateRange.startDate, 'MMMM')} - ${format(dateRange.endDate, 'MMMM yyyy')}`;
-    } else {
-      // Different years - show "December 2024 - January 2025"
-      dateRangeFormatted = `${format(dateRange.startDate, 'MMMM yyyy')} - ${format(dateRange.endDate, 'MMMM yyyy')}`;
-    }
-  }
 
   return (
+    <DashboardProvider
+      currency={currency}
+      dateRange={dateRange}
+      handleCurrencyChange={handleCurrencyChange}
+      handleDateRangeChange={handleDateRangeChange}
+    >
     <div className="min-h-screen bg-gradient-to-br from-[hsl(var(--background))] via-[hsl(var(--background))] to-[hsl(var(--muted))]">
       <div className="max-w-7xl mx-auto px-3 py-4 md:px-6 md:py-12">
-        {/* Header */}
         <header className="mb-6 md:mb-10">
-          {/* Controls Row */}
           <div className="flex items-center justify-between gap-4 mb-8">
-            {/* Left side - Filters and Loading */}
             <div className="flex items-center gap-3">
               <DateRangeFilter
-                dateRange={dateRange}
-                onDateRangeChange={handleDateRangeChange}
                 isLoading={summaryLoading || entriesLoading}
               />
               <CurrencyFilter
-                selectedCurrency={currency}
-                onCurrencyChange={handleCurrencyChange}
                 isLoading={summaryLoading || entriesLoading}
               />
 
-              {/* Loading indicator animation */}
               {(summaryLoading || entriesLoading) && (
                 <div className="flex items-center">
                   <svg className="animate-spin h-4 w-4 text-[hsl(var(--accent))]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -469,7 +123,6 @@ export default function MainApp({ onLogout }) {
               )}
             </div>
 
-            {/* Right side - Profile */}
             {userData && (
               <div
                 className="flex items-center gap-2 cursor-pointer bg-background hover:bg-muted/50 rounded-lg px-3 py-2 transition-all duration-200 border border-border/60 hover:border-border shadow-sm"
@@ -487,8 +140,7 @@ export default function MainApp({ onLogout }) {
               </div>
             )}
           </div>
-          
-          {/* Centered Date Title */}
+
           <div className="text-center">
             <div className="inline-flex items-center justify-center gap-3 px-6 py-3 bg-gradient-to-r from-[hsl(var(--accent))/0.1] to-[hsl(var(--chart-3))/0.1] rounded-2xl border border-[hsl(var(--accent))/0.2] backdrop-blur-sm">
               <div className="w-2 h-2 bg-[hsl(var(--accent))] rounded-full animate-pulse"></div>
@@ -500,17 +152,14 @@ export default function MainApp({ onLogout }) {
           </div>
         </header>
 
-        {/* Summary Cards - only show for specific currencies, not for ALL */}
         {currency !== "ALL" && (
           <SummaryCards
             summary={summary}
-            currency={currency}
             dateRangeFormatted={dateRangeFormatted}
             isLoading={summaryLoading}
           />
         )}
 
-        {/* Currency Overview - only show when ALL is selected */}
         {currency === "ALL" && (
           <CurrencyOverview
             currencySummary={currencySummary}
@@ -521,7 +170,6 @@ export default function MainApp({ onLogout }) {
           />
         )}
 
-        {/* Main Content - only show for specific currencies, not for ALL */}
         {currency !== "ALL" && (
           <Tabs ref={tabsRef} value={activeTab} onValueChange={handleTabChange} className="space-y-8">
             <div className="flex justify-center w-full">
@@ -529,10 +177,7 @@ export default function MainApp({ onLogout }) {
                 <TabsTrigger
                   value="dashboard"
                   className="flex-1 sm:flex-none text-[hsl(var(--muted-foreground))] rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
-                  style={{
-                    '--active-color': 'hsl(var(--accent))',
-                    '--active-bg': 'hsl(var(--accent) / 0.1)'
-                  }}
+                  style={{ '--active-color': 'hsl(var(--accent))', '--active-bg': 'hsl(var(--accent) / 0.1)' }}
                   data-state={activeTab === "dashboard" ? "active" : "inactive"}
                 >
                   <LayoutDashboardIcon className="h-4 w-4" />
@@ -541,10 +186,7 @@ export default function MainApp({ onLogout }) {
                 <TabsTrigger
                   value="entries"
                   className="flex-1 sm:flex-none text-[hsl(var(--muted-foreground))] rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
-                  style={{
-                    '--active-color': 'hsl(var(--accent))',
-                    '--active-bg': 'hsl(var(--accent) / 0.1)'
-                  }}
+                  style={{ '--active-color': 'hsl(var(--accent))', '--active-bg': 'hsl(var(--accent) / 0.1)' }}
                   data-state={activeTab === "entries" ? "active" : "inactive"}
                 >
                   <BarChartIcon className="h-4 w-4" />
@@ -553,10 +195,7 @@ export default function MainApp({ onLogout }) {
                 <TabsTrigger
                   value="new"
                   className="flex-1 sm:flex-none text-[hsl(var(--muted-foreground))] rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
-                  style={{
-                    '--active-color': 'hsl(var(--accent))',
-                    '--active-bg': 'hsl(var(--accent) / 0.1)'
-                  }}
+                  style={{ '--active-color': 'hsl(var(--accent))', '--active-bg': 'hsl(var(--accent) / 0.1)' }}
                   data-state={activeTab === "new" ? "active" : "inactive"}
                 >
                   <PlusCircleIcon className="h-4 w-4" />
@@ -565,10 +204,7 @@ export default function MainApp({ onLogout }) {
                 <TabsTrigger
                   value="import"
                   className="flex-1 sm:flex-none text-[hsl(var(--muted-foreground))] rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
-                  style={{
-                    '--active-color': 'hsl(var(--accent))',
-                    '--active-bg': 'hsl(var(--accent) / 0.1)'
-                  }}
+                  style={{ '--active-color': 'hsl(var(--accent))', '--active-bg': 'hsl(var(--accent) / 0.1)' }}
                   data-state={activeTab === "import" ? "active" : "inactive"}
                 >
                   <UploadIcon className="h-4 w-4" />
@@ -577,10 +213,7 @@ export default function MainApp({ onLogout }) {
                 <TabsTrigger
                   value="files"
                   className="flex-1 sm:flex-none text-[hsl(var(--muted-foreground))] rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
-                  style={{
-                    '--active-color': 'hsl(var(--accent))',
-                    '--active-bg': 'hsl(var(--accent) / 0.1)'
-                  }}
+                  style={{ '--active-color': 'hsl(var(--accent))', '--active-bg': 'hsl(var(--accent) / 0.1)' }}
                   data-state={activeTab === "files" ? "active" : "inactive"}
                 >
                   <FolderIcon className="h-4 w-4" />
@@ -589,7 +222,6 @@ export default function MainApp({ onLogout }) {
               </TabsList>
             </div>
 
-            {/* Dashboard Tab Content */}
             <TabsContent value="dashboard" className="mt-6 focus-visible:outline-none">
               <div className="w-full max-w-7xl mx-auto">
                 <Dashboard
@@ -602,7 +234,6 @@ export default function MainApp({ onLogout }) {
               </div>
             </TabsContent>
 
-            {/* Transactions List */}
             <TabsContent value="entries" className="mt-6 focus-visible:outline-none">
               <div className="w-full max-w-7xl mx-auto">
                 <ActivityList
@@ -621,11 +252,11 @@ export default function MainApp({ onLogout }) {
               </div>
             </TabsContent>
 
-            {/* Add New Transaction */}
             <TabsContent value="new" className="mt-6 focus-visible:outline-none">
               <div className="w-full max-w-7xl mx-auto">
                 <AddTransaction
                   defaultCurrency={currency}
+                  categories={categories}
                   onTransactionAdded={() => {
                     fetchSummary();
                     fetchDetails();
@@ -634,7 +265,6 @@ export default function MainApp({ onLogout }) {
               </div>
             </TabsContent>
 
-            {/* Import Transactions */}
             <TabsContent value="import" className="mt-6 focus-visible:outline-none">
               <div className="w-full max-w-7xl mx-auto">
                 <ImportFile
@@ -648,7 +278,6 @@ export default function MainApp({ onLogout }) {
               </div>
             </TabsContent>
 
-            {/* Files List */}
             <TabsContent value="files" className="mt-6 focus-visible:outline-none">
               <div className="w-full max-w-7xl mx-auto">
                 <FilesList
@@ -669,7 +298,6 @@ export default function MainApp({ onLogout }) {
           </Tabs>
         )}
 
-        {/* Profile Update Dialog */}
         <ProfileDialog
           open={showProfileModal}
           onOpenChange={setShowProfileModal}
@@ -679,5 +307,6 @@ export default function MainApp({ onLogout }) {
         />
       </div>
     </div>
+    </DashboardProvider>
   );
 }

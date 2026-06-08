@@ -5,12 +5,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useDashboardContext } from "@/contexts/DashboardContext"
 import { formatDateForInput } from "@/lib/dateUtils"
 import { endOfMonth, lastDayOfMonth, startOfMonth, subMonths } from "date-fns"
 import { CalendarIcon, ChevronDownIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 
-export default function DateRangeFilter({ dateRange, onDateRangeChange, isLoading }) {
+export default function DateRangeFilter({ isLoading }) {
+  const { dateRange, handleDateRangeChange: onDateRangeChange } = useDashboardContext()
   const [isOpen, setIsOpen] = useState(false)
   const [tempRange, setTempRange] = useState({
     startDate: dateRange.startDate,

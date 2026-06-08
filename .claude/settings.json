@@ -9,7 +9,11 @@
       "Bash(python -c \"from src.auth_user import router, service, schemas, dependencies\")",
       "Bash(ENV_JWT_ALG=HS256 ENV_JWT_SECRET=test_secret GOOGLE_CLIENT_ID=test python -c \"from src.auth_user import router, service, schemas, dependencies; print\\('OK'\\)\")",
       "Bash(ENV_JWT_ALG=HS256 ENV_JWT_SECRET=test_secret GOOGLE_CLIENT_ID=test ENV_DATABASE_URL=postgresql+asyncpg://user:pass@localhost/db python -c \"from src.auth_user import router, service, schemas, dependencies; print\\('OK'\\)\")",
-      "Bash(ENV_JWT_ALG=HS256 ENV_JWT_SECRET=test_secret GOOGLE_CLIENT_ID=test ENV_DATABASE_URL=postgresql+asyncpg://user:pass@localhost/db ENV_CORS_ORIGINS='[\"http://localhost:5173\"]' ENV_CORS_HEADERS='[\"*\"]' ENV_ENVIRONMENT=LOCAL python -c 'from src.auth_user import router, service, schemas, dependencies; print\\('\\\\''OK'\\\\''\\)')"
+      "Bash(ENV_JWT_ALG=HS256 ENV_JWT_SECRET=test_secret GOOGLE_CLIENT_ID=test ENV_DATABASE_URL=postgresql+asyncpg://user:pass@localhost/db ENV_CORS_ORIGINS='[\"http://localhost:5173\"]' ENV_CORS_HEADERS='[\"*\"]' ENV_ENVIRONMENT=LOCAL python -c 'from src.auth_user import router, service, schemas, dependencies; print\\('\\\\''OK'\\\\''\\)')",
+      "Bash(npx @bubblewrap/cli --version)",
+      "Bash(java -version)",
+      "Bash(sudo npm install -g @bubblewrap/cli)",
+      "Bash(keytool -list -v -keystore android.keystore -alias mynab-key)"
     ]
   }
 }

@@ -1,0 +1,10 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "app.mynab.pwa",
+    "sha256_cert_fingerprints": [
+      "58:63:04:1A:D5:51:88:66:DA:E1:1A:55:2D:29:91:39:51:D4:89:35:C2:47:F0:58:53:8D:8B:94:41:36:19:44"
+    ]
+  }
+}]

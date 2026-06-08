@@ -1,6 +1,15 @@
 # Claude
 .claude/worktrees/
 
+# Bubblewrap / Android build
+app/client/android/android.keystore
+app/client/android/build/
+app/client/android/app/build/
+app/client/android/.gradle/
+*.apk
+*.aab
+com.myapp.pwa.zip
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

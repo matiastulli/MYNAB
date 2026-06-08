@@ -5,7 +5,6 @@
 // Currency symbols mapping
 export const CURRENCY_SYMBOLS = {
   USD: "$",
-  EUR: "€",
   GBP: "£",
   ARS: "$",
   AUD: "A$"
@@ -14,7 +13,6 @@ export const CURRENCY_SYMBOLS = {
 // Currency names mapping
 export const CURRENCY_NAMES = {
   USD: "US Dollar",
-  EUR: "Euro", 
   GBP: "British Pound",
   ARS: "Argentine Peso",
   AUD: "Australian Dollar",

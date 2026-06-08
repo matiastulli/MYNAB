@@ -103,15 +103,6 @@ export default function CurrencyOverview({
               <span className="text-sm sm:text-base">USD</span>
             </button>
 
-            {/* EUR Button - Vertical Rectangle */}
-            <button
-              onClick={() => handleCurrencyImport("EUR")}
-              className="col-span-2 row-span-3 sm:col-span-1 sm:row-span-4 flex flex-col items-center justify-center gap-2 px-3 py-4 bg-gradient-to-r from-[hsl(var(--chart-3))] to-[hsl(var(--accent))/0.8] hover:from-[hsl(var(--chart-3))/0.9] hover:to-[hsl(var(--accent))/0.7] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl border border-[var(--glass-border)] backdrop-blur-xl"
-            >
-              <span className="text-2xl sm:text-3xl font-bold">€</span>
-              <span className="text-sm">EUR</span>
-            </button>
-
             {/* ARS Button - Square */}
             <button
               onClick={() => handleCurrencyImport("ARS")}

@@ -22,7 +22,7 @@ export default function ImportFile({ onImportComplete, onImportSuccess, currency
     mercado_pago: { format: ".pdf", supportedCurrencies: ["ARS"], description: "PDF statement download" },
     bbva: { format: ".xls", supportedCurrencies: ["ARS"], description: "Excel format from BBVA" },
     comm_bank: { format: ".csv", supportedCurrencies: ["AUD"], description: "CSV export from Commonwealth Bank" },
-    revolut: { format: ".csv", supportedCurrencies: ["AUD", "EUR", "USD", "GBP"], description: "CSV export from Revolut" },
+    revolut: { format: ".csv", supportedCurrencies: ["AUD", "USD", "GBP"], description: "CSV export from Revolut" },
   };
 
   const handleFileChange = (e) => {

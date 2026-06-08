@@ -39,6 +39,27 @@
 
         curl http://localhost:8000/healthcheck
 
+**How to build the Android app (TWA)?**
+
+    Requirements: Node.js, JDK 11+, Android SDK
+
+    1- cd app/client/android
+
+    2- npx @bubblewrap/cli update   (regenerates Gradle project from twa-manifest.json)
+
+    3- npx @bubblewrap/cli build    (produces app-release-bundle.aab and app-release-signed.apk)
+
+    Upload app-release-bundle.aab to Google Play Console.
+
+    To bump version before a new release, edit twa-manifest.json:
+        "appVersionName": "1.0.x"
+        "appVersionCode": <increment by 1>
+        "appVersion": "1.0.x"   (keep in sync with appVersionName)
+
+    Package name: com.mynab.app
+    Keystore:     android/android.keystore  (alias: mynab-key)
+    Privacy policy URL: https://mynab.app/privacy
+
 **To use Alembic, do**
 
     Use to migrate orm changes in backend to database:

@@ -14,11 +14,19 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'favicon-16x16.png', 'favicon-32x32.png', 'apple-touch-icon.png'],
       manifest: {
+        id: '/',
         name: 'MYNAB - Budget Tracker',
         short_name: 'MYNAB',
         description: 'Track your personal finances and budget with MYNAB',
+        start_url: '/',
+        display: 'standalone',
+        display_override: ['window-controls-overlay', 'standalone'],
+        orientation: 'portrait',
+        lang: 'en',
+        dir: 'ltr',
         theme_color: '#0d0f12',
         background_color: '#0d0f12',
+        categories: ['finance', 'productivity'],
         icons: [
           {
             src: 'favicon-16x16.png',
@@ -46,8 +54,8 @@ export default defineConfig({
             type: 'image/png'
           },
           {
-            src: 'android-chrome-192x192.png',
-            sizes: '192x192',
+            src: 'android-chrome-512x512.png',
+            sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable'
           }

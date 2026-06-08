@@ -11,7 +11,8 @@ import { useEffect, useState } from "react";
 
 export default function AddTransaction({
   onTransactionAdded,
-  defaultCurrency = "ARS"
+  defaultCurrency = "ARS",
+  categories = []
 }) {
   const [form, setForm] = useState({
     amount: "",
@@ -24,29 +25,8 @@ export default function AddTransaction({
     category_id: null,
   });
 
-  const [categories, setCategories] = useState([]);
-  const [loadingCategories, setLoadingCategories] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      
-        setLoadingCategories(true);
-        try {
-          const response = await api.get("/budget-transaction-category/budget-transaction-category");
-          if (response && !response.error) {
-            setCategories(response);
-          }
-        } catch (error) {
-          console.error("Error fetching transaction categories:", error);
-        } finally {
-          setLoadingCategories(false);
-        }
-    };
-
-    fetchCategories();
-  }, []);
 
   useEffect(() => {
     setForm(prevForm => ({
@@ -251,21 +231,14 @@ export default function AddTransaction({
                     <SelectItem value="none" className="text-[hsl(var(--popover-foreground))] py-2">
                       <span className="text-[hsl(var(--muted-foreground))]">No category</span>
                     </SelectItem>
-                    {loadingCategories ? (
-                      <div className="flex items-center justify-center py-4">
-                        <div className="h-4 w-4 border-2 border-[hsl(var(--accent))] border-t-transparent rounded-full animate-spin"></div>
-                        <span className="ml-2 text-sm text-[hsl(var(--muted-foreground))]">Loading categories...</span>
-                      </div>
-                    ) : (
-                      categories.map(category => (
-                        <SelectItem key={category.id} value={category.id.toString()} className="text-[hsl(var(--popover-foreground))] py-2">
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-[hsl(var(--accent))]"></div>
-                            <span>{category.category_name}</span>
-                          </div>
-                        </SelectItem>
-                      ))
-                    )}
+                    {categories.map(category => (
+                      <SelectItem key={category.id} value={category.id.toString()} className="text-[hsl(var(--popover-foreground))] py-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-[hsl(var(--accent))]"></div>
+                          <span>{category.category_name}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

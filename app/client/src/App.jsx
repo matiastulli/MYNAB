@@ -8,33 +8,53 @@ import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-d
 
 const MainApp = React.lazy(() => import('@/components/MainApp'))
 
+const dashboardSpinner = (
+  <div className="flex items-center justify-center h-screen">
+    <div className="w-8 h-8 rounded-full border-2 border-[hsl(var(--accent))] border-t-transparent animate-spin" />
+  </div>
+)
+
+function ProtectedRoute({ isAuthenticated, children }) {
+  if (!isAuthenticated) return <Navigate to="/" replace />
+  return <React.Suspense fallback={dashboardSpinner}>{children}</React.Suspense>
+}
+
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Check authentication status on app load
   useEffect(() => {
-    const checkAuth = () => {
-      const isAuth = api.isAuthenticated()
-      setIsAuthenticated(isAuth)
-      setIsLoading(false)
+    const checkAuth = async () => {
+      const hasToken = api.isAuthenticated()
+      if (hasToken) {
+        setIsAuthenticated(true)
+        setIsLoading(false)
+        const newToken = await api.attemptRefresh()
+        if (!newToken) {
+          api.logout()
+          setIsAuthenticated(false)
+        }
+      } else {
+        const newToken = await api.attemptRefresh()
+        if (newToken) {
+          setIsAuthenticated(true)
+        }
+        setIsLoading(false)
+      }
     }
 
     checkAuth()
   }, [])
 
-  // Handle successful authentication from landing page
   const handleAuthenticated = () => {
     setIsAuthenticated(true)
   }
 
-  // Handle logout
   const handleLogout = () => {
     api.logout()
     setIsAuthenticated(false)
   }
 
-  // Show loading spinner while checking authentication
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted flex items-center justify-center">
@@ -51,7 +71,6 @@ export default function App() {
     )
   }
 
-  // Route between landing page and main app based on authentication
   return (
     <Router>
       <Routes>
@@ -68,49 +87,25 @@ export default function App() {
         <Route
           path="/dashboard"
           element={
-            isAuthenticated ? (
-              <React.Suspense fallback={
-                <div className="flex items-center justify-center h-screen">
-                  <div className="w-8 h-8 rounded-full border-2 border-[hsl(var(--accent))] border-t-transparent animate-spin" />
-                </div>
-              }>
-                <MainApp onLogout={handleLogout} />
-              </React.Suspense>
-            ) : (
-              <Navigate to="/" replace />
-            )
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <MainApp onLogout={handleLogout} />
+            </ProtectedRoute>
           }
         />
         <Route
           path="/dashboard/:tab"
           element={
-            isAuthenticated ? (
-              <React.Suspense fallback={
-                <div className="flex items-center justify-center h-screen">
-                  <div className="w-8 h-8 rounded-full border-2 border-[hsl(var(--accent))] border-t-transparent animate-spin" />
-                </div>
-              }>
-                <MainApp onLogout={handleLogout} />
-              </React.Suspense>
-            ) : (
-              <Navigate to="/" replace />
-            )
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <MainApp onLogout={handleLogout} />
+            </ProtectedRoute>
           }
         />
         <Route
           path="/dashboard/:tab/:currency"
           element={
-            isAuthenticated ? (
-              <React.Suspense fallback={
-                <div className="flex items-center justify-center h-screen">
-                  <div className="w-8 h-8 rounded-full border-2 border-[hsl(var(--accent))] border-t-transparent animate-spin" />
-                </div>
-              }>
-                <MainApp onLogout={handleLogout} />
-              </React.Suspense>
-            ) : (
-              <Navigate to="/" replace />
-            )
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <MainApp onLogout={handleLogout} />
+            </ProtectedRoute>
           }
         />
         <Route path="*" element={<Navigate to="/" replace />} />

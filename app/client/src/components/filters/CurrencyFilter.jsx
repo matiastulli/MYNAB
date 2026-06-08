@@ -2,19 +2,18 @@
 
 import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { useDashboardContext } from "@/contexts/DashboardContext"
+import { getSupportedCurrencies } from "@/lib/currencyUtils"
 import { ChevronDownIcon, CircleDollarSignIcon } from "lucide-react"
 import { useState } from "react"
 
-export default function CurrencyFilter({ selectedCurrency, onCurrencyChange }) {
+export default function CurrencyFilter({ isLoading }) {
+  const { currency: selectedCurrency, handleCurrencyChange: onCurrencyChange } = useDashboardContext()
   const [isOpen, setIsOpen] = useState(false)
 
   const currencies = [
-    { code: "ALL", name: "All Currencies", symbol: "💰" },
-    { code: "ARS", name: "Argentine Peso", symbol: "$" },
-    { code: "USD", name: "US Dollar", symbol: "$" },
-    { code: "AUD", name: "Australian Dollar", symbol: "A$" },
-    { code: "GBP", name: "British Pound", symbol: "£" },
-    { code: "EUR", name: "Euro", symbol: "€" },
+    { code: "ALL", name: "All Currencies", symbol: "ALL" },
+    ...getSupportedCurrencies(),
   ]
 
   const selectedCurrencyInfo = currencies.find((c) => c.code === selectedCurrency) || currencies[0]

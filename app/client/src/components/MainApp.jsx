@@ -159,7 +159,10 @@ export default function MainApp({ onLogout }) {
           </div>
         ) : (
           <div className="flex flex-col gap-2 w-full">
-            <CurrencyFilter isLoading={summaryLoading || entriesLoading} />
+            <CurrencyFilter
+              isLoading={summaryLoading || entriesLoading}
+              availableCurrencies={currencySummary?.currencies?.map(c => c.currency)}
+            />
           </div>
         )}
 
@@ -204,35 +207,37 @@ export default function MainApp({ onLogout }) {
 
       {/* Mobile floating bottom bar */}
       <div className="md:hidden fixed bottom-4 left-4 right-4 z-50">
-        <div className="flex items-center justify-between gap-3 px-4 py-3 rounded-[22px] border border-[hsl(var(--border))] bg-[hsl(var(--background)/0.82)] backdrop-blur-2xl shadow-2xl">
+        <div className="flex items-center gap-3 px-4 py-3 rounded-[22px] border border-[hsl(var(--border))] bg-[hsl(var(--background)/0.82)] backdrop-blur-2xl shadow-2xl">
           {/* User avatar */}
           {userData && (
             <button
               onClick={() => setShowProfileModal(true)}
-              className="relative p-1 rounded-full shrink-0"
+              className="relative shrink-0"
             >
               <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] flex items-center justify-center">
                 <UserIcon className="h-4 w-4 text-[hsl(var(--background))]" />
               </div>
               {(!userData.national_id || userData.national_id === "") && (
-                <span className="absolute top-0.5 right-0.5 w-2 h-2 rounded-full bg-[hsl(var(--warning-fg))] border border-[hsl(var(--background))]" />
+                <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-[hsl(var(--warning-fg))] border border-[hsl(var(--background))]" />
               )}
             </button>
           )}
 
           {/* Divider */}
-          <div className="w-px h-6 bg-[hsl(var(--border))] shrink-0" />
+          <div className="w-px h-5 bg-[hsl(var(--border)/0.6)] shrink-0" />
 
-          {/* Filters */}
-          <div className="flex items-center gap-2 flex-1 justify-center">
-            
-            <CurrencyFilter isLoading={summaryLoading || entriesLoading} />
+          {/* Currency chips — scrollable if many */}
+          <div className="flex-1 overflow-x-auto">
+            <CurrencyFilter
+              isLoading={summaryLoading || entriesLoading}
+              availableCurrencies={currencySummary?.currencies?.map(c => c.currency)}
+            />
           </div>
 
           {/* Loading indicator */}
           {(summaryLoading || entriesLoading) && (
             <>
-              <div className="w-px h-6 bg-[hsl(var(--border))] shrink-0" />
+              <div className="w-px h-5 bg-[hsl(var(--border)/0.6)] shrink-0" />
               <svg className="animate-spin h-4 w-4 text-[hsl(var(--accent))] shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
@@ -254,7 +259,7 @@ export default function MainApp({ onLogout }) {
                     <h2 className="text-lg md:text-xl font-semibold bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] bg-clip-text text-transparent">
                       {dateRangeFormatted}
                     </h2>
-                    <CalendarIcon className="h-3.5 w-3.5 text-[hsl(var(--muted-foreground))]" />
+                    
                   </button>
                 }
               />

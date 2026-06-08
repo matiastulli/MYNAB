@@ -1,68 +1,49 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useDashboardContext } from "@/contexts/DashboardContext"
-import { getSupportedCurrencies } from "@/lib/currencyUtils"
-import { ChevronDownIcon, CircleDollarSignIcon } from "lucide-react"
-import { useState } from "react"
+import { getCurrencySymbol, getSupportedCurrencies } from "@/lib/currencyUtils"
 
-export default function CurrencyFilter({ isLoading }) {
-  const { currency: selectedCurrency, handleCurrencyChange: onCurrencyChange } = useDashboardContext()
-  const [isOpen, setIsOpen] = useState(false)
+const SUPPORTED = getSupportedCurrencies()
 
-  const currencies = [
-    { code: "ALL", name: "All Currencies", symbol: "ALL" },
-    ...getSupportedCurrencies(),
-  ]
+export default function CurrencyFilter({ isLoading, availableCurrencies }) {
+  const { currency: selectedCurrency, handleCurrencyChange } = useDashboardContext()
 
-  const selectedCurrencyInfo = currencies.find((c) => c.code === selectedCurrency) || currencies[0]
+  const codes =
+    availableCurrencies && availableCurrencies.length > 0
+      ? availableCurrencies
+      : SUPPORTED.map((c) => c.code)
 
-  const handleSelect = (currency) => {
-    onCurrencyChange(currency)
-    setIsOpen(false)
-  }
+  const items = ["ALL", ...codes]
 
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-8 bg-[hsl(var(--card))] border-[hsl(var(--border))] hover:bg-[hsl(var(--accent))] hover:text-[hsl(var(--accent-foreground))] gap-1 text-xs sm:text-sm shadow-sm"
-        >
-          <CircleDollarSignIcon className="h-3.5 w-3.5 text-[hsl(var(--accent))] mr-1" />
-          <span className="font-medium text-[hsl(var(--foreground))]">{selectedCurrencyInfo.code}</span>
-          <span className="hidden sm:inline text-[hsl(var(--muted-foreground))]">currency</span>
-          <ChevronDownIcon className="h-3.5 w-3.5 text-[hsl(var(--muted-foreground))]" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent
-        className="w-48 p-1 bg-popover text-popover-foreground border-border shadow-lg"
-        style={{ backgroundColor: "hsl(var(--popover))", backgroundImage: "none" }}
-      >
-        <div className="space-y-0.5">
-          {currencies.map((currency) => (
-            <button
-              key={currency.code}
-              onClick={() => handleSelect(currency.code)}
-              className={`w-full text-left px-3 py-1.5 rounded-md text-sm transition-colors ${
-                currency.code === selectedCurrency
-                  ? "bg-[hsl(var(--accent)/0.2)] text-[hsl(var(--accent))] font-medium"
-                  : "hover:bg-[hsl(var(--accent)/0.1)] text-[hsl(var(--popover-foreground))]"
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">{currency.code}</span>
-                  <span className="text-xs text-[hsl(var(--muted-foreground))]">{currency.name}</span>
-                </div>
-                <span className="text-[hsl(var(--popover-foreground))] font-semibold">{currency.symbol}</span>
-              </div>
-            </button>
-          ))}
-        </div>
-      </PopoverContent>
-    </Popover>
+    <div className="flex items-center gap-1.5 overflow-x-auto snap-x snap-mandatory">
+      {items.map((code) => {
+        const isActive = code === selectedCurrency
+        const symbol = code === "ALL" ? "∗" : getCurrencySymbol(code)
+        return (
+          <button
+            key={code}
+            onClick={() => !isLoading && handleCurrencyChange(code)}
+            disabled={isLoading}
+            className={`
+              snap-start shrink-0 flex flex-col items-center justify-center
+              w-12 h-10 rounded-xl transition-all duration-150
+              ${isActive
+                ? "bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))] shadow-sm"
+                : "bg-[hsl(var(--background)/0.35)] border border-[var(--glass-border)] text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
+              }
+              ${isLoading ? "opacity-40 pointer-events-none" : ""}
+            `}
+          >
+            <span className={`leading-none font-bold ${isActive ? "text-sm" : "text-xs"}`}>
+              {symbol}
+            </span>
+            <span className="text-[9px] leading-tight mt-0.5 font-medium tracking-wide opacity-80">
+              {code}
+            </span>
+          </button>
+        )
+      })}
+    </div>
   )
 }

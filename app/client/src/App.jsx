@@ -7,6 +7,7 @@ import { useEffect, useState } from "react"
 import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-dom"
 
 const MainApp = React.lazy(() => import('@/components/MainApp'))
+const PrivacyPolicy = React.lazy(() => import('@/components/PrivacyPolicy'))
 
 const dashboardSpinner = (
   <div className="flex items-center justify-center h-screen">
@@ -91,6 +92,14 @@ export default function App() {
             }
           />
         ))}
+        <Route
+          path="/privacy"
+          element={
+            <React.Suspense fallback={dashboardSpinner}>
+              <PrivacyPolicy />
+            </React.Suspense>
+          }
+        />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

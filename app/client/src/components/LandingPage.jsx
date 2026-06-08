@@ -181,6 +181,15 @@ export default function LandingPage({ onGetStarted }) {
                     </div>
                 </div>
             </section>
+
+            <footer className="mt-8 pb-8 text-center">
+                <a
+                    href="/privacy"
+                    className="text-xs text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors underline underline-offset-2"
+                >
+                    Privacy Policy
+                </a>
+            </footer>
         </div>
     )
 }

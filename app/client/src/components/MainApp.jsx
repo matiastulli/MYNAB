@@ -45,8 +45,6 @@ export default function MainApp({ onLogout }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [showExitToast, setShowExitToast] = useState(false)
   const { canInstall, handleInstall, handleDismiss } = usePWAInstall()
-  const activeTabRef = useRef(activeTab)
-  const currencyRef = useRef(currency)
   const exitPending = useRef(false)
   const exitTimer = useRef(null)
 
@@ -80,6 +78,10 @@ export default function MainApp({ onLogout }) {
     handleImportSuccess,
     dateRangeFormatted,
   } = useDashboardData({ params, searchParams, navigate })
+
+  // Declared after useDashboardData so activeTab/currency are in scope
+  const activeTabRef = useRef(activeTab)
+  const currencyRef = useRef(currency)
 
   useEffect(() => {
     const cleanup = setupSystemPreferenceListener();

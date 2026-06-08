@@ -207,12 +207,9 @@ export function useDashboardData({ params, searchParams, navigate }) {
     }
   }, [currency, filesPagination.limit, filesPagination.offset]);
 
+  // Profile and categories only need to load once
   useEffect(() => {
     fetchUserProfile();
-    fetchSummary();
-    fetchDetails();
-    fetchFiles();
-
     api
       .get("/budget-transaction-category/budget-transaction-category")
       .then((response) => {
@@ -223,16 +220,14 @@ export function useDashboardData({ params, searchParams, navigate }) {
       .catch((error) => console.error("Error fetching transaction categories:", error));
   }, []);
 
-  useEffect(() => {
-    fetchSummary();
-    fetchDetails();
-  }, [dateRange.startDate, dateRange.endDate]);
-
+  // Single effect for all filter-driven fetches — fires once on mount and on every filter change
   useEffect(() => {
     fetchSummary();
     fetchDetails();
     fetchFiles();
-  }, [currency]);
+    // deps are the raw filter values, not the function refs, to avoid stale-closure re-runs
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currency, dateRange.startDate, dateRange.endDate]);
 
   useEffect(() => {
     if (prevPaginationOffset.current !== pagination.offset) {

@@ -141,7 +141,7 @@ export default function ImportFile({ onImportComplete, onImportSuccess, currency
   );
 
   return (
-    <Card className="border-[hsl(var(--border))] bg-[hsl(var(--card))] backdrop-blur-sm shadow-lg">
+    <Card className="border border-[var(--glass-border)] bg-[var(--glass-bg-heavy)] backdrop-blur-xl shadow-[var(--glass-shadow)] rounded-[var(--glass-radius-sm)]">
       <CardHeader className="pb-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -181,7 +181,7 @@ export default function ImportFile({ onImportComplete, onImportSuccess, currency
           <form onSubmit={handleSubmit} className="space-y-6">
 
             {/* Info Box */}
-            <div className="bg-[hsl(var(--info-bg))] border-2 border-[hsl(var(--info-fg)/0.2)] rounded-lg p-4">
+            <div className="bg-[hsl(var(--info-bg)/0.6)] backdrop-blur-sm border border-[hsl(var(--info-fg)/0.2)] rounded-[var(--glass-radius-sm)] p-4">
               <h4 className="font-semibold text-[hsl(var(--info-fg))] flex items-center gap-2 mb-3">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -267,11 +267,11 @@ export default function ImportFile({ onImportComplete, onImportSuccess, currency
                 Statement File *
               </Label>
               <div
-                className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 ${isDragging
-                  ? 'border-[hsl(var(--accent))] bg-[hsl(var(--accent)/0.05)] scale-[1.02]'
+                className={`border-2 p-8 text-center transition-all duration-200 ${isDragging
+                  ? 'border-[hsl(var(--accent))] bg-[hsl(var(--accent)/0.05)] scale-[1.01] backdrop-blur-xl rounded-[var(--glass-radius)]'
                   : file
-                    ? 'border-[hsl(var(--accent)/0.5)] bg-[hsl(var(--accent)/0.05)]'
-                    : 'border-[hsl(var(--border))] hover:border-[hsl(var(--accent)/0.4)] hover:bg-[hsl(var(--accent)/0.05)]'
+                    ? 'border-dashed border-[hsl(var(--accent)/0.5)] bg-[hsl(var(--accent)/0.05)] backdrop-blur-sm rounded-[var(--glass-radius)]'
+                    : 'border-dashed border-[var(--glass-border)] bg-[var(--glass-bg)] backdrop-blur-sm rounded-[var(--glass-radius)] hover:border-[hsl(var(--accent)/0.4)] hover:bg-[hsl(var(--accent)/0.05)]'
                   }`}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
@@ -306,7 +306,7 @@ export default function ImportFile({ onImportComplete, onImportSuccess, currency
                   </div>
                 ) : (
                   <div className="flex flex-col items-center gap-4">
-                    <div className="p-4 bg-[hsl(var(--accent)/0.1)] rounded-lg border border-[hsl(var(--accent)/0.2)]">
+                    <div className="p-4 bg-[var(--glass-bg)] backdrop-blur-xl border border-[var(--glass-border)] rounded-[var(--glass-radius-sm)]">
                       <FileIcon className="h-10 w-10 text-[hsl(var(--accent))]" />
                     </div>
                     <div className="text-center space-y-1">

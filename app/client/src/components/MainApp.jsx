@@ -11,10 +11,10 @@ import Dashboard from "@/components/tabs/Dashboard"
 import FilesList from "@/components/tabs/FilesList"
 import ImportFile from "@/components/tabs/ImportFile"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { DashboardProvider } from "@/contexts/DashboardContext"
+import { useDashboardData } from "@/hooks/useDashboardData"
 import { setupSystemPreferenceListener } from "@/lib/themeUtils"
 import { api } from "@/services/api"
-import { useDashboardData } from "@/hooks/useDashboardData"
-import { DashboardProvider } from "@/contexts/DashboardContext"
 import {
   AlertTriangleIcon,
   BarChartIcon,
@@ -110,7 +110,7 @@ export default function MainApp({ onLogout }) {
     <div className="flex min-h-screen bg-gradient-to-br from-[hsl(var(--background))] via-[hsl(var(--background))] to-[hsl(var(--muted))]">
 
       {/* Desktop sidebar */}
-      <aside className={`hidden md:flex flex-col shrink-0 sticky top-0 h-screen border-r border-[hsl(var(--border))] bg-[hsl(var(--background)/0.8)] backdrop-blur-sm py-6 gap-4 transition-all duration-200 ${sidebarCollapsed ? 'w-14 px-2' : 'w-56 px-4'}`}>
+      <aside className={`hidden md:flex flex-col shrink-0 sticky top-0 h-screen border-r border-[hsl(var(--border))] bg-[var(--glass-bg-heavy)] backdrop-blur-2xl py-6 gap-4 transition-all duration-200 ${sidebarCollapsed ? 'w-14 px-2' : 'w-56 px-4'}`}>
         {/* Brand */}
         <div className={`flex items-center pb-4 border-b border-[hsl(var(--border))] ${sidebarCollapsed ? 'flex-col gap-2' : 'gap-2'}`}>
           <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[hsl(var(--accent)/0.2)] to-[hsl(var(--accent)/0.1)] flex items-center justify-center shrink-0">
@@ -159,7 +159,6 @@ export default function MainApp({ onLogout }) {
           </div>
         ) : (
           <div className="flex flex-col gap-2 w-full">
-            <DateRangeFilter isLoading={summaryLoading || entriesLoading} />
             <CurrencyFilter isLoading={summaryLoading || entriesLoading} />
           </div>
         )}
@@ -226,7 +225,7 @@ export default function MainApp({ onLogout }) {
 
           {/* Filters */}
           <div className="flex items-center gap-2 flex-1 justify-center">
-            <DateRangeFilter isLoading={summaryLoading || entriesLoading} />
+            
             <CurrencyFilter isLoading={summaryLoading || entriesLoading} />
           </div>
 
@@ -248,13 +247,17 @@ export default function MainApp({ onLogout }) {
         <div className="px-4 py-6 pb-28 md:pb-10 md:px-8 md:py-10">
           <header className="mb-6 md:mb-8">
             <div className="text-center">
-              <div className="inline-flex items-center justify-center gap-3 px-6 py-3 bg-gradient-to-r from-[hsl(var(--accent))/0.1] to-[hsl(var(--chart-3))/0.1] rounded-2xl border border-[hsl(var(--accent))/0.2] backdrop-blur-sm">
-                <div className="w-2 h-2 bg-[hsl(var(--accent))] rounded-full animate-pulse"></div>
-                <h2 className="text-lg md:text-xl font-semibold bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] bg-clip-text text-transparent">
-                  {dateRangeFormatted}
-                </h2>
-                <div className="w-2 h-2 bg-[hsl(var(--chart-3))] rounded-full animate-pulse"></div>
-              </div>
+              <DateRangeFilter
+                isLoading={summaryLoading || entriesLoading}
+                trigger={
+                  <button className="inline-flex items-center justify-center gap-3 px-6 py-3 bg-gradient-to-r from-[hsl(var(--accent))/0.1] to-[hsl(var(--chart-3))/0.1] rounded-2xl border border-[hsl(var(--accent))/0.2] backdrop-blur-sm hover:border-[hsl(var(--accent))/0.5] hover:shadow-md transition-all duration-150 cursor-pointer">
+                    <h2 className="text-lg md:text-xl font-semibold bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] bg-clip-text text-transparent">
+                      {dateRangeFormatted}
+                    </h2>
+                    <CalendarIcon className="h-3.5 w-3.5 text-[hsl(var(--muted-foreground))]" />
+                  </button>
+                }
+              />
             </div>
           </header>
 
@@ -279,7 +282,7 @@ export default function MainApp({ onLogout }) {
         {currency !== "ALL" && (
           <Tabs ref={tabsRef} value={activeTab} onValueChange={handleTabChange} className="space-y-8">
             <div className="flex justify-center w-full">
-              <TabsList className="flex bg-[hsl(var(--card))] p-1.5 gap-x-1.5 rounded-xl shadow-sm border border-[hsl(var(--border))] overflow-x-auto max-w-full w-full sm:w-auto">
+              <TabsList className="flex p-1.5 gap-x-1.5 overflow-x-auto max-w-full w-full sm:w-auto">
                 <TabsTrigger
                   value="dashboard"
                   className="flex-1 sm:flex-none text-[hsl(var(--muted-foreground))] rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"

@@ -14,7 +14,7 @@ export default function SummaryCards({
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
       {/* Balance Card */}
-      <Card className={`border-[hsl(var(--border))] bg-[hsl(var(--card))] backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow ${isLoading ? 'relative overflow-hidden' : ''}`}>
+      <Card className={`border border-[var(--glass-border)] bg-[var(--glass-bg-heavy)] backdrop-blur-xl shadow-[var(--glass-shadow)] hover:shadow-[var(--glass-shadow-heavy)] transition-shadow rounded-[var(--glass-radius-sm)] ${isLoading ? 'relative overflow-hidden' : ''}`}>
         <CardContent className="p-6">
           {isLoading && (
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[hsl(var(--foreground))/0.1] to-transparent animate-shimmer"></div>
@@ -61,7 +61,7 @@ export default function SummaryCards({
       </Card>
 
       {/* Income Card */}
-      <Card className={`border-[hsl(var(--border))] bg-[hsl(var(--card))] backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow ${isLoading ? 'relative overflow-hidden' : ''}`}>
+      <Card className={`border border-[var(--glass-border)] bg-[var(--glass-bg-heavy)] backdrop-blur-xl shadow-[var(--glass-shadow)] hover:shadow-[var(--glass-shadow-heavy)] transition-shadow rounded-[var(--glass-radius-sm)] ${isLoading ? 'relative overflow-hidden' : ''}`}>
         <CardContent className="p-6">
           {isLoading && (
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[hsl(var(--foreground))/0.1] to-transparent animate-shimmer"></div>
@@ -100,7 +100,7 @@ export default function SummaryCards({
       </Card>
 
       {/* Expenses Card */}
-      <Card className={`border-[hsl(var(--border))] bg-[hsl(var(--card))] backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow ${isLoading ? 'relative overflow-hidden' : ''}`}>
+      <Card className={`border border-[var(--glass-border)] bg-[var(--glass-bg-heavy)] backdrop-blur-xl shadow-[var(--glass-shadow)] hover:shadow-[var(--glass-shadow-heavy)] transition-shadow rounded-[var(--glass-radius-sm)] ${isLoading ? 'relative overflow-hidden' : ''}`}>
         <CardContent className="p-6">
           {isLoading && (
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[hsl(var(--foreground))/0.1] to-transparent animate-shimmer"></div>

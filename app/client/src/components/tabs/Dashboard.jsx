@@ -78,8 +78,7 @@ export default function Dashboard({
     if (active && payload && payload.length) {
       return (
         <div
-          className="bg-popover border border-border rounded-lg p-3 shadow-lg"
-          style={{ backgroundColor: "hsl(var(--popover))", backgroundImage: "none" }}
+          className="bg-[var(--glass-bg-heavy)] backdrop-blur-xl border border-[var(--glass-border)] rounded-[var(--glass-radius-sm)] shadow-[var(--glass-shadow)] p-3"
         >
           <p className="text-popover-foreground font-medium">{`${payload[0].name}`}</p>
           <p className="text-popover-foreground">
@@ -93,7 +92,7 @@ export default function Dashboard({
 
   return (
     <div className="space-y-6">
-      <Card className="border-[hsl(var(--border))] bg-[hsl(var(--card))] backdrop-blur-sm shadow-lg">
+      <Card className="border border-[var(--glass-border)] bg-[var(--glass-bg-heavy)] backdrop-blur-xl shadow-[var(--glass-shadow)] rounded-[var(--glass-radius-sm)]">
         <CardHeader className="pb-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-3">
@@ -191,7 +190,7 @@ export default function Dashboard({
 
       {/* Financial snapshot */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card className="border-[hsl(var(--border))] bg-[hsl(var(--card))] backdrop-blur-sm shadow-sm">
+        <Card className="border border-[var(--glass-border)] bg-[var(--glass-bg-heavy)] backdrop-blur-xl shadow-[var(--glass-shadow)] rounded-[var(--glass-radius-sm)]">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-medium text-[hsl(var(--muted-foreground))]">Top Category</h3>
@@ -210,7 +209,7 @@ export default function Dashboard({
           </CardContent>
         </Card>
 
-        <Card className="border-[hsl(var(--border))] bg-[hsl(var(--card))] backdrop-blur-sm shadow-sm">
+        <Card className="border border-[var(--glass-border)] bg-[var(--glass-bg-heavy)] backdrop-blur-xl shadow-[var(--glass-shadow)] rounded-[var(--glass-radius-sm)]">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-medium text-[hsl(var(--muted-foreground))]">Transaction Count</h3>

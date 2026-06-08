@@ -11,7 +11,7 @@ import { endOfMonth, lastDayOfMonth, startOfMonth, subMonths } from "date-fns"
 import { CalendarIcon, ChevronDownIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 
-export default function DateRangeFilter({ isLoading }) {
+export default function DateRangeFilter({ isLoading, trigger }) {
   const { dateRange, handleDateRangeChange: onDateRangeChange } = useDashboardContext()
   const [isOpen, setIsOpen] = useState(false)
   const [tempRange, setTempRange] = useState({
@@ -140,31 +140,24 @@ export default function DateRangeFilter({ isLoading }) {
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className={`h-8 bg-[hsl(var(--card))] border-[hsl(var(--border))] hover:bg-[hsl(var(--accent))] hover:text-[hsl(var(--accent-foreground))] gap-1 text-xs sm:text-sm shadow-sm ${isLoading ? "opacity-70 pointer-events-none" : ""}`}
-          disabled={isLoading}
-        >
-          <CalendarIcon className={`h-3.5 w-3.5 text-[hsl(var(--accent))] ${isLoading ? "animate-pulse" : ""}`} />
-          <span className="hidden sm:inline font-medium text-[hsl(var(--foreground))]">Date Range</span>
-          <ChevronDownIcon className="h-3.5 w-3.5 text-[hsl(var(--muted-foreground))]" />
-          {isLoading && (
-            <svg
-              className="animate-spin ml-1 h-3 w-3 text-[hsl(var(--accent))]"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
-          )}
-        </Button>
+        {trigger ?? (
+          <Button
+            variant="outline"
+            size="sm"
+            className={`h-8 bg-[hsl(var(--card))] border-[hsl(var(--border))] hover:bg-[hsl(var(--accent))] hover:text-[hsl(var(--accent-foreground))] gap-1 text-xs sm:text-sm shadow-sm ${isLoading ? "opacity-70 pointer-events-none" : ""}`}
+            disabled={isLoading}
+          >
+            <CalendarIcon className={`h-3.5 w-3.5 text-[hsl(var(--accent))] ${isLoading ? "animate-pulse" : ""}`} />
+            <span className="hidden sm:inline font-medium text-[hsl(var(--foreground))]">Date Range</span>
+            <ChevronDownIcon className="h-3.5 w-3.5 text-[hsl(var(--muted-foreground))]" />
+            {isLoading && (
+              <svg className="animate-spin ml-1 h-3 w-3 text-[hsl(var(--accent))]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            )}
+          </Button>
+        )}
       </PopoverTrigger>
       <PopoverContent
         className="w-80 p-4 bg-popover text-popover-foreground border-border shadow-lg"

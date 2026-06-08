@@ -36,6 +36,13 @@
   --input: 220 8% 97%;              /* Light input background */
   --ring: 210 25% 40%;              /* Steel focus ring */
   --radius: 0.5rem;
+  --glass-bg: hsl(var(--background) / 0.82);
+  --glass-bg-heavy: hsl(var(--background) / 0.92);
+  --glass-border: hsl(var(--border) / 0.7);
+  --glass-shadow: 0 8px 32px hsl(0 0% 0% / 0.10);
+  --glass-shadow-heavy: 0 16px 48px hsl(0 0% 0% / 0.16);
+  --glass-radius: 20px;
+  --glass-radius-sm: 14px;
 
   /* Filter specific colors */
   --filter-bg: 220 10% 98%;
@@ -164,6 +171,13 @@ body {
   --border: 220 15% 22%;           /* Charcoal border */
   --input: 220 12% 16%;            /* Input background */
   --ring: 210 20% 60%;             /* Steel focus ring */
+  --glass-bg: hsl(var(--background) / 0.78);
+  --glass-bg-heavy: hsl(var(--background) / 0.92);
+  --glass-border: hsl(var(--border) / 0.7);
+  --glass-shadow: 0 8px 32px hsl(0 0% 0% / 0.30);
+  --glass-shadow-heavy: 0 16px 48px hsl(0 0% 0% / 0.16);
+  --glass-radius: 20px;
+  --glass-radius-sm: 14px;
 
   /* Filter specific colors */
   --filter-bg: 220 20% 12%;
@@ -332,13 +346,6 @@ textarea:focus {
 .badge-info {
   background-color: hsl(var(--info-bg));
   color: hsl(var(--info-fg));
-}
-
-/* Enhanced dialog/modal styling */
-[role="dialog"] {
-  background-color: hsl(var(--card)) !important;
-  border: 1px solid hsl(var(--border));
-  backdrop-filter: none !important;
 }
 
 /* Ensure select dropdowns have proper backgrounds */

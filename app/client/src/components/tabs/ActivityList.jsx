@@ -187,7 +187,7 @@ export default function ActivityList({
 
   if (entries.length === 0) {
     return (
-      <Card className="border-[hsl(var(--border))] bg-[hsl(var(--card))] shadow-sm">
+      <Card className="border border-[var(--glass-border)] bg-[var(--glass-bg-heavy)] backdrop-blur-xl shadow-[var(--glass-shadow)] rounded-[var(--glass-radius-sm)]">
         <CardContent className="p-8 sm:p-16 text-center">
           <div className="flex flex-col items-center gap-6 max-w-md mx-auto">
             {/* Enhanced Icon with gradient background */}
@@ -230,7 +230,7 @@ export default function ActivityList({
   // Download all transactions as .xlsx
 
   return (
-    <Card className="border-[hsl(var(--border))] bg-[hsl(var(--card))] shadow-sm overflow-hidden">
+    <Card className="border border-[var(--glass-border)] bg-[var(--glass-bg-heavy)] backdrop-blur-xl shadow-[var(--glass-shadow)] rounded-[var(--glass-radius-sm)] overflow-hidden">
       <CardHeader className="pb-4">
         <div className="flex flex-col gap-3">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -267,7 +267,7 @@ export default function ActivityList({
               <input
                 type="search"
                 placeholder="Search transactions by description..."
-                className="w-full h-10 py-2 pl-10 pr-4 rounded-lg text-sm bg-background/50 border border-border/50 focus:border-accent/50 focus:outline-none focus:ring-2 focus:ring-accent/20 text-foreground placeholder:text-muted-foreground backdrop-blur-sm transition-all duration-200"
+                className="w-full h-10 py-2 pl-10 pr-4 text-sm bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-[var(--glass-radius-sm)] focus:border-accent/50 focus:outline-none focus:ring-2 focus:ring-accent/20 text-foreground placeholder:text-muted-foreground transition-all duration-200"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -287,7 +287,7 @@ export default function ActivityList({
             </div>
             
             {/* Control Buttons */}
-            <div className="flex items-center gap-2 bg-[hsl(var(--muted)/0.3)] p-1 rounded-lg border border-[hsl(var(--border)/0.5)]">
+            <div className="flex items-center gap-2 bg-[var(--glass-bg)] border border-[var(--glass-border)] backdrop-blur-xl rounded-[var(--glass-radius-sm)] p-1">
               <Button
                 variant="ghost"
                 size="sm"
@@ -366,7 +366,7 @@ export default function ActivityList({
               <div key={dateGroup} className="divide-y divide-border/50">
                 {/* Enhanced Date header */}
                 {groupByDate && dateGroup !== 'ungrouped' && (
-                  <div className="sticky top-0 z-10 bg-gradient-to-r from-[hsl(var(--muted)/0.9)] to-[hsl(var(--muted)/0.8)] backdrop-blur-md border-b border-[hsl(var(--border)/0.3)] px-4 py-2.5 text-sm font-medium text-[hsl(var(--foreground))]">
+                  <div className="sticky top-0 z-10 bg-[var(--glass-bg)] backdrop-blur-2xl border-b border-[var(--glass-border)] px-4 py-2.5 text-sm font-medium text-[hsl(var(--foreground))]">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-[hsl(var(--accent))] rounded-full"></div>
@@ -471,7 +471,7 @@ export default function ActivityList({
 
                       {/* Enhanced Delete button with confirmation */}
                       {showDeleteConfirm && confirmDelete === entry.id ? (
-                        <div className="flex items-center gap-2 ml-auto bg-background/80 backdrop-blur-sm border border-border rounded-lg p-1">
+                        <div className="flex items-center gap-2 ml-auto bg-[var(--glass-bg-heavy)] backdrop-blur-2xl border border-[var(--glass-border)] rounded-[var(--glass-radius-sm)] p-1">
                           <Button
                             variant="ghost"
                             size="sm"
@@ -519,7 +519,7 @@ export default function ActivityList({
         </div>
 
         {pagination.total > pagination.limit && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-border bg-muted/20">
+          <div className="flex items-center justify-between px-4 py-3 bg-[var(--glass-bg)] backdrop-blur-xl border-t border-[var(--glass-border)]">
             <p className="text-sm text-muted-foreground">
               {pagination.offset + 1}–{Math.min(pagination.offset + pagination.limit, pagination.total)} of {pagination.total}
             </p>

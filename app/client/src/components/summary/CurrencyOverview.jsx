@@ -101,7 +101,7 @@ export default function CurrencyOverview({
             {/* USD Button - Large Rectangle */}
             <button
               onClick={() => handleCurrencyImport("USD")}
-              className="col-span-4 row-span-2 sm:col-span-3 flex flex-col items-center justify-center gap-2 px-3 py-4 bg-gradient-to-r from-[hsl(var(--chart-4))] to-[hsl(var(--chart-2))/0.8] hover:from-[hsl(var(--chart-4))/0.9] hover:to-[hsl(var(--chart-2))/0.7] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 border border-[hsl(var(--chart-4))/0.2] backdrop-blur-sm"
+              className="col-span-4 row-span-2 sm:col-span-3 flex flex-col items-center justify-center gap-2 px-3 py-4 bg-gradient-to-r from-[hsl(var(--chart-4))] to-[hsl(var(--chart-2))/0.8] hover:from-[hsl(var(--chart-4))/0.9] hover:to-[hsl(var(--chart-2))/0.7] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl border border-[var(--glass-border)] backdrop-blur-xl"
             >
               <span className="text-3xl sm:text-4xl font-bold">$</span>
               <span className="text-sm sm:text-base">USD</span>
@@ -110,7 +110,7 @@ export default function CurrencyOverview({
             {/* EUR Button - Vertical Rectangle */}
             <button
               onClick={() => handleCurrencyImport("EUR")}
-              className="col-span-2 row-span-3 sm:col-span-1 sm:row-span-4 flex flex-col items-center justify-center gap-2 px-3 py-4 bg-gradient-to-r from-[hsl(var(--chart-3))] to-[hsl(var(--accent))/0.8] hover:from-[hsl(var(--chart-3))/0.9] hover:to-[hsl(var(--accent))/0.7] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 border border-[hsl(var(--chart-3))/0.2] backdrop-blur-sm"
+              className="col-span-2 row-span-3 sm:col-span-1 sm:row-span-4 flex flex-col items-center justify-center gap-2 px-3 py-4 bg-gradient-to-r from-[hsl(var(--chart-3))] to-[hsl(var(--accent))/0.8] hover:from-[hsl(var(--chart-3))/0.9] hover:to-[hsl(var(--accent))/0.7] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl border border-[var(--glass-border)] backdrop-blur-xl"
             >
               <span className="text-2xl sm:text-3xl font-bold">€</span>
               <span className="text-sm">EUR</span>
@@ -119,7 +119,7 @@ export default function CurrencyOverview({
             {/* ARS Button - Square */}
             <button
               onClick={() => handleCurrencyImport("ARS")}
-              className="col-span-2 row-span-2 flex flex-col items-center justify-center gap-2 px-3 py-4 bg-gradient-to-r from-[hsl(var(--chart-2))] to-[hsl(var(--chart-2))/0.8] hover:from-[hsl(var(--chart-2))/0.9] hover:to-[hsl(var(--chart-2))/0.7] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 border border-[hsl(var(--chart-3))/0.2] backdrop-blur-sm"
+              className="col-span-2 row-span-2 flex flex-col items-center justify-center gap-2 px-3 py-4 bg-gradient-to-r from-[hsl(var(--chart-2))] to-[hsl(var(--chart-2))/0.8] hover:from-[hsl(var(--chart-2))/0.9] hover:to-[hsl(var(--chart-2))/0.7] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl border border-[var(--glass-border)] backdrop-blur-xl"
             >
               <span className="text-2xl sm:text-3xl font-bold">$</span>
               <span className="text-sm">ARS</span>
@@ -128,7 +128,7 @@ export default function CurrencyOverview({
             {/* GBP Button - Wide Rectangle */}
             <button
               onClick={() => handleCurrencyImport("GBP")}
-              className="col-span-2 sm:col-span-2 flex flex-col items-center justify-center gap-2 px-3 py-4 bg-gradient-to-r from-[hsl(var(--chart-5))] to-[hsl(var(--accent))/0.8] hover:from-[hsl(var(--chart-5))/0.9] hover:to-[hsl(var(--accent))/0.7] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 border border-[hsl(var(--chart-5))/0.2] backdrop-blur-sm"
+              className="col-span-2 sm:col-span-2 flex flex-col items-center justify-center gap-2 px-3 py-4 bg-gradient-to-r from-[hsl(var(--chart-5))] to-[hsl(var(--accent))/0.8] hover:from-[hsl(var(--chart-5))/0.9] hover:to-[hsl(var(--accent))/0.7] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl border border-[var(--glass-border)] backdrop-blur-xl"
             >
               <span className="text-2xl sm:text-3xl font-bold">£</span>
               <span className="text-sm">GBP</span>
@@ -137,7 +137,7 @@ export default function CurrencyOverview({
             {/* AUD Button - Wide Rectangle */}
             <button
               onClick={() => handleCurrencyImport("AUD")}
-              className="col-span-2 sm:col-span-2 flex flex-col items-center justify-center gap-2 px-3 py-4 bg-gradient-to-r from-[hsl(var(--chart-1))] to-[hsl(var(--chart-3))/0.8] hover:from-[hsl(var(--chart-1))/0.9] hover:to-[hsl(var(--chart-3))/0.7] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 border border-[hsl(var(--chart-1))/0.2] backdrop-blur-sm"
+              className="col-span-2 sm:col-span-2 flex flex-col items-center justify-center gap-2 px-3 py-4 bg-gradient-to-r from-[hsl(var(--chart-1))] to-[hsl(var(--chart-3))/0.8] hover:from-[hsl(var(--chart-1))/0.9] hover:to-[hsl(var(--chart-3))/0.7] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl border border-[var(--glass-border)] backdrop-blur-xl"
             >
               <span className="text-2xl sm:text-3xl font-bold">A$</span>
               <span className="text-sm">AUD</span>
@@ -171,7 +171,7 @@ export default function CurrencyOverview({
           return (
             <Card
               key={currencyData.currency}
-              className="group cursor-pointer hover:shadow-2xl transition-all duration-300 hover:scale-[1.03] border border-[hsl(var(--accent))/0.1] bg-gradient-to-br from-[hsl(var(--accent))/0.05] to-[hsl(var(--chart-3))/0.05] backdrop-blur-sm relative overflow-hidden"
+              className="group cursor-pointer transition-all duration-300 border border-[var(--glass-border)] bg-[var(--glass-bg)] backdrop-blur-2xl shadow-[var(--glass-shadow)] hover:shadow-[var(--glass-shadow-heavy)] rounded-[var(--glass-radius)] relative overflow-hidden"
               onClick={() => onCurrencySelect(currencyData.currency)}
             >
               {/* Background Pattern */}
@@ -211,7 +211,7 @@ export default function CurrencyOverview({
 
               <CardContent className="space-y-4 relative">
                 {/* Main Balance Display */}
-                <div className="text-center py-4 bg-gradient-to-r from-[hsl(var(--accent))/0.05] to-[hsl(var(--chart-3))/0.05] rounded-xl border border-[hsl(var(--accent))/0.1] backdrop-blur-sm">
+                <div className="text-center py-4 bg-[hsl(var(--background)/0.4)] rounded-[var(--glass-radius-sm)] border border-[var(--glass-border)]">
                   <p className="text-sm font-medium text-[hsl(var(--muted-foreground))] mb-1">Net Balance</p>
                   <p className={`text-2xl md:text-3xl font-bold ${isPositive ? "text-[hsl(var(--positive))]" : "text-[hsl(var(--destructive))]"}`}>
                     {isPositive ? "+" : "-"}
@@ -222,7 +222,7 @@ export default function CurrencyOverview({
 
                 {/* Income/Expenses Row */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-3 bg-gradient-to-r from-[hsl(var(--positive))/0.05] to-[hsl(var(--positive))/0.1] rounded-xl border border-[hsl(var(--positive))/0.1] backdrop-blur-sm">
+                  <div className="text-center p-3 bg-[hsl(var(--background)/0.4)] rounded-[var(--glass-radius-sm)] border border-[var(--glass-border)]">
                     <div className="flex items-center justify-center mb-2">
                       <ArrowUpIcon className="h-4 w-4 text-[hsl(var(--positive))] mr-1" />
                       <span className="text-xs font-medium text-[hsl(var(--positive))] uppercase tracking-wide">Income</span>
@@ -236,7 +236,7 @@ export default function CurrencyOverview({
                     </p>
                   </div>
 
-                  <div className="text-center p-3 bg-gradient-to-r from-[hsl(var(--destructive))/0.05] to-[hsl(var(--destructive))/0.1] rounded-xl border border-[hsl(var(--destructive))/0.1] backdrop-blur-sm">
+                  <div className="text-center p-3 bg-[hsl(var(--background)/0.4)] rounded-[var(--glass-radius-sm)] border border-[var(--glass-border)]">
                     <div className="flex items-center justify-center mb-2">
                       <ArrowDownIcon className="h-4 w-4 text-[hsl(var(--destructive))] mr-1" />
                       <span className="text-xs font-medium text-[hsl(var(--destructive))] uppercase tracking-wide">Expenses</span>

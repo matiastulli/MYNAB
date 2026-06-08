@@ -86,7 +86,7 @@ export default function ProfileDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] border-2 border-[hsl(var(--border))] shadow-xl max-w-md" onOpenAutoFocus={(e) => e.preventDefault()}>
+      <DialogContent className="bg-[var(--glass-bg-heavy)] backdrop-blur-2xl text-[hsl(var(--card-foreground))] border border-[var(--glass-border)] shadow-[var(--glass-shadow-heavy)] rounded-[var(--glass-radius)] max-w-md" onOpenAutoFocus={(e) => e.preventDefault()}>
         <button
           onClick={() => onOpenChange(false)}
           className="absolute top-3 left-3 p-1.5 rounded-md text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--muted))] transition-colors z-10"
@@ -106,7 +106,7 @@ export default function ProfileDialog({
           </div>
           <DialogDescription className="text-[hsl(var(--muted-foreground))]">
             {(!userData?.national_id || userData?.national_id === "") ? (
-              <div className="flex items-start gap-3 mt-3 p-4 bg-[hsl(var(--warning-bg))] border-2 border-[hsl(var(--warning-fg)/0.2)] rounded-lg">
+              <div className="flex items-start gap-3 mt-3 p-4 bg-[hsl(var(--warning-bg)/0.6)] backdrop-blur-sm border border-[hsl(var(--warning-fg)/0.2)] rounded-[var(--glass-radius-sm)]">
                 <AlertTriangleIcon className="h-5 w-5 text-[hsl(var(--warning-fg))] mt-0.5" />
                 <div className="space-y-1">
                   <p className="font-semibold text-[hsl(var(--warning-fg))]">CUIT Required</p>
@@ -186,7 +186,7 @@ export default function ProfileDialog({
               </p>
             </div>
 
-            <DialogFooter className="flex flex-row gap-3 pt-4 border-t border-[hsl(var(--border))]">
+            <DialogFooter className="flex flex-row gap-3 pt-4 border-t border-[var(--glass-border)]">
               <Button
                 type="submit"
                 disabled={isUpdating}
@@ -210,7 +210,7 @@ export default function ProfileDialog({
         )}
 
         {/* Theme toggle section */}
-        <div className="pt-4 border-t border-border">
+        <div className="pt-4 border-t border-[var(--glass-border)]">
           <Button
             type="button"
             variant="ghost"
@@ -229,7 +229,7 @@ export default function ProfileDialog({
           </Button>
         </div>
 
-        <div className="pt-4 border-t border-border">
+        <div className="pt-4 border-t border-[var(--glass-border)]">
           <Button
             type="button"
             variant="destructive"

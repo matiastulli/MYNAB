@@ -67,7 +67,7 @@ export default function AddTransaction({
   };
 
   return (
-    <Card className="border-[hsl(var(--border))] bg-[hsl(var(--card))] backdrop-blur-sm shadow-lg">
+    <Card className="border border-[var(--glass-border)] bg-[var(--glass-bg-heavy)] backdrop-blur-xl shadow-[var(--glass-shadow)] rounded-[var(--glass-radius-sm)]">
       <CardHeader className="pb-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -110,7 +110,7 @@ export default function AddTransaction({
           <form onSubmit={handleSubmit} className="space-y-6">
 
             {/* Info Box */}
-            <div className="bg-[hsl(var(--info-bg))] border-2 border-[hsl(var(--info-fg)/0.2)] rounded-lg p-4">
+            <div className="bg-[hsl(var(--info-bg)/0.6)] backdrop-blur-sm border border-[hsl(var(--info-fg)/0.2)] rounded-[var(--glass-radius-sm)] p-4">
               <h4 className="font-semibold text-[hsl(var(--info-fg))] flex items-center gap-2 mb-2">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -250,7 +250,7 @@ export default function AddTransaction({
                 <CircleDollarSignIcon className="h-4 w-4 text-muted-foreground" />
                 Currency
               </Label>
-              <div className="flex items-center justify-between h-12 px-4 rounded-md border-2 border-[hsl(var(--border))] bg-[hsl(var(--muted)/0.5)]">
+              <div className="flex items-center justify-between h-12 px-4 rounded-md bg-[var(--glass-bg)] backdrop-blur-sm border border-[var(--glass-border)]">
                 <div className="flex items-center gap-3">
                   <span className="text-lg font-semibold text-[hsl(var(--foreground))]">{getCurrencySymbol(defaultCurrency)}</span>
                   <div>

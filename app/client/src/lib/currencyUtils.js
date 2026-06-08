@@ -7,14 +7,8 @@ export const CURRENCY_SYMBOLS = {
   USD: "$",
   EUR: "€",
   GBP: "£",
-  BRL: "R$",
   ARS: "$",
-  AUD: "A$",
-  JPY: "¥",
-  CNY: "¥",
-  INR: "₹",
-  MXN: "$",
-  CAD: "$"
+  AUD: "A$"
 };
 
 // Currency names mapping
@@ -22,14 +16,8 @@ export const CURRENCY_NAMES = {
   USD: "US Dollar",
   EUR: "Euro", 
   GBP: "British Pound",
-  BRL: "Brazilian Real",
   ARS: "Argentine Peso",
   AUD: "Australian Dollar",
-  JPY: "Japanese Yen",
-  CNY: "Chinese Yuan",
-  INR: "Indian Rupee",
-  MXN: "Mexican Peso",
-  CAD: "Canadian Dollar"
 };
 
 /**

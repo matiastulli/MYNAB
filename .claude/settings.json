@@ -17,7 +17,8 @@
       "Bash(npx vite *)",
       "Bash(git merge worktree-agent-a4a69ebae77a478f3 --no-ff -m ' *)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(npx tsc *)"
     ]
   }
 }

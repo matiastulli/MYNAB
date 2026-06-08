@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { isDarkModeActive, toggleTheme } from "@/lib/themeUtils";
 import { api } from "@/services/api";
-import { AlertTriangleIcon, CheckCircleIcon, IdCardIcon, LogOutIcon, MoonIcon, SunIcon, UserIcon } from "lucide-react";
+import { AlertTriangleIcon, CheckCircleIcon, IdCardIcon, LogOutIcon, MoonIcon, SunIcon, UserIcon, XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function ProfileDialog({
@@ -87,6 +87,13 @@ export default function ProfileDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] border-2 border-[hsl(var(--border))] shadow-xl max-w-md" onOpenAutoFocus={(e) => e.preventDefault()}>
+        <button
+          onClick={() => onOpenChange(false)}
+          className="absolute top-3 left-3 p-1.5 rounded-md text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--muted))] transition-colors z-10"
+          aria-label="Close"
+        >
+          <XIcon className="h-4 w-4" />
+        </button>
         <DialogHeader className="pb-2">
           <DialogTitle className="sr-only">Profile Settings</DialogTitle>
           <div className="flex flex-col items-center gap-1">
@@ -94,7 +101,7 @@ export default function ProfileDialog({
               <span className="p-1 rounded-md bg-[hsl(var(--accent)/0.1)] border border-[hsl(var(--accent)/0.2)]">
               <UserIcon className="h-5 w-5 text-[hsl(var(--accent))]" />
               </span>
-             <span className="text-lg font-bold tracking-wider text-[hsl(var(--foreground))]">MYNAB</span>
+             
             </div>
           </div>
           <DialogDescription className="text-[hsl(var(--muted-foreground))]">
@@ -180,14 +187,6 @@ export default function ProfileDialog({
             </div>
 
             <DialogFooter className="flex flex-row gap-3 pt-4 border-t border-[hsl(var(--border))]">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-                className="flex-1 h-11"
-              >
-                Cancel
-              </Button>
               <Button
                 type="submit"
                 disabled={isUpdating}

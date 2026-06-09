@@ -28,22 +28,8 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const hasToken = api.isAuthenticated()
-      if (hasToken) {
-        setIsAuthenticated(true)
-        setIsLoading(false)
-        const newToken = await api.attemptRefresh()
-        if (!newToken) {
-          api.logout()
-          setIsAuthenticated(false)
-        }
-      } else {
-        setIsLoading(false)
-      }
-    }
-
-    checkAuth()
+    setIsAuthenticated(api.isAuthenticated())
+    setIsLoading(false)
   }, [])
 
   const handleAuthenticated = () => {

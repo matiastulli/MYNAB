@@ -3,8 +3,11 @@
 import React from "react"
 import LandingPage from "@/components/LandingPage"
 import { api } from "@/services/api"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useEffect, useState } from "react"
 import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-dom"
+
+const queryClient = new QueryClient()
 
 const MainApp = React.lazy(() => import('@/components/MainApp'))
 const PrivacyPolicy = React.lazy(() => import('@/components/PrivacyPolicy'))
@@ -69,6 +72,7 @@ export default function App() {
   }
 
   return (
+    <QueryClientProvider client={queryClient}>
     <Router>
       <Routes>
         <Route
@@ -103,5 +107,6 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
+    </QueryClientProvider>
   )
 }

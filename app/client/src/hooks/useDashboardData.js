@@ -1,7 +1,43 @@
 import { toDateOnlyISOString } from "@/lib/dateUtils";
 import { api } from "@/services/api";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { endOfMonth, format, parseISO, startOfMonth } from "date-fns";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+
+// --- Fetchers ---
+
+const apiFetch = async (path) => {
+  const data = await api.get(path);
+  if (data.error) throw new Error(data.error);
+  return data;
+};
+
+const fetchProfile = () => apiFetch("/auth/profile");
+
+const fetchCategories = () =>
+  apiFetch("/budget-transaction-category/budget-transaction-category");
+
+const fetchCurrencySummary = (startDate, endDate) => {
+  const p = new URLSearchParams({ start_date: startDate, end_date: endDate });
+  return apiFetch(`/budget/summary-by-currency?${p}`);
+};
+
+const fetchSummaryData = (currency, startDate, endDate) => {
+  const p = new URLSearchParams({ start_date: startDate, end_date: endDate, currency });
+  return apiFetch(`/budget/summary?${p}`);
+};
+
+const fetchDetailsData = (currency, startDate, endDate, limit, offset) => {
+  const p = new URLSearchParams({ start_date: startDate, end_date: endDate, currency, limit, offset });
+  return apiFetch(`/budget/details?${p}`);
+};
+
+const fetchFilesData = (currency, limit, offset) => {
+  const p = new URLSearchParams({ currency, limit, offset });
+  return apiFetch(`/budget/files?${p}`);
+};
+
+// --- Hook ---
 
 export function useDashboardData({ params, searchParams, navigate }) {
   const getInitialDateRange = () => {
@@ -10,43 +46,80 @@ export function useDashboardData({ params, searchParams, navigate }) {
     const preset = searchParams.get("preset");
 
     if (startDate && endDate) {
-      return {
-        startDate: parseISO(startDate),
-        endDate: parseISO(endDate),
-        preset: preset || "custom",
-      };
+      return { startDate: parseISO(startDate), endDate: parseISO(endDate), preset: preset || "custom" };
     }
-
-    return {
-      startDate: startOfMonth(new Date()),
-      endDate: endOfMonth(new Date()),
-      preset: "current-month",
-    };
+    return { startDate: startOfMonth(new Date()), endDate: endOfMonth(new Date()), preset: "current-month" };
   };
-
-  const [summary, setSummary] = useState({ income: 0, outcome: 0, categories: [] });
-  const [entries, setEntries] = useState([]);
-  const [files, setFiles] = useState([]);
-  const [userData, setUserData] = useState(null);
-  const [currencySummary, setCurrencySummary] = useState({ currencies: [] });
-  const [categories, setCategories] = useState([]);
 
   const [currency, setCurrency] = useState(
     params.currency || searchParams.get("currency") || "ALL"
   );
   const [dateRange, setDateRange] = useState(getInitialDateRange);
   const [activeTab, setActiveTab] = useState("dashboard");
-
   const [pagination, setPagination] = useState({ limit: 25, offset: 0, total: 0 });
   const [filesPagination, setFilesPagination] = useState({ limit: 25, offset: 0, total: 0 });
 
-  const [summaryLoading, setSummaryLoading] = useState(false);
-  const [entriesLoading, setEntriesLoading] = useState(false);
-  const [filesLoading, setFilesLoading] = useState(false);
-  const [filesError, setFilesError] = useState(null);
+  const queryClient = useQueryClient();
 
-  const prevPaginationOffset = useRef(pagination.offset);
-  const prevFilesPaginationOffset = useRef(filesPagination.offset);
+  const startDateStr = toDateOnlyISOString(dateRange.startDate);
+  const endDateStr = toDateOnlyISOString(dateRange.endDate);
+
+  const profileQuery = useQuery({
+    queryKey: ["profile"],
+    queryFn: fetchProfile,
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
+  });
+
+  const categoriesQuery = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategories,
+    staleTime: Infinity,
+    retry: 1,
+  });
+
+  const currencySummaryQuery = useQuery({
+    queryKey: ["currency-summary", startDateStr, endDateStr],
+    queryFn: () => fetchCurrencySummary(startDateStr, endDateStr),
+    enabled: currency === "ALL",
+    staleTime: 30 * 1000,
+  });
+
+  const summaryQuery = useQuery({
+    queryKey: ["summary", currency, startDateStr, endDateStr],
+    queryFn: () => fetchSummaryData(currency, startDateStr, endDateStr),
+    enabled: currency !== "ALL",
+    staleTime: 30 * 1000,
+  });
+
+  const detailsQuery = useQuery({
+    queryKey: ["details", currency, startDateStr, endDateStr, pagination.limit, pagination.offset],
+    queryFn: () => fetchDetailsData(currency, startDateStr, endDateStr, pagination.limit, pagination.offset),
+    enabled: currency !== "ALL",
+    staleTime: 30 * 1000,
+  });
+
+  const filesQuery = useQuery({
+    queryKey: ["files", currency, filesPagination.limit, filesPagination.offset],
+    queryFn: () => fetchFilesData(currency, filesPagination.limit, filesPagination.offset),
+    enabled: currency !== "ALL",
+    staleTime: 30 * 1000,
+  });
+
+  // Sync total counts from query responses back into pagination state
+  useEffect(() => {
+    const total = detailsQuery.data?.metadata?.total_count;
+    if (total !== undefined) {
+      setPagination((prev) => (prev.total !== total ? { ...prev, total } : prev));
+    }
+  }, [detailsQuery.data]);
+
+  useEffect(() => {
+    const total = filesQuery.data?.metadata?.total_count;
+    if (total !== undefined) {
+      setFilesPagination((prev) => (prev.total !== total ? { ...prev, total } : prev));
+    }
+  }, [filesQuery.data]);
 
   const updateURLWithFilters = useCallback(
     (newDateRange = dateRange, newCurrency = currency, newTab = activeTab) => {
@@ -63,9 +136,7 @@ export function useDashboardData({ params, searchParams, navigate }) {
       }
 
       let path = "/dashboard";
-      if (newTab !== "dashboard") {
-        path += `/${newTab}`;
-      }
+      if (newTab !== "dashboard") path += `/${newTab}`;
 
       const newURL = urlParams.toString() ? `${path}?${urlParams.toString()}` : path;
       navigate(newURL, { replace: true });
@@ -73,184 +144,12 @@ export function useDashboardData({ params, searchParams, navigate }) {
     [dateRange, currency, activeTab, navigate]
   );
 
-  const fetchUserProfile = useCallback(async () => {
-    const profile = await api.get("/auth/profile");
-    if (!profile.error) {
-      setUserData(profile);
-    }
-  }, []);
-
-  const fetchCurrencySummary = useCallback(async () => {
-    try {
-      const startDateStr = toDateOnlyISOString(dateRange.startDate);
-      const endDateStr = toDateOnlyISOString(dateRange.endDate);
-
-      const urlParams = new URLSearchParams();
-      urlParams.append("start_date", startDateStr);
-      urlParams.append("end_date", endDateStr);
-
-      const data = await api.get(`/budget/summary-by-currency?${urlParams.toString()}`);
-
-      if (!data.error) {
-        setCurrencySummary(data);
-      } else {
-        console.error("Error fetching currency summary:", data.error);
-        setCurrencySummary({ currencies: [] });
-      }
-    } catch (error) {
-      console.error("Failed to fetch currency summary:", error);
-      setCurrencySummary({ currencies: [] });
-    }
-  }, [dateRange.startDate, dateRange.endDate]);
-
-  const fetchSummary = useCallback(async () => {
-    setSummaryLoading(true);
-    try {
-      if (currency === "ALL") {
-        await fetchCurrencySummary();
-        setSummary({ income: 0, outcome: 0, categories: [] });
-      } else {
-        const startDateStr = toDateOnlyISOString(dateRange.startDate);
-        const endDateStr = toDateOnlyISOString(dateRange.endDate);
-
-        const urlParams = new URLSearchParams();
-        urlParams.append("start_date", startDateStr);
-        urlParams.append("end_date", endDateStr);
-        urlParams.append("currency", currency);
-
-        const data = await api.get(`/budget/summary?${urlParams.toString()}`);
-
-        if (!data.error) {
-          setSummary(data);
-        } else {
-          console.error("Error fetching summary:", data.error);
-        }
-      }
-    } catch (error) {
-      console.error("Failed to fetch summary:", error);
-      setSummary({ income: 0, outcome: 0, categories: [] });
-    } finally {
-      setSummaryLoading(false);
-    }
-  }, [currency, dateRange.startDate, dateRange.endDate, fetchCurrencySummary]);
-
-  const fetchDetails = useCallback(async () => {
-    if (currency === "ALL") {
-      setEntries([]);
-      return;
-    }
-
-    setEntriesLoading(true);
-    try {
-      const startDateStr = toDateOnlyISOString(dateRange.startDate);
-      const endDateStr = toDateOnlyISOString(dateRange.endDate);
-
-      const urlParams = new URLSearchParams();
-      urlParams.append("start_date", startDateStr);
-      urlParams.append("end_date", endDateStr);
-      urlParams.append("limit", pagination.limit);
-      urlParams.append("offset", pagination.offset);
-      urlParams.append("currency", currency);
-
-      const data = await api.get(`/budget/details?${urlParams.toString()}`);
-
-      if (!data.error) {
-        setEntries(data.data || []);
-        setPagination((prev) => ({
-          ...prev,
-          total: data.metadata?.total_count || 0,
-        }));
-      } else {
-        console.error("Error fetching details:", data.error);
-        setEntries([]);
-      }
-    } catch (error) {
-      console.error("Failed to fetch details:", error);
-      setEntries([]);
-    } finally {
-      setEntriesLoading(false);
-    }
-  }, [currency, dateRange.startDate, dateRange.endDate, pagination.limit, pagination.offset]);
-
-  const fetchFiles = useCallback(async () => {
-    if (currency === "ALL") {
-      setFiles([]);
-      return;
-    }
-
-    setFilesLoading(true);
-    setFilesError(null);
-
-    try {
-      const urlParams = new URLSearchParams();
-      urlParams.append("limit", filesPagination.limit);
-      urlParams.append("offset", filesPagination.offset);
-      urlParams.append("currency", currency);
-
-      const response = await api.get(`/budget/files?${urlParams.toString()}`);
-
-      if (!response.error) {
-        setFiles(response.data || []);
-        setFilesPagination((prev) => ({
-          ...prev,
-          total: response.metadata?.total_count || 0,
-        }));
-      } else {
-        setFilesError(response.error);
-        setFiles([]);
-      }
-    } catch (err) {
-      setFilesError("Failed to load files. Please try again.");
-      console.error("Error fetching files:", err);
-    } finally {
-      setFilesLoading(false);
-    }
-  }, [currency, filesPagination.limit, filesPagination.offset]);
-
-  // Profile and categories only need to load once
-  useEffect(() => {
-    fetchUserProfile();
-    api
-      .get("/budget-transaction-category/budget-transaction-category")
-      .then((response) => {
-        if (response && !response.error) {
-          setCategories(response);
-        }
-      })
-      .catch((error) => console.error("Error fetching transaction categories:", error));
-  }, []);
-
-  // Single effect for all filter-driven fetches — fires once on mount and on every filter change
-  useEffect(() => {
-    fetchSummary();
-    fetchDetails();
-    fetchFiles();
-    // deps are the raw filter values, not the function refs, to avoid stale-closure re-runs
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currency, dateRange.startDate, dateRange.endDate]);
-
-  useEffect(() => {
-    if (prevPaginationOffset.current !== pagination.offset) {
-      prevPaginationOffset.current = pagination.offset;
-      fetchDetails();
-    }
-  }, [pagination.offset]);
-
-  useEffect(() => {
-    if (prevFilesPaginationOffset.current !== filesPagination.offset) {
-      prevFilesPaginationOffset.current = filesPagination.offset;
-      fetchFiles();
-    }
-  }, [filesPagination.offset]);
-
   useEffect(() => {
     const tabFromURL = params.tab || "dashboard";
     setActiveTab(tabFromURL);
 
     const currencyFromURL = params.currency || searchParams.get("currency") || "ALL";
-    if (currencyFromURL !== currency) {
-      setCurrency(currencyFromURL);
-    }
+    if (currencyFromURL !== currency) setCurrency(currencyFromURL);
 
     const urlDateRange = getInitialDateRange();
     if (
@@ -259,6 +158,7 @@ export function useDashboardData({ params, searchParams, navigate }) {
     ) {
       setDateRange(urlDateRange);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.tab, params.currency, searchParams]);
 
   const handleDateRangeChange = useCallback(
@@ -314,29 +214,35 @@ export function useDashboardData({ params, searchParams, navigate }) {
     setFilesPagination(newPagination);
   }, []);
 
+  // Imperative invalidation helpers — kept for backward compat
+  const fetchSummary = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ["summary"] });
+    queryClient.invalidateQueries({ queryKey: ["currency-summary"] });
+  }, [queryClient]);
+
+  const fetchDetails = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ["details"] });
+  }, [queryClient]);
+
+  const fetchFiles = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ["files"] });
+  }, [queryClient]);
+
+  const fetchUserProfile = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ["profile"] });
+  }, [queryClient]);
+
   const handleImportSuccess = useCallback(() => {
-    fetchSummary();
-    fetchDetails();
-    fetchFiles();
+    queryClient.invalidateQueries({ queryKey: ["summary"] });
+    queryClient.invalidateQueries({ queryKey: ["currency-summary"] });
+    queryClient.invalidateQueries({ queryKey: ["details"] });
+    queryClient.invalidateQueries({ queryKey: ["files"] });
     setActiveTab("dashboard");
-  }, [fetchSummary, fetchDetails, fetchFiles]);
+  }, [queryClient]);
 
   let dateRangeFormatted;
   if (dateRange.preset === "current-month") {
     dateRangeFormatted = format(new Date(), "MMMM yyyy");
-  } else if (dateRange.preset === "custom") {
-    const startYear = dateRange.startDate.getFullYear();
-    const endYear = dateRange.endDate.getFullYear();
-    const startMonth = dateRange.startDate.getMonth();
-    const endMonth = dateRange.endDate.getMonth();
-
-    if (startYear === endYear && startMonth === endMonth) {
-      dateRangeFormatted = format(dateRange.startDate, "MMMM yyyy");
-    } else if (startYear === endYear) {
-      dateRangeFormatted = `${format(dateRange.startDate, "MMM dd")} - ${format(dateRange.endDate, "MMM dd, yyyy")}`;
-    } else {
-      dateRangeFormatted = `${format(dateRange.startDate, "MMM dd, yyyy")} - ${format(dateRange.endDate, "MMM dd, yyyy")}`;
-    }
   } else {
     const startYear = dateRange.startDate.getFullYear();
     const endYear = dateRange.endDate.getFullYear();
@@ -346,19 +252,27 @@ export function useDashboardData({ params, searchParams, navigate }) {
     if (startYear === endYear && startMonth === endMonth) {
       dateRangeFormatted = format(dateRange.startDate, "MMMM yyyy");
     } else if (startYear === endYear) {
-      dateRangeFormatted = `${format(dateRange.startDate, "MMMM")} - ${format(dateRange.endDate, "MMMM yyyy")}`;
+      if (dateRange.preset === "custom") {
+        dateRangeFormatted = `${format(dateRange.startDate, "MMM dd")} - ${format(dateRange.endDate, "MMM dd, yyyy")}`;
+      } else {
+        dateRangeFormatted = `${format(dateRange.startDate, "MMMM")} - ${format(dateRange.endDate, "MMMM yyyy")}`;
+      }
     } else {
-      dateRangeFormatted = `${format(dateRange.startDate, "MMMM yyyy")} - ${format(dateRange.endDate, "MMMM yyyy")}`;
+      if (dateRange.preset === "custom") {
+        dateRangeFormatted = `${format(dateRange.startDate, "MMM dd, yyyy")} - ${format(dateRange.endDate, "MMM dd, yyyy")}`;
+      } else {
+        dateRangeFormatted = `${format(dateRange.startDate, "MMMM yyyy")} - ${format(dateRange.endDate, "MMMM yyyy")}`;
+      }
     }
   }
 
   return {
-    summary,
-    entries,
-    files,
-    userData,
-    currencySummary,
-    categories,
+    summary: summaryQuery.data ?? { income: 0, outcome: 0, categories: [] },
+    entries: detailsQuery.data?.data ?? [],
+    files: filesQuery.data?.data ?? [],
+    userData: profileQuery.data ?? null,
+    currencySummary: currencySummaryQuery.data ?? { currencies: [] },
+    categories: categoriesQuery.data ?? [],
     currency,
     setCurrency,
     dateRange,
@@ -369,10 +283,10 @@ export function useDashboardData({ params, searchParams, navigate }) {
     setPagination,
     filesPagination,
     setFilesPagination,
-    summaryLoading,
-    entriesLoading,
-    filesLoading,
-    filesError,
+    summaryLoading: summaryQuery.isFetching || currencySummaryQuery.isFetching,
+    entriesLoading: detailsQuery.isFetching,
+    filesLoading: filesQuery.isFetching,
+    filesError: filesQuery.error?.message ?? null,
     fetchSummary,
     fetchDetails,
     fetchFiles,

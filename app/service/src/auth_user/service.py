@@ -1,3 +1,4 @@
+import base64
 import uuid
 from datetime import datetime, timedelta
 from typing import Any
@@ -43,7 +44,8 @@ async def update_user(id_user: int, user: UpdateUser) -> dict[str, Any] | None:
         auth_user.c.auth_method,
         auth_user.c.email_verified,
         auth_user.c.created_at,
-        auth_user.c.updated_at
+        auth_user.c.updated_at,
+        auth_user.c.avatar_data,
     ).where(auth_user.c.id == result['id'])
 
     return await fetch_one(select_query)
@@ -60,8 +62,44 @@ async def get_user_by_id(id_user: int) -> dict[str, Any] | None:
         auth_user.c.auth_method,
         auth_user.c.email_verified,
         auth_user.c.created_at,
-        auth_user.c.updated_at
+        auth_user.c.updated_at,
+        auth_user.c.avatar_data,
     ).where(auth_user.c.id == id_user)
+
+    return await fetch_one(select_query)
+
+
+async def update_avatar(id_user: int, avatar_data: str) -> dict[str, Any] | None:
+    try:
+        raw = base64.b64decode(avatar_data)
+    except Exception:
+        raise ValueError("Invalid base64 data")
+    if len(raw) > 10485760:  # 10 MB
+        raise ValueError("Avatar must be under 10 MB")
+
+    update_query = (
+        update(auth_user)
+        .where(auth_user.c.id == id_user)
+        .values({"avatar_data": avatar_data})
+        .returning(auth_user.c.id)
+    )
+    result = await fetch_one(update_query)
+    if result is None:
+        return None
+
+    select_query = select(
+        auth_user.c.id,
+        auth_user.c.name,
+        auth_user.c.last_name,
+        auth_user.c.national_id,
+        auth_user.c.email,
+        auth_user.c.id_role,
+        auth_user.c.auth_method,
+        auth_user.c.email_verified,
+        auth_user.c.created_at,
+        auth_user.c.updated_at,
+        auth_user.c.avatar_data,
+    ).where(auth_user.c.id == result['id'])
 
     return await fetch_one(select_query)
 

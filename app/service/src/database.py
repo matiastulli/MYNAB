@@ -56,6 +56,7 @@ auth_user = Table(
     Column("id_role", Integer, ForeignKey(
         "mynab.auth_user_role.id")),
     Column("google_id", String(255), nullable=True, unique=True),
+    Column("avatar_data", Text, nullable=True),
     Column("created_at", DateTime, server_default=func.now(), nullable=False),
     Column("updated_at", DateTime, server_default=func.now(), onupdate=func.now()),
     schema="mynab",

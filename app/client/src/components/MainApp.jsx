@@ -229,8 +229,16 @@ export default function MainApp({ onLogout }) {
                 className="w-full flex items-center justify-center p-2 rounded-lg hover:bg-[hsl(var(--muted))] transition-colors relative"
                 title={`${userData.name} ${userData.last_name}`}
               >
-                <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] flex items-center justify-center">
-                  <UserIcon className="h-3.5 w-3.5 text-[hsl(var(--background))]" />
+                <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] flex items-center justify-center overflow-hidden">
+                  {userData?.avatar_data ? (
+                    <img
+                      src={`data:image/jpeg;base64,${userData.avatar_data}`}
+                      alt="avatar"
+                      className="w-full h-full object-cover rounded-full"
+                    />
+                  ) : (
+                    <UserIcon className="h-3.5 w-3.5 text-[hsl(var(--background))]" />
+                  )}
                 </div>
                 {(!userData.national_id || userData.national_id === "") && (
                   <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[hsl(var(--warning-fg))]" />
@@ -241,8 +249,16 @@ export default function MainApp({ onLogout }) {
                 onClick={() => setShowProfileModal(true)}
                 className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[hsl(var(--muted))] transition-colors text-left"
               >
-                <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] flex items-center justify-center shrink-0">
-                  <UserIcon className="h-3.5 w-3.5 text-[hsl(var(--background))]" />
+                <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] flex items-center justify-center shrink-0 overflow-hidden">
+                  {userData?.avatar_data ? (
+                    <img
+                      src={`data:image/jpeg;base64,${userData.avatar_data}`}
+                      alt="avatar"
+                      className="w-full h-full object-cover rounded-full"
+                    />
+                  ) : (
+                    <UserIcon className="h-3.5 w-3.5 text-[hsl(var(--background))]" />
+                  )}
                 </div>
                 <span className="text-sm font-medium text-[hsl(var(--foreground))] truncate">
                   {userData.name} {userData.last_name}
@@ -272,8 +288,16 @@ export default function MainApp({ onLogout }) {
               onClick={() => setShowProfileModal(true)}
               className="relative shrink-0"
             >
-              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] flex items-center justify-center">
-                <UserIcon className="h-4 w-4 text-[hsl(var(--background))]" />
+              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] flex items-center justify-center overflow-hidden">
+                {userData?.avatar_data ? (
+                  <img
+                    src={`data:image/jpeg;base64,${userData.avatar_data}`}
+                    alt="avatar"
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                ) : (
+                  <UserIcon className="h-4 w-4 text-[hsl(var(--background))]" />
+                )}
               </div>
               {(!userData.national_id || userData.national_id === "") && (
                 <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-[hsl(var(--warning-fg))] border border-[hsl(var(--background))]" />

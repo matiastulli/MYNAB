@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { isDarkModeActive, toggleTheme } from "@/lib/themeUtils";
 import { api } from "@/services/api";
-import { AlertTriangleIcon, CheckCircleIcon, IdCardIcon, LogOutIcon, MoonIcon, SunIcon, UserIcon, XIcon } from "lucide-react";
+import { AlertTriangleIcon, CameraIcon, CheckCircleIcon, IdCardIcon, LogOutIcon, MoonIcon, SunIcon, UserIcon, XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function ProfileDialog({
@@ -22,6 +22,9 @@ export default function ProfileDialog({
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState(null);
+  const [avatarError, setAvatarError] = useState(null);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
   useEffect(() => {
     if (userData) {
@@ -30,6 +33,8 @@ export default function ProfileDialog({
         last_name: userData.last_name || "",
         national_id: userData.national_id || ""
       });
+      setAvatarPreview(null);
+      setAvatarError(null);
     }
   }, [userData]);
 
@@ -40,20 +45,62 @@ export default function ProfileDialog({
     return () => window.removeEventListener('themechange', update);
   }, []);
 
+  const handleAvatarSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setAvatarError(null);
+
+    if (file.size > 10485760) {
+      setAvatarError('Image must be under 10 MB');
+      return;
+    }
+
+    const canvas = document.createElement('canvas');
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+
+    img.onload = () => {
+      const MAX = 512;
+      let { width, height } = img;
+      if (width > MAX || height > MAX) {
+        if (width > height) { height = Math.round((height * MAX) / width); width = MAX; }
+        else { width = Math.round((width * MAX) / height); height = MAX; }
+      }
+      canvas.width = width;
+      canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      const base64 = dataUrl.split(',')[1];
+      setAvatarPreview(base64);
+      URL.revokeObjectURL(objectUrl);
+    };
+    img.src = objectUrl;
+  };
+
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
     setIsUpdating(true);
     try {
-      const response = await api.put("/auth/profile", profileForm);
+      if (avatarPreview) {
+        setIsUploadingAvatar(true);
+        const avatarRes = await api.put('/auth/avatar', { avatar_data: avatarPreview });
+        setIsUploadingAvatar(false);
+        if (avatarRes.error) {
+          console.error('Avatar upload failed:', avatarRes.error);
+          return;
+        }
+      }
+      const response = await api.put('/auth/profile', profileForm);
       if (!response.error) {
         setUpdateSuccess(true);
         if (onProfileUpdated) onProfileUpdated();
         setTimeout(() => { onOpenChange(false); setUpdateSuccess(false); }, 1500);
       }
     } catch (error) {
-      console.error("Error updating profile:", error);
+      console.error('Error updating profile:', error);
     } finally {
       setIsUpdating(false);
+      setIsUploadingAvatar(false);
     }
   };
 
@@ -84,9 +131,41 @@ export default function ProfileDialog({
 
         {/* Avatar + identity */}
         <div className="flex flex-col items-center gap-3 px-6 pt-8 pb-6 bg-gradient-to-b from-[hsl(var(--accent)/0.08)] to-transparent border-b border-[var(--glass-border)]">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] flex items-center justify-center shadow-lg ring-2 ring-[hsl(var(--accent)/0.25)] ring-offset-2 ring-offset-transparent">
-            <UserIcon className="h-8 w-8 text-white" />
-          </div>
+          {/* Hidden file input */}
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            id="avatar-upload"
+            onChange={handleAvatarSelect}
+          />
+
+          {/* Clickable avatar */}
+          <label
+            htmlFor="avatar-upload"
+            className="group/avatar relative w-16 h-16 rounded-full cursor-pointer"
+          >
+            {(avatarPreview || userData?.avatar_data) ? (
+              <img
+                src={`data:image/jpeg;base64,${avatarPreview || userData.avatar_data}`}
+                alt="avatar"
+                className="w-16 h-16 rounded-full object-cover ring-2 ring-[hsl(var(--accent)/0.25)] ring-offset-2 ring-offset-transparent"
+              />
+            ) : (
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] flex items-center justify-center shadow-lg ring-2 ring-[hsl(var(--accent)/0.25)] ring-offset-2 ring-offset-transparent">
+                <UserIcon className="h-8 w-8 text-white" />
+              </div>
+            )}
+            {/* Camera overlay on hover */}
+            <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover/avatar:opacity-100 transition-opacity flex items-center justify-center">
+              <CameraIcon className="h-5 w-5 text-white" />
+            </div>
+          </label>
+
+          {avatarError && (
+            <p className="text-xs text-[hsl(var(--destructive))] mt-1">{avatarError}</p>
+          )}
+
           <div className="text-center">
             <p className="font-semibold text-[hsl(var(--foreground))]">{displayName}</p>
             {userData?.email && (
@@ -179,9 +258,9 @@ export default function ProfileDialog({
                 {isUpdating ? (
                   <div className="flex items-center gap-2">
                     <div className="h-4 w-4 border-2 border-t-transparent border-white rounded-full animate-spin" />
-                    Saving…
+                    {isUploadingAvatar ? 'Uploading…' : 'Saving…'}
                   </div>
-                ) : "Save Changes"}
+                ) : 'Save Changes'}
               </Button>
             </form>
           )}

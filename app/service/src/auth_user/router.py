@@ -40,6 +40,20 @@ async def edit_profile(
     return JSONResponse(status_code=status.HTTP_200_OK, content=user_response.model_dump())
 
 
+@router.put("/avatar", response_model=schemas.UserResponse)
+async def update_avatar(
+    update_data: schemas.UpdateAvatar,
+    jwt_data: JWTData = Depends(require_role([ROLES.USER]))
+) -> JSONResponse:
+    try:
+        updated = await service.update_avatar(jwt_data.id_user, update_data.avatar_data)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    if updated is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    return JSONResponse(status_code=status.HTTP_200_OK, content=schemas.UserResponse(**updated).model_dump())
+
+
 @router.delete("/logout")
 async def logout_user(
     response: Response,

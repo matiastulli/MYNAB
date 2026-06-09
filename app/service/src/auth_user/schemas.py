@@ -16,6 +16,10 @@ class UpdateUser(CustomModel):
     national_id: Optional[str] = Field(min_length=6, max_length=20)
 
 
+class UpdateAvatar(CustomModel):
+    avatar_data: str  # base64-encoded JPEG, no data URL prefix
+
+
 class JWTData(CustomModel):
     id_user: int = Field(alias="sub")
     id_user_role: Optional[int] = None
@@ -38,6 +42,7 @@ class UserResponse(CustomModel):
     id_role: int
     created_at: str
     updated_at: str
+    avatar_data: Optional[str] = None
 
     @validator('created_at', 'updated_at', pre=True)
     def format_datetime(cls, value):

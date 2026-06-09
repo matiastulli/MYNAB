@@ -20,7 +20,6 @@ import {
   BarChartIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  DollarSignIcon,
   DownloadIcon,
   FolderIcon,
   LayoutDashboardIcon,
@@ -176,16 +175,18 @@ export default function MainApp({ onLogout }) {
               onClick={() => toggleSidebar(false)}
               title="Expand sidebar"
               aria-label="Expand sidebar"
-              className="group/brand relative w-7 h-7 rounded-lg bg-gradient-to-br from-[hsl(var(--accent)/0.2)] to-[hsl(var(--accent)/0.1)] flex items-center justify-center"
+              className="group/brand relative w-7 h-7 rounded-lg flex items-center justify-center"
             >
-              <DollarSignIcon className="h-4 w-4 text-[hsl(var(--accent))] transition-opacity duration-150 group-hover/brand:opacity-0" />
+              <img src="/android-chrome-192x192.png" alt="MYNAB" className="w-7 h-7 rounded-lg object-cover transition-opacity duration-150 group-hover/brand:opacity-0" />
               <ChevronRightIcon className="h-3.5 w-3.5 text-[hsl(var(--foreground))] absolute opacity-0 group-hover/brand:opacity-100 transition-opacity duration-150" />
             </button>
           ) : (
             <>
-              <div className={`w-7 h-7 rounded-lg bg-gradient-to-br from-[hsl(var(--accent)/0.2)] to-[hsl(var(--accent)/0.1)] flex items-center justify-center shrink-0 ${(summaryLoading || entriesLoading) ? 'animate-pulse' : ''}`}>
-                <DollarSignIcon className="h-4 w-4 text-[hsl(var(--accent))]" />
-              </div>
+              <img
+                src="/android-chrome-192x192.png"
+                alt="MYNAB"
+                className={`w-7 h-7 rounded-lg object-cover shrink-0 ${(summaryLoading || entriesLoading) ? 'opacity-60' : ''}`}
+              />
               <div className="flex items-center gap-2 flex-1 overflow-hidden">
                 <span className="font-bold text-sm tracking-wider text-[hsl(var(--foreground))] whitespace-nowrap">MYNAB</span>
                 {(summaryLoading || entriesLoading) && (

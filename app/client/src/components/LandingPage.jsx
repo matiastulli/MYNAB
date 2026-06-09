@@ -110,9 +110,11 @@ export default function LandingPage({ onGetStarted }) {
             <section className="h-full flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8">
                 <div className="max-w-4xl w-full mx-auto text-center">
                     <div className="mb-6 sm:mb-8">
-                        <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-accent/20 to-accent/10 rounded-full mb-4 sm:mb-6 shadow-lg">
-                            <DollarSignIcon className="h-10 w-10 sm:h-12 sm:w-12 text-[hsl(var(--accent))]" />
-                        </div>
+                        <img
+                            src="/android-chrome-192x192.png"
+                            alt="MYNAB"
+                            className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover shadow-lg mb-4 sm:mb-6 mx-auto"
+                        />
                         <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-[hsl(var(--foreground))] mb-6 sm:mb-8 leading-tight">
                             <span className="block text-[hsl(var(--foreground))/0.9]">MYNAB</span>
                             <span className="block text-xl sm:text-2xl md:text-3xl font-normal text-[hsl(var(--muted-foreground))] mt-2">

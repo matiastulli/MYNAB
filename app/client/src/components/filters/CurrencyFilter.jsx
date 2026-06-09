@@ -5,7 +5,7 @@ import { getCurrencySymbol, getSupportedCurrencies } from "@/lib/currencyUtils"
 
 const SUPPORTED = getSupportedCurrencies()
 
-export default function CurrencyFilter({ isLoading, availableCurrencies }) {
+export default function CurrencyFilter({ isLoading, availableCurrencies, vertical = false }) {
   const { currency: selectedCurrency, handleCurrencyChange } = useDashboardContext()
 
   const codes =
@@ -14,6 +14,35 @@ export default function CurrencyFilter({ isLoading, availableCurrencies }) {
       : SUPPORTED.map((c) => c.code)
 
   const items = ["ALL", ...codes]
+
+  if (vertical) {
+    return (
+      <div className="flex flex-col gap-0.5 w-full">
+        {items.map((code) => {
+          const isActive = code === selectedCurrency
+          const symbol = code === "ALL" ? "∗" : getCurrencySymbol(code)
+          return (
+            <button
+              key={code}
+              onClick={() => !isLoading && handleCurrencyChange(code)}
+              disabled={isLoading}
+              className={`
+                w-full flex items-center gap-2.5 px-3 h-8 rounded-lg transition-all duration-150 text-sm font-medium
+                ${isActive
+                  ? "bg-[hsl(var(--accent)/0.15)] text-[hsl(var(--accent))]"
+                  : "text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--muted))] hover:text-[hsl(var(--foreground))]"
+                }
+                ${isLoading ? "opacity-40 pointer-events-none" : ""}
+              `}
+            >
+              <span className="w-4 text-center font-bold text-xs shrink-0">{symbol}</span>
+              <span className="tracking-wide text-xs">{code}</span>
+            </button>
+          )
+        })}
+      </div>
+    )
+  }
 
   return (
     <div className="flex items-center gap-1.5 overflow-x-auto snap-x snap-mandatory">

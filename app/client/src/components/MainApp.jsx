@@ -18,10 +18,8 @@ import { api } from "@/services/api"
 import {
   AlertTriangleIcon,
   BarChartIcon,
-  CalendarIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  CircleDollarSignIcon,
   DollarSignIcon,
   DownloadIcon,
   FolderIcon,
@@ -170,81 +168,51 @@ export default function MainApp({ onLogout }) {
     <div className="flex min-h-screen bg-gradient-to-br from-[hsl(var(--background))] via-[hsl(var(--background))] to-[hsl(var(--muted))]">
 
       {/* Desktop sidebar */}
-      <aside className={`relative group hidden md:flex flex-col shrink-0 sticky top-0 h-screen border-r border-[hsl(var(--border))] bg-[var(--glass-bg-heavy)] backdrop-blur-2xl py-6 gap-4 transition-all duration-200 ${sidebarCollapsed ? 'w-14 px-2' : 'w-56 px-4'}`}>
+      <aside className={`relative hidden md:flex flex-col shrink-0 sticky top-0 h-screen border-r border-[hsl(var(--border))] bg-[var(--glass-bg-heavy)] backdrop-blur-2xl py-6 gap-4 transition-all duration-200 ${sidebarCollapsed ? 'w-14 px-2' : 'w-56 px-4'}`}>
         {/* Brand */}
-        <div className="flex items-center gap-2 pb-4 border-b border-[hsl(var(--border))]">
-          <div className={`w-7 h-7 rounded-lg bg-gradient-to-br from-[hsl(var(--accent)/0.2)] to-[hsl(var(--accent)/0.1)] flex items-center justify-center shrink-0 ${sidebarCollapsed && (summaryLoading || entriesLoading) ? 'animate-pulse' : ''}`}>
-            <DollarSignIcon className="h-4 w-4 text-[hsl(var(--accent))]" />
-          </div>
-
-          <div className={`flex items-center gap-2 flex-1 overflow-hidden transition-all duration-150 ${sidebarCollapsed ? 'opacity-0 w-0 pointer-events-none' : 'opacity-100 delay-100'}`}>
-            <span className="font-bold text-sm tracking-wider text-[hsl(var(--foreground))] whitespace-nowrap">MYNAB</span>
-            {(summaryLoading || entriesLoading) && (
-              <svg className="animate-spin h-3.5 w-3.5 text-[hsl(var(--accent))] shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-              </svg>
-            )}
-          </div>
-
-          {!sidebarCollapsed && (
+        <div className={`flex pb-4 border-b border-[hsl(var(--border))] ${sidebarCollapsed ? 'justify-center' : 'items-center gap-2'}`}>
+          {sidebarCollapsed ? (
             <button
-              onClick={() => toggleSidebar(true)}
-              className="p-1.5 rounded-lg hover:bg-[hsl(var(--muted))] transition-colors text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] ml-auto shrink-0"
-              title="Collapse sidebar"
+              onClick={() => toggleSidebar(false)}
+              title="Expand sidebar"
+              aria-label="Expand sidebar"
+              className="group/brand relative w-7 h-7 rounded-lg bg-gradient-to-br from-[hsl(var(--accent)/0.2)] to-[hsl(var(--accent)/0.1)] flex items-center justify-center"
             >
-              <ChevronLeftIcon className="h-4 w-4" />
+              <DollarSignIcon className="h-4 w-4 text-[hsl(var(--accent))] transition-opacity duration-150 group-hover/brand:opacity-0" />
+              <ChevronRightIcon className="h-3.5 w-3.5 text-[hsl(var(--foreground))] absolute opacity-0 group-hover/brand:opacity-100 transition-opacity duration-150" />
             </button>
+          ) : (
+            <>
+              <div className={`w-7 h-7 rounded-lg bg-gradient-to-br from-[hsl(var(--accent)/0.2)] to-[hsl(var(--accent)/0.1)] flex items-center justify-center shrink-0 ${(summaryLoading || entriesLoading) ? 'animate-pulse' : ''}`}>
+                <DollarSignIcon className="h-4 w-4 text-[hsl(var(--accent))]" />
+              </div>
+              <div className="flex items-center gap-2 flex-1 overflow-hidden">
+                <span className="font-bold text-sm tracking-wider text-[hsl(var(--foreground))] whitespace-nowrap">MYNAB</span>
+                {(summaryLoading || entriesLoading) && (
+                  <svg className="animate-spin h-3.5 w-3.5 text-[hsl(var(--accent))] shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                )}
+              </div>
+              <button
+                onClick={() => toggleSidebar(true)}
+                className="p-1.5 rounded-lg hover:bg-[hsl(var(--muted))] transition-colors text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] ml-auto shrink-0"
+                title="Collapse sidebar"
+              >
+                <ChevronLeftIcon className="h-4 w-4" />
+              </button>
+            </>
           )}
         </div>
 
-        {/* Floating expand pill — collapsed state only, visible on sidebar hover */}
-        {sidebarCollapsed && (
-          <button
-            onClick={() => toggleSidebar(false)}
-            title="Expand sidebar"
-            aria-label="Expand sidebar"
-            className="absolute -right-3 top-8 z-10 flex items-center justify-center w-6 h-6 rounded-full bg-[var(--glass-bg-heavy)] border border-[hsl(var(--border))] shadow-md text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--muted))] transition-all duration-150 opacity-0 group-hover:opacity-100"
-          >
-            <ChevronRightIcon className="h-3 w-3" />
-          </button>
-        )}
-
         {/* Filters */}
-        {sidebarCollapsed ? (
-          <div className="flex flex-col items-center gap-3">
-            <div className="relative">
-              <button
-                onClick={() => toggleSidebar(false)}
-                className="p-2.5 rounded-lg hover:bg-[hsl(var(--muted))] transition-colors text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
-                title="Date range"
-                aria-label="Open date range filter"
-              >
-                <CalendarIcon className="h-4 w-4" />
-              </button>
-              {dateRange.preset && dateRange.preset !== 'current-month' && (
-                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[hsl(var(--accent))]" />
-              )}
-            </div>
-            <div className="relative">
-              <button
-                onClick={() => toggleSidebar(false)}
-                className="p-2.5 rounded-lg hover:bg-[hsl(var(--muted))] transition-colors text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
-                title="Currency"
-                aria-label="Open currency filter"
-              >
-                <CircleDollarSignIcon className="h-4 w-4" />
-              </button>
-              {currency && currency !== 'ALL' && (
-                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[hsl(var(--accent))]" />
-              )}
-            </div>
-          </div>
-        ) : (
-          <div className="flex flex-col gap-2 w-full">
+        {!sidebarCollapsed && (
+          <div className="flex flex-col gap-1 w-full">
             <CurrencyFilter
               isLoading={summaryLoading || entriesLoading}
               availableCurrencies={currencySummary?.currencies?.map(c => c.currency)}
+              vertical
             />
           </div>
         )}
@@ -338,8 +306,8 @@ export default function MainApp({ onLogout }) {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 min-w-0">
-        <div className="px-4 py-6 pb-28 md:pb-10 md:px-8 md:py-10">
+      <div className="flex-1 min-w-0 flex flex-col">
+        <div className="px-4 py-6 pb-28 md:pb-10 md:px-8 md:py-10 flex flex-col flex-1 min-h-0">
 
           {/* PWA install banner */}
           {canInstall && (
@@ -387,13 +355,15 @@ export default function MainApp({ onLogout }) {
         )}
 
         {currency === "ALL" && (
-          <CurrencyOverview
-            currencySummary={currencySummary}
-            dateRangeFormatted={dateRangeFormatted}
-            isLoading={summaryLoading}
-            onCurrencySelect={handleCurrencySelect}
-            onCurrencyImport={handleCurrencyImport}
-          />
+          <div className="flex-1 min-h-0">
+            <CurrencyOverview
+              currencySummary={currencySummary}
+              dateRangeFormatted={dateRangeFormatted}
+              isLoading={summaryLoading}
+              onCurrencySelect={handleCurrencySelect}
+              onCurrencyImport={handleCurrencyImport}
+            />
+          </div>
         )}
 
         {currency !== "ALL" && (

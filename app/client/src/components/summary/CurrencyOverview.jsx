@@ -78,58 +78,52 @@ export default function CurrencyOverview({
 
   if (currencies.length === 0) {
     return (
-      <div className="text-center py-2 px-4 max-w-full mx-auto">
-        <div className="mb-4">
-  
-          <h3 className="text-xl font-semibold text-[hsl(var(--foreground))] mb-2 bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] bg-clip-text text-transparent">
+      <div className="h-full flex flex-col text-center px-4 max-w-full mx-auto">
+        <div className="mb-3">
+          <h3 className="text-xl font-semibold mb-1 bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] bg-clip-text text-transparent">
             Start Your Financial Journey
           </h3>
-          
-        </div>
-
-        {/* Currency Import Options */}
-        <div className="space-y-4">
-          <h4 className="text-sm font-medium text-[hsl(var(--foreground))] text-center bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] bg-clip-text text-transparent">
+          <h4 className="text-sm font-medium bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] bg-clip-text text-transparent">
             Choose Currency to Import
           </h4>
+        </div>
 
-          <div className="grid grid-cols-6 auto-rows-fr gap-3 w-full max-w-4xl mx-auto">
-            {/* USD Button - Large Rectangle */}
-            <button
-              onClick={() => handleCurrencyImport("USD")}
-              className="col-span-4 row-span-2 sm:col-span-3 flex flex-col items-center justify-center gap-2 px-3 py-4 bg-gradient-to-r from-[hsl(var(--chart-4))] to-[hsl(var(--chart-2))/0.8] hover:from-[hsl(var(--chart-4))/0.9] hover:to-[hsl(var(--chart-2))/0.7] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl border border-[var(--glass-border)] backdrop-blur-xl"
-            >
-              <span className="text-3xl sm:text-4xl font-bold">$</span>
-              <span className="text-sm sm:text-base">USD</span>
-            </button>
+        <div className="grid grid-cols-6 auto-rows-fr gap-3 w-full max-w-4xl mx-auto flex-1 min-h-0">
+          {/* USD Button - Large Rectangle */}
+          <button
+            onClick={() => handleCurrencyImport("USD")}
+            className="col-span-4 row-span-2 sm:col-span-3 h-full flex flex-col items-center justify-center gap-2 px-3 py-4 bg-gradient-to-r from-[hsl(var(--chart-4))] to-[hsl(var(--chart-2))/0.8] hover:from-[hsl(var(--chart-4))/0.9] hover:to-[hsl(var(--chart-2))/0.7] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl border border-[var(--glass-border)] backdrop-blur-xl"
+          >
+            <span className="text-3xl sm:text-4xl font-bold">$</span>
+            <span className="text-sm sm:text-base">USD</span>
+          </button>
 
-            {/* ARS Button - Square */}
-            <button
-              onClick={() => handleCurrencyImport("ARS")}
-              className="col-span-2 row-span-2 flex flex-col items-center justify-center gap-2 px-3 py-4 bg-gradient-to-r from-[hsl(var(--chart-2))] to-[hsl(var(--chart-2))/0.8] hover:from-[hsl(var(--chart-2))/0.9] hover:to-[hsl(var(--chart-2))/0.7] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl border border-[var(--glass-border)] backdrop-blur-xl"
-            >
-              <span className="text-2xl sm:text-3xl font-bold">$</span>
-              <span className="text-sm">ARS</span>
-            </button>
+          {/* ARS Button - Square */}
+          <button
+            onClick={() => handleCurrencyImport("ARS")}
+            className="col-span-2 row-span-2 h-full flex flex-col items-center justify-center gap-2 px-3 py-4 bg-gradient-to-r from-[hsl(var(--chart-2))] to-[hsl(var(--chart-2))/0.8] hover:from-[hsl(var(--chart-2))/0.9] hover:to-[hsl(var(--chart-2))/0.7] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl border border-[var(--glass-border)] backdrop-blur-xl"
+          >
+            <span className="text-2xl sm:text-3xl font-bold">$</span>
+            <span className="text-sm">ARS</span>
+          </button>
 
-            {/* GBP Button - Wide Rectangle */}
-            <button
-              onClick={() => handleCurrencyImport("GBP")}
-              className="col-span-2 sm:col-span-2 flex flex-col items-center justify-center gap-2 px-3 py-4 bg-gradient-to-r from-[hsl(var(--chart-5))] to-[hsl(var(--accent))/0.8] hover:from-[hsl(var(--chart-5))/0.9] hover:to-[hsl(var(--accent))/0.7] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl border border-[var(--glass-border)] backdrop-blur-xl"
-            >
-              <span className="text-2xl sm:text-3xl font-bold">£</span>
-              <span className="text-sm">GBP</span>
-            </button>
+          {/* GBP Button */}
+          <button
+            onClick={() => handleCurrencyImport("GBP")}
+            className="col-span-2 h-full flex flex-col items-center justify-center gap-2 px-3 py-4 bg-gradient-to-r from-[hsl(var(--chart-5))] to-[hsl(var(--accent))/0.8] hover:from-[hsl(var(--chart-5))/0.9] hover:to-[hsl(var(--accent))/0.7] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl border border-[var(--glass-border)] backdrop-blur-xl"
+          >
+            <span className="text-2xl sm:text-3xl font-bold">£</span>
+            <span className="text-sm">GBP</span>
+          </button>
 
-            {/* AUD Button - Wide Rectangle */}
-            <button
-              onClick={() => handleCurrencyImport("AUD")}
-              className="col-span-2 sm:col-span-2 flex flex-col items-center justify-center gap-2 px-3 py-4 bg-gradient-to-r from-[hsl(var(--chart-1))] to-[hsl(var(--chart-3))/0.8] hover:from-[hsl(var(--chart-1))/0.9] hover:to-[hsl(var(--chart-3))/0.7] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl border border-[var(--glass-border)] backdrop-blur-xl"
-            >
-              <span className="text-2xl sm:text-3xl font-bold">A$</span>
-              <span className="text-sm">AUD</span>
-            </button>
-          </div>
+          {/* AUD Button */}
+          <button
+            onClick={() => handleCurrencyImport("AUD")}
+            className="col-span-2 h-full flex flex-col items-center justify-center gap-2 px-3 py-4 bg-gradient-to-r from-[hsl(var(--chart-1))] to-[hsl(var(--chart-3))/0.8] hover:from-[hsl(var(--chart-1))/0.9] hover:to-[hsl(var(--chart-3))/0.7] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl border border-[var(--glass-border)] backdrop-blur-xl"
+          >
+            <span className="text-2xl sm:text-3xl font-bold">A$</span>
+            <span className="text-sm">AUD</span>
+          </button>
         </div>
       </div>
     )
@@ -147,9 +141,9 @@ export default function CurrencyOverview({
   }
 
   return (
-    <div className="space-y-8">
+    <div className="h-full">
       {/* Currency Cards Grid */}
-      <div className={`grid gap-6 ${getGridLayout()}`}>
+      <div className={`grid gap-6 h-full ${getGridLayout()}`}>
         {currencies.map((currencyData) => {
           const balance = currencyData.income - currencyData.outcome
           const isPositive = balance >= 0

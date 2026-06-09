@@ -122,6 +122,6 @@ The backend exposes `GET /healthcheck` (no auth) — useful for uptime monitors 
 
 ## Team Workflow
 
-Features follow a PM → Engineer pipeline. See [`.claude/WORKFLOW.md`](.claude/WORKFLOW.md) for the full process.
+Features follow a PM → Architect → Engineer pipeline. See [`workflows/team-workflow.md`](workflows/team-workflow.md) for the full process.
 
 **Short version**: user describes a goal → main Claude spawns **PM agent** to produce a scoped plan → main Claude spawns **Engineer agent** with that plan → main Claude reports back. Agents cannot spawn each other; all coordination goes through the main Claude instance.

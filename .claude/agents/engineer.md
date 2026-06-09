@@ -48,6 +48,68 @@ alembic upgrade head
 
 **Currency/date formatting** — use helpers in `src/lib/currencyUtils.js` and `src/lib/dateUtils.js`. Never format currencies or dates inline.
 
+## Design system — glass UI language
+
+MYNAB uses a consistent "floating glass" design language. Always apply it when building or modifying UI.
+
+**CSS custom property tokens** (defined in `src/index.css`, use these — never hardcode opacity values):
+```
+--glass-bg            background at 0.82 opacity  (cards, sidebars)
+--glass-bg-heavy      background at 0.92 opacity  (dialogs, overlays)
+--glass-border        subtle border for glass surfaces
+--glass-shadow        default shadow for glass cards
+--glass-shadow-heavy  elevated shadow on hover
+--glass-radius        20px  — primary card radius
+--glass-radius-sm     14px  — inner panel / smaller card radius
+```
+
+**Applying glass to a surface:**
+```jsx
+className="bg-[var(--glass-bg)] backdrop-blur-2xl border border-[var(--glass-border)] shadow-[var(--glass-shadow)] rounded-[var(--glass-radius)]"
+```
+
+**Heavy glass (dialogs, modals):**
+```jsx
+className="bg-[var(--glass-bg-heavy)] backdrop-blur-xl border border-[var(--glass-border)] rounded-[var(--glass-radius)]"
+```
+
+**Hover elevation** — add depth on hover with shadow only, never scale:
+```jsx
+className="hover:shadow-[var(--glass-shadow-heavy)] transition-shadow"
+```
+
+**Critical Safari bug** — never combine `hover:scale-*` with `backdrop-blur-*` on the same element. It breaks the blur in Safari/WebKit. Use scale only on non-blurred children.
+
+**Native input elements** (`<input>`, `<select>`, `<textarea>`) must NOT have `backdrop-blur-*` applied directly. Apply blur to the wrapper container instead.
+
+**Floating pill pattern** (mobile bottom bar, toasts, floating actions):
+```jsx
+className="rounded-[22px] bg-[hsl(var(--background)/0.82)] backdrop-blur-2xl border border-[hsl(var(--border))] shadow-2xl"
+```
+
+**Accent color** — use `hsl(var(--accent))` for primary interactive elements. Use `hsl(var(--accent)/0.1)` for tinted backgrounds.
+
+**Semantic color tokens:**
+- `hsl(var(--foreground))` — primary text
+- `hsl(var(--muted-foreground))` — secondary text, labels
+- `hsl(var(--background))` — page background
+- `hsl(var(--muted))` — subtle backgrounds
+- `hsl(var(--border))` — default borders
+- `hsl(var(--positive))` — income / success
+- `hsl(var(--destructive))` — expenses / errors
+- `hsl(var(--warning-fg))` / `hsl(var(--warning-bg))` — warnings
+
+**Interactive states:**
+- Hover backgrounds: `hover:bg-[hsl(var(--muted))]`
+- Active/selected: `bg-[hsl(var(--accent)/0.1)] text-[hsl(var(--accent))]`
+- Disabled: `opacity-40 pointer-events-none`
+
+**Transitions** — use `transition-all duration-200` for layout changes (sidebar), `transition-colors` for color-only changes, `transition-shadow` for hover elevation.
+
+**Sidebar collapsed state** — `w-14 px-2` collapsed, `w-56 px-4` expanded. Navigation items in collapsed state show only the icon, centered. On hover over the sidebar in collapsed state, reveal tooltips or expand affordances.
+
+**Spacing scale** — prefer `gap-2`, `gap-4`, `gap-6`, `p-4`, `p-6`, `p-8` to keep rhythm consistent. Avoid arbitrary values unless matching a specific design token.
+
 ## Adding a new bank parser
 
 1. Add the bank name + accepted file extension to `bank_formats` dict in `budget/router.py`

@@ -86,10 +86,11 @@ There is no session/ORM abstraction — queries are built with SQLAlchemy `selec
 | Bank | Format |
 |------|--------|
 | `santander_rio` | `.xlsx` |
-| `ICBC` | `.csv` |
+| `icbc` | `.csv` |
 | `mercado_pago` | `.pdf` |
-| `bbva` | `.xls` |
-| `comm_bank` | `.csv` |
+| `bbva` | `.xls` (header on row 3) |
+| `comm_bank` | `.csv` (no header row) |
+| `revolut` | `.csv` |
 
 **Transaction categories** are stored in the `budget_transaction_category` table and matched via regex patterns defined in `TRANSACTION_CATEGORIES` (constants.py). `CATEGORY_IDS` maps category key strings to their DB integer IDs (hardcoded).
 
@@ -99,7 +100,7 @@ There is no session/ORM abstraction — queries are built with SQLAlchemy `selec
 
 **Routing**: React Router v7 with URL-encoded state: `/dashboard/:tab/:currency`. Currency and date range filters are also reflected in URL search params (`startDate`, `endDate`, `preset`).
 
-**State management**: No global store. `MainApp.jsx` is the top-level state holder — it fetches summary, entries, and files data and passes handlers down as props. All API calls go through the centralized `services/api.jsx` client, which reads the JWT from `localStorage` and attaches it as a `Bearer` header.
+**State management**: No global store. Server state lives in TanStack Query behind the `useDashboardData` hook (`hooks/useDashboardData.js`), which owns the `profile`, `categories`, `summary`, `currency-summary`, `details` and `files` queries and invalidates them after mutations. `MainApp.jsx` calls that hook and wraps the tabs in `DashboardProvider` (`contexts/DashboardContext.jsx`), so currency and date range come from context rather than prop drilling. All API calls go through the centralized `services/api.jsx` client, which reads the JWT from `localStorage`, attaches it as a `Bearer` header, and transparently retries once through `POST /auth/refresh` on a 401.
 
 **UI**: Tailwind CSS v4 + shadcn/ui components (Radix UI primitives in `components/ui/`). Light/dark theme is managed via `lib/themeUtils.js` which listens to the system preference.
 
@@ -110,7 +111,7 @@ There is no session/ORM abstraction — queries are built with SQLAlchemy `selec
 - `AddTransaction.jsx` — manual entry form
 - `FilesList.jsx` — lists imported files, supports delete (cascades to entries)
 
-**Auth**: `LandingPage.jsx` → `AuthModal.jsx` → custom Google Sign-In button (uses `useGoogleLogin` from `@react-oauth/google`). On success, JWT is written to `localStorage` and `userId` to `localStorage`; `App.jsx` checks `api.isAuthenticated()` to route between landing and dashboard. `MainApp` is lazy-loaded via `React.lazy` so it doesn't affect landing page paint.
+**Auth**: `main.jsx` wraps the app in `GoogleOAuthProvider` (client id from `VITE_GOOGLE_CLIENT_ID`); `LandingPage.jsx` calls `useGoogleLogin` directly to drive the sign-in button. On success, JWT is written to `localStorage` and `userId` to `localStorage`; `App.jsx` checks `api.isAuthenticated()` to route between landing and dashboard. `MainApp` is lazy-loaded via `React.lazy` so it doesn't affect landing page paint.
 
 ### Deployment
 
@@ -120,8 +121,23 @@ The backend exposes `GET /healthcheck` (no auth) — useful for uptime monitors 
 
 ---
 
+## Conventions
+
+| Doc | Covers |
+|---|---|
+| [`docs/conventions/00-naming.md`](docs/conventions/00-naming.md) | Python, database, API, env var and React naming |
+| [`docs/conventions/01-git-workflow.md`](docs/conventions/01-git-workflow.md) | Branching off `main`, Conventional Commits, scopes, PRs |
+| [`docs/conventions/02-code-style.md`](docs/conventions/02-code-style.md) | Pre-handoff checks, async rules, logging, tests |
+| [`.claude/rules/plans.md`](.claude/rules/plans.md) | Where plans live and how their status is tracked |
+
+---
+
 ## Team Workflow
 
-Features follow a PM → Architect → Engineer pipeline. See [`workflows/team-workflow.md`](workflows/team-workflow.md) for the full process.
+Features follow a PM → Architect → Engineer pipeline.
 
-**Short version**: user describes a goal → main Claude spawns **PM agent** to produce a scoped plan → main Claude spawns **Engineer agent** with that plan → main Claude reports back. Agents cannot spawn each other; all coordination goes through the main Claude instance.
+**Short version**: user describes a goal → main Claude spawns the **`project-manager`** agent to produce a scoped plan → spawns the **`architect`** agent first when the work spans DB + service + client → spawns the **`engineer`** agent with that plan → main Claude reports back. Agents cannot spawn each other; all coordination goes through the main Claude instance.
+
+Agents live in `.claude/agents/`: `project-manager`, `architect`, `engineer`, `qa-tester`, `security-reviewer`. Skills: `/new-plan`, `/update-status`, `/ship-task`, `/review`, `/pr`, `/railway`.
+
+**Hard rule — agents never commit.** They create and switch branches, but only Juan commits, by running `/pr`.

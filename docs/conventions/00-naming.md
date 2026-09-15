@@ -1,81 +1,82 @@
 # Naming conventions
 
-Checked by the `reviewer` agent. When this doc and the surrounding code disagree, match the code and fix this doc. Package invariants in each package's CLAUDE.md win over anything here.
+Checked during `/review`. When this doc and the surrounding code disagree, match the code and fix this doc.
 
-## Python — `packages/api`, `packages/ingestion`
+## Python — `app/service/`
 
-| Thing              | Convention                  | Example                                   |
-| ------------------ | --------------------------- | ----------------------------------------- |
-| Module             | `snake_case.py`             | `price_alert_matcher.py`                  |
-| Class              | `PascalCase`                | `GovRecord`                               |
-| Function, variable | `snake_case`                | `accept_price_report`                     |
-| Constant           | `UPPER_SNAKE`               | `POINTS_ACCEPTED`, `VALID_PRODUCTS`       |
-| Private            | leading `_`                 | `_identity_safe_to_overwrite`             |
-| Exception (new)    | ends in `Error`             | `<Provider>Error`                         |
-| Boolean            | reads as a predicate        | `has_gnc`, `is_active`                    |
-| Async function     | no `async_` prefix          | `send_push`, not `async_send_push`        |
+| Thing              | Convention                  | Example                              |
+| ------------------ | --------------------------- | ------------------------------------ |
+| Module             | `snake_case.py`             | `budget_transaction_category/service.py` |
+| Class              | `PascalCase`                | `BudgetEntryCreate`, `CustomModel`   |
+| Function, variable | `snake_case`                | `process_bank_statement`             |
+| Constant           | `UPPER_SNAKE`               | `TRANSACTION_CATEGORIES`, `CATEGORY_IDS` |
+| Private helper     | leading `_`                 | `_get_existing_reference_ids`        |
+| Bank parser        | `_process_<bank>_format`    | `_process_comm_bank_format`          |
+| Async function     | no `async_` prefix          | `fetch_all`, not `async_fetch_all`   |
 
-**API layout** — one concern per folder:
+**Domain module layout** — every domain lives in `app/service/src/<domain>/`:
 
-- `routers/<resource>.py`, plural resource (`stations.py`, `alerts.py`). Each exposes `router = APIRouter(prefix="/<resource>", tags=[...])`.
-- `db/queries/<topic>.py` — SQL lives here, not in routers.
-- `models/<entity>.py`, singular (`station.py`, `report.py`) — Pydantic request/response models.
-- `services/<capability>.py` — external providers and background jobs (`gemini.py`, `routing.py`, `streak_reminder.py`).
-- Shared thresholds and enums in `config.py`.
+- `router.py` — route handlers only, no business logic. Exposes `router = APIRouter()`, mounted with its prefix in `main.py`.
+- `service.py` — business logic and all database access.
+- `schemas.py` — Pydantic request/response models extending `CustomModel` from `src/models.py`.
+- `constants.py`, `config.py`, `exceptions.py`, `utils.py` as needed.
 
-**Ingestion layout** — pipeline steps are numbered in tens so a new step fits between two others:
+`budget_transaction_category` uses `schema.py` (singular) — it predates this doc. New modules use `schemas.py`.
 
-- `scrapers/NN_topic/` (`10_stations`, `30_prices`, `50_promotions`), output mirrored in `data/NN_topic/`.
-- Files are named by verb: `scrape_<source>.py`, `import_<what>.py`, `backfill_<what>.py`.
-- Full walkthrough: the `new-scraper` skill.
+Shared code sits directly in `src/`: `database.py`, `models.py`, `config.py`, `constants.py`, `exceptions.py`, `logging.py`, `utils.py`.
 
-## Database
+## Database — schema `mynab`
 
-- Schema `tuplayero`. Tables `snake_case`, **plural**: `stations`, `price_reports`, `reporter_favorites`.
-- Columns `snake_case`, **singular**: `reporter_id`, `google_place_id`, `price_ars`.
-- Primary key `id`; foreign key `<singular_table>_id`.
-- Timestamps are `TIMESTAMPTZ` in UTC with an `_at` suffix: `effective_at`, `paid_at`. Converted to `America/Argentina/Buenos_Aires` only for display.
-- Booleans `has_` / `is_`: `has_gnc`, `has_restaurant`.
-- Fuel products use the canonical keys only: `nafta_super | nafta_premium | gasoil_g2 | gasoil_g3 | gnc` (EV: `ac_semirrapida | dc_rapida`).
-- Migrations: `alembic revision --autogenerate -m "verb_object"` in `snake_case` (`add_prize_paid_at`). Alembic prefixes the date and revision id — never rename the file.
+- Tables `snake_case` and **singular**: `auth_user`, `budget_entry`, `budget_transaction_category`, `auth_refresh_token`. `files` is the one plural legacy name — don't copy it.
+- Columns `snake_case` and singular: `user_id`, `reference_id`, `file_base64`.
+- Primary key `id`. Foreign keys `<entity>_id`: `user_id`, `file_id`, `category_id`.
+- Timestamps `created_at` / `updated_at`, `DateTime` with server defaults.
+- Booleans read as a predicate: `email_verified`.
+- Tables are `Table(...)` objects in `src/database.py` with `schema="mynab"`. SQLAlchemy **Core** only — no ORM models, no session layer. All queries go through `fetch_one`, `fetch_all`, `execute`.
+- Migrations: `alembic revision --autogenerate -m "verb_object"` in snake_case (`add_avatar_data_to_auth_user`). Alembic prefixes the date and revision id — never rename the generated file.
 
 ## API
 
-- Paths `kebab-case`, plural resources: `/stations/along-route`, `/reporters/{id}/notification-preferences`.
-- The authenticated user's own resources live under `/me`: `/reporters/me/cars/{car_id}`.
-- Query, body and response fields `snake_case` (`radius_km`, `staleness_days`). Mobile and web consume them as is — no camelCase mapping at the boundary.
-- Every price object carries `source` and `effective_at`.
+- Router prefixes are kebab-case and mounted in `main.py`: `/auth`, `/budget`, `/budget-transaction-category`, `/mail`.
+- Sub-paths kebab-case: `/budget/import-file`, `/budget/summary-by-currency`, `/budget/export-xlsx`.
+- Path params snake_case: `/budget/entry/{entry_id}`, `/budget/file/{file_id}`.
+- Request, query and response fields are `snake_case` (`start_date`, `file_base64`, `id_user`). The client consumes them as they are — no camelCase mapping at the boundary.
+- Every protected route takes `jwt_data: JWTData = Depends(require_role([]))`. The authenticated id is `jwt_data.id_user` — never trust a user-supplied id for ownership.
+- Errors come back as `{"error": ...}` from the handlers in `main.py`; validation errors add `details` and `path`.
 
 ## Environment variables
 
-- `UPPER_SNAKE`, no project prefix, named after the provider or resource: `DATABASE_URL`, `GOOGLE_ROUTES_API_KEY`, `RESEND_API_KEY`.
-- Client-exposed vars use the framework prefix: `EXPO_PUBLIC_*` (mobile), `NEXT_PUBLIC_*` (web).
-- A new var is added to that package's example file in the same change: `packages/api/.env.example`, `packages/ingestion/.env.example`, `apps/mobile/env_example`.
+- Backend: `UPPER_SNAKE` with an `ENV_` prefix — `ENV_DATABASE_URL`, `ENV_JWT_SECRET`, `ENV_JWT_ALG`, `ENV_CORS_ORIGINS`, `ENV_RESEND_API_KEY`. `GOOGLE_CLIENT_ID` has no prefix; it predates the convention. New backend vars get `ENV_`.
+- Frontend: the `VITE_` prefix is required by Vite — `VITE_API_BASE_URL`, `VITE_GOOGLE_CLIENT_ID`. These are **baked in at build time**, so on Railway they must be build variables, not runtime variables.
+- A new var is documented in `CLAUDE.md` § Environment variables in the same change.
 
-## TypeScript — `apps/mobile`, `apps/web`
+## JavaScript / React — `app/client/`
 
-| Thing                         | Convention                       | Example                                   |
-| ----------------------------- | -------------------------------- | ----------------------------------------- |
-| Component                     | `PascalCase.tsx`, one per file   | `PriceShareCard.tsx`, `SiteHeader.tsx`    |
-| Component folder              | lowercase feature name           | `components/share/`, `components/map/`    |
-| Hook                          | `useX.ts` in `hooks/`            | `useNearbyStations.ts`                    |
-| Utility / lib module          | `camelCase.ts`                   | `shareCardModel.ts`, `externalMaps.ts`    |
-| Zustand store                 | `store/<name>Store.ts`           | `appStore.ts`                             |
-| Exported constant             | `UPPER_SNAKE`                    | `STORY_SAFE_TOP`, `SOURCE_LABELS`         |
-| Function, variable            | `camelCase`                      | `getBrandLogo`                            |
-| Type / interface              | `PascalCase`, no `I` prefix      | `ShareCardPayload`                        |
+| Thing                | Convention                          | Example                              |
+| -------------------- | ----------------------------------- | ------------------------------------ |
+| Component            | `PascalCase.jsx`, one per file      | `ActivityList.jsx`, `SummaryCards.jsx` |
+| shadcn/ui primitive  | `kebab-case.jsx` in `components/ui/`| `financial-value.jsx`                |
+| Component folder     | lowercase feature name              | `components/tabs/`, `components/filters/` |
+| Hook                 | `useX.js` in `hooks/`               | `useDashboardData.js`                |
+| Context              | `<Name>Context.jsx` in `contexts/`  | `DashboardContext.jsx`               |
+| Lib / util module    | `camelCase.js` in `lib/`            | `currencyUtils.js`, `dateUtils.js`   |
+| API client           | `camelCase.jsx` in `services/`      | `api.jsx`                            |
+| Function, variable   | `camelCase`                         | `handleCurrencyChange`               |
+| Exported constant    | `UPPER_SNAKE`                       | `API_BASE_URL`                       |
 
-- **Routes** (Expo Router screens, Next.js segments): `kebab-case`. User-facing web URLs are in Spanish: `/precios/[combustible]/[provincia]`, `/preguntas-frecuentes`. URL segments are slugs, never DB names — see `apps/web/CLAUDE.md`.
-- `apps/web/src/lib/admin-api.ts` predates this doc; new lib files use `camelCase`. Don't rename old files just for this.
-- User-facing copy is Spanish (Argentina), `vos` register — see `.claude/rules/argentina.md`.
+- `components/auth_user/` is snake_case to mirror the backend module name. New folders use a lowercase single word.
+- All network calls go through the `api` object in `services/api.jsx` — never `fetch` directly from a component.
+- TanStack Query keys are lowercase kebab strings with their filters appended: `["details", currency, startDate, endDate, limit, offset]`.
+- Routes: `/dashboard/:tab/:currency`, with filters in search params (`startDate`, `endDate`, `preset`). camelCase there is deliberate — it is URL state, not an API payload.
+- Currency and date formatting always go through `lib/currencyUtils.js` and `lib/dateUtils.js`, never inline.
 
 ## Tests
 
-- Python: `tests/test_<module>.py`. Test names describe the behavior: `test_row_to_route_station_without_price`, not `test_1`.
-- Mobile: `__tests__/<module>.test.ts(x)`, named after the module under test: `shareCardModel.test.ts`.
+- Python: `app/service/tests/test_<module>.py`, stdlib `unittest` (`unittest.IsolatedAsyncioTestCase` for async code). Test names describe the behavior: `test_existing_reference_ids_are_scoped_by_user`, not `test_1`.
+- The client has no test suite today. Don't claim one ran.
 
 ## Files that are not code
 
-- Plans: `docs/plans/YYYYMMDD-short-slug.md` — see `.claude/rules/plans.md`.
+- Plans: `docs/plans/YYYY-MM-DD-short-slug.md` — see `.claude/rules/plans.md`.
 - Conventions: `docs/conventions/NN-kebab-case.md`.
 - Agents and skills: `.claude/agents/<role>.md`, `.claude/skills/<kebab-name>/SKILL.md`.

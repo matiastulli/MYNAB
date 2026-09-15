@@ -1,18 +1,32 @@
 ---
 name: review
-description: Run the reviewer agent on the current git diff. Use before merging any non-trivial feature.
+description: Review the current git diff for correctness, data isolation and convention drift. Use before opening any non-trivial PR.
 allowed-tools:
   - Read
   - Bash
   - Grep
+  - Agent
 ---
 
-Get the current diff and delegate a full review to the reviewer agent.
+Review the working tree diff before it becomes a PR.
 
-1. Run `git diff HEAD` to get the full diff of uncommitted changes. If the working tree is clean, run `git diff HEAD~1` to review the last commit instead.
+1. Get the diff:
 
-2. Pass the diff to the **reviewer agent** with the instruction:
-   > "Review this diff against the checklist in your system prompt. Report all findings as Critical / Major / Minor with file:line references."
+```bash
+git diff HEAD                 # uncommitted changes
+git diff origin/main...HEAD   # if the tree is clean, review the whole branch
+```
 
-3. After the reviewer responds, summarise the findings and ask:
-   > "Any of these blockers before we continue?"
+2. Delegate to the **`qa-tester`** agent with the diff and this instruction:
+
+> "Review this diff against the checklist in your system prompt, plus `docs/conventions/00-naming.md` and `02-code-style.md`. Report findings as BLOCKER / MAJOR / MINOR with file:line references."
+
+3. If the diff adds an endpoint, or touches auth, file upload, or secrets, also run the **`security-reviewer`** agent on it. Data isolation (`user_id` scoping on every `budget_entry`, `files` and `auth_user` query) is the highest-severity class in this codebase — a missing filter is a cross-user leak.
+
+4. Summarise the findings and ask:
+
+> "Any of these blockers before we continue?"
+
+Fix every BLOCKER and MAJOR before handing off to `/pr`.
+
+**Note:** Claude Code also ships a built-in `/code-review`. This skill is the MYNAB-specific pass that checks conventions and data isolation; the built-in is a general correctness review. They complement each other.

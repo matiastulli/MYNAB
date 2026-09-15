@@ -25,11 +25,11 @@
             "source.organizeImports": "explicit"
         }
     },
+    "python.testing.cwd": "${workspaceFolder}/app/service",
     "python.testing.unittestArgs": [
         "-v",
         "-s",
-        "./app/service/tests",
-        ".",
+        "tests",
         "-p",
         "test_*.py"
     ],

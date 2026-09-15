@@ -1,3 +1,7 @@
+-----
+Status: #SHELVED — June 2026 week plan; predates status tracking, needs re-triage
+-----
+
 # MYNAB Next Week Plan
 
 Week: Monday, June 1, 2026 through Friday, June 5, 2026.

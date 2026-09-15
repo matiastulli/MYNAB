@@ -10,6 +10,7 @@ os.environ.setdefault("ENV_JWT_SECRET", "test-secret")
 os.environ.setdefault("ENV_DATABASE_URL", "postgresql+asyncpg://user:pass@localhost:5432/test")
 os.environ.setdefault("ENV_CORS_ORIGINS", '["http://localhost:5173"]')
 os.environ.setdefault("ENV_CORS_HEADERS", '["Content-Type", "Authorization"]')
+os.environ.setdefault("GOOGLE_CLIENT_ID", "test-client-id")
 
 from src.budget import service
 from src.budget.utils import identify_transaction_category

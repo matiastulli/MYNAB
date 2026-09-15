@@ -1,6 +1,6 @@
 ---
 name: ship-task
-description: Take one plan (or one fix) from a fresh feature branch to a reviewed, PR-ready working tree. Use when starting work on a plan slug from docs/plans/project-status.yaml, or when asked to "ship", "implement", "start" or "pick up" a feature or fix.
+description: Take one plan (or one fix) from a fresh feature branch to a reviewed, PR-ready working tree. Use when starting work on a plan in docs/plans/, or when asked to "ship", "implement", "start" or "pick up" a feature or fix.
 ---
 
 # Ship one plan
@@ -9,52 +9,59 @@ One plan slug (or one fix) per branch. If you find yourself doing two, stop and 
 
 ## 1. Pick
 
-- Find the slug in `docs/plans/project-status.yaml`.
-  - If the work touches more than one package or needs more than one session and has no plan, run `/new-plan <slug>` first.
+- Find the plan in `docs/plans/` and read its status banner.
+  - If it is `#DONE` or `#SHELVED`, stop and confirm with Juan.
+  - If the work touches both `app/service/` and `app/client/`, or needs a migration, and has no plan, run `/new-plan <slug>` first.
   - A trivial fix needs no plan; just choose a short slug.
-- If the entry has `blocked_on`, say so and stop.
-- Read the plan's **Acceptance criteria**: that is the definition of done. If they are vague, send the plan to the `pm` agent before building.
+- Read the plan's **Acceptance criteria**: that is the definition of done. If they are vague, send the plan to the `project-manager` agent before building.
 
 ## 2. Branch
 
 ```bash
 git branch --show-current
 git status --porcelain          # uncommitted work unrelated to this task → stop and ask Juan
-git checkout master && git pull
+git checkout main && git pull
 git checkout -b <type>/<slug>   # feat|fix|refactor|chore|docs|test
 ```
 
-Full rules: `docs/conventions/01-git-workflow.md`. Then run `/update-status <slug> IN_PROGRESS`.
+Full rules: [01-git-workflow.md](../../../docs/conventions/01-git-workflow.md). Then run `/update-status <slug> IN_PROGRESS`.
 
 ## 3. Build
 
-Delegate using the table in CLAUDE.md § Orchestration protocol (PM → Architect if multi-layer → engineer agents). Give each agent:
+Delegate in this order — agents cannot spawn each other, so every hop goes through main Claude:
 
-- the branch name
-- the acceptance criteria
-- `docs/conventions/00-naming.md`, `02-code-style.md` and the package's CLAUDE.md
+| Situation | Agent |
+| --- | --- |
+| Needs scoping or task breakdown | `project-manager` |
+| Touches DB + service + client, or adds a domain module | `architect` (before any code) |
+| Implementation | `engineer` |
+
+Give each agent: the branch name, the acceptance criteria, and [00-naming.md](../../../docs/conventions/00-naming.md) plus [02-code-style.md](../../../docs/conventions/02-code-style.md). Agents do not have context from this conversation — task descriptions must be self-contained.
 
 ## 4. Verify
 
-- Run the checks in `docs/conventions/02-code-style.md` for every package touched.
-- Walk each acceptance criterion. For criteria that need a device or store build, list them as **to verify by Juan**; never mark them passed.
-- Use the `qa-test` agent when the change needs a test plan.
-- Confirm no `console.log` is left in the diff.
+- Run the checks in [02-code-style.md](../../../docs/conventions/02-code-style.md) for every area touched:
+  - service: `cd app/service && python -m unittest discover -s tests`
+  - client: `cd app/client && npm run lint && npm run build`
+- Walk each acceptance criterion and say how it was verified. Never mark one passed that you did not actually run.
+- Use the `qa-tester` agent when the change needs a test plan or a second opinion on correctness.
+- Confirm no `console.log` is left in the client diff.
+- If `database.py` changed, confirm the Alembic migration exists and its SQL matches the table definition.
 
 ## 5. Review
 
 - Run `/review`, then fix every Critical and Major finding.
-- Run the `security` agent if the change adds an endpoint or touches auth, rate limiting or secrets.
+- Run the `security-reviewer` agent if the change adds an endpoint, or touches auth, file upload, or secrets.
 
 ## 6. Hand off — never commit
 
 Report to Juan:
 
-- branch name and files changed, grouped by package
-- checks run with results, plus what still needs on-device verification
-- suggested commit message(s): Conventional Commits, one scope per package
+- branch name and files changed, grouped by area
+- checks run with their results, plus anything still unverified
+- suggested commit message(s): Conventional Commits, one scope per area
 - suggested PR title and body: plan link, acceptance criteria, how each was verified
-- deploy order if the API and web both changed (API first)
+- deploy order if both service and client changed (service first)
 
 Once Juan has reviewed the tree, he runs `/pr` to commit, push and open the PR. Don't run it for him.
 

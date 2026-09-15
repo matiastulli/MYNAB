@@ -1,30 +1,39 @@
 ---
 name: railway
-description: Railway platform management for TuPlayero — checking logs, managing env vars, redeploying services, and creating new cron services. Use when you need to inspect a running service, debug a failed deployment, or provision a new ingestion pipeline.
+description: Railway platform management for MYNAB — checking logs, managing env vars, and redeploying the client and service. Use when you need to inspect a running service or debug a failed deployment.
 ---
 
 # Railway Management
+
+> **Fill these in.** The exact Railway project and service names below are placeholders — replace them with the real ones from the dashboard the first time you use this skill.
 
 ## Project identifiers
 
 | Resource | Value |
 |---|---|
-| Project | TuPlayero |
-| Daily ingestion service | `TuPlayero Ingestion` |
-| Weekly ingestion service | `TuPlayero Ingestion Weekly` (project `4cb8e2a7-62b8-4057-8693-46f61302a721`, env `8393bb2e-1838-4af0-8451-5cbfaa07a88e`) |
-| API service | `TuPlayero API` |
-| Web service | `TuPlayero Web` |
-| GraphQL API | `https://backboard.railway.com/graphql/v2` |
+| Project | MYNAB |
+| Service (backend) | `<service name>` — built from `Dockerfile.service` |
+| Client (frontend) | `<client name>` — built from `Dockerfile.client` |
+| Database | Railway PostgreSQL, schema `mynab` |
+
+---
+
+## How a deploy works
+
+- **Service**: `Dockerfile.service` installs `app/service/requirements.txt`, then `entrypoint.sh` sleeps 10s, runs `alembic upgrade head`, and starts uvicorn on `$PORT`. **A migration runs on every boot** — a bad migration takes the service down, not just the request that needs it.
+- **Client**: `Dockerfile.client` runs `npm ci && npm run build`, then serves `dist/` with nginx using `app/client/nginx.conf`.
+
+Deploy the service before the client when a response shape changed.
 
 ---
 
 ## Check service logs
 
-1. Open [railway.app](https://railway.app) → select **TuPlayero** project
+1. Open [railway.app](https://railway.app) → select the **MYNAB** project
 2. Click the service → **Deployments** tab → click the latest deployment
-3. **Logs** tab — filter by `ERROR` or scroll to the bottom for the last run output
+3. **Logs** tab — filter by `ERROR`, or look for the Alembic output at the top of a fresh boot
 
-For ingestion cron services: logs appear once the cron fires. Check **Metrics** → **Last run** to confirm it ran.
+The backend logs through `loguru`, and `log_middleware` in `src/logging.py` logs every request.
 
 ---
 
@@ -35,7 +44,7 @@ Service → **Deployments** → latest deployment → **Redeploy**
 
 ### Via CLI
 ```bash
-railway redeploy --service "TuPlayero API"
+railway redeploy --service "<service name>"
 ```
 
 ---
@@ -46,63 +55,54 @@ railway redeploy --service "TuPlayero API"
 Service → **Variables** tab
 
 ### Add / update
-Service → **Variables** → **New Variable** or click an existing one to edit.
+Service → **Variables** → **New Variable**, or click an existing one to edit.
 
-**Never commit secrets to git.** All credentials live in Railway Variables, not in `.env` files checked in.
+**Never commit secrets to git.** All credentials live in Railway Variables, not in checked-in `.env` files.
 
-### Variable references (ingestion weekly)
-The weekly service uses Railway variable references so it stays in sync with the daily service:
+Backend variables (all `ENV_`-prefixed except `GOOGLE_CLIENT_ID`):
+
 ```
-DATABASE_URL  →  ${{TuPlayero Ingestion.DATABASE_URL}}
-DATABASE_SSL  →  ${{TuPlayero Ingestion.DATABASE_SSL}}
+ENV_DATABASE_URL       postgresql+asyncpg://…
+ENV_ENVIRONMENT        PRODUCTION
+ENV_CORS_ORIGINS       ["https://mynab.app"]
+ENV_CORS_HEADERS       ["*"]
+ENV_JWT_SECRET         …
+ENV_JWT_ALG            HS256
+ENV_RESEND_API_KEY     …
+ENV_MAIL_FROM_EMAIL    …
+GOOGLE_CLIENT_ID       …
 ```
-If you add a new variable to the daily service that the weekly also needs, add the same reference pattern — don't copy the literal value.
 
----
+### Client variables are build-time, not runtime
 
-## Add a new cron service
-
-Use this pattern when a new ingestion task needs a **different schedule** than the daily run. Never add a date-gate inside `cron_daily.sh`.
-
-1. Create the service via Railway GraphQL API (`serviceCreate`) or dashboard → **New Service** → **Empty Service**
-2. Set source:
-   - Same repo as the daily service
-   - Same `Dockerfile.package.ingestion.*` 
-   - `watchPatterns: ["/packages/ingestion/**"]`
-3. Set runtime:
-   - `startCommand`: the two commands to run (e.g. `python -m scrapers.50_promotions.scrape_modo_promos ... && python -m scrapers.50_promotions.import_promotions ...`)
-   - `cronSchedule`: cron expression (e.g. `"0 3 * * 0"` = Sundays 03:00 UTC)
-4. Add variable references pointing to the daily service's `DATABASE_URL` / `DATABASE_SSL`
-5. Deploy once manually to confirm it works before the cron fires
+`VITE_API_BASE_URL` and `VITE_GOOGLE_CLIENT_ID` are baked into the JS bundle by Vite. They must be set as Railway **build** variables, and `VITE_GOOGLE_CLIENT_ID` is passed through `ARG VITE_GOOGLE_CLIENT_ID` in `Dockerfile.client`. Setting them as runtime variables does nothing — the built bundle already has the old value. Changing one requires a rebuild, not a restart.
 
 ---
 
 ## Debug a failed deployment
 
-1. Check **Build logs** — usually a dependency install or Docker layer failure
-2. Check **Deploy logs** — usually a startup crash or missing env var
+1. Check **Build logs** — usually a dependency install or Docker layer failure.
+2. Check **Deploy logs** — usually a startup crash or a missing env var.
 3. Common causes:
-   - Missing env var → add it in Variables tab
-   - asyncpg TIMESTAMPTZ error → Python `datetime` missing `tzinfo` — check the offending query
-   - Railway `DATABASE_SSL=disable` — confirm the service has this variable set (PostgreSQL 18 image requires it)
+   - Missing env var → `Config` raises at import time, so the service never starts. Add it in the Variables tab.
+   - Alembic failure → the entrypoint stops before uvicorn. Read the migration error; fix forward with a new migration rather than editing a applied one.
+   - Google sign-in broken on the deployed client but fine locally → `VITE_GOOGLE_CLIENT_ID` was set as a runtime variable instead of a build variable.
+   - CORS errors in the browser → `ENV_CORS_ORIGINS` doesn't include the client's real origin.
 
 ---
 
 ## Useful Railway CLI commands
 
 ```bash
-# Login
 railway login
-
-# Link to project (run once per machine)
-railway link
-
-# Run a command in the service environment (uses Railway env vars)
-railway run python -m scrapers.30_prices.scrape_gov --all --since-days 7
-
-# Check service status
+railway link                              # once per machine
 railway status
-
-# View logs
-railway logs --service "TuPlayero Ingestion"
+railway logs --service "<service name>"
+railway run uvicorn src.main:app --port 3001   # run locally with Railway's env vars
 ```
+
+---
+
+## Healthcheck
+
+`GET /healthcheck` is public and returns `{"status": "ok"}`. Point an uptime monitor at it to keep the service warm.

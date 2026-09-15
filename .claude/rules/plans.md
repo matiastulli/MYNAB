@@ -1,47 +1,47 @@
 # Plans convention
 
-All implementation plans for TuPlayero live in `docs/plans/`. These rules apply to every agent and to main Claude.
+All implementation plans for MYNAB live in `docs/plans/`. These rules apply to every agent and to main Claude.
 
 ## Location — non-negotiable
 
-- **Always** create plan files at `docs/plans/YYYYMMDD-slug.md`
+- **Always** create plan files at `docs/plans/YYYY-MM-DD-slug.md`
 - **Never** create plan files anywhere else — not in `.claude/`, not in the workspace root, not in `docs/` directly
-- Claude Code's `plansDirectory` is already set to `docs/plans` in `.claude/settings.json` — the built-in Plan feature writes there automatically
-- When a plan becomes `DONE` or `SHELVED`, move it to `docs/plans/archive/` (same filename) and update its `file:` path in `project-status.yaml`. `/update-status` does both.
+- When a plan is finished or abandoned, update its status banner in place. There is no archive directory; git history is the archive.
+
+`plansDirectory` is **not** set in `.claude/settings.json`, so Claude Code's built-in Plan feature does not write here automatically. Either create plans with `/new-plan`, or add `"plansDirectory": "docs/plans"` to settings.json if you want the built-in feature to use it.
 
 ## Filename format
 
 ```
-YYYYMMDD-short-slug.md
+YYYY-MM-DD-short-slug.md
 ```
-Examples: `20260809-price-alerts.md`, `20260809-web-redesign.md`
 
-Use `/new-plan <slug>` to scaffold one automatically with today's date.
+Examples: `2026-06-01-next-week-plan.md`, `2026-09-15-revolut-parser.md`
+
+Use `/new-plan <slug>` to scaffold one with today's date.
 
 ## Status banner
 
-Every plan file must start with:
+Every plan file starts with:
+
 ```
 -----
 Status: #TODO | #IN_PROGRESS | #DONE | #SHELVED — one-line note
 -----
 ```
 
-## Keeping project-status.yaml in sync
+The banner is the single source of truth for a plan's state. Update it with `/update-status <slug> <STATUS> [note]` when the state changes — when the branch is created, and again when the PR merges. There is no index file to keep in sync.
 
-`docs/plans/project-status.yaml` is the machine-readable index of every plan. When a plan's status changes:
+## Branch naming
 
-1. Update the status banner in the plan file
-2. Update the matching entry in `project-status.yaml`
-
-Use `/update-status <slug> <STATUS> [note]` to do both in one step.
-
-**Never let the two sources drift.** If you change one, always change the other.
+A plan's slug is the branch slug: `2026-09-15-revolut-parser.md` → `feat/revolut-parser`. See [01-git-workflow.md](../../docs/conventions/01-git-workflow.md).
 
 ## When to create a plan
 
 Create a plan for any work that:
-- Touches more than one package
+
+- Touches both `app/service/` and `app/client/`
+- Requires a database migration
 - Requires more than one session to complete
 - Has a non-obvious sequence of steps
 

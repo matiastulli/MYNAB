@@ -1,51 +1,53 @@
 # Code style
 
-Linters decide formatting, so formatting is not a review topic. This file covers what they can't check. Invariants in each package's CLAUDE.md (price rows are INSERT-only, share card rules, slug rules…) win over anything here.
+This file covers what tooling can't check. `CLAUDE.md` wins over anything here.
 
 ## Checks before handing off
 
-Run the checks for every package the change touches:
+Run the checks for every area the change touches:
 
-| Package     | Command                                                              |
-| ----------- | -------------------------------------------------------------------- |
-| api         | `cd packages/api && ruff check . && pytest tests/`                   |
-| ingestion   | `cd packages/ingestion && ruff check . && python -m pytest tests/`   |
-| mobile      | `cd apps/mobile && npx tsc --noEmit && npm run lint && npm test`     |
-| web         | `cd apps/web && npm run lint && npm run build`                       |
+| Area    | Command                                                    |
+| ------- | ---------------------------------------------------------- |
+| service | `cd app/service && python -m unittest discover -s tests` |
+| client  | `cd app/client && npm run lint && npm run build`            |
 
-Report the results. Never claim a check passed if you didn't run it. On-device checks (Android emulator, iOS simulator) go in the hand-off as "to verify" unless someone actually did them.
+Report the results. **Never claim a check passed if you didn't run it.**
+
+There is no Python linter or formatter configured — no `ruff`, `black` or `pytest` in `requirements.txt`. Don't write instructions that assume one. If you add one, add it to `requirements.txt` and to this table in the same change.
 
 ## Python
 
-- `ruff` config is in each `pyproject.toml`: line length 120, rules `E F I UP B`. `UP` enforces modern typing (`str | None`, `frozenset[str]`).
 - Type hints on every public function.
-- **API is async end to end:** asyncpg for the DB and an async HTTP client for providers. No sync DB driver and no `time.sleep` inside a coroutine. Ingestion scrapers are standalone sync scripts, so `requests` is fine there.
-- SQL uses asyncpg `$N` placeholders. Never build SQL with f-strings.
-- Query functions live in `db/queries/`, so routers stay thin.
-- Schema changes only through Alembic (see `packages/api/CLAUDE.md`).
-- HTTP errors: raise `HTTPException` in routers and auth. `db/queries/reporters.py` and `services/routing.py` still raise it too. New query and service code should raise plain exceptions and let the router map them.
+- **The service is async end to end**: asyncpg via SQLAlchemy Core, `async def` handlers. No sync DB driver and no `time.sleep` inside a coroutine. `requests` is used synchronously in `auth_user/service.py` for the Google userinfo call — don't spread that pattern.
+- Queries are built with SQLAlchemy `select()`, `insert()`, `update()`, `delete()` and passed to `fetch_one` / `fetch_all` / `execute`. Never build SQL with f-strings. `fetch_all_sql` takes a raw string — it must never receive user input.
+- All business logic lives in `service.py`; routers stay thin.
+- Schema changes only through Alembic, generated and reviewed before `alembic upgrade head`.
+- Raise domain exceptions from the module's `exceptions.py`; the handlers in `main.py` turn them into JSON. Don't raise bare `HTTPException` from a service.
+- Every query touching `budget_entry`, `files` or `auth_user` filters by `user_id = jwt_data.id_user`. This is the single most important rule in the codebase — a miss here is a cross-user data leak.
 
 ## Logging
 
-- Python uses the stdlib `logging` module: `logger = logging.getLogger("<module>")`. Pass `%`-style arguments instead of f-strings: `logger.info("[scheduler] prize job scheduled every %s minute(s)", minutes)`.
-- **Never log** tokens, JWTs, emails, push tokens or full request bodies. Log ids and counts. This is a hard rule.
-- Mobile and web: `console.log` is a debugging tool (CLAUDE.md § Debugging). Remove every one before commit.
+- The service uses `loguru`: `from loguru import logger`.
+- **Never log** JWTs, refresh tokens, `ENV_JWT_SECRET`, email addresses, `national_id`, or `file_base64` contents. Log ids and counts. This is a hard rule.
+- `console.log` is a debugging tool in the client. Remove every one before commit.
 
-## TypeScript
+## JavaScript / React
 
-- `tsc` runs in `strict` mode; keep it clean. Avoid `any` at API boundaries; type responses in `api/client.ts` (mobile) or `src/lib/api.ts` (web).
-- Mobile colors come from `constants/colors.ts` via `useTheme()`. Don't hardcode hex values or static Tailwind color classes, because they break dark mode.
-- Server state lives in TanStack Query hooks in `hooks/`. Client state lives in Zustand in `store/`, with no async logic inside stores.
-- Reuse the shared components named in `apps/mobile/CLAUDE.md` (`GlassCard`, `SortTabs`, `ScreenHeader`…) instead of inlining a second copy.
-- Every price rendered shows its source and age.
+- Components are functions. Server state lives in TanStack Query hooks (`hooks/useDashboardData.js`); everything else is props or local state. Don't add a global store.
+- After a mutation, invalidate the affected query keys rather than refetching by hand.
+- Reuse the primitives in `components/ui/` before adding a new one. Icons come from `lucide-react`.
+- Colors and surfaces use the CSS custom property tokens in `src/index.css` (`--glass-bg`, `hsl(var(--accent))`, `hsl(var(--positive))`). Never hardcode hex values or opacity — they break dark mode.
+- **Safari bug**: never combine `hover:scale-*` with `backdrop-blur-*` on the same element; it kills the blur in WebKit. Never apply `backdrop-blur-*` directly to a native `<input>`, `<select>` or `<textarea>`.
+- The URL is the source of truth for tab, currency and date range. Keep views bookmarkable.
 
 ## Comments
 
-Comment the *why*, not the *what*. Platform quirks always get a comment, because the fix looks like a bug without one. Example: `captureOptionsFor()` in `utils/shareCardMetrics.ts`.
+Comment the *why*, not the *what*. Platform quirks always get a comment, because the fix looks like a bug without one — the Safari blur rule above is the standing example.
+
+No docstrings beyond a single short line where one is genuinely needed. No backwards-compatibility shims for code that was removed. No defensive handling for cases that cannot happen.
 
 ## Tests
 
-- **api:** pytest in `tests/`. Keep them runnable without the production database.
-- **ingestion:** unit tests need no DB. DB tests are opt-in with `RUN_DB_TESTS=1 python -m pytest tests/ -m db`. Check which database `DATABASE_URL` points at before running them.
-- **mobile:** Jest in `__tests__/` for pure logic (models, metrics, filters). Keep layout math in `utils/` so it can be tested there.
-- **Bug fixes:** a fix in pure logic adds a regression test that fails before the fix.
+- Python tests live in `app/service/tests/` and must run without a real database — patch `fetch_one` / `fetch_all` / `execute` with `AsyncMock`, as `test_budget_service.py` does. The test module sets the required `ENV_*` vars **and** `GOOGLE_CLIENT_ID` before importing `src` — `auth_config` and `Config` both instantiate at import time, so a missing var is a collection-time `ValidationError`, not a test failure. When you add a required setting to `config.py` or `auth_user/config.py`, add it to that block in the same change.
+- A bug fix in pure logic (a bank parser, a categorizer, a date helper) adds a regression test that fails before the fix.
+- Bank parsers are the highest-value thing to test: column mapping, date format, income/outcome sign, and rows with missing fields being skipped rather than crashing.

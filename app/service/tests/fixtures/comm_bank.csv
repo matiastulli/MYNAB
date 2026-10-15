@@ -1,0 +1,5 @@
+01/06/2026,"+2500.00","Fast Transfer From ACME FAKE PTY LTD","+3500.00"
+02/06/2026,"-45.90","WOOLWORTHS 1234 FAKETOWN","+3454.10"
+03/06/2026,"0.00","Zero value adjustment","+3454.10"
+not-a-date,"-1.00","Malformed row","+3453.10"
+04/06/2026,"-12.00","International Transaction Fee","+3442.10"

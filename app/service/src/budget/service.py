@@ -619,8 +619,13 @@ def _process_icbc_format(df: pd.DataFrame, file_id: int, bank_name: str, currenc
             date_val = datetime.strptime(str(row["Fecha"]), "%m/%d/%y").date()
             description = str(row["Descripcion"]).strip(
             ) or "Transacción sin descripción"
-            credito = pd.to_numeric(row.get("Credito"), errors="coerce") or 0.0
-            debito = pd.to_numeric(row.get("Debito"), errors="coerce") or 0.0
+            # `or 0.0` would not work here: NaN is truthy
+            credito = pd.to_numeric(row.get("Credito"), errors="coerce")
+            debito = pd.to_numeric(row.get("Debito"), errors="coerce")
+            credito = 0.0 if pd.isna(credito) else credito
+            debito = 0.0 if pd.isna(debito) else debito
+            if credito == 0 and debito == 0:
+                continue
 
             # Determine amount and type
             if credito > 0:

@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  client:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app/client
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: app/client/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+        env:
+          VITE_GOOGLE_CLIENT_ID: ci-dummy-client-id
+
+  service:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app/service
+    # src/config.py and auth_user/config.py validate these at import time; no DB is reached.
+    env:
+      ENV_ENVIRONMENT: TESTING
+      ENV_DATABASE_URL: postgresql+asyncpg://ci:ci@localhost:5432/ci
+      ENV_JWT_ALG: HS256
+      ENV_JWT_SECRET: ci-dummy-secret
+      ENV_CORS_ORIGINS: '["http://localhost:5173"]'
+      ENV_CORS_HEADERS: '["*"]'
+      GOOGLE_CLIENT_ID: ci-dummy-client-id
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: app/service/requirements.txt
+      - run: pip install -r requirements.txt
+      - run: python -m unittest discover -s tests -t .
+
+  # Non-blocking until the known findings are fixed (dependency upgrade plan, phase 1).
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - run: pip install pip-audit
+      - name: pip-audit
+        continue-on-error: true
+        run: pip-audit -r app/service/requirements.txt
+      - name: npm audit
+        continue-on-error: true
+        working-directory: app/client
+        run: npm audit --omit=dev --audit-level=high

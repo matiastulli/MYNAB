@@ -2,6 +2,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, Eyebrow } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { BANK_FORMATS as bankFormats, BANK_LABELS, bankMonogram, banksForCurrency } from "@/lib/banks";
 import { getCurrencyName } from "@/lib/currencyUtils";
 import { fadeUp, listItem, listParent, snappy } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -13,21 +14,7 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 
-const BANK_LABELS = {
-  santander_rio: "Santander Rio",
-  ICBC: "ICBC",
-  mercado_pago: "Mercado Pago",
-  bbva: "BBVA",
-  comm_bank: "CommBank",
-  revolut: "Revolut",
-};
-
-const bankMonogram = (label) => {
-  const words = label.split(" ");
-  return words.length > 1 ? words.map((w) => w[0]).join("").slice(0, 2) : label.slice(0, 2);
-};
-
-const FORMAT_ICONS ={ ".xlsx": FileXlsIcon, ".xls": FileXlsIcon, ".csv": FileCsvIcon, ".pdf": FilePdfIcon };
+const FORMAT_ICONS = { ".xlsx": FileXlsIcon, ".xls": FileXlsIcon, ".csv": FileCsvIcon, ".pdf": FilePdfIcon };
 
 export default function ImportFile({ onImportComplete, onImportSuccess, currency }) {
   const [file, setFile] = useState(null);
@@ -36,15 +23,6 @@ export default function ImportFile({ onImportComplete, onImportSuccess, currency
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
-  const bankFormats = {
-    santander_rio: { format: ".xlsx", supportedCurrencies: ["ARS", "USD"], description: "Excel export from online banking" },
-    ICBC: { format: ".csv", supportedCurrencies: ["ARS", "USD"], description: "CSV export from the ICBC portal" },
-    mercado_pago: { format: ".pdf", supportedCurrencies: ["ARS"], description: "PDF account statement" },
-    bbva: { format: ".xls", supportedCurrencies: ["ARS"], description: "Excel export from BBVA" },
-    comm_bank: { format: ".csv", supportedCurrencies: ["AUD"], description: "CSV export from NetBank" },
-    revolut: { format: ".csv", supportedCurrencies: ["AUD", "USD", "GBP"], description: "CSV statement from the app" },
-  };
-
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     setFile(selectedFile);
@@ -142,9 +120,7 @@ export default function ImportFile({ onImportComplete, onImportSuccess, currency
     }
   };
 
-  const filteredBankKeys = Object.keys(bankFormats).filter(
-    (key) => bankFormats[key].supportedCurrencies.includes(currency)
-  );
+  const filteredBankKeys = banksForCurrency(currency);
   const selectedBank = bankName ? bankFormats[bankName] : null;
   const FileGlyph = (selectedBank && FORMAT_ICONS[selectedBank.format]) || FileIcon;
 

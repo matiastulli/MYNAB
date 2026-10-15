@@ -1,7 +1,12 @@
 import { cn } from "@/lib/utils"
+import { useState } from "react"
 
-// Photo when the user uploaded one, otherwise a monogram from their name.
+// Google profile picture when available, otherwise a monogram from the user's name.
 export function Avatar({ user, className, ring = false }) {
+  const [failedUrl, setFailedUrl] = useState(null)
+  const url = user?.avatar_url
+  const showPhoto = url && url !== failedUrl
+
   const initials = [user?.name, user?.last_name]
     .filter(Boolean)
     .map((part) => part.trim()[0])
@@ -12,15 +17,17 @@ export function Avatar({ user, className, ring = false }) {
   return (
     <div
       className={cn(
-        "relative grid size-8 shrink-0 place-items-center overflow-hidden rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 text-[11px] font-semibold tracking-wide text-zinc-100 dark:from-zinc-200 dark:to-zinc-400 dark:text-zinc-900",
+        "relative grid size-8 shrink-0 place-items-center overflow-hidden rounded-full border border-border bg-secondary text-[11px] font-semibold tracking-wide text-foreground",
         ring && "ring-2 ring-card ring-offset-2 ring-offset-accent/40",
         className
       )}
     >
-      {user?.avatar_data ? (
+      {showPhoto ? (
         <img
-          src={`data:image/jpeg;base64,${user.avatar_data}`}
+          src={url}
           alt=""
+          referrerPolicy="no-referrer"
+          onError={() => setFailedUrl(url)}
           className="size-full object-cover"
         />
       ) : (

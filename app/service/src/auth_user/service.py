@@ -1,4 +1,3 @@
-import base64
 import uuid
 from datetime import datetime, timedelta
 from typing import Any
@@ -45,7 +44,7 @@ async def update_user(id_user: int, user: UpdateUser) -> dict[str, Any] | None:
         auth_user.c.email_verified,
         auth_user.c.created_at,
         auth_user.c.updated_at,
-        auth_user.c.avatar_data,
+        auth_user.c.avatar_url,
     ).where(auth_user.c.id == result['id'])
 
     return await fetch_one(select_query)
@@ -63,43 +62,8 @@ async def get_user_by_id(id_user: int) -> dict[str, Any] | None:
         auth_user.c.email_verified,
         auth_user.c.created_at,
         auth_user.c.updated_at,
-        auth_user.c.avatar_data,
+        auth_user.c.avatar_url,
     ).where(auth_user.c.id == id_user)
-
-    return await fetch_one(select_query)
-
-
-async def update_avatar(id_user: int, avatar_data: str) -> dict[str, Any] | None:
-    try:
-        raw = base64.b64decode(avatar_data)
-    except Exception:
-        raise ValueError("Invalid base64 data")
-    if len(raw) > 10485760:  # 10 MB
-        raise ValueError("Avatar must be under 10 MB")
-
-    update_query = (
-        update(auth_user)
-        .where(auth_user.c.id == id_user)
-        .values({"avatar_data": avatar_data})
-        .returning(auth_user.c.id)
-    )
-    result = await fetch_one(update_query)
-    if result is None:
-        return None
-
-    select_query = select(
-        auth_user.c.id,
-        auth_user.c.name,
-        auth_user.c.last_name,
-        auth_user.c.national_id,
-        auth_user.c.email,
-        auth_user.c.id_role,
-        auth_user.c.auth_method,
-        auth_user.c.email_verified,
-        auth_user.c.created_at,
-        auth_user.c.updated_at,
-        auth_user.c.avatar_data,
-    ).where(auth_user.c.id == result['id'])
 
     return await fetch_one(select_query)
 
@@ -168,6 +132,14 @@ async def get_user_roles(user_id: int) -> dict[str, Any]:
     return result
 
 
+def google_avatar_url(id_info: dict[str, Any]) -> str | None:
+    """Google's profile picture URL from a userinfo payload, or None if absent or not https."""
+    picture = id_info.get("picture")
+    if not isinstance(picture, str) or not picture.startswith("https://") or len(picture) > 2048:
+        return None
+    return picture
+
+
 async def google_sign_in(access_token: str) -> dict[str, Any]:
     try:
         resp = http_requests.get(
@@ -187,6 +159,7 @@ async def google_sign_in(access_token: str) -> dict[str, Any]:
     email = id_info.get("email", "")
     name = id_info.get("given_name") or id_info.get("name", "").split(" ")[0] or "User"
     last_name = id_info.get("family_name") or (id_info.get("name", "").split(" ", 1)[1] if " " in id_info.get("name", "") else "")
+    avatar_url = google_avatar_url(id_info)
 
     select_by_google = select(
         auth_user.c.id, auth_user.c.name, auth_user.c.last_name,
@@ -195,6 +168,12 @@ async def google_sign_in(access_token: str) -> dict[str, Any]:
 
     existing = await fetch_one(select_by_google)
     if existing:
+        # Google rotates picture URLs, so refresh on every sign-in
+        await execute(
+            update(auth_user)
+            .where(auth_user.c.id == existing["id"])
+            .values(avatar_url=avatar_url)
+        )
         return existing
 
     select_by_email = select(auth_user.c.id).where(auth_user.c.email == email)
@@ -204,7 +183,13 @@ async def google_sign_in(access_token: str) -> dict[str, Any]:
         await execute(
             update(auth_user)
             .where(auth_user.c.id == email_match["id"])
-            .values(google_id=google_sub, auth_method="google", email_verified=True, updated_at=datetime.utcnow())
+            .values(
+                google_id=google_sub,
+                auth_method="google",
+                email_verified=True,
+                avatar_url=avatar_url,
+                updated_at=datetime.utcnow(),
+            )
         )
     else:
         await execute(
@@ -217,6 +202,7 @@ async def google_sign_in(access_token: str) -> dict[str, Any]:
                 auth_method="google",
                 email_verified=True,
                 id_role=1,
+                avatar_url=avatar_url,
                 created_at=datetime.utcnow(),
                 updated_at=datetime.utcnow(),
             )

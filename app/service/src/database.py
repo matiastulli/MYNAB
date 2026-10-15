@@ -57,7 +57,7 @@ auth_user = Table(
     Column("id_role", Integer, ForeignKey(
         "mynab.auth_user_role.id")),
     Column("google_id", String(255), nullable=True),
-    Column("avatar_data", Text, nullable=True),
+    Column("avatar_url", String(2048), nullable=True),
     Column("created_at", DateTime, server_default=func.now(), nullable=False),
     Column("updated_at", DateTime, server_default=func.now(), onupdate=func.now()),
     # Unique index (not a constraint) to match migration 7adaa559ed82

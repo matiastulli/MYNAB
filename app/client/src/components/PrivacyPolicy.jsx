@@ -3,7 +3,7 @@
 import { ArrowLeftIcon } from "@phosphor-icons/react"
 import { Link } from "react-router-dom"
 
-const LAST_UPDATED = "June 8, 2026"
+const LAST_UPDATED = "October 15, 2026"
 const CONTACT_EMAIL = "pampasstudiodev@gmail.com"
 
 function Section({ title, children }) {
@@ -54,7 +54,7 @@ export default function PrivacyPolicy() {
           </Section>
 
           <Section title="2. Information We Collect">
-            <p><strong>Account information.</strong> When you sign in with Google we receive your name, email address, and Google account ID. We do not receive your Google password.</p>
+            <p><strong>Account information.</strong> When you sign in with Google we receive your name, email address, Google account ID, and the address of your Google profile picture, which we show inside the app. We do not receive your Google password.</p>
             <p><strong>Financial data.</strong> When you import a bank statement we store the raw file and the transactions extracted from it (description, amount, date, currency, category). When you add a transaction manually we store the same fields. We also store computed summaries (monthly income, expenses, balances by currency).</p>
             <p><strong>Usage data.</strong> We do not collect analytics, crash reports, advertising identifiers, or device information beyond what is necessary to authenticate your session (a short-lived JWT and an httpOnly refresh token cookie).</p>
           </Section>

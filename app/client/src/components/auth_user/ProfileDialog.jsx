@@ -7,7 +7,7 @@ import { Segmented } from "@/components/ui/segmented";
 import { fadeUp } from "@/lib/motion";
 import { getCurrentTheme, setTheme } from "@/lib/themeUtils";
 import { api } from "@/services/api";
-import { CameraIcon, CheckIcon, DesktopIcon, MoonIcon, SignOutIcon, SunIcon, WarningCircleIcon, XIcon } from "@phosphor-icons/react";
+import { CheckIcon, DesktopIcon, MoonIcon, SignOutIcon, SunIcon, WarningCircleIcon, XIcon } from "@phosphor-icons/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
@@ -27,9 +27,6 @@ export default function ProfileDialog({
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [updateError, setUpdateError] = useState(null);
   const [theme, setThemeState] = useState("system");
-  const [avatarPreview, setAvatarPreview] = useState(null);
-  const [avatarError, setAvatarError] = useState(null);
-  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
   useEffect(() => {
     if (userData) {
@@ -38,8 +35,6 @@ export default function ProfileDialog({
         last_name: userData.last_name || "",
         national_id: userData.national_id || ""
       });
-      setAvatarPreview(null);
-      setAvatarError(null);
     }
   }, [userData]);
 
@@ -50,53 +45,11 @@ export default function ProfileDialog({
     return () => window.removeEventListener('themechange', update);
   }, []);
 
-  const handleAvatarSelect = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setAvatarError(null);
-
-    if (file.size > 10485760) {
-      setAvatarError('Image must be under 10 MB');
-      return;
-    }
-
-    const canvas = document.createElement('canvas');
-    const img = new Image();
-    const objectUrl = URL.createObjectURL(file);
-
-    img.onload = () => {
-      const MAX = 512;
-      let { width, height } = img;
-      if (width > MAX || height > MAX) {
-        if (width > height) { height = Math.round((height * MAX) / width); width = MAX; }
-        else { width = Math.round((width * MAX) / height); height = MAX; }
-      }
-      canvas.width = width;
-      canvas.height = height;
-      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-      const base64 = dataUrl.split(',')[1];
-      setAvatarPreview(base64);
-      URL.revokeObjectURL(objectUrl);
-    };
-    img.src = objectUrl;
-  };
-
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
     setIsUpdating(true);
     setUpdateError(null);
     try {
-      if (avatarPreview) {
-        setIsUploadingAvatar(true);
-        const avatarRes = await api.put('/auth/avatar', { avatar_data: avatarPreview });
-        setIsUploadingAvatar(false);
-        if (avatarRes.error) {
-          console.error('Avatar upload failed:', avatarRes.error);
-          setUpdateError('The photo could not be uploaded. Try a smaller image.');
-          return;
-        }
-      }
       const response = await api.put('/auth/profile', profileForm);
       if (!response.error) {
         setUpdateSuccess(true);
@@ -110,7 +63,6 @@ export default function ProfileDialog({
       setUpdateError('Your changes could not be saved. Try again.');
     } finally {
       setIsUpdating(false);
-      setIsUploadingAvatar(false);
     }
   };
 
@@ -121,7 +73,6 @@ export default function ProfileDialog({
 
   const missingCuit = !userData?.national_id || userData?.national_id === "";
   const displayName = [userData?.name, userData?.last_name].filter(Boolean).join(" ") || "Your profile";
-  const avatarUser = avatarPreview ? { ...userData, avatar_data: avatarPreview } : userData;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -139,20 +90,10 @@ export default function ProfileDialog({
 
         {/* Identity */}
         <div className="flex items-center gap-4 border-b border-border/70 px-6 pb-6 pt-7">
-          <input type="file" accept="image/*" className="sr-only" id="avatar-upload" onChange={handleAvatarSelect} />
-          <label htmlFor="avatar-upload" className="group/avatar relative shrink-0 cursor-pointer rounded-full" aria-label="Change profile photo">
-            <Avatar user={avatarUser} className="size-16 text-lg" />
-            <span className="absolute inset-0 grid place-items-center rounded-full bg-zinc-950/45 opacity-0 transition-opacity duration-200 group-hover/avatar:opacity-100">
-              <CameraIcon className="size-5 text-white" />
-            </span>
-            <span className="absolute -bottom-0.5 -right-0.5 grid size-6 place-items-center rounded-full border-2 border-card bg-foreground text-background">
-              <CameraIcon className="size-3" weight="bold" />
-            </span>
-          </label>
+          <Avatar user={userData} className="size-16 text-lg" />
           <div className="min-w-0 pr-8">
             <DialogTitle className="truncate text-lg">{displayName}</DialogTitle>
             <DialogDescription className="mt-1 truncate">{userData?.email || "Profile settings"}</DialogDescription>
-            <FieldError className="mt-1.5">{avatarError}</FieldError>
           </div>
         </div>
 
@@ -219,7 +160,7 @@ export default function ProfileDialog({
                   size="lg"
                   className="w-full"
                   loading={isUpdating}
-                  loadingText={isUploadingAvatar ? "Uploading photo" : "Saving"}
+                  loadingText="Saving"
                 >
                   Save changes
                 </Button>

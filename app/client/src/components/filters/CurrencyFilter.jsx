@@ -62,8 +62,9 @@ export default function CurrencyFilter({ isLoading, availableCurrencies, vertica
     )
   }
 
+  // Mobile: segmented control, same language as the tab bar
   return (
-    <nav aria-label="Currency" className="flex items-center gap-1">
+    <nav aria-label="Currency" className="flex w-full items-center gap-0.5 rounded-full bg-muted/70 p-1">
       {items.map((code) => {
         const isActive = code === selectedCurrency
         const hasData = code === "ALL" || withData.has(code)
@@ -73,23 +74,29 @@ export default function CurrencyFilter({ isLoading, availableCurrencies, vertica
             onClick={() => !isLoading && handleCurrencyChange(code)}
             disabled={isLoading}
             aria-current={isActive ? "page" : undefined}
-            aria-label={code === "ALL" ? "All currencies" : code}
+            aria-label={code === "ALL" ? "All currencies" : `${code}${hasData ? "" : ", no data this period"}`}
             className={cn(
-              "relative flex h-10 min-w-11 shrink-0 flex-col items-center justify-center rounded-2xl px-2 transition-colors duration-200 active:scale-[0.97]",
-              isActive ? "text-accent-foreground" : "text-muted-foreground",
-              !hasData && !isActive && "opacity-45",
+              "relative flex h-9 min-w-0 flex-1 items-center justify-center gap-1 rounded-full text-[13px] font-medium transition-colors duration-200 active:scale-[0.97]",
+              isActive ? "text-foreground" : hasData ? "text-muted-foreground" : "text-muted-foreground/50",
               isLoading && "pointer-events-none"
             )}
           >
             {isActive && (
-              <motion.span layoutId="currency-active-mobile" transition={snappy} className="absolute inset-0 rounded-2xl bg-accent" />
+              <motion.span
+                layoutId="currency-active-mobile"
+                transition={snappy}
+                className="absolute inset-0 rounded-full border border-border/80 bg-card shadow-[0_1px_2px_hsl(var(--shadow-tint)/0.1)]"
+              />
             )}
-            <span className="figure relative text-xs font-semibold leading-none">
-              {code === "ALL" ? <StackIcon className="size-3.5" weight="bold" /> : getCurrencySymbol(code)}
-            </span>
-            <span className="relative mt-1 text-[9px] font-medium leading-none tracking-[0.08em]">
-              {code === "ALL" ? "ALL" : code}
-            </span>
+            {code === "ALL" ? (
+              <StackIcon className={cn("relative size-4", isActive && "text-accent")} weight={isActive ? "fill" : "regular"} />
+            ) : (
+              <span className="relative">{code}</span>
+            )}
+            {/* Data marker so empty currencies read as "nothing yet", not "disabled" */}
+            {code !== "ALL" && hasData && !isActive && (
+              <span className="absolute bottom-1 left-1/2 size-1 -translate-x-1/2 rounded-full bg-accent/70" aria-hidden="true" />
+            )}
           </button>
         )
       })}

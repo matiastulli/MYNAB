@@ -168,7 +168,7 @@ erDiagram
         string email UK
         string google_id UK
         string auth_method
-        text avatar_data
+        string avatar_url
         int id_role FK
     }
     files {

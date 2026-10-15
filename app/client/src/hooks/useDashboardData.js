@@ -81,7 +81,7 @@ export function useDashboardData({ params, searchParams, navigate }) {
   const currencySummaryQuery = useQuery({
     queryKey: ["currency-summary", startDateStr, endDateStr],
     queryFn: () => fetchCurrencySummary(startDateStr, endDateStr),
-    enabled: currency === "ALL",
+    // Always on: the currency nav uses it to mark which currencies have data
     staleTime: 30 * 1000,
   });
 
@@ -283,7 +283,7 @@ export function useDashboardData({ params, searchParams, navigate }) {
     setPagination,
     filesPagination,
     setFilesPagination,
-    summaryLoading: summaryQuery.isFetching || currencySummaryQuery.isFetching,
+    summaryLoading: summaryQuery.isFetching || (currency === "ALL" && currencySummaryQuery.isFetching),
     entriesLoading: detailsQuery.isFetching,
     filesLoading: filesQuery.isFetching,
     filesError: filesQuery.error?.message ?? null,

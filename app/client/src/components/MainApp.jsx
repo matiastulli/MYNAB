@@ -22,6 +22,7 @@ import { setupSystemPreferenceListener } from "@/lib/themeUtils"
 import { cn } from "@/lib/utils"
 import { api } from "@/services/api"
 import {
+  CalendarBlankIcon,
   CaretDownIcon,
   DownloadSimpleIcon,
   FolderSimpleIcon,
@@ -277,28 +278,45 @@ export default function MainApp({ onLogout }) {
 
       {/* Mobile floating bottom bar */}
       <div className="fixed inset-x-4 bottom-4 z-40 md:hidden">
-        <div className="flex items-center gap-2.5 rounded-[1.6rem] border border-border/80 bg-card/85 p-2 pl-2.5 shadow-[var(--shadow-lift)] backdrop-blur-xl [box-shadow:var(--shadow-lift),inset_0_1px_0_hsl(0_0%_100%/0.08)]">
+        <div className="flex items-center gap-2 rounded-full border border-border/80 bg-card/85 p-1.5 backdrop-blur-xl [box-shadow:var(--shadow-lift),inset_0_1px_0_hsl(0_0%_100%/0.06)]">
           {userData && (
-            <button onClick={() => setShowProfileModal(true)} className="relative shrink-0 active:scale-95" aria-label="Open profile">
-              <Avatar user={userData} className="size-9" />
+            <button onClick={() => setShowProfileModal(true)} className="relative shrink-0 rounded-full active:scale-95" aria-label="Open profile">
+              <Avatar user={userData} className="size-11" />
               {missingCuit && (
-                <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full border-2 border-card bg-warning" />
+                <span className="absolute right-0 top-0 size-2.5 rounded-full border-2 border-card bg-warning" />
               )}
             </button>
           )}
-          <div className="h-6 w-px shrink-0 bg-border" />
-          <div className="flex-1 overflow-x-auto">
-            <CurrencyFilter
-              isLoading={isBusy}
-              availableCurrencies={currencySummary?.currencies?.map(c => c.currency)}
-            />
-          </div>
+          <CurrencyFilter
+            isLoading={isBusy}
+            availableCurrencies={currencySummary?.currencies?.map(c => c.currency)}
+          />
         </div>
       </div>
 
       {/* Main content */}
       <main className="flex min-w-0 flex-1 flex-col">
-        <div className="mx-auto flex w-full max-w-[1400px] flex-1 flex-col px-4 pb-32 pt-6 md:px-10 md:pb-12 md:pt-9">
+        {/* Mobile app bar: brand + period */}
+        <header
+          className="sticky top-0 z-30 border-b border-border/60 bg-background/80 backdrop-blur-xl md:hidden"
+          style={{ paddingTop: "env(safe-area-inset-top)" }}
+        >
+          <div className="flex h-14 items-center justify-between gap-3 px-4">
+            <span className="text-[19px] font-bold tracking-tight">MYNAB</span>
+            <DateRangeFilter
+              isLoading={isBusy}
+              trigger={
+                <button className="inline-flex h-9 min-w-0 items-center gap-1.5 rounded-full border border-border bg-card px-3.5 text-[13px] font-medium transition-colors active:scale-[0.97]">
+                  <CalendarBlankIcon className="size-4 shrink-0 text-muted-foreground" />
+                  <span className="truncate">{dateRangeFormatted}</span>
+                  <CaretDownIcon className="size-3 shrink-0 text-muted-foreground" weight="bold" />
+                </button>
+              }
+            />
+          </div>
+        </header>
+
+        <div className="mx-auto flex w-full max-w-[1600px] flex-1 flex-col px-4 pb-32 pt-5 md:px-10 md:pb-12 md:pt-9">
 
           {/* PWA install banner */}
           <AnimatePresence>
@@ -327,16 +345,21 @@ export default function MainApp({ onLogout }) {
           </AnimatePresence>
 
           {/* Page header: period on the left, context on the right */}
-          <header className="mb-8 flex flex-col gap-5 md:mb-10 md:flex-row md:items-end md:justify-between">
+          {/* Page title: period on desktop; on mobile the period lives in the app bar, so the title names the currency */}
+          <header className="mb-6 flex flex-col gap-4 md:mb-10 md:flex-row md:items-end md:justify-between md:gap-5">
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2.5 text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
                 <StatusDot busy={isBusy} />
-                <span>{isBusy ? "Updating" : currency === "ALL" ? "All currencies" : `${currency} · ${getCurrencyName(currency)}`}</span>
+                <span className="md:hidden">{isBusy ? "Updating" : currency === "ALL" ? "Overview" : currency}</span>
+                <span className="hidden md:inline">{isBusy ? "Updating" : currency === "ALL" ? "All currencies" : `${currency} · ${getCurrencyName(currency)}`}</span>
               </div>
+              <h1 className="text-[1.75rem] font-semibold leading-none tracking-tighter md:hidden">
+                {currency === "ALL" ? "All currencies" : getCurrencyName(currency)}
+              </h1>
               <DateRangeFilter
                 isLoading={isBusy}
                 trigger={
-                  <button className="group -ml-1 inline-flex w-fit items-center gap-2 rounded-xl px-1 text-left active:scale-[0.99]">
+                  <button className="group -ml-1 hidden w-fit items-center gap-2 rounded-xl px-1 text-left active:scale-[0.99] md:inline-flex">
                     <h1 className="text-[1.75rem] font-semibold leading-none tracking-tighter text-foreground md:text-[2.5rem]">
                       {dateRangeFormatted}
                     </h1>
@@ -354,7 +377,8 @@ export default function MainApp({ onLogout }) {
                 className="flex w-fit items-center gap-2 rounded-full border border-warning/30 text-left bg-warning-soft px-3.5 py-1.5 text-[13px] font-medium text-warning transition-colors hover:border-warning/50"
               >
                 <WarningCircleIcon className="size-4" />
-                Add your CUIT to skip transfers between your accounts
+                <span className="md:hidden">Add your CUIT</span>
+                <span className="hidden md:inline">Add your CUIT to skip transfers between your accounts</span>
               </button>
             )}
           </header>

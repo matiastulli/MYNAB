@@ -62,9 +62,18 @@ fi
 log "Migrating $DB_NAME"
 (cd "$SERVICE_DIR" && .venv/bin/alembic upgrade head)
 
-# Imports write these ids (CATEGORY_IDS in budget_transaction_category/constants.py);
-# without the rows the budget_entry foreign key rejects categorized lines.
+# Reference rows the code assumes exist. Without them the foreign keys reject
+# sign-up (new users get id_role=1, auth_user/service.py) and categorized imports
+# (CATEGORY_IDS in budget_transaction_category/constants.py). Role 1 must stay the
+# least-privileged one.
 "${PSQL[@]}" -d "$DB_NAME" <<'SQL'
+INSERT INTO mynab.auth_user_role (id, name) VALUES
+  (1, 'user'),
+  (2, 'admin')
+ON CONFLICT (id) DO NOTHING;
+SELECT setval(pg_get_serial_sequence('mynab.auth_user_role', 'id'),
+              (SELECT max(id) FROM mynab.auth_user_role));
+
 INSERT INTO mynab.budget_transaction_category (id, category_key, category_name) VALUES
   (1, 'TRANSFER_SENT', 'Transfer sent'),
   (2, 'TRANSFER_RECEIVED', 'Transfer received'),

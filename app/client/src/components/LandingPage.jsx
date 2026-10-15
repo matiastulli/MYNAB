@@ -1,20 +1,20 @@
 "use client"
 
-import { useGoogleLogin } from '@react-oauth/google'
-import { api } from '@/services/api'
-import { setupSystemPreferenceListener } from "@/lib/themeUtils"
-import {
-    DollarSignIcon,
-    DownloadIcon,
-    TrendingDownIcon,
-    TrendingUpIcon
-} from "lucide-react"
-import { useEffect, useState } from "react"
+import LedgerPreview from '@/components/landing/LedgerPreview'
 import { usePWAInstall } from "@/hooks/usePWAInstall"
+import { listItem, listParent } from "@/lib/motion"
+import { setupSystemPreferenceListener } from "@/lib/themeUtils"
+import { api } from '@/services/api'
+import { DownloadSimpleIcon, LockKeyIcon, WarningCircleIcon } from "@phosphor-icons/react"
+import { useGoogleLogin } from '@react-oauth/google'
+import { motion } from "framer-motion"
+import { memo, useEffect, useState } from "react"
+
+const BANKS = ["Santander Rio", "ICBC", "Mercado Pago", "BBVA", "CommBank", "Revolut"]
 
 function GoogleLogo() {
     return (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5 shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="size-[18px] shrink-0" aria-hidden="true">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
             <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
             <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
@@ -23,58 +23,36 @@ function GoogleLogo() {
     )
 }
 
+// Endless band of supported banks
+const BankMarquee = memo(function BankMarquee() {
+    const loop = [...BANKS, ...BANKS]
+    return (
+        <div className="relative overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_12%,black_88%,transparent)]">
+            <motion.div
+                className="flex w-max gap-8"
+                animate={{ x: ["0%", "-50%"] }}
+                transition={{ duration: 22, ease: "linear", repeat: Infinity }}
+            >
+                {loop.map((bank, i) => (
+                    <span key={i} className="whitespace-nowrap text-[13px] font-medium text-muted-foreground">
+                        {bank}
+                    </span>
+                ))}
+            </motion.div>
+        </div>
+    )
+})
+
 export default function LandingPage({ onGetStarted }) {
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState(null)
     const { canInstall, handleInstall } = usePWAInstall()
-    const [animatedValues, setAnimatedValues] = useState({
-        balance: 0,
-        income: 0,
-        expenses: 0
-    })
 
     // Setup system preference listener for theme changes
     useEffect(() => {
         const cleanup = setupSystemPreferenceListener();
         return cleanup;
     }, []);
-
-    // Animate the financial values
-    useEffect(() => {
-        const targetValues = {
-            balance: 3500.00,
-            income: 5500.00,
-            expenses: 2000.00
-        }
-
-        const duration = 2000 // 2 seconds
-        const steps = 60
-        const stepDuration = duration / steps
-
-        let currentStep = 0
-
-        const animate = () => {
-            currentStep++
-            const progress = currentStep / steps
-
-            // Easing function for smooth animation
-            const easeOutQuart = 1 - Math.pow(1 - progress, 4)
-
-            setAnimatedValues({
-                balance: targetValues.balance * easeOutQuart,
-                income: targetValues.income * easeOutQuart,
-                expenses: targetValues.expenses * easeOutQuart
-            })
-
-            if (currentStep < steps) {
-                setTimeout(animate, stepDuration)
-            }
-        }
-
-        const timer = setTimeout(animate, 500) // Start after 500ms delay
-
-        return () => clearTimeout(timer)
-    }, [])
 
     const login = useGoogleLogin({
         onSuccess: async (tokenResponse) => {
@@ -96,118 +74,104 @@ export default function LandingPage({ onGetStarted }) {
         scope: 'openid email profile',
     })
 
-    const formatCurrency = (value) => {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 2
-        }).format(value)
-    }
-
     return (
-        <div className="h-screen overflow-hidden bg-gradient-to-br from-[hsl(var(--background))] via-[hsl(var(--background))] to-[hsl(var(--muted))]">
-            {/* Hero Section */}
-            <section className="h-full flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8">
-                <div className="max-w-4xl w-full mx-auto text-center">
-                    <div className="mb-6 sm:mb-8">
-                        <img
-                            src="/android-chrome-192x192.png"
-                            alt="MYNAB"
-                            className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover shadow-lg mb-4 sm:mb-6 mx-auto"
-                        />
-                        <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-[hsl(var(--foreground))] mb-6 sm:mb-8 leading-tight">
-                            <span className="block text-[hsl(var(--foreground))/0.9]">MYNAB</span>
-                            <span className="block text-xl sm:text-2xl md:text-3xl font-normal text-[hsl(var(--muted-foreground))] mt-2">
-                                Maybe You Need A Budget
-                            </span>
-                        </h1>
+        <div className="min-h-[100dvh] overflow-x-hidden bg-background">
+            <div className="mx-auto grid min-h-[100dvh] max-w-[1400px] grid-cols-1 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
 
-                        {/* Google Sign-In */}
-                        <div className="mb-6 sm:mb-8 flex flex-col items-center gap-3">
-                            {error && (
-                                <div className="rounded-lg bg-destructive/10 border border-destructive/20 px-3 py-2">
-                                    <p className="text-sm text-destructive">{error}</p>
-                                </div>
-                            )}
-                            <button
-                                onClick={() => login()}
-                                disabled={isLoading}
-                                className="flex items-center justify-center gap-3 h-11 px-6 rounded-lg border border-[hsl(var(--border))] bg-white text-[#3c4043] text-sm font-medium shadow-sm hover:shadow-md hover:bg-gray-50 active:bg-gray-100 transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
-                            >
-                                {isLoading ? (
-                                    <div className="w-5 h-5 rounded-full border-2 border-[#4285F4] border-t-transparent animate-spin" />
-                                ) : (
-                                    <GoogleLogo />
-                                )}
-                                <span className="font-medium">
-                                    {isLoading ? 'Signing in…' : 'Sign in with Google'}
-                                </span>
-                            </button>
-                        </div>
-                        
-                        {/* PWA install prompt */}
-                        {canInstall && (
-                            <div className="flex justify-center mb-4">
+                {/* Left: pitch + sign in */}
+                <motion.div
+                    variants={listParent}
+                    initial="hidden"
+                    animate="show"
+                    className="flex flex-col justify-between gap-12 px-4 py-8 sm:px-8 lg:px-12 lg:py-10"
+                >
+                    <motion.header variants={listItem} className="flex items-center justify-between">
+                        <span className="flex items-center gap-2.5">
+                            <img src="/android-chrome-192x192.png" alt="" className="size-8 rounded-[10px] object-cover" />
+                            <span className="text-[15px] font-semibold tracking-tight">MYNAB</span>
+                        </span>
+                        <a href="/privacy" className="text-[13px] text-muted-foreground transition-colors hover:text-foreground">
+                            Privacy
+                        </a>
+                    </motion.header>
+
+                    <div className="flex flex-col gap-8">
+                        <motion.div variants={listItem} className="flex flex-col gap-5">
+                            <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-accent">Maybe You Need A Budget</p>
+                            <h1 className="max-w-[16ch] text-4xl font-semibold leading-[0.98] tracking-tighter md:text-6xl">
+                                Every peso, dollar and pound in one ledger.
+                            </h1>
+                            <p className="max-w-[46ch] text-base leading-relaxed text-muted-foreground">
+                                Drop in the statements your bank already gives you. MYNAB sorts each line into a
+                                category, skips the duplicates and shows where the month went, per currency.
+                            </p>
+                        </motion.div>
+
+                        <motion.div variants={listItem} className="flex flex-col gap-3">
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                                 <button
-                                    onClick={handleInstall}
-                                    className="flex items-center gap-2 h-10 px-5 rounded-lg bg-[hsl(var(--accent)/0.12)] border border-[hsl(var(--accent)/0.3)] text-[hsl(var(--accent))] text-sm font-medium hover:bg-[hsl(var(--accent)/0.2)] transition-all duration-150"
+                                    onClick={() => login()}
+                                    disabled={isLoading}
+                                    className="inline-flex h-12 items-center justify-center gap-3 rounded-full border border-[#dadce0] bg-white px-6 text-[15px] font-medium text-[#1f1f1f] shadow-[0_1px_2px_hsl(240_10%_4%/0.08)] transition-[box-shadow,transform] duration-300 hover:shadow-[0_6px_20px_-6px_hsl(240_10%_4%/0.25)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
                                 >
-                                    <DownloadIcon className="h-4 w-4" />
-                                    Install App
+                                    {isLoading ? (
+                                        <span className="size-[18px] rounded-full border-2 border-[#4285F4] border-t-transparent animate-spin" />
+                                    ) : (
+                                        <GoogleLogo />
+                                    )}
+                                    {isLoading ? 'Signing in' : 'Continue with Google'}
                                 </button>
+
+                                {canInstall && (
+                                    <button
+                                        onClick={handleInstall}
+                                        className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-border px-5 text-[15px] font-medium text-foreground transition-colors duration-200 hover:bg-muted active:scale-[0.98]"
+                                    >
+                                        <DownloadSimpleIcon className="size-4" />
+                                        Install app
+                                    </button>
+                                )}
                             </div>
-                        )}
 
-                        {/* Financial Overview Example */}
-                        <div className="mt-6 sm:mt-8 bg-[hsl(var(--card))] rounded-2xl shadow-xl border border-[hsl(var(--border))] p-6 sm:p-8 max-w-2xl mx-auto transform hover:scale-105 transition-all duration-300">
-                            <h2 className="text-base sm:text-lg font-semibold text-[hsl(var(--foreground))] mb-4 sm:mb-6 text-center">Your Financial Overview</h2>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-                                <div className="text-center p-3 sm:p-4 bg-[hsl(var(--background))] rounded-lg border border-[hsl(var(--border))] hover:shadow-lg hover:border-[hsl(var(--accent))/0.3] transition-all duration-300 group">
-                                    <div className="text-xs sm:text-sm text-[hsl(var(--muted-foreground))] mb-2 flex items-center justify-center gap-1">
-                                        <DollarSignIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[hsl(var(--positive))]" />
-                                        Current Balance
-                                    </div>
-                                    <div className="text-xl sm:text-2xl font-bold text-[hsl(var(--positive))] group-hover:scale-110 transition-transform duration-300">
-                                        {formatCurrency(animatedValues.balance)}
-                                    </div>
-                                    <div className="mt-2 text-xs text-[hsl(var(--positive))/0.75]">Available Funds</div>
-                                </div>
+                            {error ? (
+                                <p role="alert" className="flex items-center gap-2 text-[13px] font-medium text-destructive">
+                                    <WarningCircleIcon className="size-4 shrink-0" weight="fill" />
+                                    {error}
+                                </p>
+                            ) : (
+                                <p className="flex items-center gap-2 text-[13px] text-muted-foreground">
+                                    <LockKeyIcon className="size-4 shrink-0" />
+                                    No bank passwords. You upload files, nothing connects to your accounts.
+                                </p>
+                            )}
+                        </motion.div>
+                    </div>
 
-                                <div className="text-center p-3 sm:p-4 bg-[hsl(var(--background))] rounded-lg border border-[hsl(var(--border))] hover:shadow-lg hover:border-[hsl(var(--accent))/0.3] transition-all duration-300 group">
-                                    <div className="text-xs sm:text-sm text-[hsl(var(--muted-foreground))] mb-2 flex items-center justify-center gap-1">
-                                        <TrendingUpIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[hsl(var(--positive))]" />
-                                        Monthly Income
-                                    </div>
-                                    <div className="text-xl sm:text-2xl font-bold text-[hsl(var(--positive))] group-hover:scale-110 transition-transform duration-300">
-                                        +{formatCurrency(animatedValues.income)}
-                                    </div>
-                                    <div className="mt-2 text-xs text-[hsl(var(--positive))/0.75]">This Month</div>
-                                </div>
+                    <motion.footer variants={listItem} className="flex flex-col gap-4">
+                        <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">Reads statements from</p>
+                        <BankMarquee />
+                        <p className="text-xs text-muted-foreground/80">© {new Date().getFullYear()} Pampas Studio</p>
+                    </motion.footer>
+                </motion.div>
 
-                                <div className="text-center p-3 sm:p-4 bg-[hsl(var(--background))] rounded-lg border border-[hsl(var(--border))] hover:shadow-lg hover:border-[hsl(var(--destructive))/0.3] transition-all duration-300 group">
-                                    <div className="text-xs sm:text-sm text-[hsl(var(--muted-foreground))] mb-2 flex items-center justify-center gap-1">
-                                        <TrendingDownIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[hsl(var(--destructive))]" />
-                                        Monthly Expenses
-                                    </div>
-                                    <div className="text-xl sm:text-2xl font-bold text-[hsl(var(--destructive))] group-hover:scale-110 transition-transform duration-300">
-                                        -{formatCurrency(animatedValues.expenses)}
-                                    </div>
-                                    <div className="mt-2 text-xs text-[hsl(var(--destructive))/0.75]">This Month</div>
-                                </div>
-                            </div>
-                        </div>
+                {/* Right: live product preview on a recessed panel */}
+                <div className="px-4 pb-16 sm:px-8 lg:py-6 lg:pl-0 lg:pr-6">
+                    <div className="relative flex h-full flex-col justify-center overflow-hidden rounded-[2.5rem] bg-muted/70 px-4 py-14 sm:px-10 lg:px-14">
+                        <div
+                            aria-hidden="true"
+                            className="pointer-events-none absolute inset-0 opacity-[0.5] [background-image:radial-gradient(hsl(var(--foreground)/0.07)_1px,transparent_1px)] [background-size:20px_20px] [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)]"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, y: 24 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.15 }}
+                            className="relative mx-auto w-full max-w-[640px]"
+                        >
+                            <LedgerPreview />
+                        </motion.div>
                     </div>
                 </div>
-            </section>
-
-            <footer className="mt-8 pb-8 text-center">
-                <a
-                    href="/privacy"
-                    className="text-xs text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors underline underline-offset-2"
-                >
-                    Privacy Policy
-                </a>
-            </footer>
+            </div>
         </div>
     )
 }

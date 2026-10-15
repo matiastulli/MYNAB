@@ -10,27 +10,40 @@ import AddTransaction from "@/components/tabs/AddTransaction"
 import Dashboard from "@/components/tabs/Dashboard"
 import FilesList from "@/components/tabs/FilesList"
 import ImportFile from "@/components/tabs/ImportFile"
+import { Avatar } from "@/components/ui/avatar"
+import { StatusDot } from "@/components/ui/status-dot"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DashboardProvider } from "@/contexts/DashboardContext"
 import { useDashboardData } from "@/hooks/useDashboardData"
+import { usePWAInstall } from "@/hooks/usePWAInstall"
+import { getCurrencyName } from "@/lib/currencyUtils"
+import { snappy, spring } from "@/lib/motion"
 import { setupSystemPreferenceListener } from "@/lib/themeUtils"
+import { cn } from "@/lib/utils"
 import { api } from "@/services/api"
 import {
-  AlertTriangleIcon,
-  BarChartIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  DownloadIcon,
-  FolderIcon,
-  LayoutDashboardIcon,
+  CaretDownIcon,
+  DownloadSimpleIcon,
+  FolderSimpleIcon,
+  ListBulletsIcon,
   PlusCircleIcon,
-  UploadIcon,
-  UserIcon,
-  XIcon
-} from "lucide-react"
+  SidebarSimpleIcon,
+  SquaresFourIcon,
+  UploadSimpleIcon,
+  WarningCircleIcon,
+  XIcon,
+} from "@phosphor-icons/react"
+import { AnimatePresence, motion } from "framer-motion"
 import { useEffect, useRef, useState } from "react"
 import { useNavigate, useParams, useSearchParams } from "react-router-dom"
-import { usePWAInstall } from "@/hooks/usePWAInstall"
+
+const TABS = [
+  { value: "dashboard", label: "Overview", icon: SquaresFourIcon },
+  { value: "entries", label: "Activity", icon: ListBulletsIcon },
+  { value: "new", label: "Add", icon: PlusCircleIcon },
+  { value: "import", label: "Import", icon: UploadSimpleIcon },
+  { value: "files", label: "Statements", icon: FolderSimpleIcon },
+]
 
 export default function MainApp({ onLogout }) {
   const params = useParams()
@@ -139,8 +152,7 @@ export default function MainApp({ onLogout }) {
     onLogout();
   };
 
-  const handleCurrencySelect = (selectedCurrency) => {
-    hookHandleCurrencySelect(selectedCurrency);
+  const scrollToTabs = () => {
     setTimeout(() => {
       if (tabsRef.current) {
         tabsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -148,14 +160,19 @@ export default function MainApp({ onLogout }) {
     }, 100);
   };
 
+  const handleCurrencySelect = (selectedCurrency) => {
+    hookHandleCurrencySelect(selectedCurrency);
+    scrollToTabs();
+  };
+
   const handleCurrencyImport = (selectedCurrency) => {
     hookHandleCurrencyImport(selectedCurrency);
-    setTimeout(() => {
-      if (tabsRef.current) {
-        tabsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 100);
+    scrollToTabs();
   };
+
+  const isBusy = summaryLoading || entriesLoading
+  const missingCuit = userData && (!userData.national_id || userData.national_id === "")
+  const fullName = userData ? [userData.name, userData.last_name].filter(Boolean).join(" ") : ""
 
   return (
     <DashboardProvider
@@ -164,211 +181,182 @@ export default function MainApp({ onLogout }) {
       handleCurrencyChange={handleCurrencyChange}
       handleDateRangeChange={handleDateRangeChange}
     >
-    <div className="flex min-h-screen bg-gradient-to-br from-[hsl(var(--background))] via-[hsl(var(--background))] to-[hsl(var(--muted))]">
+    <div className="flex min-h-[100dvh] bg-background">
 
       {/* Desktop sidebar */}
-      <aside className={`relative hidden md:flex flex-col shrink-0 sticky top-0 h-screen border-r border-[hsl(var(--border))] bg-[var(--glass-bg-heavy)] backdrop-blur-2xl py-6 gap-4 transition-all duration-200 ${sidebarCollapsed ? 'w-14 px-2' : 'w-56 px-4'}`}>
+      <motion.aside
+        initial={false}
+        animate={{ width: sidebarCollapsed ? 76 : 248 }}
+        transition={spring}
+        className="sticky top-0 hidden h-[100dvh] shrink-0 flex-col gap-6 overflow-hidden border-r border-border/70 px-3.5 py-5 md:flex"
+      >
         {/* Brand */}
-        <div className={`flex pb-4 border-b border-[hsl(var(--border))] ${sidebarCollapsed ? 'justify-center' : 'items-center gap-2'}`}>
-          {sidebarCollapsed ? (
-            <button
-              onClick={() => toggleSidebar(false)}
-              title="Expand sidebar"
-              aria-label="Expand sidebar"
-              className="group/brand relative w-7 h-7 rounded-lg flex items-center justify-center"
-            >
-              <img src="/android-chrome-192x192.png" alt="MYNAB" className="w-7 h-7 rounded-lg object-cover transition-opacity duration-150 group-hover/brand:opacity-0" />
-              <ChevronRightIcon className="h-3.5 w-3.5 text-[hsl(var(--foreground))] absolute opacity-0 group-hover/brand:opacity-100 transition-opacity duration-150" />
-            </button>
-          ) : (
+        <div className={cn("flex h-9 items-center", sidebarCollapsed ? "justify-center" : "gap-2.5 px-1")}>
+          <button
+            onClick={() => sidebarCollapsed && toggleSidebar(false)}
+            className={cn("group/brand relative size-8 shrink-0 rounded-[10px]", !sidebarCollapsed && "pointer-events-none")}
+            aria-label={sidebarCollapsed ? "Expand sidebar" : undefined}
+            tabIndex={sidebarCollapsed ? 0 : -1}
+          >
+            <img src="/android-chrome-192x192.png" alt="MYNAB" className="size-8 rounded-[10px] object-cover transition-opacity duration-200 group-hover/brand:opacity-0" />
+            <SidebarSimpleIcon className="absolute inset-0 m-auto size-4 text-foreground opacity-0 transition-opacity duration-200 group-hover/brand:opacity-100" />
+          </button>
+          {!sidebarCollapsed && (
             <>
-              <img
-                src="/android-chrome-192x192.png"
-                alt="MYNAB"
-                className={`w-7 h-7 rounded-lg object-cover shrink-0 ${(summaryLoading || entriesLoading) ? 'opacity-60' : ''}`}
-              />
-              <div className="flex items-center gap-2 flex-1 overflow-hidden">
-                <span className="font-bold text-sm tracking-wider text-[hsl(var(--foreground))] whitespace-nowrap">MYNAB</span>
-                {(summaryLoading || entriesLoading) && (
-                  <svg className="animate-spin h-3.5 w-3.5 text-[hsl(var(--accent))] shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                  </svg>
-                )}
+              <div className="flex min-w-0 flex-1 flex-col leading-none">
+                <span className="text-[15px] font-semibold tracking-tight">MYNAB</span>
+                <span className="mt-1 text-[11px] text-muted-foreground">Personal ledger</span>
               </div>
               <button
                 onClick={() => toggleSidebar(true)}
-                className="p-1.5 rounded-lg hover:bg-[hsl(var(--muted))] transition-colors text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] ml-auto shrink-0"
-                title="Collapse sidebar"
+                className="grid size-8 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                aria-label="Collapse sidebar"
               >
-                <ChevronLeftIcon className="h-4 w-4" />
+                <SidebarSimpleIcon className="size-4" />
               </button>
             </>
           )}
         </div>
 
-        {/* Filters */}
+        {/* Currencies */}
         {!sidebarCollapsed && (
-          <div className="flex flex-col gap-1 w-full">
+          <div className="flex flex-col gap-2">
+            <p className="px-2.5 text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">Currencies</p>
             <CurrencyFilter
-              isLoading={summaryLoading || entriesLoading}
+              isLoading={isBusy}
               availableCurrencies={currencySummary?.currencies?.map(c => c.currency)}
               vertical
             />
           </div>
         )}
 
-        {/* Spacer */}
         <div className="flex-1" />
 
         {/* User */}
         {userData && (
-          <div className="border-t border-[hsl(var(--border))] pt-4">
-            {sidebarCollapsed ? (
-              <button
-                onClick={() => setShowProfileModal(true)}
-                className="w-full flex items-center justify-center p-2 rounded-lg hover:bg-[hsl(var(--muted))] transition-colors relative"
-                title={`${userData.name} ${userData.last_name}`}
-              >
-                <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] flex items-center justify-center overflow-hidden">
-                  {userData?.avatar_data ? (
-                    <img
-                      src={`data:image/jpeg;base64,${userData.avatar_data}`}
-                      alt="avatar"
-                      className="w-full h-full object-cover rounded-full"
-                    />
-                  ) : (
-                    <UserIcon className="h-3.5 w-3.5 text-[hsl(var(--background))]" />
-                  )}
-                </div>
-                {(!userData.national_id || userData.national_id === "") && (
-                  <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[hsl(var(--warning-fg))]" />
-                )}
-              </button>
-            ) : (
-              <button
-                onClick={() => setShowProfileModal(true)}
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[hsl(var(--muted))] transition-colors text-left"
-              >
-                <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] flex items-center justify-center shrink-0 overflow-hidden">
-                  {userData?.avatar_data ? (
-                    <img
-                      src={`data:image/jpeg;base64,${userData.avatar_data}`}
-                      alt="avatar"
-                      className="w-full h-full object-cover rounded-full"
-                    />
-                  ) : (
-                    <UserIcon className="h-3.5 w-3.5 text-[hsl(var(--background))]" />
-                  )}
-                </div>
-                <span className="text-sm font-medium text-[hsl(var(--foreground))] truncate">
-                  {userData.name} {userData.last_name}
-                </span>
-                {(!userData.national_id || userData.national_id === "") && (
-                  <AlertTriangleIcon className="h-4 w-4 text-[hsl(var(--warning-fg))] shrink-0 ml-auto" />
-                )}
-              </button>
+          <button
+            onClick={() => setShowProfileModal(true)}
+            className={cn(
+              "flex items-center gap-3 rounded-2xl border border-transparent p-2 text-left transition-colors duration-200 hover:border-border hover:bg-card active:scale-[0.99]",
+              sidebarCollapsed && "justify-center"
             )}
-          </div>
+            title={fullName}
+          >
+            <span className="relative">
+              <Avatar user={userData} className="size-9" />
+              {missingCuit && (
+                <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full border-2 border-background bg-warning" />
+              )}
+            </span>
+            {!sidebarCollapsed && (
+              <span className="flex min-w-0 flex-1 flex-col leading-tight">
+                <span className="truncate text-[13px] font-medium">{fullName}</span>
+                <span className={cn("truncate text-[11px]", missingCuit ? "text-warning" : "text-muted-foreground")}>
+                  {missingCuit ? "Add your CUIT" : userData.email || "Profile"}
+                </span>
+              </span>
+            )}
+          </button>
         )}
-      </aside>
+      </motion.aside>
 
       {/* Exit toast — shown on first back press when already on home */}
-      <div className={`md:hidden fixed bottom-24 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 ${showExitToast ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}>
-        <div className="px-5 py-2.5 rounded-2xl bg-[hsl(var(--foreground)/0.88)] backdrop-blur-xl text-[hsl(var(--background))] text-sm font-medium whitespace-nowrap shadow-xl">
-          Press back again to exit
-        </div>
-      </div>
+      <AnimatePresence>
+        {showExitToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 8, x: "-50%" }}
+            animate={{ opacity: 1, y: 0, x: "-50%" }}
+            exit={{ opacity: 0, y: 8, x: "-50%" }}
+            transition={snappy}
+            className="fixed bottom-28 left-1/2 z-50 whitespace-nowrap rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background shadow-[var(--shadow-lift)] md:hidden"
+          >
+            Press back again to exit
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Mobile floating bottom bar */}
-      <div className="md:hidden fixed bottom-4 left-4 right-4 z-50">
-        <div className="flex items-center gap-3 px-4 py-3 rounded-[22px] border border-[hsl(var(--border))] bg-[hsl(var(--background)/0.82)] backdrop-blur-2xl shadow-2xl">
-          {/* User avatar */}
+      <div className="fixed inset-x-4 bottom-4 z-40 md:hidden">
+        <div className="flex items-center gap-2.5 rounded-[1.6rem] border border-border/80 bg-card/85 p-2 pl-2.5 shadow-[var(--shadow-lift)] backdrop-blur-xl [box-shadow:var(--shadow-lift),inset_0_1px_0_hsl(0_0%_100%/0.08)]">
           {userData && (
-            <button
-              onClick={() => setShowProfileModal(true)}
-              className="relative shrink-0"
-            >
-              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] flex items-center justify-center overflow-hidden">
-                {userData?.avatar_data ? (
-                  <img
-                    src={`data:image/jpeg;base64,${userData.avatar_data}`}
-                    alt="avatar"
-                    className="w-full h-full object-cover rounded-full"
-                  />
-                ) : (
-                  <UserIcon className="h-4 w-4 text-[hsl(var(--background))]" />
-                )}
-              </div>
-              {(!userData.national_id || userData.national_id === "") && (
-                <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-[hsl(var(--warning-fg))] border border-[hsl(var(--background))]" />
+            <button onClick={() => setShowProfileModal(true)} className="relative shrink-0 active:scale-95" aria-label="Open profile">
+              <Avatar user={userData} className="size-9" />
+              {missingCuit && (
+                <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full border-2 border-card bg-warning" />
               )}
             </button>
           )}
-
-          {/* Divider */}
-          <div className="w-px h-5 bg-[hsl(var(--border)/0.6)] shrink-0" />
-
-          {/* Currency chips — scrollable if many */}
+          <div className="h-6 w-px shrink-0 bg-border" />
           <div className="flex-1 overflow-x-auto">
             <CurrencyFilter
-              isLoading={summaryLoading || entriesLoading}
+              isLoading={isBusy}
               availableCurrencies={currencySummary?.currencies?.map(c => c.currency)}
             />
           </div>
-
-          {/* Loading indicator */}
-          {(summaryLoading || entriesLoading) && (
-            <>
-              <div className="w-px h-5 bg-[hsl(var(--border)/0.6)] shrink-0" />
-              <svg className="animate-spin h-4 w-4 text-[hsl(var(--accent))] shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-              </svg>
-            </>
-          )}
         </div>
       </div>
 
       {/* Main content */}
-      <div className="flex-1 min-w-0 flex flex-col">
-        <div className="px-4 py-6 pb-28 md:pb-10 md:px-8 md:py-10 flex flex-col flex-1 min-h-0">
+      <main className="flex min-w-0 flex-1 flex-col">
+        <div className="mx-auto flex w-full max-w-[1400px] flex-1 flex-col px-4 pb-32 pt-6 md:px-10 md:pb-12 md:pt-9">
 
           {/* PWA install banner */}
-          {canInstall && (
-            <div className="mb-4 flex items-center gap-3 px-4 py-3 rounded-[var(--glass-radius-sm)] bg-[hsl(var(--accent)/0.1)] border border-[hsl(var(--accent)/0.25)] backdrop-blur-xl">
-              <DownloadIcon className="h-4 w-4 text-[hsl(var(--accent))] shrink-0" />
-              <span className="flex-1 text-sm text-[hsl(var(--foreground))]">Install MYNAB for a faster, offline-ready experience.</span>
-              <button
-                onClick={handleInstall}
-                className="shrink-0 text-xs font-semibold text-[hsl(var(--accent))] hover:underline"
+          <AnimatePresence>
+            {canInstall && (
+              <motion.div
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={spring}
+                className="mb-6 flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3"
               >
-                Install
-              </button>
-              <button
-                onClick={handleDismiss}
-                className="shrink-0 p-0.5 rounded text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors"
-                aria-label="Dismiss"
-              >
-                <XIcon className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          )}
+                <DownloadSimpleIcon className="size-4 shrink-0 text-accent" />
+                <span className="flex-1 text-sm">Install MYNAB to open it like an app, even offline.</span>
+                <button onClick={handleInstall} className="shrink-0 text-[13px] font-semibold text-accent hover:underline">
+                  Install
+                </button>
+                <button
+                  onClick={handleDismiss}
+                  className="grid size-7 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  aria-label="Dismiss"
+                >
+                  <XIcon className="size-3.5" />
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          <header className="mb-4 md:mb-6">
-            <div className="text-center">
+          {/* Page header: period on the left, context on the right */}
+          <header className="mb-8 flex flex-col gap-5 md:mb-10 md:flex-row md:items-end md:justify-between">
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2.5 text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                <StatusDot busy={isBusy} />
+                <span>{isBusy ? "Updating" : currency === "ALL" ? "All currencies" : `${currency} · ${getCurrencyName(currency)}`}</span>
+              </div>
               <DateRangeFilter
-                isLoading={summaryLoading || entriesLoading}
+                isLoading={isBusy}
                 trigger={
-                  <button className="inline-flex items-center justify-center gap-3 px-6 py-3 bg-gradient-to-r from-[hsl(var(--accent))/0.1] to-[hsl(var(--chart-3))/0.1] rounded-2xl border border-[hsl(var(--accent))/0.2] backdrop-blur-sm hover:border-[hsl(var(--accent))/0.5] hover:shadow-md transition-all duration-150 cursor-pointer">
-                    <h2 className="text-lg md:text-xl font-semibold bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] bg-clip-text text-transparent">
+                  <button className="group -ml-1 inline-flex w-fit items-center gap-2 rounded-xl px-1 text-left active:scale-[0.99]">
+                    <h1 className="text-[1.75rem] font-semibold leading-none tracking-tighter text-foreground md:text-[2.5rem]">
                       {dateRangeFormatted}
-                    </h2>
-                    
+                    </h1>
+                    <span className="grid size-7 place-items-center rounded-full border border-border text-muted-foreground transition-colors duration-200 group-hover:border-foreground/30 group-hover:text-foreground md:mt-1">
+                      <CaretDownIcon className="size-3.5" weight="bold" />
+                    </span>
                   </button>
                 }
               />
             </div>
+
+            {missingCuit && (
+              <button
+                onClick={() => setShowProfileModal(true)}
+                className="flex w-fit items-center gap-2 rounded-full border border-warning/30 text-left bg-warning-soft px-3.5 py-1.5 text-[13px] font-medium text-warning transition-colors hover:border-warning/50"
+              >
+                <WarningCircleIcon className="size-4" />
+                Add your CUIT to skip transfers between your accounts
+              </button>
+            )}
           </header>
 
         {currency !== "ALL" && (
@@ -392,129 +380,91 @@ export default function MainApp({ onLogout }) {
         )}
 
         {currency !== "ALL" && (
-          <Tabs ref={tabsRef} value={activeTab} onValueChange={handleTabChange} className="space-y-8">
-            <div className="flex justify-center w-full">
-              <TabsList className="flex p-1.5 gap-x-1.5 overflow-x-auto max-w-full w-full sm:w-auto">
-                <TabsTrigger
-                  value="dashboard"
-                  className="flex-1 sm:flex-none text-[hsl(var(--muted-foreground))] rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
-                  style={{ '--active-color': 'hsl(var(--accent))', '--active-bg': 'hsl(var(--accent) / 0.1)' }}
-                  data-state={activeTab === "dashboard" ? "active" : "inactive"}
-                >
-                  <LayoutDashboardIcon className="h-4 w-4" />
-                  <span className="hidden sm:inline-block ml-2">Dashboard</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="entries"
-                  className="flex-1 sm:flex-none text-[hsl(var(--muted-foreground))] rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
-                  style={{ '--active-color': 'hsl(var(--accent))', '--active-bg': 'hsl(var(--accent) / 0.1)' }}
-                  data-state={activeTab === "entries" ? "active" : "inactive"}
-                >
-                  <BarChartIcon className="h-4 w-4" />
-                  <span className="hidden sm:inline-block ml-2">Activity</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="new"
-                  className="flex-1 sm:flex-none text-[hsl(var(--muted-foreground))] rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
-                  style={{ '--active-color': 'hsl(var(--accent))', '--active-bg': 'hsl(var(--accent) / 0.1)' }}
-                  data-state={activeTab === "new" ? "active" : "inactive"}
-                >
-                  <PlusCircleIcon className="h-4 w-4" />
-                  <span className="hidden sm:inline-block ml-2">Add Transaction</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="import"
-                  className="flex-1 sm:flex-none text-[hsl(var(--muted-foreground))] rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
-                  style={{ '--active-color': 'hsl(var(--accent))', '--active-bg': 'hsl(var(--accent) / 0.1)' }}
-                  data-state={activeTab === "import" ? "active" : "inactive"}
-                >
-                  <UploadIcon className="h-4 w-4" />
-                  <span className="hidden sm:inline-block ml-2">Import Statements</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="files"
-                  className="flex-1 sm:flex-none text-[hsl(var(--muted-foreground))] rounded-lg px-0 sm:px-4 whitespace-nowrap flex items-center justify-center"
-                  style={{ '--active-color': 'hsl(var(--accent))', '--active-bg': 'hsl(var(--accent) / 0.1)' }}
-                  data-state={activeTab === "files" ? "active" : "inactive"}
-                >
-                  <FolderIcon className="h-4 w-4" />
-                  <span className="hidden sm:inline-block ml-2">Bank Statements</span>
-                </TabsTrigger>
+          <Tabs ref={tabsRef} value={activeTab} onValueChange={handleTabChange} className="scroll-mt-6 gap-6">
+            <div className="-mx-4 overflow-x-auto px-4 md:mx-0 md:px-0">
+              <TabsList className="w-full sm:w-auto">
+                {TABS.map(({ value, label, icon: Icon }) => {
+                  const isActive = activeTab === value
+                  return (
+                    <TabsTrigger key={value} value={value} className="flex-1 px-3 sm:flex-none sm:px-4" aria-label={label}>
+                      {isActive && (
+                        <motion.span
+                          layoutId="tab-active"
+                          transition={snappy}
+                          className="absolute inset-0 rounded-full border border-border/80 bg-card shadow-[0_1px_2px_hsl(var(--shadow-tint)/0.08)]"
+                        />
+                      )}
+                      <Icon className="relative size-4" weight={isActive ? "fill" : "regular"} />
+                      <span className="relative hidden sm:inline">{label}</span>
+                    </TabsTrigger>
+                  )
+                })}
               </TabsList>
             </div>
 
-            <TabsContent value="dashboard" className="mt-6 focus-visible:outline-none">
-              <div className="w-full max-w-7xl mx-auto">
-                <Dashboard
-                  currency={currency}
-                  summary={summary}
-                  entries={entries}
-                  totalTransactions={pagination.total}
-                  isLoading={summaryLoading || entriesLoading}
-                />
-              </div>
+            <TabsContent value="dashboard">
+              <Dashboard
+                currency={currency}
+                summary={summary}
+                entries={entries}
+                totalTransactions={pagination.total}
+                isLoading={summaryLoading || entriesLoading}
+              />
             </TabsContent>
 
-            <TabsContent value="entries" className="mt-6 focus-visible:outline-none">
-              <div className="w-full max-w-7xl mx-auto">
-                <ActivityList
-                  currency={currency}
-                  entries={entries}
-                  dateRangeFormatted={dateRangeFormatted}
-                  dateRange={dateRange}
-                  onTransactionDeleted={() => {
-                    fetchSummary();
-                    fetchDetails();
-                  }}
-                  isLoading={entriesLoading}
-                  pagination={pagination}
-                  onPaginationChange={handlePaginationChange}
-                />
-              </div>
+            <TabsContent value="entries">
+              <ActivityList
+                currency={currency}
+                entries={entries}
+                dateRangeFormatted={dateRangeFormatted}
+                dateRange={dateRange}
+                onTransactionDeleted={() => {
+                  fetchSummary();
+                  fetchDetails();
+                }}
+                isLoading={entriesLoading}
+                pagination={pagination}
+                onPaginationChange={handlePaginationChange}
+              />
             </TabsContent>
 
-            <TabsContent value="new" className="mt-6 focus-visible:outline-none">
-              <div className="w-full max-w-7xl mx-auto">
-                <AddTransaction
-                  defaultCurrency={currency}
-                  categories={categories}
-                  onTransactionAdded={() => {
-                    fetchSummary();
-                    fetchDetails();
-                  }}
-                />
-              </div>
+            <TabsContent value="new">
+              <AddTransaction
+                defaultCurrency={currency}
+                categories={categories}
+                onTransactionAdded={() => {
+                  fetchSummary();
+                  fetchDetails();
+                }}
+              />
             </TabsContent>
 
-            <TabsContent value="import" className="mt-6 focus-visible:outline-none">
-              <div className="w-full max-w-7xl mx-auto">
-                <ImportFile
-                  currency={currency}
-                  onImportComplete={() => {
-                    fetchSummary();
-                    fetchDetails();
-                  }}
-                  onImportSuccess={handleImportSuccess}
-                />
-              </div>
+            <TabsContent value="import">
+              <ImportFile
+                currency={currency}
+                onImportComplete={() => {
+                  fetchSummary();
+                  fetchDetails();
+                }}
+                onImportSuccess={handleImportSuccess}
+              />
             </TabsContent>
 
-            <TabsContent value="files" className="mt-6 focus-visible:outline-none">
-              <div className="w-full max-w-7xl mx-auto">
-                <FilesList
-                  currency={currency}
-                  onFileDeleted={() => {
-                    fetchSummary();
-                    fetchDetails();
-                    fetchFiles();
-                  }}
-                  files={files}
-                  loading={filesLoading}
-                  error={filesError}
-                  pagination={filesPagination}
-                  onPaginationChange={handleFilesPaginationChange}
-                />
-              </div>
+            <TabsContent value="files">
+              <FilesList
+                currency={currency}
+                onFileDeleted={() => {
+                  fetchSummary();
+                  fetchDetails();
+                  fetchFiles();
+                }}
+                onImportClick={() => handleTabChange('import')}
+                files={files}
+                loading={filesLoading}
+                error={filesError}
+                pagination={filesPagination}
+                onPaginationChange={handleFilesPaginationChange}
+              />
             </TabsContent>
           </Tabs>
         )}
@@ -526,9 +476,9 @@ export default function MainApp({ onLogout }) {
           onProfileUpdated={fetchUserProfile}
           onLogout={handleLogout}
         />
-      </div>{/* end inner padding */}
-    </div>{/* end flex-1 main */}
-  </div>{/* end outer flex */}
+        </div>
+      </main>
+    </div>
     </DashboardProvider>
   );
 }

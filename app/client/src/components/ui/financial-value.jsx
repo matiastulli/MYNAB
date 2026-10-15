@@ -2,17 +2,14 @@ import { getCurrencySymbol } from "@/lib/currencyUtils";
 import { cn } from "@/lib/utils";
 
 /**
- * An enhanced component to display financial values with consistent formatting and visual design
- * 
- * @param {Object} props
+ * Money, consistently formatted: mono tabular digits, sign + color by direction.
+ *
  * @param {number} props.value - The numeric value to display
- * @param {string} props.type - Can be "income", "outcome" or "neutral"
- * @param {string} props.currency - Currency code (USD, EUR, ARS, etc.)
- * @param {string} props.className - Additional CSS classes
- * @param {boolean} props.showSign - Whether to show + or - sign
- * @param {boolean} props.compact - Compact display format
- * @param {string} props.size - Size variant: "xs", "sm", "base", "lg", "xl", "2xl"
- * @param {boolean} props.animate - Whether to animate value changes
+ * @param {string} props.type - "income", "outcome" or "neutral"
+ * @param {string} props.currency - Currency code (USD, ARS, ...)
+ * @param {boolean} props.showSign - Whether to show + or -
+ * @param {boolean} props.compact - Compact display (1.2k, 3.4M)
+ * @param {string} props.size - "xs" | "sm" | "base" | "lg" | "xl" | "2xl"
  */
 export function FinancialValue({
   value,
@@ -22,25 +19,22 @@ export function FinancialValue({
   showSign = true,
   compact = false,
   size = "base",
-  animate = false
 }) {
   const isPositive = type === "income";
   const isNegative = type === "outcome";
   const isZero = value === 0;
 
-  // Size classes mapping
   const sizeClasses = {
     xs: "text-xs",
     sm: "text-sm",
-    base: "text-base",
-    lg: "text-lg",
+    base: "text-[15px]",
+    md: "text-[15px]",
+    lg: "text-base",
     xl: "text-xl",
-    "2xl": "text-2xl"
+    "2xl": "text-2xl",
   };
 
-  // Format number with commas and decimal places
   const formatNumber = (num) => {
-    // For compact display of large numbers
     if (compact && Math.abs(num) >= 1000000) {
       return (Math.abs(num) / 1000000).toLocaleString("en-US", {
         minimumFractionDigits: 1,
@@ -61,36 +55,31 @@ export function FinancialValue({
     });
   };
 
-  // Get CSS class based on type
-  const getTypeClass = () => {
-    if (isZero) return "financial-neutral";
-    if (isPositive) return "financial-positive";
-    if (isNegative) return "financial-negative";
-    return "financial-neutral";
-  };
+  const tone = isZero
+    ? "text-foreground"
+    : isPositive
+      ? "text-positive"
+      : isNegative
+        ? "text-foreground"
+        : "text-foreground";
 
   return (
-    <span className={cn(
-      {
-        'financial-neutral': 'text-[hsl(var(--foreground))]',
-        'financial-positive': 'text-[hsl(var(--positive))]',
-        'financial-negative': 'text-[hsl(var(--destructive))]'
-      }[getTypeClass()],
-      sizeClasses[size] || "text-base",
-      animate && "transition-all duration-300 ease-in-out",
-      "whitespace-nowrap", 
-      className
-    )}>
+    <span className={cn("figure whitespace-nowrap font-medium", tone, sizeClasses[size] || sizeClasses.base, className)}>
       {showSign && isPositive && "+"}
-      {showSign && isNegative && "-"}
+      {showSign && isNegative && "−"}
       {getCurrencySymbol(currency)}
       {formatNumber(value)}
-      {!compact && currency !== "USD" && currency !== "ARS" && (
-        <span className="text-xs ml-1 opacity-75">{currency}</span>
-      )}
-      {compact && (currency !== "USD" && currency !== "ARS") && (
-        <span className="text-xs ml-0.5 opacity-75">{currency}</span>
+      {currency !== "USD" && currency !== "ARS" && (
+        <span className="ml-1 text-[0.7em] font-normal text-muted-foreground">{currency}</span>
       )}
     </span>
   );
+}
+
+// Shared formatter for figures rendered outside <FinancialValue>
+export function formatMoney(value, { decimals = 2 } = {}) {
+  return Math.abs(Number(value) || 0).toLocaleString("en-US", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
 }

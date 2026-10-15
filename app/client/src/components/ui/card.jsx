@@ -1,16 +1,15 @@
 import { cn } from "@/lib/utils"
 
+// Elevated surface. Used only where elevation communicates grouping;
+// inside a card, separate content with dividers and space instead of nesting cards.
 function Card({ className, ...props }) {
   return (
     <div
       data-slot="card"
       className={cn(
-        "bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] border-[hsl(var(--border))] flex flex-col gap-6 rounded-xl border py-6 shadow-sm backdrop-blur-none",
+        "bg-card text-card-foreground rounded-[1.75rem] border border-border/70 shadow-[var(--shadow-diffuse)] dark:shadow-[var(--shadow-inner-edge)]",
         className,
       )}
-      style={{
-        backgroundImage: "none",
-      }}
       {...props}
     />
   )
@@ -20,40 +19,42 @@ function CardHeader({ className, ...props }) {
   return (
     <div
       data-slot="card-header"
-      className={cn(
-        "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6",
-        className,
-      )}
+      className={cn("flex flex-col gap-1 px-6 pt-6 md:px-8 md:pt-7", className)}
       {...props}
     />
   )
 }
 
 function CardTitle({ className, ...props }) {
-  return <div data-slot="card-title" className={cn("leading-none font-semibold", className)} {...props} />
-}
-
-function CardDescription({ className, ...props }) {
-  return <div data-slot="card-description" className={cn("text-[hsl(var(--muted-foreground))] text-sm", className)} {...props} />
-}
-
-function CardAction({ className, ...props }) {
   return (
-    <div
-      data-slot="card-action"
-      className={cn("col-start-2 row-span-2 row-start-1 self-start justify-self-end", className)}
+    <h3
+      data-slot="card-title"
+      className={cn("text-base font-semibold tracking-tight text-foreground", className)}
       {...props}
     />
   )
 }
 
+function CardDescription({ className, ...props }) {
+  return <p data-slot="card-description" className={cn("text-sm text-muted-foreground", className)} {...props} />
+}
+
 function CardContent({ className, ...props }) {
-  return <div data-slot="card-content" className={cn("px-6", className)} {...props} />
+  return <div data-slot="card-content" className={cn("px-6 pb-6 md:px-8 md:pb-8", className)} {...props} />
 }
 
 function CardFooter({ className, ...props }) {
-  return <div data-slot="card-footer" className={cn("flex items-center px-6 [.border-t]:pt-6", className)} {...props} />
+  return <div data-slot="card-footer" className={cn("flex items-center px-6 pb-6 md:px-8", className)} {...props} />
 }
 
-export { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
+// Small uppercase label used above figures and sections
+function Eyebrow({ className, ...props }) {
+  return (
+    <p
+      className={cn("text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground", className)}
+      {...props}
+    />
+  )
+}
 
+export { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Eyebrow }

@@ -1,7 +1,12 @@
 "use client"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, Eyebrow } from "@/components/ui/card"
+import { formatMoney } from "@/components/ui/financial-value"
+import { Skeleton } from "@/components/ui/skeleton"
 import { getCurrencyName, getCurrencySymbol } from "@/lib/currencyUtils"
-import { ArrowDownIcon, ArrowUpIcon } from "lucide-react"
+import { listItem, listParent, spring } from "@/lib/motion"
+import { cn } from "@/lib/utils"
+import { ArrowRightIcon, UploadSimpleIcon } from "@phosphor-icons/react"
+import { motion } from "framer-motion"
 import { useNavigate } from "react-router-dom"
 
 export default function CurrencyOverview({
@@ -22,235 +27,164 @@ export default function CurrencyOverview({
 
   if (isLoading) {
     return (
-      <div className="space-y-6 py-4 px-4">
-        {/* Loading Header */}
-        <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[hsl(var(--accent))/0.1] to-[hsl(var(--chart-3))/0.1] rounded-full mb-4 animate-pulse border border-[hsl(var(--accent))/0.2]">
-            <div className="w-8 h-8 bg-gradient-to-r from-[hsl(var(--accent))/0.2] to-[hsl(var(--chart-3))/0.2] rounded animate-pulse"></div>
-          </div>
-          <div className="space-y-2">
-            <div className="h-6 sm:h-8 bg-gradient-to-r from-[hsl(var(--accent))/0.1] to-[hsl(var(--chart-3))/0.1] rounded-lg w-48 sm:w-64 mx-auto animate-pulse"></div>
-            <div className="h-4 sm:h-6 bg-gradient-to-r from-[hsl(var(--accent))/0.1] to-[hsl(var(--chart-3))/0.1] rounded w-24 sm:w-32 mx-auto animate-pulse"></div>
-            <div className="h-6 sm:h-8 bg-gradient-to-r from-[hsl(var(--accent))/0.1] to-[hsl(var(--chart-3))/0.1] rounded-full w-32 sm:w-40 mx-auto animate-pulse"></div>
-          </div>
+      <Card className="overflow-hidden">
+        <div className="hidden border-b border-border/70 px-8 py-4 md:block">
+          <Skeleton className="h-3 w-24" />
         </div>
-
-        {/* Loading Cards */}
-        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 w-full max-w-6xl mx-auto">
-          {[1, 2, 3].map((i) => (
-            <Card
-              key={i}
-              className="animate-pulse border border-[hsl(var(--accent))/0.1] bg-gradient-to-br from-[hsl(var(--accent))/0.05] to-[hsl(var(--chart-3))/0.05]"
-            >
-              <CardHeader className="pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-r from-[hsl(var(--accent))/0.2] to-[hsl(var(--chart-3))/0.2] rounded-lg animate-pulse"></div>
-                  <div className="space-y-2">
-                    <div className="h-4 sm:h-5 bg-gradient-to-r from-[hsl(var(--accent))/0.1] to-[hsl(var(--chart-3))/0.1] rounded w-12 sm:w-16 animate-pulse"></div>
-                    <div className="h-3 sm:h-4 bg-gradient-to-r from-[hsl(var(--accent))/0.1] to-[hsl(var(--chart-3))/0.1] rounded w-16 sm:w-24 animate-pulse"></div>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="py-3 sm:py-4 bg-gradient-to-r from-[hsl(var(--accent))/0.05] to-[hsl(var(--chart-3))/0.05] rounded-lg">
-                  <div className="h-3 sm:h-4 bg-gradient-to-r from-[hsl(var(--accent))/0.1] to-[hsl(var(--chart-3))/0.1] rounded w-16 sm:w-20 mx-auto mb-2 animate-pulse"></div>
-                  <div className="h-6 sm:h-8 bg-gradient-to-r from-[hsl(var(--accent))/0.1] to-[hsl(var(--chart-3))/0.1] rounded w-24 sm:w-32 mx-auto animate-pulse"></div>
-                </div>
-                <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                  <div className="p-2 sm:p-3 bg-[hsl(var(--positive))/0.05] rounded-lg">
-                    <div className="h-3 sm:h-4 bg-[hsl(var(--positive))/0.1] rounded w-12 sm:w-16 mx-auto mb-2 animate-pulse"></div>
-                    <div className="h-4 sm:h-6 bg-[hsl(var(--positive))/0.1] rounded w-16 sm:w-20 mx-auto animate-pulse"></div>
-                  </div>
-                  <div className="p-2 sm:p-3 bg-[hsl(var(--destructive))/0.05] rounded-lg">
-                    <div className="h-3 sm:h-4 bg-[hsl(var(--destructive))/0.1] rounded w-12 sm:w-16 mx-auto mb-2 animate-pulse"></div>
-                    <div className="h-4 sm:h-6 bg-[hsl(var(--destructive))/0.1] rounded w-16 sm:w-20 mx-auto animate-pulse"></div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+        <div className="divide-y divide-border/70">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="flex items-center gap-4 px-6 py-6 md:px-8">
+              <Skeleton className="size-11 rounded-2xl" />
+              <div className="flex flex-1 flex-col gap-2">
+                <Skeleton className="h-4 w-16" />
+                <Skeleton className="h-3 w-28" />
+              </div>
+              <Skeleton className="hidden h-1.5 w-40 rounded-full md:block" />
+              <Skeleton className="h-6 w-28" />
+            </div>
           ))}
         </div>
-      </div>
+      </Card>
     )
   }
 
   const currencies = currencySummary?.currencies || []
 
   if (currencies.length === 0) {
-    return (
-      <div className="h-full flex flex-col text-center px-4 max-w-full mx-auto">
-        <div className="mb-3">
-          <h3 className="text-xl font-semibold mb-1 bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] bg-clip-text text-transparent">
-            Start Your Financial Journey
-          </h3>
-          <h4 className="text-sm font-medium bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] bg-clip-text text-transparent">
-            Choose Currency to Import
-          </h4>
-        </div>
-
-        <div className="grid grid-cols-6 auto-rows-fr gap-3 w-full max-w-4xl mx-auto flex-1 min-h-0">
-          {/* USD Button - Large Rectangle */}
-          <button
-            onClick={() => handleCurrencyImport("USD")}
-            className="col-span-4 row-span-2 sm:col-span-3 h-full flex flex-col items-center justify-center gap-2 px-3 py-4 bg-gradient-to-r from-[hsl(var(--chart-4))] to-[hsl(var(--chart-2))/0.8] hover:from-[hsl(var(--chart-4))/0.9] hover:to-[hsl(var(--chart-2))/0.7] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl border border-[var(--glass-border)] backdrop-blur-xl"
-          >
-            <span className="text-3xl sm:text-4xl font-bold">$</span>
-            <span className="text-sm sm:text-base">USD</span>
-          </button>
-
-          {/* ARS Button - Square */}
-          <button
-            onClick={() => handleCurrencyImport("ARS")}
-            className="col-span-2 row-span-2 h-full flex flex-col items-center justify-center gap-2 px-3 py-4 bg-gradient-to-r from-[hsl(var(--chart-2))] to-[hsl(var(--chart-2))/0.8] hover:from-[hsl(var(--chart-2))/0.9] hover:to-[hsl(var(--chart-2))/0.7] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl border border-[var(--glass-border)] backdrop-blur-xl"
-          >
-            <span className="text-2xl sm:text-3xl font-bold">$</span>
-            <span className="text-sm">ARS</span>
-          </button>
-
-          {/* GBP Button */}
-          <button
-            onClick={() => handleCurrencyImport("GBP")}
-            className="col-span-2 h-full flex flex-col items-center justify-center gap-2 px-3 py-4 bg-gradient-to-r from-[hsl(var(--chart-5))] to-[hsl(var(--accent))/0.8] hover:from-[hsl(var(--chart-5))/0.9] hover:to-[hsl(var(--accent))/0.7] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl border border-[var(--glass-border)] backdrop-blur-xl"
-          >
-            <span className="text-2xl sm:text-3xl font-bold">£</span>
-            <span className="text-sm">GBP</span>
-          </button>
-
-          {/* AUD Button */}
-          <button
-            onClick={() => handleCurrencyImport("AUD")}
-            className="col-span-2 h-full flex flex-col items-center justify-center gap-2 px-3 py-4 bg-gradient-to-r from-[hsl(var(--chart-1))] to-[hsl(var(--chart-3))/0.8] hover:from-[hsl(var(--chart-1))/0.9] hover:to-[hsl(var(--chart-3))/0.7] text-[hsl(var(--accent-foreground))] font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl border border-[var(--glass-border)] backdrop-blur-xl"
-          >
-            <span className="text-2xl sm:text-3xl font-bold">A$</span>
-            <span className="text-sm">AUD</span>
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  // Determine grid layout based on number of currencies
-  const getGridLayout = () => {
-    if (currencies.length === 1) return "grid-cols-1 max-w-md mx-auto"
-    if (currencies.length === 2) return "grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto"
-    if (currencies.length === 3) return "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto"
-    if (currencies.length === 4) return "grid-cols-1 md:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto"
-    if (currencies.length === 5) return "grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 max-w-7xl mx-auto"
-    if (currencies.length >= 6) return "grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 max-w-7xl mx-auto"
-    return "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 max-w-7xl mx-auto"
+    return <FirstImport onPick={handleCurrencyImport} />
   }
 
   return (
-    <div className="h-full">
-      {/* Currency Cards Grid */}
-      <div className={`grid gap-6 h-full ${getGridLayout()}`}>
+    <Card className="overflow-hidden">
+      <div className="hidden grid-cols-[minmax(0,1.3fr)_minmax(0,1.1fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_minmax(0,1fr)_2rem] gap-6 border-b border-border/70 px-8 py-4 md:grid">
+        <Eyebrow>Currency</Eyebrow>
+        <Eyebrow>Flow</Eyebrow>
+        <Eyebrow className="text-right">In</Eyebrow>
+        <Eyebrow className="text-right">Out</Eyebrow>
+        <Eyebrow className="text-right">Net</Eyebrow>
+        <span />
+      </div>
+
+      <motion.ul variants={listParent} initial="hidden" animate="show" className="divide-y divide-border/70">
         {currencies.map((currencyData) => {
           const balance = currencyData.income - currencyData.outcome
           const isPositive = balance >= 0
-          const totalActivity = currencyData.income + currencyData.outcome
+          const flow = currencyData.income + currencyData.outcome
+          const incomeShare = flow > 0 ? (currencyData.income / flow) * 100 : 50
+          const symbol = getCurrencySymbol(currencyData.currency)
 
           return (
-            <Card
-              key={currencyData.currency}
-              className="group cursor-pointer transition-all duration-300 border border-[var(--glass-border)] bg-[var(--glass-bg)] backdrop-blur-2xl shadow-[var(--glass-shadow)] hover:shadow-[var(--glass-shadow-heavy)] rounded-[var(--glass-radius)] relative overflow-hidden"
-              onClick={() => onCurrencySelect(currencyData.currency)}
-            >
-              {/* Background Pattern */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--accent))/0.05] to-[hsl(var(--chart-3))/0.05] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-              <CardHeader className="pb-4 relative">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-[hsl(var(--accent))/0.2] to-[hsl(var(--chart-3))/0.2] rounded-xl flex items-center justify-center border border-[hsl(var(--accent))/0.2]">
-                      <span className="text-lg font-bold bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] bg-clip-text text-transparent">
-                        {getCurrencySymbol(currencyData.currency)}
-                      </span>
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg font-bold bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] bg-clip-text text-transparent">
-                        {currencyData.currency}
-                      </CardTitle>
-                      <p className="text-sm text-[hsl(var(--muted-foreground))]">
-                        {getCurrencyName(currencyData.currency)}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div
-                      className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium border backdrop-blur-sm ${
-                        isPositive
-                          ? "bg-gradient-to-r from-[hsl(var(--positive))/0.1] to-[hsl(var(--positive))/0.15] text-[hsl(var(--positive))] border-[hsl(var(--positive))/0.2]"
-                          : "bg-gradient-to-r from-[hsl(var(--destructive))/0.1] to-[hsl(var(--destructive))/0.15] text-[hsl(var(--destructive))] border-[hsl(var(--destructive))/0.2]"
-                      }`}
-                    >
-                      {isPositive ? <ArrowUpIcon className="h-3 w-3" /> : <ArrowDownIcon className="h-3 w-3" />}
-                      <span>{isPositive ? "Profit" : "Loss"}</span>
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-
-              <CardContent className="space-y-4 relative">
-                {/* Main Balance Display */}
-                <div className="text-center py-4 bg-[hsl(var(--background)/0.4)] rounded-[var(--glass-radius-sm)] border border-[var(--glass-border)]">
-                  <p className="text-sm font-medium text-[hsl(var(--muted-foreground))] mb-1">Net Balance</p>
-                  <p className={`text-2xl md:text-3xl font-bold ${isPositive ? "text-[hsl(var(--positive))]" : "text-[hsl(var(--destructive))]"}`}>
-                    {isPositive ? "+" : "-"}
-                    {getCurrencySymbol(currencyData.currency)}
-                    {Math.abs(balance).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </p>
-                </div>
-
-                {/* Income/Expenses Row */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-3 bg-[hsl(var(--background)/0.4)] rounded-[var(--glass-radius-sm)] border border-[var(--glass-border)]">
-                    <div className="flex items-center justify-center mb-2">
-                      <ArrowUpIcon className="h-4 w-4 text-[hsl(var(--positive))] mr-1" />
-                      <span className="text-xs font-medium text-[hsl(var(--positive))] uppercase tracking-wide">Income</span>
-                    </div>
-                    <p className="text-lg font-bold text-[hsl(var(--positive))]">
-                      {getCurrencySymbol(currencyData.currency)}
-                      {currencyData.income.toLocaleString("en-US", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </p>
-                  </div>
-
-                  <div className="text-center p-3 bg-[hsl(var(--background)/0.4)] rounded-[var(--glass-radius-sm)] border border-[var(--glass-border)]">
-                    <div className="flex items-center justify-center mb-2">
-                      <ArrowDownIcon className="h-4 w-4 text-[hsl(var(--destructive))] mr-1" />
-                      <span className="text-xs font-medium text-[hsl(var(--destructive))] uppercase tracking-wide">Expenses</span>
-                    </div>
-                    <p className="text-lg font-bold text-[hsl(var(--destructive))]">
-                      {getCurrencySymbol(currencyData.currency)}
-                      {currencyData.outcome.toLocaleString("en-US", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Activity Indicator */}
-                <div className="flex items-center justify-between pt-3 border-t border-[hsl(var(--accent))/0.1]">
-                  <span className="text-xs text-[hsl(var(--muted-foreground))]">Total Activity</span>
-                  <span className="text-xs font-medium bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] bg-clip-text text-transparent">
-                    {getCurrencySymbol(currencyData.currency)}
-                    {totalActivity.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            <motion.li key={currencyData.currency} variants={listItem}>
+              <button
+                onClick={() => onCurrencySelect(currencyData.currency)}
+                className="group grid w-full grid-cols-[1fr_auto] items-center gap-x-4 gap-y-4 px-6 py-6 text-left transition-colors duration-200 hover:bg-muted/50 active:bg-muted md:grid-cols-[minmax(0,1.3fr)_minmax(0,1.1fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_minmax(0,1fr)_2rem] md:gap-6 md:px-8"
+              >
+                <span className="flex items-center gap-3.5">
+                  <span className="figure grid size-11 shrink-0 place-items-center rounded-2xl bg-foreground text-sm font-semibold text-background">
+                    {symbol}
                   </span>
-                </div>
+                  <span className="flex flex-col leading-tight">
+                    <span className="text-[15px] font-semibold tracking-tight">{currencyData.currency}</span>
+                    <span className="text-[13px] text-muted-foreground">{getCurrencyName(currencyData.currency)}</span>
+                  </span>
+                </span>
 
-                {/* Click hint with arrow */}
-                <div className="flex items-center justify-center pt-2 opacity-60 group-hover:opacity-100 transition-opacity">
-                  <span className="text-xs text-[hsl(var(--muted-foreground))] mr-2">View Details</span>
-                  <ArrowUpIcon className="h-3 w-3 text-[hsl(var(--accent))] rotate-45 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </CardContent>
-            </Card>
+                {/* Net (mobile position) */}
+                <span className={cn("figure text-right text-lg font-medium md:hidden", isPositive ? "text-foreground" : "text-destructive")}>
+                  {isPositive ? "+" : "−"}{symbol}{formatMoney(balance)}
+                </span>
+
+                <span className="col-span-2 flex flex-col gap-1.5 md:col-span-1">
+                  <span className="flex h-1.5 w-full gap-[2px] overflow-hidden rounded-full">
+                    <motion.span
+                      className="h-full rounded-full bg-accent"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${incomeShare}%` }}
+                      transition={spring}
+                    />
+                    <span className="h-full flex-1 rounded-full bg-foreground/15" />
+                  </span>
+                  <span className="flex justify-between text-[11px] text-muted-foreground md:hidden">
+                    <span className="figure">In {symbol}{formatMoney(currencyData.income)}</span>
+                    <span className="figure">Out {symbol}{formatMoney(currencyData.outcome)}</span>
+                  </span>
+                </span>
+
+                <span className="figure hidden text-right text-sm text-muted-foreground md:block">{symbol}{formatMoney(currencyData.income)}</span>
+                <span className="figure hidden text-right text-sm text-muted-foreground md:block">{symbol}{formatMoney(currencyData.outcome)}</span>
+                <span className={cn("figure hidden text-right text-base font-medium md:block", isPositive ? "text-foreground" : "text-destructive")}>
+                  {isPositive ? "+" : "−"}{symbol}{formatMoney(balance)}
+                </span>
+                <span className="hidden size-8 place-items-center rounded-full border border-border text-muted-foreground transition-all duration-300 group-hover:translate-x-0.5 group-hover:border-foreground/30 group-hover:text-foreground md:grid">
+                  <ArrowRightIcon className="size-3.5" />
+                </span>
+              </button>
+            </motion.li>
           )
         })}
+      </motion.ul>
+    </Card>
+  )
+}
+
+const FIRST_IMPORT_TILES = [
+  { code: "USD", className: "md:row-span-2", hint: "Revolut, Santander, ICBC" },
+  { code: "ARS", className: "md:col-span-2", hint: "Santander, ICBC, Mercado Pago, BBVA" },
+  { code: "AUD", className: "", hint: "CommBank, Revolut" },
+  { code: "GBP", className: "", hint: "Revolut" },
+]
+
+function FirstImport({ onPick }) {
+  return (
+    <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.4fr)] lg:gap-12">
+      <div className="flex flex-col justify-center gap-4">
+        <Eyebrow>Getting started</Eyebrow>
+        <h2 className="text-3xl font-semibold leading-[1.05] tracking-tighter md:text-4xl">
+          Nothing here yet for this period.
+        </h2>
+        <p className="max-w-[46ch] text-[15px] leading-relaxed text-muted-foreground">
+          Pick the currency of your first bank statement. MYNAB reads the file, sorts every line into a
+          category and skips duplicates if you import the same month twice.
+        </p>
       </div>
+
+      <motion.div
+        variants={listParent}
+        initial="hidden"
+        animate="show"
+        className="grid grid-cols-2 gap-3 md:grid-cols-3 md:grid-rows-2"
+      >
+        {FIRST_IMPORT_TILES.map(({ code, className, hint }, i) => (
+          <motion.button
+            key={code}
+            variants={listItem}
+            onClick={() => onPick(code)}
+            className={cn(
+              "group flex min-h-36 flex-col justify-between gap-6 rounded-[1.75rem] border border-border/70 bg-card p-5 text-left shadow-[var(--shadow-diffuse)] transition-[border-color,transform] duration-300 hover:border-foreground/25 active:scale-[0.98] md:p-6",
+              i === 0 && "col-span-2 bg-foreground text-background md:col-span-1",
+              className
+            )}
+          >
+            <span className="flex items-start justify-between">
+              <span className={cn("figure text-4xl font-medium tracking-tighter", i === 0 ? "md:text-6xl" : "")}>
+                {getCurrencySymbol(code)}
+              </span>
+              <span
+                className={cn(
+                  "grid size-8 place-items-center rounded-full border transition-transform duration-300 group-hover:-translate-y-0.5",
+                  i === 0 ? "border-background/20" : "border-border text-muted-foreground"
+                )}
+              >
+                <UploadSimpleIcon className="size-3.5" />
+              </span>
+            </span>
+            <span className="flex flex-col gap-0.5">
+              <span className="text-[15px] font-semibold tracking-tight">{code}</span>
+              <span className={cn("text-xs", i === 0 ? "text-background/60" : "text-muted-foreground")}>{hint}</span>
+            </span>
+          </motion.button>
+        ))}
+      </motion.div>
     </div>
   )
 }

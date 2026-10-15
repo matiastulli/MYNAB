@@ -1,15 +1,20 @@
-
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FinancialValue } from "@/components/ui/financial-value";
+import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { FinancialValue, formatMoney } from "@/components/ui/financial-value";
+import { Segmented } from "@/components/ui/segmented";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
-import { getCurrencyName } from "@/lib/currencyUtils";
+import { getCurrencySymbol } from "@/lib/currencyUtils";
 import { parseDatePreservingDay, toDateOnlyISOString } from "@/lib/dateUtils";
+import { snappy } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 import { api } from "@/services/api";
 import {
-  ArrowDownIcon, ArrowUpIcon, BarChart2Icon, BarChartIcon, CalendarIcon,
-  CircleDollarSignIcon, FilterIcon, SearchIcon, TrashIcon
-} from "lucide-react";
+  ArrowDownLeftIcon, ArrowUpRightIcon, ArrowsDownUpIcon, DownloadSimpleIcon, ListBulletsIcon,
+  MagnifyingGlassIcon, RowsIcon, SortAscendingIcon, SortDescendingIcon, TrashIcon, XIcon
+} from "@phosphor-icons/react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
 export default function ActivityList({
@@ -29,6 +34,9 @@ export default function ActivityList({
   const [groupByDate, setGroupByDate] = useState(true);
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportError, setExportError] = useState(null);
+  const [deleteError, setDeleteError] = useState(null);
 
   useEffect(() => {
     // Apply filtering and sorting
@@ -65,10 +73,6 @@ export default function ActivityList({
     }
   };
 
-  const toggleGroupByDate = () => {
-    setGroupByDate(!groupByDate);
-  };
-
   const groupedEntries = () => {
     if (!groupByDate) return { ungrouped: filteredEntries };
 
@@ -93,12 +97,12 @@ export default function ActivityList({
   };
 
   const handleExportXLSX = async () => {
+    setExportError(null);
+    setIsExporting(true);
     try {
-      // Build query parameters manually
       const params = new URLSearchParams();
       params.append('currency', currency);
 
-      // Add date range parameters if available
       if (dateRange) {
         if (dateRange.startDate) {
           params.append('start_date', toDateOnlyISOString(dateRange.startDate));
@@ -108,48 +112,37 @@ export default function ActivityList({
         }
       }
 
-      // Add pagination parameters to export all data
-      params.append('limit', '10000'); // Large limit to get all transactions
+      // Large limit so the export covers every transaction in range
+      params.append('limit', '10000');
       params.append('offset', '0');
 
-      // Build the URL with query parameters
-      const url = `/budget/export-xlsx?${params.toString()}`;
-
-      const response = await api.get(url);
+      const response = await api.get(`/budget/export-xlsx?${params.toString()}`);
 
       if (response.error) {
         console.error("Export error:", response.error);
-        alert("Failed to download transactions: " + response.error);
+        setExportError(`Export failed: ${response.error}`);
         return;
       }
 
-      // Check if we have file data
       if (!response.file_data) {
-        alert(response.message || "No transactions found for export");
+        setExportError(response.message || "No transactions found for export");
         return;
       }
 
-      // Use filename from backend response
       const filename = response.filename || "transactions.xlsx";
-      
-      // Create data URL and download directly
       const dataUrl = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${response.file_data}`;
-      
+
       const downloadLink = document.createElement("a");
       downloadLink.href = dataUrl;
       downloadLink.download = filename;
       document.body.appendChild(downloadLink);
       downloadLink.click();
       document.body.removeChild(downloadLink);
-      
-      // Show success message with file info
-      if (response.record_count) {
-        console.log(`Successfully exported ${response.record_count} transactions to ${filename}`);
-      }
-      
     } catch (err) {
       console.error("Export failed:", err);
-      alert("Failed to download transactions. Please try again.");
+      setExportError("Export failed. Please try again.");
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -169,17 +162,19 @@ export default function ActivityList({
     setDeletingId(id);
     setConfirmDelete(null);
     setShowDeleteConfirm(false);
+    setDeleteError(null);
 
     try {
       const response = await api.delete(`/budget/entry/${id}`);
       if (!response.error) {
-        // Notify parent component to refresh data
         onTransactionDeleted();
       } else {
         console.error("Error deleting entry:", response.error);
+        setDeleteError("That transaction could not be deleted. Try again.");
       }
     } catch (error) {
       console.error("Failed to delete entry:", error);
+      setDeleteError("That transaction could not be deleted. Try again.");
     } finally {
       setDeletingId(null);
     }
@@ -187,368 +182,271 @@ export default function ActivityList({
 
   if (entries.length === 0) {
     return (
-      <Card className="border border-[var(--glass-border)] bg-[var(--glass-bg-heavy)] backdrop-blur-xl shadow-[var(--glass-shadow)] rounded-[var(--glass-radius-sm)]">
-        <CardContent className="p-8 sm:p-16 text-center">
-          <div className="flex flex-col items-center gap-6 max-w-md mx-auto">
-            {/* Enhanced Icon with gradient background */}
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--info)/0.2)] to-[hsl(var(--accent)/0.2)] rounded-full blur-xl"></div>
-              <div className="relative p-6 rounded-full bg-gradient-to-br from-[hsl(var(--muted))] to-[hsl(var(--muted)/0.5)] text-[hsl(var(--muted-foreground))] border border-[hsl(var(--border)/0.5)]">
-                <FilterIcon className="h-8 w-8" />
-              </div>
-            </div>
-
-            {/* Enhanced messaging */}
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-xl font-semibold mb-2 text-[hsl(var(--foreground))]">
-                  No {currency} transactions found
-                </h3>
-                <p className="text-sm text-[hsl(var(--muted-foreground))]">
-                  for the period: <span className="font-medium text-[hsl(var(--foreground))]">{dateRangeFormatted}</span>
-                </p>
-              </div>
-
-              {/* Enhanced currency filter notice */}
-              <div className="bg-gradient-to-r from-[hsl(var(--info-bg)/0.5)] to-[hsl(var(--info-bg)/0.3)] border border-[hsl(var(--info-fg)/0.2)] rounded-lg p-4 space-y-3">
-                <div className="flex items-center justify-center gap-2 text-[hsl(var(--info-fg))]">
-                  <CircleDollarSignIcon className="h-5 w-5 flex-shrink-0" />
-                  <span className="font-medium">Currency Filter Active</span>
-                </div>
-                <p className="text-sm text-[hsl(var(--info-fg)/0.8)] leading-relaxed">
-                  You're currently viewing <span className="font-semibold bg-[hsl(var(--info-fg)/0.1)] px-1.5 py-0.5 rounded text-[hsl(var(--info-fg))]">{currency}</span> transactions only.
-                </p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
+      <Card className="overflow-hidden">
+        {isLoading ? (
+          <ActivitySkeleton />
+        ) : (
+          <EmptyState icon={ListBulletsIcon} title={`No ${currency} transactions in ${dateRangeFormatted}`}>
+            Try a wider period from the date at the top, switch currency, or import a statement from the
+            Import tab.
+          </EmptyState>
+        )}
       </Card>
     );
   }
 
-
-  // Download all transactions as .xlsx
+  const symbol = getCurrencySymbol(currency);
+  let rowIndex = 0;
 
   return (
-    <Card className="border border-[var(--glass-border)] bg-[var(--glass-bg-heavy)] backdrop-blur-xl shadow-[var(--glass-shadow)] rounded-[var(--glass-radius-sm)] overflow-hidden">
-      <CardHeader className="pb-4">
-        <div className="flex flex-col gap-3">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-accent/20 to-accent/10 rounded-lg blur-sm"></div>
-                <div className="relative p-2.5 rounded-lg bg-gradient-to-br from-accent/15 to-accent/5 border border-accent/20">
-                  <BarChartIcon className="h-5 w-5 text-accent" />
-                </div>
-              </div>
-              <div>
-                <CardTitle className="text-xl font-semibold text-foreground">
-                  Transaction Activity
-                </CardTitle>
-                <p className="text-sm text-muted-foreground mt-0.5">
-                  {pagination.total} transaction{pagination.total !== 1 ? 's' : ''}
-                  {searchTerm && filteredEntries.length !== entries.length && (
-                    <span className="text-xs opacity-70"> ({filteredEntries.length} matching search)</span>
-                  )}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 bg-gradient-to-r from-accent/10 to-accent/5 text-accent px-4 py-2 rounded-full border border-accent/20 backdrop-blur-sm">
-              <CircleDollarSignIcon className="h-4 w-4" />
-              <span className="text-sm font-medium">{currency}</span>
-              <span className="text-xs opacity-75">({getCurrencyName(currency)})</span>
-            </div>
+    <Card className="relative overflow-clip">
+      {/* Toolbar */}
+      <div className="flex flex-col gap-4 border-b border-border/70 px-5 pb-5 pt-6 md:px-8">
+        <div className="flex items-end justify-between gap-4">
+          <div className="flex flex-col gap-1">
+            <h2 className="text-xl font-semibold tracking-tight">Activity</h2>
+            <p className="text-[13px] text-muted-foreground">
+              <span className="figure">{pagination.total}</span> transaction{pagination.total !== 1 ? 's' : ''}
+              {searchTerm && filteredEntries.length !== entries.length && (
+                <span> · <span className="figure">{filteredEntries.length}</span> match on this page</span>
+              )}
+            </p>
           </div>
-          {/* Enhanced Controls Section */}
-          <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full">
-            {/* Search Input */}
-            <div className="relative flex-1 sm:min-w-[280px]">
-              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <input
-                type="search"
-                placeholder="Search transactions by description..."
-                className="w-full h-10 py-2 pl-10 pr-4 text-sm bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-[var(--glass-radius-sm)] focus:border-accent/50 focus:outline-none focus:ring-2 focus:ring-accent/20 text-foreground placeholder:text-muted-foreground transition-all duration-200"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-              {searchTerm && (
-                <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <button
-                    onClick={() => setSearchTerm("")}
-                    className="text-muted-foreground hover:text-foreground transition-colors"
-                    title="Clear search"
-                  >
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
+          <Button type="button" variant="outline" size="sm" onClick={handleExportXLSX} loading={isExporting} loadingText="Exporting" title="Download all transactions as .xlsx">
+            <DownloadSimpleIcon />
+            <span className="hidden sm:inline">Export .xlsx</span>
+          </Button>
+        </div>
+
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="relative flex-1">
+            <MagnifyingGlassIcon className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="search"
+              aria-label="Search transactions"
+              placeholder="Search by description"
+              className="h-10 w-full rounded-full border border-input bg-background/60 pl-10 pr-10 text-sm transition-[border-color,box-shadow] duration-300 hover:border-foreground/25 focus-visible:border-accent focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/12"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm("")}
+                className="absolute right-2 top-1/2 grid size-7 -translate-y-1/2 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                aria-label="Clear search"
+              >
+                <XIcon className="size-3.5" />
+              </button>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button
+              variant={sortDirection ? "secondary" : "ghost"}
+              size="sm"
+              onClick={toggleSortDirection}
+              className={cn("border", sortDirection ? "border-border" : "border-transparent")}
+              aria-label={
+                sortDirection === 'asc' ? "Sorted by amount, low to high" :
+                  sortDirection === 'desc' ? "Sorted by amount, high to low" :
+                    "Sort by amount"
+              }
+            >
+              {sortDirection === 'asc' ? <SortAscendingIcon /> : sortDirection === 'desc' ? <SortDescendingIcon /> : <ArrowsDownUpIcon />}
+              <span>{sortDirection === 'asc' ? "Low first" : sortDirection === 'desc' ? "High first" : "Amount"}</span>
+            </Button>
+            <Segmented
+              size="sm"
+              ariaLabel="Grouping"
+              value={groupByDate ? "day" : "flat"}
+              onChange={(v) => setGroupByDate(v === "day")}
+              options={[
+                { value: "day", label: "By day", icon: RowsIcon },
+                { value: "flat", label: "Flat", icon: ListBulletsIcon },
+              ]}
+            />
+          </div>
+        </div>
+
+        {(exportError || deleteError) && (
+          <p role="alert" className="text-[13px] font-medium text-destructive">{exportError || deleteError}</p>
+        )}
+      </div>
+
+      {/* Refresh overlay */}
+      {isLoading && (
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-0.5 overflow-hidden">
+          <div className="h-full w-1/3 animate-shimmer bg-accent" />
+        </div>
+      )}
+
+      <div className={cn("transition-opacity duration-300", isLoading && "opacity-60")}>
+        {Object.keys(groups).map(dateGroup => {
+          const entriesForGroup = groups[dateGroup];
+          if (!entriesForGroup || entriesForGroup.length === 0) return null;
+
+          const dayNet = entriesForGroup.reduce(
+            (sum, e) => sum + (e.type === "income" ? e.amount : -e.amount),
+            0
+          );
+
+          return (
+            <section key={dateGroup}>
+              {groupByDate && dateGroup !== 'ungrouped' && (
+                <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border/70 bg-card/90 px-5 py-2.5 backdrop-blur-md md:px-8">
+                  <span className="text-[13px] font-semibold tracking-tight">{formatDisplayDate(dateGroup)}</span>
+                  <span className="flex items-center gap-3 text-[11px] text-muted-foreground">
+                    <span>{entriesForGroup.length} item{entriesForGroup.length !== 1 ? 's' : ''}</span>
+                    <span className={cn("figure font-medium", dayNet >= 0 ? "text-positive" : "text-foreground")}>
+                      {dayNet >= 0 ? "+" : "−"}{symbol}{formatMoney(dayNet)}
+                    </span>
+                  </span>
                 </div>
               )}
-            </div>
-            
-            {/* Control Buttons */}
-            <div className="flex items-center gap-2 bg-[var(--glass-bg)] border border-[var(--glass-border)] backdrop-blur-xl rounded-[var(--glass-radius-sm)] p-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={toggleSortDirection}
-                title={
-                  sortDirection === 'asc' ? "Sorting: Low to High" :
-                    sortDirection === 'desc' ? "Sorting: High to Low" :
-                      "Sort by Amount"
-                }
-                className={`h-8 px-3 rounded-md transition-all duration-200 ${sortDirection ? 'bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))] shadow-sm' :
-                  'text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--background)/0.5)] hover:text-[hsl(var(--foreground))]'
-                  }`}
-              >
-                {sortDirection === 'asc' ? (
-                  <ArrowUpIcon className="h-4 w-4" />
-                ) : sortDirection === 'desc' ? (
-                  <ArrowDownIcon className="h-4 w-4" />
-                ) : (
-                  <span className="text-xs font-medium">Sort</span>
-                )}
-              </Button>
-              
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={toggleGroupByDate}
-                title={groupByDate ? "Showing grouped by date" : "Showing all transactions"}
-                className={`h-8 px-3 rounded-md transition-all duration-200 ${groupByDate ? 'bg-accent text-accent-foreground shadow-sm' :
-                  'text-muted-foreground hover:bg-background/50 hover:text-foreground'}`}
-              >
-                {groupByDate ? (
-                  <BarChart2Icon className="h-4 w-4" />
-                ) : (
-                  <BarChartIcon className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
 
-            {/* Export Button */}
+              <ul className="divide-y divide-border/60">
+                {entriesForGroup.map((entry) => {
+                  const i = rowIndex++;
+                  const isIncome = entry.type === "income";
+                  const confirming = showDeleteConfirm && confirmDelete === entry.id;
+                  return (
+                    <li
+                      key={entry.id}
+                      className={cn("group flex items-center gap-4 px-5 py-4 transition-colors duration-200 hover:bg-muted/45 md:px-8", i < 24 && "cascade")}
+                      style={{ "--i": i }}
+                    >
+                      <span
+                        className={cn(
+                          "grid size-10 shrink-0 place-items-center rounded-2xl",
+                          isIncome ? "bg-accent-soft text-accent" : "bg-muted text-muted-foreground"
+                        )}
+                      >
+                        {isIncome ? <ArrowDownLeftIcon className="size-4" weight="bold" /> : <ArrowUpRightIcon className="size-4" weight="bold" />}
+                      </span>
+
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[15px] font-medium leading-snug">
+                          {entry.description || <span className="text-muted-foreground">No description</span>}
+                        </p>
+                        <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+                          {!groupByDate && (
+                            <span className="figure">
+                              {parseDatePreservingDay(entry.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                            </span>
+                          )}
+                          {entry.source && (
+                            <span className="capitalize">{entry.source.replace('_', ' ')}</span>
+                          )}
+                          {entry.currency && entry.currency !== currency && (
+                            <span className="rounded-full bg-muted px-1.5 py-px font-medium text-foreground">{entry.currency}</span>
+                          )}
+                          {entry.reference_id && (
+                            <span className="figure max-w-[160px] truncate opacity-75" title={entry.reference_id}>
+                              #{entry.reference_id}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <FinancialValue
+                        value={entry.amount}
+                        type={entry.type}
+                        currency={entry.currency}
+                        showSign={true}
+                        size="md"
+                        className="shrink-0"
+                      />
+
+                      <div className="relative flex w-8 shrink-0 justify-end">
+                        <AnimatePresence initial={false}>
+                          {confirming && (
+                            <motion.div
+                              initial={{ opacity: 0, scale: 0.92, x: 8 }}
+                              animate={{ opacity: 1, scale: 1, x: 0 }}
+                              exit={{ opacity: 0, scale: 0.92, x: 8 }}
+                              transition={snappy}
+                              className="absolute right-0 top-1/2 z-10 flex -translate-y-1/2 items-center gap-1 rounded-full border border-border bg-popover p-1 shadow-[var(--shadow-lift)]"
+                            >
+                              <Button variant="ghost" size="xs" onClick={() => setConfirmDelete(null)}>
+                                Keep
+                              </Button>
+                              <Button variant="destructive" size="xs" onClick={() => handleDelete(entry.id)}>
+                                Delete
+                              </Button>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                        <Button
+                          variant="destructive-ghost"
+                          size="icon-sm"
+                          className={cn("opacity-60 md:opacity-0 md:group-hover:opacity-100 md:focus-visible:opacity-100", confirming && "invisible")}
+                          onClick={() => handleDeleteConfirm(entry.id)}
+                          disabled={deletingId === entry.id}
+                          aria-label="Delete transaction"
+                        >
+                          {deletingId === entry.id ? <Spinner size="xs" /> : <TrashIcon />}
+                        </Button>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          );
+        })}
+      </div>
+
+      {pagination.total > pagination.limit && (
+        <div className="flex items-center justify-between gap-3 border-t border-border/70 px-5 py-4 md:px-8">
+          <p className="figure text-xs text-muted-foreground">
+            {pagination.offset + 1}–{Math.min(pagination.offset + pagination.limit, pagination.total)} of {pagination.total}
+          </p>
+          <div className="flex items-center gap-2">
             <Button
-              type="button"
               variant="outline"
               size="sm"
-              className="flex items-center gap-2 bg-background/50 backdrop-blur-sm border-border/50 hover:bg-accent/5 hover:border-accent/30 transition-all duration-200"
-              onClick={handleExportXLSX}
-              title="Download all transactions as .xlsx"
+              onClick={() => onPaginationChange({ ...pagination, offset: pagination.offset - pagination.limit })}
+              disabled={pagination.offset === 0}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
-              </svg>
-              <span className="hidden sm:inline font-medium">Export</span>
+              Previous
+            </Button>
+            <span className="figure hidden px-1 text-xs text-muted-foreground sm:inline">
+              {Math.floor(pagination.offset / pagination.limit) + 1} / {Math.ceil(pagination.total / pagination.limit)}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onPaginationChange({ ...pagination, offset: pagination.offset + pagination.limit })}
+              disabled={pagination.offset + pagination.limit >= pagination.total}
+            >
+              Next
             </Button>
           </div>
         </div>
-      </CardHeader>
-      <CardContent className="p-0">
-        {isLoading && entries.length > 0 && (
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-foreground/5 to-transparent animate-shimmer z-10"></div>
-        )}
-
-        {isLoading && entries.length === 0 && (
-          <div className="py-12 flex flex-col items-center justify-center">
-            <Spinner size="lg" className="mb-4" />
-            <p className="text-muted-foreground">Loading transactions...</p>
-          </div>
-        )}
-
-        <div className="divide-y divide-border">
-          {Object.keys(groups).map(dateGroup => {
-            const entriesForGroup = groups[dateGroup];
-
-            // Skip rendering if no entries (shouldn't happen, but just in case)
-            if (!entriesForGroup || entriesForGroup.length === 0) return null;
-
-            return (
-              <div key={dateGroup} className="divide-y divide-border/50">
-                {/* Enhanced Date header */}
-                {groupByDate && dateGroup !== 'ungrouped' && (
-                  <div className="sticky top-0 z-10 bg-[var(--glass-bg)] backdrop-blur-2xl border-b border-[var(--glass-border)] px-4 py-2.5 text-sm font-medium text-[hsl(var(--foreground))]">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-[hsl(var(--accent))] rounded-full"></div>
-                        <CalendarIcon className="h-4 w-4 text-[hsl(var(--accent)/0.8)]" />
-                        <span className="font-semibold">{formatDisplayDate(dateGroup)}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-[hsl(var(--muted-foreground))] bg-[hsl(var(--background)/0.5)] px-2 py-1 rounded-full">
-                          {entriesForGroup.length} transaction{entriesForGroup.length !== 1 ? 's' : ''}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Enhanced transaction entries */}
-                {entriesForGroup.map((entry) => (
-                  <div
-                    key={entry.id}
-                    className="group flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-5 hover:bg-gradient-to-r hover:from-[hsl(var(--accent)/0.05)] hover:to-[hsl(var(--accent)/0.03)] transition-all duration-200 border-l-2 border-l-transparent hover:border-l-[hsl(var(--accent)/0.3)]"
-                  >
-                    <div className="flex items-start gap-4 w-full sm:w-auto">
-                      <div
-                        className={`p-3 rounded-xl flex-shrink-0 transition-all duration-200 group-hover:scale-105 ${entry.type === "income"
-                          ? "bg-gradient-to-br from-[hsl(var(--positive)/0.1)] to-[hsl(var(--positive)/0.05)] text-[hsl(var(--positive))] border border-[hsl(var(--positive)/0.2)]"
-                          : "bg-gradient-to-br from-[hsl(var(--destructive)/0.1)] to-[hsl(var(--destructive)/0.05)] text-[hsl(var(--destructive))] border border-[hsl(var(--destructive)/0.2)]"
-                          }`}
-                      >
-                        <CircleDollarSignIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center justify-between sm:justify-start gap-2 sm:gap-1">
-                          <p className="font-semibold text-foreground mr-auto line-clamp-1 group-hover:text-accent transition-colors duration-200">
-                            {entry.description || "No description"}
-                          </p>
-                          {/* Mobile-only amount display */}
-                          <div className="sm:hidden">
-                            <FinancialValue
-                              value={entry.amount}
-                              type={entry.type}
-                              currency={entry.currency}
-                              showSign={true}
-                              size="md"
-                            />
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground mt-2">
-                          {!groupByDate && (
-                            <div className="flex items-center gap-1.5">
-                              <CalendarIcon className="h-3.5 w-3.5 opacity-70" />
-                              <span className="text-[hsl(var(--foreground))]">
-                                {(() => {
-                                  const entryDate = parseDatePreservingDay(entry.date);
-                                  return entryDate.toLocaleDateString("en-US", {
-                                    month: "short",
-                                    day: "numeric",
-                                    year: "numeric",
-                                  });
-                                })()}
-                              </span>
-                            </div>
-                          )}
-                          {entry.source && (
-                            <div className="flex items-center gap-1">
-                              {!groupByDate && <span className="hidden xs:inline text-muted-foreground/50">•</span>}
-                              <span className="capitalize bg-[hsl(var(--muted)/0.5)] px-2 py-0.5 rounded-full text-xs">
-                                {entry.source.replace('_', ' ')}
-                              </span>
-                            </div>
-                          )}
-                          {entry.currency && entry.currency !== currency && (
-                            <div className="flex items-center gap-1">
-                              <span className="hidden xs:inline text-[hsl(var(--muted-foreground)/0.5)]">•</span>
-                              <span className="bg-[hsl(var(--accent)/0.1)] text-[hsl(var(--accent))] px-2 py-0.5 rounded-full text-xs font-medium">
-                                {entry.currency}
-                              </span>
-                            </div>
-                          )}
-                          {entry.reference_id && (
-                            <div className="flex items-center gap-1">
-                              <span className="hidden xs:inline text-muted-foreground/50">•</span>
-                              <span className="italic text-xs opacity-70 bg-muted/30 px-2 py-0.5 rounded-full max-w-[140px] truncate">
-                                ref: {entry.reference_id.substring(0, 12)}
-                                {entry.reference_id.length > 12 ? '...' : ''}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto mt-4 sm:mt-0">
-                      {/* Desktop-only amount display */}
-                      <div className="hidden sm:block">
-                        <FinancialValue
-                          value={entry.amount}
-                          type={entry.type}
-                          currency={entry.currency}
-                          showSign={true}
-                          size="lg"
-                        />
-                      </div>
-
-                      {/* Enhanced Delete button with confirmation */}
-                      {showDeleteConfirm && confirmDelete === entry.id ? (
-                        <div className="flex items-center gap-2 ml-auto bg-[var(--glass-bg-heavy)] backdrop-blur-2xl border border-[var(--glass-border)] rounded-[var(--glass-radius-sm)] p-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setConfirmDelete(null)}
-                            className="h-8 px-3 text-xs hover:bg-muted transition-all duration-200"
-                          >
-                            Cancel
-                          </Button>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => handleDelete(entry.id)}
-                            disabled={deletingId === entry.id}
-                            className="h-8 px-3 text-xs bg-red-600 hover:bg-red-700 transition-all duration-200"
-                          >
-                            {deletingId === entry.id ? (
-                              <Spinner size="xs" />
-                            ) : (
-                              "Delete"
-                            )}
-                          </Button>
-                        </div>
-                      ) : (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="ml-auto sm:ml-4 hover:bg-[hsl(var(--destructive)/0.1)] hover:text-[hsl(var(--destructive))] h-8 w-8 p-0 rounded-lg transition-all duration-200 group-hover:opacity-100 opacity-0 sm:opacity-100"
-                          onClick={() => handleDeleteConfirm(entry.id)}
-                          disabled={deletingId === entry.id}
-                          title="Delete transaction"
-                        >
-                          {deletingId === entry.id ? (
-                            <Spinner size="xs" />
-                          ) : (
-                            <TrashIcon className="h-4 w-4" />
-                          )}
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            );
-          })}
-        </div>
-
-        {pagination.total > pagination.limit && (
-          <div className="flex items-center justify-between px-4 py-3 bg-[var(--glass-bg)] backdrop-blur-xl border-t border-[var(--glass-border)]">
-            <p className="text-sm text-muted-foreground">
-              {pagination.offset + 1}–{Math.min(pagination.offset + pagination.limit, pagination.total)} of {pagination.total}
-            </p>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onPaginationChange({ ...pagination, offset: pagination.offset - pagination.limit })}
-                disabled={pagination.offset === 0}
-                className="h-8 px-3 text-sm"
-              >
-                Previous
-              </Button>
-              <span className="text-sm text-muted-foreground px-1">
-                Page {Math.floor(pagination.offset / pagination.limit) + 1} of {Math.ceil(pagination.total / pagination.limit)}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onPaginationChange({ ...pagination, offset: pagination.offset + pagination.limit })}
-                disabled={pagination.offset + pagination.limit >= pagination.total}
-                className="h-8 px-3 text-sm"
-              >
-                Next
-              </Button>
-            </div>
-          </div>
-        )}
-      </CardContent>
+      )}
     </Card>
+  );
+}
+
+function ActivitySkeleton() {
+  return (
+    <div>
+      <div className="flex flex-col gap-4 border-b border-border/70 px-5 pb-5 pt-6 md:px-8">
+        <Skeleton className="h-6 w-28" />
+        <Skeleton className="h-10 w-full rounded-full" />
+      </div>
+      <div className="divide-y divide-border/60">
+        {[0, 1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className="flex items-center gap-4 px-5 py-4 md:px-8">
+            <Skeleton className="size-10 rounded-2xl" />
+            <div className="flex flex-1 flex-col gap-2">
+              <Skeleton className="h-4" style={{ width: `${62 - i * 6}%` }} />
+              <Skeleton className="h-3 w-24" />
+            </div>
+            <Skeleton className="h-4 w-20" />
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

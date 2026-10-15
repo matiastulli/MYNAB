@@ -10,7 +10,7 @@ function TabsList({ className, ...props }) {
   return (
     <TabsPrimitive.List
       data-slot="tabs-list"
-      className={cn("flex items-center justify-center p-1.5 text-[hsl(var(--muted-foreground))] bg-[var(--glass-bg)] backdrop-blur-2xl border border-[var(--glass-border)] shadow-[var(--glass-shadow)] rounded-[var(--glass-radius)]", className)}
+      className={cn("inline-flex items-center gap-0.5 rounded-full border border-border bg-muted/70 p-1 text-muted-foreground", className)}
       {...props}
     />
   )
@@ -21,9 +21,8 @@ function TabsTrigger({ className, ...props }) {
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
       className={cn(
-        "inline-flex items-center justify-center whitespace-nowrap rounded-lg px-4 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
-        "data-[state=active]:bg-[hsl(var(--accent))] data-[state=active]:text-[hsl(var(--accent-foreground))] data-[state=active]:shadow-md data-[state=active]:font-semibold",
-        "hover:bg-[hsl(var(--background)/0.5)] hover:text-[hsl(var(--foreground))]",
+        "relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full px-4 h-9 text-[13px] font-medium transition-colors duration-200",
+        "hover:text-foreground data-[state=active]:text-foreground disabled:pointer-events-none disabled:opacity-50",
         className,
       )}
       {...props}
@@ -35,14 +34,10 @@ function TabsContent({ className, ...props }) {
   return (
     <TabsPrimitive.Content
       data-slot="tabs-content"
-      className={cn(
-        "mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-        className,
-      )}
+      className={cn("focus-visible:outline-none", className)}
       {...props}
     />
   )
 }
 
 export { Tabs, TabsContent, TabsList, TabsTrigger }
-

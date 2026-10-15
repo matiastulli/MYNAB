@@ -1,10 +1,14 @@
+import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { isDarkModeActive, toggleTheme } from "@/lib/themeUtils";
+import { FieldError, FieldHint, Label } from "@/components/ui/label";
+import { Segmented } from "@/components/ui/segmented";
+import { fadeUp } from "@/lib/motion";
+import { getCurrentTheme, setTheme } from "@/lib/themeUtils";
 import { api } from "@/services/api";
-import { AlertTriangleIcon, CameraIcon, CheckCircleIcon, IdCardIcon, LogOutIcon, MoonIcon, SunIcon, UserIcon, XIcon } from "lucide-react";
+import { CameraIcon, CheckIcon, DesktopIcon, MoonIcon, SignOutIcon, SunIcon, WarningCircleIcon, XIcon } from "@phosphor-icons/react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
 export default function ProfileDialog({
@@ -21,7 +25,8 @@ export default function ProfileDialog({
   });
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [updateError, setUpdateError] = useState(null);
+  const [theme, setThemeState] = useState("system");
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [avatarError, setAvatarError] = useState(null);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
@@ -39,7 +44,7 @@ export default function ProfileDialog({
   }, [userData]);
 
   useEffect(() => {
-    const update = () => setIsDarkMode(isDarkModeActive());
+    const update = () => setThemeState(getCurrentTheme());
     update();
     window.addEventListener('themechange', update);
     return () => window.removeEventListener('themechange', update);
@@ -80,6 +85,7 @@ export default function ProfileDialog({
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
     setIsUpdating(true);
+    setUpdateError(null);
     try {
       if (avatarPreview) {
         setIsUploadingAvatar(true);
@@ -87,6 +93,7 @@ export default function ProfileDialog({
         setIsUploadingAvatar(false);
         if (avatarRes.error) {
           console.error('Avatar upload failed:', avatarRes.error);
+          setUpdateError('The photo could not be uploaded. Try a smaller image.');
           return;
         }
       }
@@ -95,9 +102,12 @@ export default function ProfileDialog({
         setUpdateSuccess(true);
         if (onProfileUpdated) onProfileUpdated();
         setTimeout(() => { onOpenChange(false); setUpdateSuccess(false); }, 1500);
+      } else {
+        setUpdateError('Your changes could not be saved. Try again.');
       }
     } catch (error) {
       console.error('Error updating profile:', error);
+      setUpdateError('Your changes could not be saved. Try again.');
     } finally {
       setIsUpdating(false);
       setIsUploadingAvatar(false);
@@ -110,182 +120,134 @@ export default function ProfileDialog({
   };
 
   const missingCuit = !userData?.national_id || userData?.national_id === "";
-  const displayName = [userData?.name, userData?.last_name].filter(Boolean).join(" ") || "Your Profile";
+  const displayName = [userData?.name, userData?.last_name].filter(Boolean).join(" ") || "Your profile";
+  const avatarUser = avatarPreview ? { ...userData, avatar_data: avatarPreview } : userData;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="bg-[var(--glass-bg-heavy)] backdrop-blur-2xl border border-[var(--glass-border)] shadow-[var(--glass-shadow-heavy)] rounded-[var(--glass-radius)] max-w-md p-0 gap-0 overflow-hidden"
+        className="max-w-md gap-0 overflow-hidden p-0"
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
-        <DialogTitle className="sr-only">Profile Settings</DialogTitle>
-
-        {/* Close */}
         <button
           onClick={() => onOpenChange(false)}
-          className="absolute top-3 right-3 p-1.5 rounded-lg text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--muted))] transition-colors z-10"
+          className="absolute right-4 top-4 z-10 grid size-8 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           aria-label="Close"
         >
-          <XIcon className="h-4 w-4" />
+          <XIcon className="size-4" />
         </button>
 
-        {/* Avatar + identity */}
-        <div className="flex flex-col items-center gap-3 px-6 pt-8 pb-6 bg-gradient-to-b from-[hsl(var(--accent)/0.08)] to-transparent border-b border-[var(--glass-border)]">
-          {/* Hidden file input */}
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            id="avatar-upload"
-            onChange={handleAvatarSelect}
-          />
-
-          {/* Clickable avatar */}
-          <label
-            htmlFor="avatar-upload"
-            className="group/avatar relative w-16 h-16 rounded-full cursor-pointer"
-          >
-            {(avatarPreview || userData?.avatar_data) ? (
-              <img
-                src={`data:image/jpeg;base64,${avatarPreview || userData.avatar_data}`}
-                alt="avatar"
-                className="w-16 h-16 rounded-full object-cover ring-2 ring-[hsl(var(--accent)/0.25)] ring-offset-2 ring-offset-transparent"
-              />
-            ) : (
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[hsl(var(--accent))] to-[hsl(var(--chart-3))] flex items-center justify-center shadow-lg ring-2 ring-[hsl(var(--accent)/0.25)] ring-offset-2 ring-offset-transparent">
-                <UserIcon className="h-8 w-8 text-white" />
-              </div>
-            )}
-            {/* Camera overlay on hover */}
-            <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover/avatar:opacity-100 transition-opacity flex items-center justify-center">
-              <CameraIcon className="h-5 w-5 text-white" />
-            </div>
+        {/* Identity */}
+        <div className="flex items-center gap-4 border-b border-border/70 px-6 pb-6 pt-7">
+          <input type="file" accept="image/*" className="sr-only" id="avatar-upload" onChange={handleAvatarSelect} />
+          <label htmlFor="avatar-upload" className="group/avatar relative shrink-0 cursor-pointer rounded-full" aria-label="Change profile photo">
+            <Avatar user={avatarUser} className="size-16 text-lg" />
+            <span className="absolute inset-0 grid place-items-center rounded-full bg-zinc-950/45 opacity-0 transition-opacity duration-200 group-hover/avatar:opacity-100">
+              <CameraIcon className="size-5 text-white" />
+            </span>
+            <span className="absolute -bottom-0.5 -right-0.5 grid size-6 place-items-center rounded-full border-2 border-card bg-foreground text-background">
+              <CameraIcon className="size-3" weight="bold" />
+            </span>
           </label>
-
-          {avatarError && (
-            <p className="text-xs text-[hsl(var(--destructive))] mt-1">{avatarError}</p>
-          )}
-
-          <div className="text-center">
-            <p className="font-semibold text-[hsl(var(--foreground))]">{displayName}</p>
-            {userData?.email && (
-              <p className="text-xs text-[hsl(var(--muted-foreground))] mt-0.5">{userData.email}</p>
-            )}
+          <div className="min-w-0 pr-8">
+            <DialogTitle className="truncate text-lg">{displayName}</DialogTitle>
+            <DialogDescription className="mt-1 truncate">{userData?.email || "Profile settings"}</DialogDescription>
+            <FieldError className="mt-1.5">{avatarError}</FieldError>
           </div>
-          {missingCuit && (
-            <div className="flex items-start gap-2.5 w-full mt-1 px-3 py-2.5 bg-[hsl(var(--warning-bg)/0.5)] border border-[hsl(var(--warning-fg)/0.25)] rounded-[var(--glass-radius-sm)]">
-              <AlertTriangleIcon className="h-4 w-4 text-[hsl(var(--warning-fg))] mt-0.5 shrink-0" />
-              <div>
-                <p className="text-xs font-semibold text-[hsl(var(--warning-fg))]">CUIT required</p>
-                <p className="text-xs text-[hsl(var(--warning-fg)/0.8)] leading-snug">
-                  Needed to filter out personal transactions from your budget.
-                </p>
-              </div>
-            </div>
-          )}
         </div>
 
-        {/* Form */}
-        <div className="px-6 py-5">
-          {updateSuccess ? (
-            <div className="flex flex-col items-center py-10 gap-3">
-              <div className="p-4 bg-[hsl(var(--positive)/0.1)] border border-[hsl(var(--positive)/0.2)] rounded-full">
-                <CheckCircleIcon className="h-8 w-8 text-[hsl(var(--positive))]" />
-              </div>
-              <div className="text-center">
-                <p className="font-semibold text-[hsl(var(--foreground))]">Profile updated!</p>
-                <p className="text-sm text-[hsl(var(--muted-foreground))]">Your changes have been saved.</p>
-              </div>
-            </div>
-          ) : (
-            <form onSubmit={handleProfileUpdate} className="space-y-4">
-              {/* Fields grouped in glass card */}
-              <div className="rounded-[var(--glass-radius-sm)] border border-[var(--glass-border)] bg-[hsl(var(--background)/0.4)] divide-y divide-[var(--glass-border)]">
-                {/* First name */}
-                <div className="px-4 py-3 space-y-1.5">
-                  <Label htmlFor="name" className="text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider">
-                    First Name
-                  </Label>
-                  <Input
-                    id="name"
-                    value={profileForm.name}
-                    onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
-                    className="h-9 border-0 bg-transparent px-0 text-sm text-[hsl(var(--foreground))] placeholder:text-[hsl(var(--muted-foreground)/0.5)] focus-visible:ring-0 focus-visible:ring-offset-0"
-                    placeholder="Enter your first name"
-                    required
-                  />
+        <div className="px-6 py-6">
+          <AnimatePresence mode="wait" initial={false}>
+            {updateSuccess ? (
+              <motion.div key="ok" {...fadeUp} className="flex items-center gap-4 py-10">
+                <span className="grid size-12 place-items-center rounded-2xl bg-accent-soft text-accent">
+                  <CheckIcon className="size-5" weight="bold" />
+                </span>
+                <div>
+                  <p className="font-semibold tracking-tight">Profile saved</p>
+                  <p className="text-sm text-muted-foreground">Your changes are live.</p>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.form key="form" {...fadeUp} onSubmit={handleProfileUpdate} className="flex flex-col gap-5">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="name">First name</Label>
+                    <Input
+                      id="name"
+                      value={profileForm.name}
+                      onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
+                      placeholder="Valentina"
+                      required
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="last_name">Last name</Label>
+                    <Input
+                      id="last_name"
+                      value={profileForm.last_name}
+                      onChange={(e) => setProfileForm({ ...profileForm, last_name: e.target.value })}
+                      placeholder="Echeverría"
+                    />
+                  </div>
                 </div>
 
-                {/* Last name */}
-                <div className="px-4 py-3 space-y-1.5">
-                  <Label htmlFor="last_name" className="text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider">
-                    Last Name
-                  </Label>
-                  <Input
-                    id="last_name"
-                    value={profileForm.last_name}
-                    onChange={(e) => setProfileForm({ ...profileForm, last_name: e.target.value })}
-                    className="h-9 border-0 bg-transparent px-0 text-sm text-[hsl(var(--foreground))] placeholder:text-[hsl(var(--muted-foreground)/0.5)] focus-visible:ring-0 focus-visible:ring-offset-0"
-                    placeholder="Enter your last name"
-                  />
-                </div>
-
-                {/* CUIT */}
-                <div className="px-4 py-3 space-y-1.5">
-                  <Label htmlFor="national_id" className="text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider flex items-center gap-1.5">
-                    <IdCardIcon className="h-3.5 w-3.5" />
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="national_id">
                     CUIT
-                    {missingCuit && <AlertTriangleIcon className="h-3.5 w-3.5 text-[hsl(var(--warning-fg))]" />}
+                    {missingCuit && <WarningCircleIcon className="size-3.5 text-warning" weight="fill" />}
                   </Label>
                   <Input
                     id="national_id"
                     type="text"
                     value={profileForm.national_id}
                     onChange={(e) => setProfileForm({ ...profileForm, national_id: e.target.value.replace(/[^0-9]/g, '') })}
-                    className="h-9 border-0 bg-transparent px-0 text-sm text-[hsl(var(--foreground))] placeholder:text-[hsl(var(--muted-foreground)/0.5)] focus-visible:ring-0 focus-visible:ring-offset-0"
-                    placeholder="e.g. 20415436042"
+                    className="figure"
+                    placeholder="20304917286"
                     inputMode="numeric"
                     pattern="[0-9]*"
                   />
+                  <FieldHint className={missingCuit ? "text-warning" : undefined}>
+                    Statement lines that mention your CUIT (transfers between your own accounts) are skipped on import.
+                  </FieldHint>
                 </div>
-              </div>
 
-              <Button
-                type="submit"
-                disabled={isUpdating}
-                className="w-full h-10 text-sm font-semibold rounded-[var(--glass-radius-sm)] bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))] hover:bg-[hsl(var(--accent)/0.9)] transition-all duration-150"
-              >
-                {isUpdating ? (
-                  <div className="flex items-center gap-2">
-                    <div className="h-4 w-4 border-2 border-t-transparent border-white rounded-full animate-spin" />
-                    {isUploadingAvatar ? 'Uploading…' : 'Saving…'}
-                  </div>
-                ) : 'Save Changes'}
-              </Button>
-            </form>
-          )}
+                <FieldError>{updateError}</FieldError>
+
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="w-full"
+                  loading={isUpdating}
+                  loadingText={isUploadingAvatar ? "Uploading photo" : "Saving"}
+                >
+                  Save changes
+                </Button>
+              </motion.form>
+            )}
+          </AnimatePresence>
         </div>
 
-        {/* Theme + Logout */}
-        <div className="flex gap-2 px-6 pb-6 border-t border-[var(--glass-border)] pt-4">
-          <button
-            type="button"
-            onClick={() => toggleTheme()}
-            className="flex-1 flex items-center justify-center gap-2 h-10 rounded-[var(--glass-radius-sm)] bg-[hsl(var(--muted)/0.5)] hover:bg-[hsl(var(--muted))] border border-[var(--glass-border)] text-sm font-medium text-[hsl(var(--foreground))] transition-colors"
-          >
-            {isDarkMode
-              ? <><SunIcon className="h-4 w-4 text-[hsl(48,95%,50%)]" /><span>Light</span></>
-              : <><MoonIcon className="h-4 w-4 text-[hsl(217,91%,60%)]" /><span>Dark</span></>
-            }
-          </button>
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="flex-1 flex items-center justify-center gap-2 h-10 rounded-[var(--glass-radius-sm)] bg-[hsl(var(--destructive)/0.1)] hover:bg-[hsl(var(--destructive)/0.2)] border border-[hsl(var(--destructive)/0.2)] text-sm font-medium text-[hsl(var(--destructive))] transition-colors"
-          >
-            <LogOutIcon className="h-4 w-4" />
-            Sign Out
-          </button>
+        {/* Appearance + sign out */}
+        <div className="flex flex-col gap-4 border-t border-border/70 bg-muted/40 px-6 py-5">
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-[13px] font-medium">Appearance</span>
+            <Segmented
+              size="sm"
+              ariaLabel="Theme"
+              value={theme}
+              onChange={(v) => setTheme(v)}
+              options={[
+                { value: "light", label: "Light", icon: SunIcon },
+                { value: "dark", label: "Dark", icon: MoonIcon },
+                { value: "system", label: "Auto", icon: DesktopIcon },
+              ]}
+            />
+          </div>
+          <Button variant="destructive-ghost" className="w-full justify-center border border-border bg-card" onClick={handleLogout}>
+            <SignOutIcon />
+            Sign out
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

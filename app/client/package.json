@@ -12,6 +12,7 @@
     "twa:keystore": "keytool -genkey -v -keystore android/android.keystore -alias mynab-key -keyalg RSA -keysize 2048 -validity 10000 -dname \"CN=Juan Matias Tulli, OU=Engineering, O=MYNAB, L=Buenos Aires, ST=Buenos Aires, C=AR\""
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
     "@radix-ui/react-dialog": "^1.1.14",
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-popover": "^1.1.14",
@@ -23,11 +24,10 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^3.5.0",
-    "lucide-react": "^0.516.0",
+    "framer-motion": "12.43.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.7.0",
-    "recharts": "^3.0.2",
     "sonner": "^2.0.5",
     "tailwind-merge": "^3.3.1",
     "tailwindcss-animate": "^1.0.7",

@@ -1,12 +1,17 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, Eyebrow } from "@/components/ui/card";
+import { formatMoney } from "@/components/ui/financial-value";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { FieldError, FieldHint, Label } from "@/components/ui/label";
+import { Segmented } from "@/components/ui/segmented";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getCurrencyName, getCurrencySymbol } from "@/lib/currencyUtils";
-import { toDateOnlyISOString } from "@/lib/dateUtils";
+import { parseDatePreservingDay, toDateOnlyISOString } from "@/lib/dateUtils";
+import { fadeUp } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 import { api } from "@/services/api";
-import { CalendarIcon, CheckIcon, CircleDollarSignIcon, PlusCircleIcon, PlusIcon, TagIcon, TrendingDownIcon, TrendingUpIcon } from "lucide-react";
+import { ArrowDownLeftIcon, ArrowUpRightIcon, CheckIcon, InfoIcon, PlusIcon } from "@phosphor-icons/react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
 export default function AddTransaction({
@@ -27,6 +32,7 @@ export default function AddTransaction({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
 
   useEffect(() => {
     setForm(prevForm => ({
@@ -35,16 +41,19 @@ export default function AddTransaction({
     }));
   }, [defaultCurrency]);
 
+  const amountInvalid = form.amount !== "" && !(Number(form.amount) > 0);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (amountInvalid) return;
 
     setIsSubmitting(true);
+    setSubmitError(null);
     try {
       const response = await api.post("/budget/entry", form);
       if (!response.error) {
         setSuccess(true);
 
-        // Reset form
         setForm({
           amount: "",
           type: "outcome",
@@ -58,255 +67,211 @@ export default function AddTransaction({
 
         onTransactionAdded();
         setTimeout(() => setSuccess(false), 3000);
+      } else {
+        setSubmitError(typeof response.error === "string" ? response.error : "The transaction could not be saved.");
       }
     } catch (error) {
       console.error("Error adding transaction:", error);
+      setSubmitError("The transaction could not be saved. Check your connection and try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const symbol = getCurrencySymbol(form.currency);
+  const isIncome = form.type === "income";
+  const category = categories.find((c) => c.id === form.category_id);
+
   return (
-    <Card className="border border-[var(--glass-border)] bg-[var(--glass-bg-heavy)] backdrop-blur-xl shadow-[var(--glass-shadow)] rounded-[var(--glass-radius-sm)]">
-      <CardHeader className="pb-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-[hsl(var(--accent)/0.1)] border border-[hsl(var(--accent)/0.2)]">
-              <PlusCircleIcon className="h-5 w-5 text-[hsl(var(--accent))]" />
-            </div>
-            <CardTitle className="text-xl font-semibold text-[hsl(var(--foreground))]">
-              Add Transaction
-            </CardTitle>
-          </div>
-          <div className="flex items-center gap-2 bg-[hsl(var(--accent)/0.1)] text-[hsl(var(--accent))] px-3 py-1.5 rounded-full border border-[hsl(var(--accent)/0.2)]">
-            <CircleDollarSignIcon className="h-4 w-4" />
-            <span className="text-sm font-medium">{defaultCurrency}</span>
-            <span className="text-xs opacity-75">({getCurrencyName(defaultCurrency)})</span>
-          </div>
-        </div>
-      </CardHeader>
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+      <Card className="p-6 md:p-8">
+        <AnimatePresence mode="wait" initial={false}>
+          {success ? (
+            <motion.div key="done" {...fadeUp} className="flex min-h-[420px] flex-col items-start justify-center gap-6">
+              <motion.span
+                initial={{ scale: 0.6, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", stiffness: 260, damping: 14 }}
+                className="grid size-14 place-items-center rounded-2xl bg-accent-soft text-accent"
+              >
+                <CheckIcon className="size-6" weight="bold" />
+              </motion.span>
+              <div className="flex flex-col gap-2">
+                <h3 className="text-2xl font-semibold tracking-tight">Saved to your ledger</h3>
+                <p className="max-w-[44ch] text-[15px] leading-relaxed text-muted-foreground">
+                  It already counts toward this period's totals and shows up in Activity.
+                </p>
+              </div>
+              <Button onClick={() => setSuccess(false)}>
+                <PlusIcon />
+                Add another
+              </Button>
+            </motion.div>
+          ) : (
+            <motion.form key="form" {...fadeUp} onSubmit={handleSubmit} className="flex flex-col gap-7">
+              <div className="flex flex-col gap-1.5">
+                <Eyebrow>New entry</Eyebrow>
+                <h2 className="text-xl font-semibold tracking-tight">Record a transaction</h2>
+              </div>
 
-      <CardContent className="p-6 space-y-6">
-        {success ? (
-          <div className="flex flex-col items-center py-12 gap-6">
-            <div className="p-4 rounded-full bg-[hsl(var(--positive)/0.1)] border-2 border-[hsl(var(--positive)/0.2)]">
-              <CheckIcon className="h-8 w-8 text-[hsl(var(--positive))]" />
-            </div>
-            <div className="text-center space-y-2">
-              <h3 className="text-xl font-semibold text-[hsl(var(--foreground))]">Transaction Added Successfully!</h3>
-              <p className="text-[hsl(var(--muted-foreground))] max-w-md">
-                Your transaction has been recorded and will appear in your transaction history.
-              </p>
-            </div>
-            <Button
-              onClick={() => setSuccess(false)}
-              className="bg-[hsl(var(--positive))] hover:bg-[hsl(var(--positive)/0.9)] text-[hsl(var(--positive-foreground))] px-6"
-            >
-              <PlusIcon className="h-4 w-4 mr-2" />
-              Add Another Transaction
-            </Button>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
+              <Segmented
+                ariaLabel="Transaction type"
+                value={form.type}
+                onChange={(value) => setForm({ ...form, type: value })}
+                className="w-full sm:w-fit"
+                options={[
+                  { value: "outcome", label: "Expense", icon: ArrowUpRightIcon, tone: "negative" },
+                  { value: "income", label: "Income", icon: ArrowDownLeftIcon, tone: "positive" },
+                ]}
+              />
 
-            {/* Info Box */}
-            <div className="bg-[hsl(var(--info-bg)/0.6)] backdrop-blur-sm border border-[hsl(var(--info-fg)/0.2)] rounded-[var(--glass-radius-sm)] p-4">
-              <h4 className="font-semibold text-[hsl(var(--info-fg))] flex items-center gap-2 mb-2">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Setting an initial account balance
-              </h4>
-              <p className="text-[hsl(var(--info-fg)/0.85)] text-sm leading-relaxed">
-                If you're importing recent transactions but already had money in your account, add your starting balance as an "Income" transaction with the description "Initial Balance". This helps ensure your account balances match your real-world accounts.
-              </p>
-            </div>
-
-            {/* Amount and Type Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="space-y-3">
-                <Label htmlFor="amount" className="text-sm font-semibold text-foreground">
-                  Amount *
-                </Label>
+              {/* Amount */}
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="amount">Amount</Label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground text-lg font-semibold">
-                    {getCurrencySymbol(form.currency)}
+                  <span className="figure pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xl text-muted-foreground">
+                    {symbol}
                   </span>
                   <Input
                     id="amount"
                     type="number"
+                    inputMode="decimal"
                     step="0.01"
+                    min="0"
                     value={form.amount}
                     onChange={(e) => setForm({ ...form, amount: e.target.value })}
-                    className="pl-10 pr-4 h-12 text-lg font-medium border-2 border-border bg-background focus:border-accent transition-all duration-200"
+                    aria-invalid={amountInvalid || undefined}
+                    className={cn("figure h-16 rounded-2xl text-[1.75rem] font-medium tracking-tight md:text-[1.75rem]", symbol.length > 1 ? "pl-12" : "pl-10")}
                     placeholder="0.00"
                     required
                   />
                 </div>
+                {amountInvalid ? (
+                  <FieldError>Enter an amount greater than zero.</FieldError>
+                ) : (
+                  <FieldHint>Always positive. The type above decides whether it adds or subtracts.</FieldHint>
+                )}
               </div>
 
-              <div className="space-y-3">
-                <Label htmlFor="type" className="text-sm font-semibold text-foreground">
-                  Transaction Type *
-                </Label>
-                <Select value={form.type} onValueChange={(value) => setForm({ ...form, type: value })}>
-                  <SelectTrigger className="h-12 border-2 border-border bg-background focus:border-accent">
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover border-2 border-border shadow-xl">
-                    <SelectItem value="outcome" className="text-[hsl(var(--popover-foreground))] py-3">
-                      <div className="flex items-center gap-3">
-                        <div className="p-1.5 rounded-full bg-[hsl(var(--destructive)/0.1)]">
-                          <TrendingDownIcon className="h-4 w-4 text-[hsl(var(--destructive))]" />
-                        </div>
-                        <div>
-                          <div className="font-medium">Expense</div>
-                          <div className="text-xs text-[hsl(var(--muted-foreground))]">Money going out</div>
-                        </div>
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="income" className="text-[hsl(var(--popover-foreground))] py-3">
-                      <div className="flex items-center gap-3">
-                        <div className="p-1.5 rounded-full bg-[hsl(var(--positive)/0.1)]">
-                          <TrendingUpIcon className="h-4 w-4 text-[hsl(var(--positive))]" />
-                        </div>
-                        <div>
-                          <div className="font-medium">Income</div>
-                          <div className="text-xs text-muted-foreground">Money coming in</div>
-                        </div>
-                      </div>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* Description */}
-            <div className="space-y-3">
-              <Label htmlFor="description" className="text-sm font-semibold text-foreground">
-                Description
-              </Label>
-              <Input
-                id="description"
-                value={form.description}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
-                className="h-12 border-2 border-border bg-background focus:border-accent transition-all duration-200"
-                placeholder="What's this transaction for? (e.g., Grocery shopping, Salary, etc.)"
-              />
-            </div>
-
-            {/* Date and Category Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="space-y-3">
-                <Label htmlFor="date" className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-                  Date *
-                </Label>
+              {/* Description */}
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="description">Description</Label>
                 <Input
-                  id="date"
-                  type="date"
-                  value={form.date}
-                  onChange={(e) => setForm({ ...form, date: e.target.value })}
-                  className="h-12 border-2 border-border bg-background focus:border-accent transition-all duration-200"
-                  required
+                  id="description"
+                  value={form.description}
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  placeholder="Verdulería Don Aurelio, rent for October, salary"
                 />
               </div>
 
-              <div className="space-y-3">
-                <Label htmlFor="category" className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <TagIcon className="h-4 w-4 text-muted-foreground" />
-                  Category
-                </Label>
-                <Select 
-                  value={form.category_id ? form.category_id.toString() : "none"} 
-                  onValueChange={(value) => setForm({ 
-                    ...form, 
-                    category_id: value !== "none" ? parseInt(value) : null 
-                  })}
-                >
-                  <SelectTrigger className="h-12 border-2 border-border bg-background focus:border-accent">
-                    <SelectValue placeholder="Select a category" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-[hsl(var(--popover))] border-2 border-[hsl(var(--border))] shadow-xl">
-                    <SelectItem value="none" className="text-[hsl(var(--popover-foreground))] py-2">
-                      <span className="text-[hsl(var(--muted-foreground))]">No category</span>
-                    </SelectItem>
-                    {categories.map(category => (
-                      <SelectItem key={category.id} value={category.id.toString()} className="text-[hsl(var(--popover-foreground))] py-2">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-[hsl(var(--accent))]"></div>
-                          <span>{category.category_name}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* Currency Display (Read-only) */}
-            <div className="space-y-3">
-              <Label className="text-sm font-semibold text-foreground flex items-center gap-2">
-                <CircleDollarSignIcon className="h-4 w-4 text-muted-foreground" />
-                Currency
-              </Label>
-              <div className="flex items-center justify-between h-12 px-4 rounded-md bg-[var(--glass-bg)] backdrop-blur-sm border border-[var(--glass-border)]">
-                <div className="flex items-center gap-3">
-                  <span className="text-lg font-semibold text-[hsl(var(--foreground))]">{getCurrencySymbol(defaultCurrency)}</span>
-                  <div>
-                    <span className="font-medium text-[hsl(var(--foreground))]">{defaultCurrency}</span>
-                    <span className="text-sm text-[hsl(var(--muted-foreground))] ml-2">
-                      {getCurrencyName(defaultCurrency)}
-                    </span>
-                  </div>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="date">Date</Label>
+                  <Input
+                    id="date"
+                    type="date"
+                    value={form.date}
+                    onChange={(e) => setForm({ ...form, date: e.target.value })}
+                    className="figure"
+                    required
+                  />
                 </div>
-                <span className="text-xs bg-[hsl(var(--accent)/0.1)] text-[hsl(var(--accent))] px-2 py-1 rounded-full border border-[hsl(var(--accent)/0.2)]">
-                  Current Filter
-                </span>
+
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="category">Category</Label>
+                  <Select
+                    value={form.category_id ? form.category_id.toString() : "none"}
+                    onValueChange={(value) => setForm({
+                      ...form,
+                      category_id: value !== "none" ? parseInt(value) : null
+                    })}
+                  >
+                    <SelectTrigger id="category">
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">
+                        <span className="text-muted-foreground">No category</span>
+                      </SelectItem>
+                      {categories.map(c => (
+                        <SelectItem key={c.id} value={c.id.toString()}>
+                          {c.category_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
-                <CircleDollarSignIcon className="h-3 w-3" />
-                Transactions are added in your selected currency filter
+
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="reference_id">
+                  Reference <span className="font-normal text-muted-foreground">optional</span>
+                </Label>
+                <Input
+                  id="reference_id"
+                  value={form.reference_id}
+                  onChange={(e) => setForm({ ...form, reference_id: e.target.value })}
+                  placeholder="Invoice or operation number"
+                />
+              </div>
+
+              <div className="flex flex-col gap-3 border-t border-border/70 pt-6 sm:flex-row sm:items-center sm:justify-between">
+                <FieldError className="sm:max-w-[40ch]">{submitError}</FieldError>
+                <Button
+                  type="submit"
+                  size="xl"
+                  className="w-full sm:ml-auto sm:w-auto"
+                  loading={isSubmitting}
+                  loadingText="Saving"
+                  disabled={!form.amount || amountInvalid}
+                >
+                  <PlusIcon />
+                  Add {isIncome ? "income" : "expense"}
+                </Button>
+              </div>
+            </motion.form>
+          )}
+        </AnimatePresence>
+      </Card>
+
+      {/* Context column */}
+      <div className="flex flex-col gap-4">
+        <Card className="p-6 md:p-7">
+          <Eyebrow>Preview</Eyebrow>
+          <div className="mt-5 flex items-center gap-4">
+            <span className={cn("grid size-11 shrink-0 place-items-center rounded-2xl", isIncome ? "bg-accent-soft text-accent" : "bg-muted text-muted-foreground")}>
+              {isIncome ? <ArrowDownLeftIcon className="size-4" weight="bold" /> : <ArrowUpRightIcon className="size-4" weight="bold" />}
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[15px] font-medium">{form.description || "Untitled entry"}</p>
+              <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                {form.date ? parseDatePreservingDay(form.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "No date"}
+                {category ? ` · ${category.category_name}` : ""}
               </p>
             </div>
+            <span className={cn("figure shrink-0 text-base font-medium", isIncome ? "text-positive" : "text-foreground")}>
+              {isIncome ? "+" : "−"}{symbol}{formatMoney(form.amount || 0)}
+            </span>
+          </div>
+          <div className="mt-6 flex items-center justify-between border-t border-border/70 pt-4 text-xs text-muted-foreground">
+            <span>Currency</span>
+            <span className="font-medium text-foreground">{form.currency} · {getCurrencyName(form.currency)}</span>
+          </div>
+        </Card>
 
-            {/* Reference ID */}
-            <div className="space-y-3">
-              <Label htmlFor="reference_id" className="text-sm font-semibold text-foreground">
-                Reference ID
-              </Label>
-              <Input
-                id="reference_id"
-                value={form.reference_id}
-                onChange={(e) => setForm({ ...form, reference_id: e.target.value })}
-                className="h-12 border-2 border-border bg-background focus:border-accent transition-all duration-200"
-                placeholder="Transaction reference, invoice number, etc."
-              />
+        <Card className="p-6 md:p-7">
+          <div className="flex gap-3">
+            <InfoIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+            <div className="flex flex-col gap-2">
+              <p className="text-sm font-medium">Starting from an existing balance?</p>
+              <p className="text-[13px] leading-relaxed text-muted-foreground">
+                If the account already had money before your first imported statement, add it once as
+                Income with the description "Initial Balance" so MYNAB matches your bank.
+              </p>
             </div>
-
-            {/* Submit Button */}
-            <Button
-              type="submit"
-              variant="success"
-              size="xl"
-              className="w-full text-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isSubmitting || !form.amount}
-            >
-              {isSubmitting ? (
-                <div className="flex items-center justify-center gap-2">
-                  <div className="h-5 w-5 border-2 border-t-transparent rounded-full animate-spin"></div>
-                  <span>Processing Transaction...</span>
-                </div>
-              ) : (
-                <>
-                  <PlusIcon className="h-5 w-5 mr-2" />
-                  Add Transaction
-                </>
-              )}
-            </Button>
-          </form>
-        )}
-      </CardContent>
-    </Card>
+          </div>
+        </Card>
+      </div>
+    </div>
   );
 }

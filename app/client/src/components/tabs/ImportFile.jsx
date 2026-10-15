@@ -1,13 +1,33 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, Eyebrow } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { getCurrencyName } from "@/lib/currencyUtils";
+import { fadeUp, listItem, listParent, snappy } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 import { api } from "@/services/api";
-import { CheckCircleIcon, CircleDollarSignIcon, FileIcon, FileTextIcon, UploadCloudIcon, UploadIcon, XCircleIcon } from "lucide-react";
+import {
+  BankIcon, CheckCircleIcon, CheckIcon, CloudArrowUpIcon, FileCsvIcon, FileIcon, FilePdfIcon, FileXlsIcon,
+  UploadSimpleIcon, XCircleIcon, XIcon
+} from "@phosphor-icons/react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
+
+const BANK_LABELS = {
+  santander_rio: "Santander Rio",
+  ICBC: "ICBC",
+  mercado_pago: "Mercado Pago",
+  bbva: "BBVA",
+  comm_bank: "CommBank",
+  revolut: "Revolut",
+};
+
+const bankMonogram = (label) => {
+  const words = label.split(" ");
+  return words.length > 1 ? words.map((w) => w[0]).join("").slice(0, 2) : label.slice(0, 2);
+};
+
+const FORMAT_ICONS ={ ".xlsx": FileXlsIcon, ".xls": FileXlsIcon, ".csv": FileCsvIcon, ".pdf": FilePdfIcon };
 
 export default function ImportFile({ onImportComplete, onImportSuccess, currency }) {
   const [file, setFile] = useState(null);
@@ -17,12 +37,12 @@ export default function ImportFile({ onImportComplete, onImportSuccess, currency
   const [error, setError] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const bankFormats = {
-    santander_rio: { format: ".xlsx", supportedCurrencies: ["ARS", "USD"], description: "Excel format from online banking" },
-    ICBC: { format: ".csv", supportedCurrencies: ["ARS", "USD"], description: "CSV export from ICBC portal" },
-    mercado_pago: { format: ".pdf", supportedCurrencies: ["ARS"], description: "PDF statement download" },
-    bbva: { format: ".xls", supportedCurrencies: ["ARS"], description: "Excel format from BBVA" },
-    comm_bank: { format: ".csv", supportedCurrencies: ["AUD"], description: "CSV export from Commonwealth Bank" },
-    revolut: { format: ".csv", supportedCurrencies: ["AUD", "USD", "GBP"], description: "CSV export from Revolut" },
+    santander_rio: { format: ".xlsx", supportedCurrencies: ["ARS", "USD"], description: "Excel export from online banking" },
+    ICBC: { format: ".csv", supportedCurrencies: ["ARS", "USD"], description: "CSV export from the ICBC portal" },
+    mercado_pago: { format: ".pdf", supportedCurrencies: ["ARS"], description: "PDF account statement" },
+    bbva: { format: ".xls", supportedCurrencies: ["ARS"], description: "Excel export from BBVA" },
+    comm_bank: { format: ".csv", supportedCurrencies: ["AUD"], description: "CSV export from NetBank" },
+    revolut: { format: ".csv", supportedCurrencies: ["AUD", "USD", "GBP"], description: "CSV statement from the app" },
   };
 
   const handleFileChange = (e) => {
@@ -59,7 +79,7 @@ export default function ImportFile({ onImportComplete, onImportSuccess, currency
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => {
-        // Remove the "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," prefix
+        // Strip the "data:<mime>;base64," prefix
         const base64String = reader.result.split(',')[1];
         resolve(base64String);
       };
@@ -79,10 +99,8 @@ export default function ImportFile({ onImportComplete, onImportSuccess, currency
     setResult(null);
 
     try {
-      // Convert file to Base64
       const base64File = await convertFileToBase64(file);
 
-      // Send the file as base64 string using the regular post method
       const response = await api.post("/budget/import-file", {
         bank_name: bankName,
         file_content: base64File,
@@ -102,23 +120,20 @@ export default function ImportFile({ onImportComplete, onImportSuccess, currency
 
       setResult(resultData);
 
-      // Show success message before redirecting
+      // Show the success state briefly, then refresh data and redirect
       setTimeout(() => {
-        // Reset form state
         setFile(null);
         setBankName("");
         setResult(null);
 
-        // Call the callback to refresh data and redirect
         if (onImportComplete) {
           onImportComplete();
         }
 
-        // Redirect to main entries view
         if (onImportSuccess) {
           onImportSuccess(resultData);
         }
-      }, 1500); // Show success message for 1.5 seconds before redirecting
+      }, 1500);
 
     } catch (err) {
       setError(err.message || "An error occurred during import");
@@ -127,244 +142,220 @@ export default function ImportFile({ onImportComplete, onImportSuccess, currency
     }
   };
 
-  const getSupportedFormatText = () => {
-    if (!bankName) {
-      return "Select a bank to see supported formats";
-    }
-    const bank = bankFormats[bankName];
-    return `${bank.format} format - ${bank.description}`;
-  };
-
-  // Filter banks by selected currency
   const filteredBankKeys = Object.keys(bankFormats).filter(
     (key) => bankFormats[key].supportedCurrencies.includes(currency)
   );
+  const selectedBank = bankName ? bankFormats[bankName] : null;
+  const FileGlyph = (selectedBank && FORMAT_ICONS[selectedBank.format]) || FileIcon;
 
   return (
-    <Card className="border border-[var(--glass-border)] bg-[var(--glass-bg-heavy)] backdrop-blur-xl shadow-[var(--glass-shadow)] rounded-[var(--glass-radius-sm)]">
-      <CardHeader className="pb-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-[hsl(var(--accent)/0.1)] border border-[hsl(var(--accent)/0.2)]">
-              <UploadIcon className="h-5 w-5 text-[hsl(var(--accent))]" />
-            </div>
-            <CardTitle className="text-xl font-semibold text-[hsl(var(--card-foreground))]">
-              Import Statements
-            </CardTitle>
-          </div>
-          <div className="flex items-center gap-2 bg-[hsl(var(--accent)/0.1)] text-[hsl(var(--accent))] px-3 py-1.5 rounded-full border border-[hsl(var(--accent)/0.2)]">
-            <CircleDollarSignIcon className="h-4 w-4" />
-            <span className="text-sm font-medium">{currency}</span>
-            <span className="text-xs opacity-75">({getCurrencyName(currency)})</span>
-          </div>
-        </div>
-      </CardHeader>
-
-      <CardContent className="p-6 space-y-6">
-        {result ? (
-          <div className="flex flex-col items-center py-12 gap-6">
-            <div className="p-4 rounded-full bg-[hsl(var(--positive)/0.1)] border-2 border-[hsl(var(--positive)/0.2)]">
-              <CheckCircleIcon className="h-8 w-8 text-[hsl(var(--positive))]" />
-            </div>
-            <div className="text-center space-y-2">
-              <h3 className="text-xl font-semibold text-[hsl(var(--foreground))]">Import Successful!</h3>
-              <p className="text-[hsl(var(--muted-foreground))] max-w-md">
-                {result.count} transactions imported
-                {result.skipped > 0 ? `, ${result.skipped} skipped (duplicates)` : ""}.
-              </p>
-            </div>
-            <div className="text-center text-sm text-[hsl(var(--muted-foreground))]">
-              Redirecting to your transactions in a moment...
-            </div>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
-
-            {/* Info Box */}
-            <div className="bg-[hsl(var(--info-bg)/0.6)] backdrop-blur-sm border border-[hsl(var(--info-fg)/0.2)] rounded-[var(--glass-radius-sm)] p-4">
-              <h4 className="font-semibold text-[hsl(var(--info-fg))] flex items-center gap-2 mb-3">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Before Importing Your File
-              </h4>
-              <div className="text-[hsl(var(--info-fg)/0.85)] text-sm space-y-3">
-                <p>Please check the following:</p>
-                <ul className="space-y-1.5 ml-1">
-                  <li className="flex items-start gap-2">
-                    <span className="select-none">•</span>
-                    <span>The file format uses the required by the bank you selected.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="select-none">•</span>
-                    <span>Transaction data is organized in the correct columns.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="select-none">•</span>
-                    <span>Transactions are in the correct currency: <strong>{currency}</strong>.</span>
-                  </li>
-                </ul>
-                <p className="text-[hsl(var(--info-fg)/0.75)] italic">
-                  Don't worry, we'll automatically skip any duplicate transactions between attached files.
-                </p>
-              </div>
-            </div>
-
-            {/* Bank Selection */}
-            <div className="space-y-3">
-              <Label htmlFor="bank" className="text-sm font-semibold text-[hsl(var(--foreground))]">
-                Select Bank *
-              </Label>
-              <Select value={bankName} onValueChange={setBankName}>
-                <SelectTrigger className="h-12 border-2 border-[hsl(var(--border))] bg-[hsl(var(--background))] focus:border-[hsl(var(--accent))]">
-                  <SelectValue placeholder="Choose your bank or financial institution" />
-                </SelectTrigger>
-                <SelectContent className="bg-[hsl(var(--popover))] border-2 border-[hsl(var(--border))] shadow-xl">
-                  {filteredBankKeys.length === 0 ? (
-                    <div className="text-[hsl(var(--muted-foreground))] px-4 py-3 text-sm">No banks available for this currency.</div>
-                  ) : (
-                    filteredBankKeys.map((key) => {
-                      const bank = bankFormats[key];
-                      let iconBg, iconDot;
-                      if (key === "santander_rio" || key === "ICBC") {
-                        iconBg = "bg-[hsl(var(--destructive)/0.1)]";
-                        iconDot = "bg-[hsl(var(--destructive))]";
-                      } else if (key === "bbva") {
-                        iconBg = "bg-[hsl(var(--accent)/0.1)]";
-                        iconDot = "bg-[hsl(var(--accent))]";
-                      } else if (key === "mercado_pago" || key === "comm_bank"|| key === "revolut") {
-                        iconBg = "bg-[hsl(48,100%,50%,0.15)]";
-                        iconDot = "bg-[hsl(48,100%,50%)]";
-                      }
-                      return (
-                        <SelectItem key={key} value={key} className="text-[hsl(var(--popover-foreground))] py-3">
-                          <div className="flex items-center gap-3">
-                            <div className={`p-1.5 rounded-full ${iconBg}`}>
-                              <div className={`w-3 h-3 rounded-full ${iconDot}`}></div>
-                            </div>
-                            <div>
-                              <div className="font-medium">{key === "santander_rio" ? "Santander Rio" : key === "ICBC" ? "ICBC" : key === "mercado_pago" ? "Mercado Pago" : key === "bbva" ? "BBVA" : key === "comm_bank" ? "CommBank" : key === "revolut" ? "Revolut" : key}</div>
-                              <div className="text-xs text-[hsl(var(--muted-foreground))]">{bank.description}</div>
-                            </div>
-                          </div>
-                        </SelectItem>
-                      );
-                    })
-                  )}
-                </SelectContent>
-              </Select>
-              {bankName && (
-                <p className="text-xs text-[hsl(var(--muted-foreground))] flex items-center gap-1">
-                  <FileTextIcon className="h-3 w-3" />
-                  {getSupportedFormatText()}
-                </p>
-              )}
-            </div>
-
-            {/* File Upload */}
-            <div className="space-y-3">
-              <Label htmlFor="importFile" className="text-sm font-semibold text-[hsl(var(--foreground))]">
-                Statement File *
-              </Label>
-              <div
-                className={`border-2 p-8 text-center transition-all duration-200 ${isDragging
-                  ? 'border-[hsl(var(--accent))] bg-[hsl(var(--accent)/0.05)] scale-[1.01] backdrop-blur-xl rounded-[var(--glass-radius)]'
-                  : file
-                    ? 'border-dashed border-[hsl(var(--accent)/0.5)] bg-[hsl(var(--accent)/0.05)] backdrop-blur-sm rounded-[var(--glass-radius)]'
-                    : 'border-dashed border-[var(--glass-border)] bg-[var(--glass-bg)] backdrop-blur-sm rounded-[var(--glass-radius)] hover:border-[hsl(var(--accent)/0.4)] hover:bg-[hsl(var(--accent)/0.05)]'
-                  }`}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+      <Card className="p-6 md:p-8">
+        <AnimatePresence mode="wait" initial={false}>
+          {result ? (
+            <motion.div key="done" {...fadeUp} className="flex min-h-[420px] flex-col items-start justify-center gap-6">
+              <motion.span
+                initial={{ scale: 0.6, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", stiffness: 260, damping: 14 }}
+                className="grid size-14 place-items-center rounded-2xl bg-accent-soft text-accent"
               >
-                {!file ? (
-                  <div className="flex flex-col items-center space-y-4">
-                    <div className="p-4 rounded-full bg-[hsl(var(--accent)/0.1)] border border-[hsl(var(--accent)/0.2)]">
-                      <UploadCloudIcon className="h-10 w-10 text-[hsl(var(--accent))]" />
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-lg font-medium text-[hsl(var(--foreground))]">
-                        Drag & drop your statement file here
-                      </p>
-                      <p className="text-sm text-[hsl(var(--muted-foreground))]">
-                        or click the button below to browse
-                      </p>
-                      <p className="text-xs text-[hsl(var(--muted-foreground))]">
-                        {bankName ? getSupportedFormatText() : "Select a bank first to see supported formats"}
-                      </p>
-                    </div>
-                    <label htmlFor="importFile" className="cursor-pointer bg-[hsl(var(--accent))] hover:bg-[hsl(var(--accent)/0.9)] text-[hsl(var(--accent-foreground))] font-medium px-6 py-2.5 rounded-lg text-sm transition-all duration-200 shadow-md hover:shadow-lg">
-                      Browse Files
-                    </label>
-                    <Input
-                      id="importFile"
-                      type="file"
-                      accept=".xlsx,.xls,.csv,.pdf"
-                      onChange={handleFileChange}
-                      className="hidden"
-                    />
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center gap-4">
-                    <div className="p-4 bg-[var(--glass-bg)] backdrop-blur-xl border border-[var(--glass-border)] rounded-[var(--glass-radius-sm)]">
-                      <FileIcon className="h-10 w-10 text-[hsl(var(--accent))]" />
-                    </div>
-                    <div className="text-center space-y-1">
-                      <p className="font-semibold text-[hsl(var(--foreground))] text-lg">{file.name}</p>
-                      <p className="text-sm text-[hsl(var(--muted-foreground))]">
-                        {(file.size / 1024).toFixed(2)} KB • {file.type || "Unknown format"}
-                      </p>
-                      <div className="flex items-center justify-center gap-2 text-xs text-[hsl(var(--accent))]">
-                        <CheckCircleIcon className="h-3 w-3" />
-                        <span>File ready for import</span>
-                      </div>
-                    </div>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setFile(null)}
-                      className="text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
-                    >
-                      Choose Different File
-                    </Button>
-                  </div>
-                )}
+                <CheckIcon className="size-6" weight="bold" />
+              </motion.span>
+              <div className="flex flex-col gap-2">
+                <h3 className="text-2xl font-semibold tracking-tight">
+                  <span className="figure">{result.count}</span> transactions imported
+                </h3>
+                <p className="text-[15px] text-muted-foreground">
+                  {result.skipped > 0 ? <><span className="figure">{result.skipped}</span> duplicates skipped. </> : null}
+                  Taking you to Activity.
+                </p>
               </div>
-            </div>
+              <div className="h-1 w-48 overflow-hidden rounded-full bg-muted">
+                <motion.div className="h-full bg-accent" initial={{ width: 0 }} animate={{ width: "100%" }} transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }} />
+              </div>
+            </motion.div>
+          ) : (
+            <motion.form key="form" {...fadeUp} onSubmit={handleSubmit} className="flex flex-col gap-8">
+              <div className="flex flex-col gap-1.5">
+                <Eyebrow>Import · {currency}</Eyebrow>
+                <h2 className="text-xl font-semibold tracking-tight">Bring in a bank statement</h2>
+              </div>
 
-            {/* Error Alert */}
-            {error && (
-              <Alert variant="destructive" className="bg-[hsl(var(--destructive)/0.05)] border-2 border-[hsl(var(--destructive)/0.2)] shadow-lg">
-                <XCircleIcon className="h-5 w-5" />
-                <AlertTitle className="text-[hsl(var(--destructive))] font-semibold">Import Failed</AlertTitle>
-                <AlertDescription className="text-[hsl(var(--destructive)/0.9)]">{error}</AlertDescription>
-              </Alert>
-            )}
+              {/* Step 1 - bank */}
+              <fieldset className="flex flex-col gap-3">
+                <legend className="mb-3 flex items-center gap-2.5 text-[13px] font-medium">
+                  <StepNumber n={1} done={!!bankName} />
+                  Choose the bank
+                </legend>
+                {filteredBankKeys.length === 0 ? (
+                  <EmptyState icon={BankIcon} title={`No supported banks for ${currency} yet`} className="rounded-2xl border border-dashed border-border px-5 py-8 md:px-6">
+                    Switch to another currency from the sidebar to import from Santander, ICBC, Mercado Pago, BBVA, CommBank or Revolut.
+                  </EmptyState>
+                ) : (
+                  <motion.div variants={listParent} initial="hidden" animate="show" role="radiogroup" aria-label="Bank" className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    {filteredBankKeys.map((key) => {
+                      const bank = bankFormats[key];
+                      const active = bankName === key;
+                      return (
+                        <motion.button
+                          key={key}
+                          type="button"
+                          role="radio"
+                          aria-checked={active}
+                          variants={listItem}
+                          onClick={() => setBankName(key)}
+                          className={cn(
+                            "relative flex items-center gap-3 rounded-2xl border p-3.5 text-left transition-colors duration-200 active:scale-[0.99]",
+                            active ? "border-foreground/80 bg-card" : "border-border hover:border-foreground/25"
+                          )}
+                        >
+                          <span className={cn("grid size-10 shrink-0 place-items-center rounded-xl text-sm font-semibold transition-colors", active ? "bg-foreground text-background" : "bg-muted text-muted-foreground")}>
+                            {bankMonogram(BANK_LABELS[key] || key)}
+                          </span>
+                          <span className="flex min-w-0 flex-1 flex-col leading-tight">
+                            <span className="text-sm font-medium">{BANK_LABELS[key] || key}</span>
+                            <span className="truncate text-xs text-muted-foreground">{bank.description}</span>
+                          </span>
+                          <span className="font-mono figure shrink-0 rounded-md bg-muted px-1.5 py-0.5 text-[10px] uppercase text-muted-foreground">
+                            {bank.format.replace(".", "")}
+                          </span>
+                          {active && (
+                            <motion.span layoutId="bank-check" transition={snappy} className="absolute -right-1.5 -top-1.5 grid size-5 place-items-center rounded-full bg-foreground text-background">
+                              <CheckIcon className="size-3" weight="bold" />
+                            </motion.span>
+                          )}
+                        </motion.button>
+                      );
+                    })}
+                  </motion.div>
+                )}
+              </fieldset>
 
-            {/* Submit Button */}
-            <Button
-              type="submit"
-              variant="success"
-              size="xl"
-              disabled={isUploading || !file || !bankName}
-              className="w-full text-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isUploading ? (
-                <div className="flex items-center justify-center gap-2">
-                  <div className="h-5 w-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                  <span>Processing Import...</span>
+              {/* Step 2 - file */}
+              <fieldset className="flex flex-col gap-3">
+                <legend className="mb-3 flex items-center gap-2.5 text-[13px] font-medium">
+                  <StepNumber n={2} done={!!file} />
+                  Add the statement file
+                </legend>
+                <div
+                  className={cn(
+                    "relative rounded-[1.5rem] border-[1.5px] border-dashed transition-[border-color,background-color,transform] duration-300",
+                    isDragging ? "scale-[1.01] border-accent bg-accent-soft/50" : file ? "border-border bg-muted/40" : "border-border hover:border-foreground/30 hover:bg-muted/30"
+                  )}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                >
+                  {!file ? (
+                    <label htmlFor="importFile" className="flex cursor-pointer flex-col items-center gap-4 px-6 py-10 text-center">
+                      <motion.span
+                        animate={isDragging ? { y: -4, scale: 1.05 } : { y: 0, scale: 1 }}
+                        transition={snappy}
+                        className="grid size-14 place-items-center rounded-2xl border border-border bg-card text-muted-foreground shadow-[var(--shadow-diffuse)]"
+                      >
+                        <CloudArrowUpIcon className="size-6" />
+                      </motion.span>
+                      <span className="flex flex-col gap-1">
+                        <span className="text-[15px] font-medium">Drop the file here or <span className="text-accent underline underline-offset-4">browse</span></span>
+                        <span className="text-xs text-muted-foreground">
+                          {selectedBank ? `${BANK_LABELS[bankName]} expects a ${selectedBank.format} file` : "Pick a bank first to see the expected format"}
+                        </span>
+                      </span>
+                      <input id="importFile" type="file" accept=".xlsx,.xls,.csv,.pdf" onChange={handleFileChange} className="sr-only" />
+                    </label>
+                  ) : (
+                    <div className="flex items-center gap-4 p-4 md:p-5">
+                      <span className="grid size-12 shrink-0 place-items-center rounded-2xl border border-border bg-card text-foreground">
+                        <FileGlyph className="size-5" />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[15px] font-medium">{file.name}</p>
+                        <p className="figure mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
+                          {(file.size / 1024).toFixed(1)} KB
+                          <span className="text-border">/</span>
+                          <span className="flex items-center gap-1 font-sans text-accent"><CheckCircleIcon className="size-3.5" weight="fill" /> Ready</span>
+                        </p>
+                      </div>
+                      <Button type="button" variant="ghost" size="icon-sm" onClick={() => setFile(null)} aria-label="Remove file">
+                        <XIcon />
+                      </Button>
+                    </div>
+                  )}
                 </div>
-              ) : (
-                <>
-                  <UploadIcon className="h-5 w-5 mr-2" />
-                  Import {file ? `${file.name}` : 'Statement File'}
-                </>
+              </fieldset>
+
+              {error && (
+                <Alert variant="destructive">
+                  <XCircleIcon weight="fill" />
+                  <div>
+                    <AlertTitle>The import did not go through</AlertTitle>
+                    <AlertDescription>{error}</AlertDescription>
+                  </div>
+                </Alert>
               )}
-            </Button>
-          </form>
+
+              <div className="flex flex-col gap-3 border-t border-border/70 pt-6 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-xs text-muted-foreground">
+                  Duplicates across files are skipped automatically.
+                </p>
+                <Button
+                  type="submit"
+                  size="xl"
+                  className="w-full sm:w-auto"
+                  loading={isUploading}
+                  loadingText="Reading statement"
+                  disabled={!file || !bankName}
+                >
+                  <UploadSimpleIcon />
+                  Import statement
+                </Button>
+              </div>
+            </motion.form>
+          )}
+        </AnimatePresence>
+      </Card>
+
+      <div className="flex flex-col gap-4">
+        <Card className="p-6 md:p-7">
+          <Eyebrow>Before you upload</Eyebrow>
+          <ul className="mt-5 flex flex-col divide-y divide-border/70 text-[13px]">
+            {[
+              "The file is the original export from your bank, not edited or re-saved.",
+              "Columns are in the layout the bank produces.",
+              <>Every movement in it is in <span className="font-medium text-foreground">{currency}</span> ({getCurrencyName(currency)}).</>,
+            ].map((text, i) => (
+              <li key={i} className="flex gap-3 py-3 first:pt-0 last:pb-0">
+                <span className="font-mono figure mt-px shrink-0 text-[11px] text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
+                <span className="leading-relaxed text-muted-foreground">{text}</span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+        <Card className="p-6 md:p-7">
+          <Eyebrow>What happens next</Eyebrow>
+          <p className="mt-4 text-[13px] leading-relaxed text-muted-foreground">
+            Each line is matched to a category by its description, then saved with a link to the file. Delete the
+            file from Statements later and its transactions go with it.
+          </p>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function StepNumber({ n, done }) {
+  return (
+    <span className={cn("figure grid size-6 place-items-center rounded-full text-[11px] font-semibold transition-colors duration-300", done ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground")}>
+      <AnimatePresence mode="wait" initial={false}>
+        {done ? (
+          <motion.span key="d" initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.4, opacity: 0 }} transition={snappy}>
+            <CheckIcon className="size-3" weight="bold" />
+          </motion.span>
+        ) : (
+          <motion.span key="n" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>{n}</motion.span>
         )}
-      </CardContent>
-    </Card>
+      </AnimatePresence>
+    </span>
   );
 }

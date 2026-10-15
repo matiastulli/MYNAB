@@ -1,14 +1,23 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { getCurrencyName } from "@/lib/currencyUtils"
-import {
-  BarChart2Icon,
-  CircleDollarSignIcon,
-  LayoutDashboardIcon,
-  PieChartIcon
-} from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle, Eyebrow } from "@/components/ui/card"
+import { EmptyState } from "@/components/ui/empty-state"
+import { formatMoney } from "@/components/ui/financial-value"
+import { Skeleton } from "@/components/ui/skeleton"
+import { getCurrencySymbol } from "@/lib/currencyUtils"
+import { listItem, listParent, spring } from "@/lib/motion"
+import { cn } from "@/lib/utils"
+import { ChartPieSliceIcon, ReceiptIcon, TagIcon } from "@phosphor-icons/react"
+import { motion } from "framer-motion"
+import { useState } from "react"
 
-// Import the recharts components for data visualization
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts"
+// Part-to-whole with few parts reads best as a ranked bar list in one hue
+// (exact comparisons, direct labels, no legend needed).
+function rankCategories(list = [], top = 5) {
+  const sorted = [...list].sort((a, b) => b.amount - a.amount)
+  const rows = sorted.slice(0, top).map((c) => ({ name: c.name, value: c.amount }))
+  const othersTotal = sorted.slice(top).reduce((sum, c) => sum + c.amount, 0)
+  if (othersTotal > 0) rows.push({ name: "Others", value: othersTotal, isOther: true })
+  return rows
+}
 
 export default function Dashboard({
   summary = { income: 0, outcome: 0, categories: { income: [], outcome: [] } },
@@ -16,212 +25,163 @@ export default function Dashboard({
   currency = "ARS",
   isLoading = false,
 }) {
-  // Extract categories for visualization - ensure backward compatibility
   const categoriesData = summary.categories || { income: [], outcome: [] }
-
-  // Prepare data for the spending chart
-  const spendingData = []
-  if (categoriesData.outcome && categoriesData.outcome.length > 0) {
-    // Sort outcome categories by amount (descending)
-    const sortedCategories = [...categoriesData.outcome].sort((a, b) => b.amount - a.amount)
-
-    // Take top 5 categories for the chart
-    const topCategories = sortedCategories.slice(0, 5)
-
-    // Calculate "Others" for remaining categories
-    const othersTotal = sortedCategories.slice(5).reduce((sum, cat) => sum + cat.amount, 0)
-
-    // Format data for pie chart
-    spendingData.push(
-      ...topCategories.map((cat) => ({
-        name: cat.name,
-        value: cat.amount,
-      })),
-    )
-
-    // Add "Others" if there are more categories
-    if (othersTotal > 0) {
-      spendingData.push({
-        name: "Others",
-        value: othersTotal,
-      })
-    }
-  }
-
-  // Find top expense category
-  const topExpenseCategory =
-    categoriesData.outcome && categoriesData.outcome.length > 0
-      ? [...categoriesData.outcome].sort((a, b) => b.amount - a.amount)[0]
-      : null
-
-  // Chart colors - using HSL values for better theme integration
-  const COLORS = [
-    "hsl(var(--chart-1))",
-    "hsl(var(--chart-2))",
-    "hsl(var(--chart-3))",
-    "hsl(var(--chart-4))",
-    "hsl(var(--chart-5))",
-    "hsl(var(--muted))"
-  ]
-
-  // Format currency for display
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: currency,
-      maximumFractionDigits: 0,
-    }).format(value)
-  }
-
-  // Custom tooltip component for better dark mode support
-  const CustomTooltip = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div
-          className="bg-[var(--glass-bg-heavy)] backdrop-blur-xl border border-[var(--glass-border)] rounded-[var(--glass-radius-sm)] shadow-[var(--glass-shadow)] p-3"
-        >
-          <p className="text-popover-foreground font-medium">{`${payload[0].name}`}</p>
-          <p className="text-popover-foreground">
-            <span className="font-semibold">{formatCurrency(payload[0].value)}</span>
-          </p>
-        </div>
-      )
-    }
-    return null
-  }
+  const spendingData = rankCategories(categoriesData.outcome)
+  const incomeData = rankCategories(categoriesData.income, 3)
+  const topExpenseCategory = spendingData.find((c) => !c.isOther) || null
+  const symbol = getCurrencySymbol(currency)
+  const spendTotal = spendingData.reduce((s, c) => s + c.value, 0)
 
   return (
-    <div className="space-y-6">
-      <Card className="border border-[var(--glass-border)] bg-[var(--glass-bg-heavy)] backdrop-blur-xl shadow-[var(--glass-shadow)] rounded-[var(--glass-radius-sm)]">
-        <CardHeader className="pb-4">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-[hsl(var(--accent)/0.1)] border border-[hsl(var(--accent)/0.2)]">
-                <LayoutDashboardIcon className="h-5 w-5 text-[hsl(var(--accent))]" />
-              </div>
-              <CardTitle className="text-xl font-semibold text-[hsl(var(--foreground))]">
-                Dashboard
-              </CardTitle>
-            </div>
-            <div className="flex items-center gap-2 bg-[hsl(var(--accent)/0.1)] text-[hsl(var(--accent))] px-3 py-1.5 rounded-full border border-[hsl(var(--accent)/0.2)]">
-              <CircleDollarSignIcon className="h-4 w-4" />
-              <span className="text-sm font-medium">{currency}</span>
-              <span className="text-xs opacity-75">({getCurrencyName(currency)})</span>
-            </div>
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)]">
+      {/* Spending breakdown */}
+      <Card className="lg:row-span-3">
+        <CardHeader className="flex-row items-end justify-between gap-4">
+          <div className="flex flex-col gap-1.5">
+            <Eyebrow>Spending</Eyebrow>
+            <CardTitle className="text-xl">Where the money went</CardTitle>
           </div>
+          {!isLoading && spendingData.length > 0 && (
+            <div className="text-right">
+              <p className="figure text-2xl font-medium leading-none tracking-[-0.04em]">
+                <span className="text-[0.6em] text-muted-foreground">{symbol}</span>
+                {formatMoney(summary.outcome, { decimals: 0 })}
+              </p>
+              <p className="mt-1.5 text-[11px] text-muted-foreground">total out</p>
+            </div>
+          )}
         </CardHeader>
-
-        <CardContent className="p-6">
-          {/* Chart and categories display */}
-          <div className="flex flex-col lg:flex-row gap-6">
-            {/* Spending breakdown chart */}
-            <div className={`${isLoading ? "animate-pulse" : ""} lg:w-1/2`}>
-              <h3 className="text-sm font-medium mb-3 text-muted-foreground">Spending Breakdown</h3>
-              <div className="h-64">
-                {spendingData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height="100%" minHeight={200}>
-                    <PieChart>
-                      <Pie
-                        data={spendingData}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={60}
-                        outerRadius={80}
-                        paddingAngle={2}
-                        dataKey="value"
-                        label={false}
-                        labelLine={false}
-                      >
-                        {spendingData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip content={<CustomTooltip />} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="h-full flex items-center justify-center">
-                    <p className="text-muted-foreground text-center">
-                      <PieChartIcon className="h-10 w-10 mx-auto mb-2 opacity-20" />
-                      No spending data available
-                    </p>
+        <CardContent className="pt-8">
+          {isLoading ? (
+            <div className="flex flex-col gap-6">
+              {[78, 54, 41, 26, 15].map((w, i) => (
+                <div key={i} className="flex flex-col gap-2.5">
+                  <div className="flex justify-between">
+                    <Skeleton className="h-3.5 w-28" />
+                    <Skeleton className="h-3.5 w-16" />
                   </div>
-                )}
-
-                {/* Total spending amount shown in the center - Mobile only */}
-                {spendingData.length > 0 && (
-                  <div className="mt-4 text-center lg:hidden">
-                    <p className="text-sm text-muted-foreground">Total spending</p>
-                    <p className="text-xl font-semibold text-foreground">{formatCurrency(summary.outcome)}</p>
-                  </div>
-                )}
-              </div>
+                  <Skeleton className="h-2 rounded-full" style={{ width: `${w}%` }} />
+                </div>
+              ))}
             </div>
-
-            {/* Categories list - displays differently on desktop vs mobile */}
-            {spendingData.length > 0 && (
-              <div className="lg:w-1/2 mt-15 lg:mt-0">
-                {/* Total spending amount - Desktop only */}
-                <div className="hidden lg:block mb-4">
-                  <h3 className="text-sm font-medium text-muted-foreground mb-1">Total spending</h3>
-                  <p className="text-xl font-semibold text-foreground">{formatCurrency(summary.outcome)}</p>
-                </div>
-
-                {/* Categories list */}
-                <div className="space-y-3">
-                  {spendingData.map((category, index) => (
-                    <div key={index} className="flex justify-between items-center">
-                      <div className="flex items-center gap-2">
-                        <div
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                        />
-                        <span className="font-medium text-foreground">{category.name}</span>
-                      </div>
-                      <span className="text-right font-semibold text-foreground">{formatCurrency(category.value)}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+          ) : spendingData.length > 0 ? (
+            <SpendingBars rows={spendingData} total={spendTotal} symbol={symbol} />
+          ) : (
+            <EmptyState icon={ChartPieSliceIcon} title="No spending in this period" className="px-0 md:px-0">
+              Import a statement or add an expense and the breakdown by category appears here.
+            </EmptyState>
+          )}
         </CardContent>
       </Card>
 
-      {/* Financial snapshot */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card className="border border-[var(--glass-border)] bg-[var(--glass-bg-heavy)] backdrop-blur-xl shadow-[var(--glass-shadow)] rounded-[var(--glass-radius-sm)]">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium text-[hsl(var(--muted-foreground))]">Top Category</h3>
-              <div className="p-2 rounded-full bg-[hsl(var(--accent)/0.1)] text-[hsl(var(--accent))]">
-                <PieChartIcon className="h-4 w-4" />
-              </div>
-            </div>
-            {topExpenseCategory ? (
-              <>
-                <p className="text-xl font-semibold text-[hsl(var(--foreground))]">{topExpenseCategory.name}</p>
-                <p className="text-xs text-[hsl(var(--muted-foreground))] mt-1">{formatCurrency(topExpenseCategory.amount)} spent</p>
-              </>
-            ) : (
-              <p className="text-sm text-muted-foreground">No categories available</p>
-            )}
-          </CardContent>
-        </Card>
+      {/* Top category */}
+      <StatTile
+        eyebrow="Biggest category"
+        icon={TagIcon}
+        isLoading={isLoading}
+        value={topExpenseCategory ? topExpenseCategory.name : "None yet"}
+        detail={
+          topExpenseCategory
+            ? `${symbol}${formatMoney(topExpenseCategory.value, { decimals: 0 })} · ${spendTotal > 0 ? ((topExpenseCategory.value / spendTotal) * 100).toFixed(1) : 0}% of spending`
+            : "Categories show up once you have expenses"
+        }
+      />
 
-        <Card className="border border-[var(--glass-border)] bg-[var(--glass-bg-heavy)] backdrop-blur-xl shadow-[var(--glass-shadow)] rounded-[var(--glass-radius-sm)]">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium text-[hsl(var(--muted-foreground))]">Transaction Count</h3>
-              <div className="p-2 rounded-full bg-[hsl(var(--accent)/0.1)] text-[hsl(var(--accent))]">
-                <BarChart2Icon className="h-4 w-4" />
-              </div>
-            </div>
-            <p className="text-xl font-semibold text-[hsl(var(--foreground))]">{totalTransactions}</p>
-            <p className="text-xs text-[hsl(var(--muted-foreground))] mt-1">Transactions this period</p>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Count */}
+      <StatTile
+        eyebrow="Transactions"
+        icon={ReceiptIcon}
+        isLoading={isLoading}
+        value={<span className="figure">{totalTransactions.toLocaleString("en-US")}</span>}
+        detail="Recorded in this period"
+      />
+
+      {/* Income sources */}
+      <Card className="p-6 md:p-7">
+        <Eyebrow>Income sources</Eyebrow>
+        {isLoading ? (
+          <div className="mt-5 flex flex-col gap-3">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-4/5" />
+          </div>
+        ) : incomeData.length > 0 ? (
+          <ul className="mt-4 divide-y divide-border/70">
+            {incomeData.map((row) => (
+              <li key={row.name} className="flex items-center justify-between gap-3 py-2.5 text-sm">
+                <span className="truncate">{row.name}</span>
+                <span className="figure text-positive">+{symbol}{formatMoney(row.value, { decimals: 0 })}</span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="mt-3 text-sm text-muted-foreground">No income recorded in this period.</p>
+        )}
+      </Card>
     </div>
+  )
+}
+
+function SpendingBars({ rows, total, symbol }) {
+  const [hovered, setHovered] = useState(null)
+  const max = rows.reduce((m, r) => Math.max(m, r.value), 0) || 1
+
+  return (
+    <motion.ol variants={listParent} initial="hidden" animate="show" className="flex flex-col gap-1" onMouseLeave={() => setHovered(null)}>
+      {rows.map((row, i) => {
+        const share = total > 0 ? (row.value / total) * 100 : 0
+        const dimmed = hovered !== null && hovered !== i
+        return (
+          <motion.li
+            key={row.name}
+            variants={listItem}
+            onMouseEnter={() => setHovered(i)}
+            className={cn("flex flex-col gap-2.5 rounded-2xl px-3 py-3 transition-opacity duration-300 -mx-3", dimmed && "opacity-45", hovered === i && "bg-muted/60")}
+          >
+            <div className="flex items-baseline justify-between gap-4 text-sm">
+              <span className="flex min-w-0 items-baseline gap-2.5">
+                <span className="font-mono figure w-5 shrink-0 text-[11px] text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
+                <span className={cn("truncate font-medium", row.isOther && "text-muted-foreground")}>{row.name}</span>
+              </span>
+              <span className="flex shrink-0 items-baseline gap-3">
+                <span className="font-mono figure text-[11px] text-muted-foreground">{share.toFixed(1)}%</span>
+                <span className="figure font-medium">{symbol}{formatMoney(row.value, { decimals: 0 })}</span>
+              </span>
+            </div>
+            <div className="ml-[1.875rem] h-2 overflow-hidden rounded-full bg-muted">
+              <motion.div
+                className={cn("h-full rounded-full", row.isOther ? "bg-foreground/30" : "bg-foreground/85")}
+                initial={{ width: 0 }}
+                animate={{ width: `${(row.value / max) * 100}%` }}
+                transition={{ ...spring, delay: i * 0.05 }}
+              />
+            </div>
+          </motion.li>
+        )
+      })}
+    </motion.ol>
+  )
+}
+
+function StatTile({ eyebrow, icon: Icon, value, detail, isLoading }) {
+  return (
+    <Card className="flex items-start justify-between gap-4 p-6 md:p-7">
+      <div className="flex min-w-0 flex-col gap-3">
+        <Eyebrow>{eyebrow}</Eyebrow>
+        {isLoading ? (
+          <>
+            <Skeleton className="h-7 w-36" />
+            <Skeleton className="h-3 w-44" />
+          </>
+        ) : (
+          <>
+            <p className="truncate text-2xl font-semibold leading-none tracking-tight">{value}</p>
+            <p className="text-[13px] text-muted-foreground">{detail}</p>
+          </>
+        )}
+      </div>
+      <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-muted text-muted-foreground">
+        <Icon className="size-[18px]" />
+      </span>
+    </Card>
   )
 }

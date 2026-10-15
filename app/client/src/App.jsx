@@ -12,9 +12,23 @@ const queryClient = new QueryClient()
 const MainApp = React.lazy(() => import('@/components/MainApp'))
 const PrivacyPolicy = React.lazy(() => import('@/components/PrivacyPolicy'))
 
+// Shell-shaped placeholder while the dashboard chunk loads
 const dashboardSpinner = (
-  <div className="flex items-center justify-center h-screen">
-    <div className="w-8 h-8 rounded-full border-2 border-[hsl(var(--accent))] border-t-transparent animate-spin" />
+  <div className="flex min-h-[100dvh] bg-background" aria-busy="true" aria-label="Loading MYNAB">
+    <div className="hidden w-[248px] shrink-0 flex-col gap-3 border-r border-border/70 p-5 md:flex">
+      <div className="h-8 w-28 rounded-lg bg-muted" />
+      <div className="mt-6 flex flex-col gap-2">
+        {[0, 1, 2, 3, 4].map((i) => <div key={i} className="h-10 rounded-xl bg-muted/70" />)}
+      </div>
+    </div>
+    <div className="flex-1 px-4 pt-9 md:px-10">
+      <div className="h-3 w-32 rounded bg-muted" />
+      <div className="mt-3 h-10 w-72 max-w-full rounded-xl bg-muted" />
+      <div className="mt-10 grid gap-4 lg:grid-cols-[1.55fr_1fr]">
+        <div className="h-64 rounded-[1.75rem] bg-muted/70" />
+        <div className="h-64 rounded-[1.75rem] bg-muted/70" />
+      </div>
+    </div>
   </div>
 )
 
@@ -43,16 +57,8 @@ export default function App() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500/10 to-blue-500/10 rounded-full mb-4">
-            <svg className="animate-spin h-8 w-8 text-emerald-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-          </div>
-          <p className="text-muted-foreground">Loading MYNAB...</p>
-        </div>
+      <div className="grid min-h-[100dvh] place-items-center bg-background">
+        <img src="/android-chrome-192x192.png" alt="MYNAB" className="size-12 animate-pulse rounded-2xl object-cover" />
       </div>
     )
   }

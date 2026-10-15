@@ -10,12 +10,25 @@ function Label({
     <LabelPrimitive.Root
       data-slot="label"
       className={cn(
-        "flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 text-[hsl(var(--foreground))]",
+        "flex items-center gap-1.5 text-[13px] font-medium leading-none text-foreground select-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
         className
       )}
       {...props} />
   );
 }
 
-export { Label };
+// Helper and error text that sit below an input
+function FieldHint({ className, ...props }) {
+  return <p className={cn("text-xs text-muted-foreground", className)} {...props} />;
+}
 
+function FieldError({ className, children, ...props }) {
+  if (!children) return null;
+  return (
+    <p role="alert" className={cn("text-xs font-medium text-destructive", className)} {...props}>
+      {children}
+    </p>
+  );
+}
+
+export { FieldError, FieldHint, Label };

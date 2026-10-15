@@ -1,6 +1,5 @@
 "use client"
 
-import ProfileDialog from "@/components/auth_user/ProfileDialog"
 import CurrencyFilter from "@/components/filters/CurrencyFilter"
 import DateRangeFilter from "@/components/filters/DateRangeFilter"
 import CurrencyOverview from "@/components/summary/CurrencyOverview"
@@ -20,7 +19,6 @@ import { getCurrencyName } from "@/lib/currencyUtils"
 import { snappy, spring } from "@/lib/motion"
 import { setupSystemPreferenceListener } from "@/lib/themeUtils"
 import { cn } from "@/lib/utils"
-import { api } from "@/services/api"
 import {
   CalendarBlankIcon,
   CaretDownIcon,
@@ -36,7 +34,7 @@ import {
 } from "@phosphor-icons/react"
 import { AnimatePresence, motion } from "framer-motion"
 import { useEffect, useRef, useState } from "react"
-import { useNavigate, useParams, useSearchParams } from "react-router-dom"
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom"
 
 const TABS = [
   { value: "dashboard", label: "Overview", icon: SquaresFourIcon },
@@ -46,13 +44,13 @@ const TABS = [
   { value: "files", label: "Statements", icon: FolderSimpleIcon },
 ]
 
-export default function MainApp({ onLogout }) {
+export default function MainApp() {
   const params = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const [searchParams] = useSearchParams()
 
   const tabsRef = useRef(null)
-  const [showProfileModal, setShowProfileModal] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(
     () => localStorage.getItem('sidebarCollapsed') === 'true'
   )
@@ -84,7 +82,6 @@ export default function MainApp({ onLogout }) {
     fetchSummary,
     fetchDetails,
     fetchFiles,
-    fetchUserProfile,
     handleCurrencyChange,
     handleDateRangeChange,
     handleCurrencySelect: hookHandleCurrencySelect,
@@ -148,11 +145,6 @@ export default function MainApp({ onLogout }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [handleTabChange])
 
-  const handleLogout = () => {
-    api.logout();
-    onLogout();
-  };
-
   const scrollToTabs = () => {
     setTimeout(() => {
       if (tabsRef.current) {
@@ -174,6 +166,7 @@ export default function MainApp({ onLogout }) {
   const isBusy = summaryLoading || entriesLoading
   const missingCuit = userData && (!userData.national_id || userData.national_id === "")
   const fullName = userData ? [userData.name, userData.last_name].filter(Boolean).join(" ") : ""
+  const profileState = { from: location.pathname + location.search }
 
   return (
     <DashboardProvider
@@ -235,8 +228,9 @@ export default function MainApp({ onLogout }) {
 
         {/* User */}
         {userData && (
-          <button
-            onClick={() => setShowProfileModal(true)}
+          <Link
+            to="/profile"
+            state={profileState}
             className={cn(
               "flex items-center gap-3 rounded-2xl border border-transparent p-2 text-left transition-colors duration-200 hover:border-border hover:bg-card active:scale-[0.99]",
               sidebarCollapsed && "justify-center"
@@ -257,7 +251,7 @@ export default function MainApp({ onLogout }) {
                 </span>
               </span>
             )}
-          </button>
+          </Link>
         )}
       </motion.aside>
 
@@ -280,12 +274,12 @@ export default function MainApp({ onLogout }) {
       <div className="fixed inset-x-4 bottom-4 z-40 md:hidden">
         <div className="flex items-center gap-2 rounded-full border border-border/80 bg-card/85 p-1.5 backdrop-blur-xl [box-shadow:var(--shadow-lift),inset_0_1px_0_hsl(0_0%_100%/0.06)]">
           {userData && (
-            <button onClick={() => setShowProfileModal(true)} className="relative shrink-0 rounded-full active:scale-95" aria-label="Open profile">
+            <Link to="/profile" state={profileState} className="relative shrink-0 rounded-full active:scale-95" aria-label="Open profile">
               <Avatar user={userData} className="size-11" />
               {missingCuit && (
                 <span className="absolute right-0 top-0 size-2.5 rounded-full border-2 border-card bg-warning" />
               )}
-            </button>
+            </Link>
           )}
           <CurrencyFilter
             isLoading={isBusy}
@@ -372,14 +366,15 @@ export default function MainApp({ onLogout }) {
             </div>
 
             {missingCuit && (
-              <button
-                onClick={() => setShowProfileModal(true)}
+              <Link
+                to="/profile"
+                state={{ ...profileState, focus: "national_id" }}
                 className="flex w-fit items-center gap-2 rounded-full border border-warning/30 text-left bg-warning-soft px-3.5 py-1.5 text-[13px] font-medium text-warning transition-colors hover:border-warning/50"
               >
                 <WarningCircleIcon className="size-4" />
                 <span className="md:hidden">Add your CUIT</span>
                 <span className="hidden md:inline">Add your CUIT to skip transfers between your accounts</span>
-              </button>
+              </Link>
             )}
           </header>
 
@@ -492,14 +487,6 @@ export default function MainApp({ onLogout }) {
             </TabsContent>
           </Tabs>
         )}
-
-        <ProfileDialog
-          open={showProfileModal}
-          onOpenChange={setShowProfileModal}
-          userData={userData}
-          onProfileUpdated={fetchUserProfile}
-          onLogout={handleLogout}
-        />
         </div>
       </main>
     </div>

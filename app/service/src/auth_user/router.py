@@ -42,16 +42,17 @@ async def edit_profile(
 
 @router.delete("/logout")
 async def logout_user(
-    response: Response,
     refresh_token: dict[str, Any] = Depends(dependencies.valid_refresh_token),
 ) -> JSONResponse:
     if refresh_token["uuid"]:
         await service.expire_refresh_token(refresh_token["uuid"])
 
+    # Headers set on an injected Response are dropped when the handler returns its own Response
+    response = JSONResponse(status_code=status.HTTP_200_OK, content={"message": "Logout successful"})
     response.delete_cookie(
         **utils.get_refresh_token_settings(refresh_token["refresh_token"], expired=True)
     )
-    return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "Logout successful"})
+    return response
 
 
 @router.post("/refresh")

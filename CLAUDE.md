@@ -99,6 +99,7 @@ There is no session/ORM abstraction — queries are built with SQLAlchemy `selec
 ### Frontend (`app/client/src/`)
 
 **Routing**: React Router v7 with URL-encoded state: `/dashboard/:tab/:currency`. Currency and date range filters are also reflected in URL search params (`startDate`, `endDate`, `preset`).
+`/profile` is a protected standalone route (`components/auth_user/ProfilePage.jsx`, no dashboard shell); entry points pass `state.from` so its back button returns to the previous dashboard URL.
 
 **State management**: No global store. Server state lives in TanStack Query behind the `useDashboardData` hook (`hooks/useDashboardData.js`), which owns the `profile`, `categories`, `summary`, `currency-summary`, `details` and `files` queries and invalidates them after mutations. `MainApp.jsx` calls that hook and wraps the tabs in `DashboardProvider` (`contexts/DashboardContext.jsx`), so currency and date range come from context rather than prop drilling. All API calls go through the centralized `services/api.jsx` client, which reads the JWT from `localStorage`, attaches it as a `Bearer` header, and transparently retries once through `POST /auth/refresh` on a 401.
 

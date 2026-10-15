@@ -2,6 +2,7 @@
 
 import React from "react"
 import LandingPage from "@/components/LandingPage"
+import { Spinner } from "@/components/ui/spinner"
 import { api } from "@/services/api"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useEffect, useState } from "react"
@@ -11,6 +12,7 @@ const queryClient = new QueryClient()
 
 const MainApp = React.lazy(() => import('@/components/MainApp'))
 const PrivacyPolicy = React.lazy(() => import('@/components/PrivacyPolicy'))
+const ProfilePage = React.lazy(() => import('@/components/auth_user/ProfilePage'))
 
 // Shell-shaped placeholder while the dashboard chunk loads
 const dashboardSpinner = (
@@ -32,9 +34,15 @@ const dashboardSpinner = (
   </div>
 )
 
-function ProtectedRoute({ isAuthenticated, children }) {
+const pageSpinner = (
+  <div className="grid min-h-[100dvh] place-items-center bg-background" aria-busy="true">
+    <Spinner size="lg" />
+  </div>
+)
+
+function ProtectedRoute({ isAuthenticated, fallback = dashboardSpinner, children }) {
   if (!isAuthenticated) return <Navigate to="/" replace />
-  return <React.Suspense fallback={dashboardSpinner}>{children}</React.Suspense>
+  return <React.Suspense fallback={fallback}>{children}</React.Suspense>
 }
 
 export default function App() {
@@ -50,8 +58,8 @@ export default function App() {
     setIsAuthenticated(true)
   }
 
-  const handleLogout = () => {
-    api.logout()
+  const handleLogout = async () => {
+    await api.logout()
     setIsAuthenticated(false)
   }
 
@@ -83,7 +91,7 @@ export default function App() {
             path={path}
             element={
               <ProtectedRoute isAuthenticated={isAuthenticated}>
-                <MainApp onLogout={handleLogout} />
+                <MainApp />
               </ProtectedRoute>
             }
           />
@@ -94,6 +102,14 @@ export default function App() {
             <React.Suspense fallback={dashboardSpinner}>
               <PrivacyPolicy />
             </React.Suspense>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated} fallback={pageSpinner}>
+              <ProfilePage onLogout={handleLogout} />
+            </ProtectedRoute>
           }
         />
         <Route path="*" element={<Navigate to="/" replace />} />

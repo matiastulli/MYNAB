@@ -1,3 +1,4 @@
+import { useProfile } from "@/hooks/useProfile";
 import { toDateOnlyISOString } from "@/lib/dateUtils";
 import { api } from "@/services/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -11,8 +12,6 @@ const apiFetch = async (path) => {
   if (data.error) throw new Error(data.error);
   return data;
 };
-
-const fetchProfile = () => apiFetch("/auth/profile");
 
 const fetchCategories = () =>
   apiFetch("/budget-transaction-category/budget-transaction-category");
@@ -64,12 +63,7 @@ export function useDashboardData({ params, searchParams, navigate }) {
   const startDateStr = toDateOnlyISOString(dateRange.startDate);
   const endDateStr = toDateOnlyISOString(dateRange.endDate);
 
-  const profileQuery = useQuery({
-    queryKey: ["profile"],
-    queryFn: fetchProfile,
-    staleTime: 5 * 60 * 1000,
-    retry: 1,
-  });
+  const profileQuery = useProfile();
 
   const categoriesQuery = useQuery({
     queryKey: ["categories"],
@@ -228,10 +222,6 @@ export function useDashboardData({ params, searchParams, navigate }) {
     queryClient.invalidateQueries({ queryKey: ["files"] });
   }, [queryClient]);
 
-  const fetchUserProfile = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: ["profile"] });
-  }, [queryClient]);
-
   const handleImportSuccess = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ["summary"] });
     queryClient.invalidateQueries({ queryKey: ["currency-summary"] });
@@ -290,7 +280,6 @@ export function useDashboardData({ params, searchParams, navigate }) {
     fetchSummary,
     fetchDetails,
     fetchFiles,
-    fetchUserProfile,
     handleCurrencyChange,
     handleDateRangeChange,
     handleCurrencySelect,

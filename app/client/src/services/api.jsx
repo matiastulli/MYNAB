@@ -254,8 +254,18 @@ export const api = {
     return !!getToken();
   },
 
-  // Logout user
-  logout: () => {
+  // Plain fetch, not api.delete: a 401 here must not trigger the refresh-and-redirect path.
+  // Errors are ignored and the request is capped so a cold or unreachable API never blocks sign-out.
+  logout: async () => {
+    try {
+      await fetch(`${API_BASE_URL}/auth/logout`, {
+        method: 'DELETE',
+        credentials: 'include',
+        signal: AbortSignal.timeout(5000),
+      });
+    } catch {
+      // Sign out locally regardless
+    }
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
   },

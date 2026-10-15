@@ -105,7 +105,7 @@ There is no session/ORM abstraction — queries are built with SQLAlchemy `selec
 **UI**: Tailwind CSS v4 + shadcn/ui components (Radix UI primitives in `components/ui/`). Light/dark theme is managed via `lib/themeUtils.js` which listens to the system preference.
 
 **Key tab components** (`components/tabs/`):
-- `Dashboard.jsx` — charts and category breakdowns (Recharts)
+- `Dashboard.jsx` — spending breakdown (ranked bar list) and stat tiles
 - `ActivityList.jsx` — paginated transaction list with delete
 - `ImportFile.jsx` — bank statement upload (Base64 encodes file client-side)
 - `AddTransaction.jsx` — manual entry form

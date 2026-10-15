@@ -35,7 +35,7 @@ There is no Python linter or formatter configured — no `ruff`, `black` or `pyt
 
 - Components are functions. Server state lives in TanStack Query hooks (`hooks/useDashboardData.js`); everything else is props or local state. Don't add a global store.
 - After a mutation, invalidate the affected query keys rather than refetching by hand.
-- Reuse the primitives in `components/ui/` before adding a new one. Icons come from `lucide-react`.
+- Reuse the primitives in `components/ui/` before adding a new one. Icons come from `@phosphor-icons/react` (use the `*Icon` exports); motion uses `framer-motion` with the springs in `lib/motion.js`.
 - Colors and surfaces use the CSS custom property tokens in `src/index.css` (`--glass-bg`, `hsl(var(--accent))`, `hsl(var(--positive))`). Never hardcode hex values or opacity — they break dark mode.
 - **Safari bug**: never combine `hover:scale-*` with `backdrop-blur-*` on the same element; it kills the blur in WebKit. Never apply `backdrop-blur-*` directly to a native `<input>`, `<select>` or `<textarea>`.
 - The URL is the source of truth for tab, currency and date range. Keep views bookmarkable.

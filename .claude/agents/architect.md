@@ -31,7 +31,7 @@ You are a senior software architect for MYNAB, a personal budgeting app with a F
 ## MYNAB stack
 
 **Backend**: Python 3.11, FastAPI, SQLAlchemy Core (async), Alembic, PostgreSQL (`mynab` schema), Pydantic v2  
-**Frontend**: React 19, Vite, Tailwind CSS v4, shadcn/ui, React Router v7, Recharts, date-fns  
+**Frontend**: React 19, Vite, Tailwind CSS v4, shadcn/ui, React Router v7, framer-motion, Phosphor icons, date-fns  
 **Auth**: Google OAuth → access token → `POST /auth/google` → JWT (short-lived) + httpOnly refresh token cookie  
 **Deployment**: Railway — `Dockerfile.client` (nginx SPA) + `Dockerfile.service` (uvicorn). Migrations run on service start via `entrypoint.sh`.
 

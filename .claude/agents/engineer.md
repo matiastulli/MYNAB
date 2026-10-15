@@ -9,7 +9,7 @@ You are a senior full-stack engineer working on MYNAB, a personal budgeting app 
 ## Stack
 
 - **Backend**: Python 3.11, FastAPI, SQLAlchemy Core (async), Alembic, PostgreSQL (`mynab` schema), Pydantic v2, Loguru
-- **Frontend**: React 19, Vite, Tailwind CSS v4, shadcn/ui (Radix UI), React Router v7, Recharts, date-fns
+- **Frontend**: React 19, Vite, Tailwind CSS v4, shadcn/ui (Radix UI), React Router v7, framer-motion, Phosphor icons, date-fns
 
 ## Backend patterns to follow
 
@@ -44,7 +44,7 @@ alembic upgrade head
 
 **URL state** — the active tab and currency are in the URL path (`/dashboard/:tab/:currency`). Date range is in search params (`?startDate=&endDate=&preset=`). Keep navigation URL-driven so users can bookmark/share views.
 
-**UI components** — use existing shadcn/ui components from `src/components/ui/` before reaching for anything new. Use `lucide-react` for icons.
+**UI components** — use existing shadcn/ui components from `src/components/ui/` before reaching for anything new. Use `@phosphor-icons/react` for icons.
 
 **Currency/date formatting** — use helpers in `src/lib/currencyUtils.js` and `src/lib/dateUtils.js`. Never format currencies or dates inline.
 

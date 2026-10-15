@@ -1,5 +1,5 @@
 from typing import Any
-from fastapi import APIRouter, Depends, Response, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 
 from src.auth_user import jwt, service, utils, schemas, dependencies
@@ -57,29 +57,29 @@ async def logout_user(
 
 @router.post("/refresh")
 async def refresh_tokens(
-    response: Response,
     refresh_token: dict[str, Any] = Depends(dependencies.valid_refresh_token),
 ) -> JSONResponse:
     new_access_token, new_refresh_token = await service.refresh_access_token(refresh_token)
-    response.set_cookie(**utils.get_refresh_token_settings(new_refresh_token))
-    return JSONResponse(
+    response = JSONResponse(
         status_code=status.HTTP_200_OK,
         content={"access_token": new_access_token},
     )
+    response.set_cookie(**utils.get_refresh_token_settings(new_refresh_token))
+    return response
 
 
 @router.post("/google", response_model=schemas.AccessTokenResponse)
 async def google_sign_in_route(
     request: GoogleSignInRequest,
-    response: Response,
 ) -> JSONResponse:
     user = await service.google_sign_in(request.access_token)
     refresh_token_value = await service.create_refresh_token(id_user=user["id"])
     access_token = jwt.create_access_token(user=user)
-    response.set_cookie(**utils.get_refresh_token_settings(refresh_token_value))
     token_response = schemas.AccessTokenResponse(
         id_user=user["id"],
         access_token=access_token,
         refresh_token=refresh_token_value,
     )
-    return JSONResponse(status_code=status.HTTP_200_OK, content=token_response.model_dump())
+    response = JSONResponse(status_code=status.HTTP_200_OK, content=token_response.model_dump())
+    response.set_cookie(**utils.get_refresh_token_settings(refresh_token_value))
+    return response

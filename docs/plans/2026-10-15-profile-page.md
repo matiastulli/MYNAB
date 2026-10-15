@@ -47,6 +47,8 @@ Places that open the dialog (all in `MainApp.jsx`):
 
 ## Route and layout decision
 
+> **Superseded (Juan, 2026-10-15):** the profile must keep the app shell (desktop sidebar, mobile header/bottom bar). Built as: MainApp is a layout route (`<Outlet>`) shared by `/dashboard/*` and `/profile`. On `/profile`, MainApp feeds `useDashboardData` the tab, currency and range from `location.state.from`, so the hook never rewrites the URL, and an `isProfileRef` keeps the popstate/exit-toast logic out of the way. The standalone reasoning below is kept for history.
+
 **`/profile` as its own protected route next to the dashboard routes, not inside the MainApp shell.** It is lazy-loaded inside `ProtectedRoute` and has its own simple top bar.
 
 Why:

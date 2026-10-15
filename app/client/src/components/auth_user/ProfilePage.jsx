@@ -6,11 +6,11 @@ import { Segmented } from "@/components/ui/segmented";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useProfile, useUpdateProfile } from "@/hooks/useProfile";
 import { fadeUp } from "@/lib/motion";
-import { getCurrentTheme, setTheme, setupSystemPreferenceListener } from "@/lib/themeUtils";
-import { ArrowLeftIcon, CheckIcon, DesktopIcon, MoonIcon, SignOutIcon, SunIcon, WarningCircleIcon } from "@phosphor-icons/react";
+import { getCurrentTheme, setTheme } from "@/lib/themeUtils";
+import { CheckIcon, DesktopIcon, MoonIcon, SignOutIcon, SunIcon, WarningCircleIcon } from "@phosphor-icons/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 const CARD = "rounded-[1.75rem] border border-border/70 bg-card shadow-[var(--shadow-diffuse)]";
 
@@ -109,25 +109,22 @@ function ProfileForm({ userData, focusNationalId }) {
 }
 
 export default function ProfilePage({ onLogout }) {
-  const navigate = useNavigate();
   const location = useLocation();
   const { data: userData, isError, refetch } = useProfile();
   const [theme, setThemeState] = useState(getCurrentTheme);
   const [signingOut, setSigningOut] = useState(false);
 
-  // MainApp owns this listener on the dashboard; it is unmounted on this route
-  useEffect(() => setupSystemPreferenceListener(), []);
+  // The shell stays mounted, so the window keeps the dashboard's scroll position otherwise
+  // Braces matter: newer browsers return a Promise from scrollTo, and React would call it as the cleanup
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     const update = () => setThemeState(getCurrentTheme());
     window.addEventListener("themechange", update);
     return () => window.removeEventListener("themechange", update);
   }, []);
-
-  const goBack = () => {
-    if (location.state?.from) navigate(-1);
-    else navigate("/dashboard", { replace: true });
-  };
 
   const handleSignOut = async () => {
     setSigningOut(true);
@@ -137,27 +134,13 @@ export default function ProfilePage({ onLogout }) {
   const displayName = [userData?.name, userData?.last_name].filter(Boolean).join(" ") || "Your profile";
 
   return (
-    <div className="min-h-[100dvh] bg-background">
-      <header
-        className="sticky top-0 z-30 border-b border-border/60 bg-background/80 backdrop-blur-xl"
-        style={{ paddingTop: "env(safe-area-inset-top)" }}
-      >
-        <div className="mx-auto flex h-14 w-full max-w-xl items-center gap-2 px-4">
-          <button
-            onClick={goBack}
-            className="-ml-2 grid size-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            aria-label="Back"
-          >
-            <ArrowLeftIcon className="size-5" />
-          </button>
-          <h1 className="text-[17px] font-semibold tracking-tight">Profile</h1>
-        </div>
+    <>
+      <header className="mb-6 flex flex-col gap-2 md:mb-10">
+        <div className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">Account</div>
+        <h1 className="text-[1.75rem] font-semibold leading-none tracking-tighter md:text-[2.5rem]">Profile</h1>
       </header>
 
-      <main
-        className="mx-auto flex w-full max-w-xl flex-col gap-6 px-4 pt-6 md:pt-10"
-        style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 2.5rem)" }}
-      >
+      <div className="flex w-full max-w-xl flex-col gap-6">
         {userData ? (
           <motion.div {...fadeUp} className="flex flex-col gap-6">
             <div className="flex items-center gap-4 px-1">
@@ -218,7 +201,7 @@ export default function ProfilePage({ onLogout }) {
             Sign out
           </Button>
         </div>
-      </main>
-    </div>
+      </div>
+    </>
   );
 }

@@ -37,7 +37,7 @@ Shared code sits directly in `src/`: `database.py`, `models.py`, `config.py`, `c
 
 ## API
 
-- Router prefixes are kebab-case and mounted in `main.py`: `/auth`, `/budget`, `/budget-transaction-category`, `/mail`.
+- Router prefixes are kebab-case and mounted in `main.py`: `/auth`, `/budget`, `/budget-transaction-category`.
 - Sub-paths kebab-case: `/budget/import-file`, `/budget/summary-by-currency`, `/budget/export-xlsx`.
 - Path params snake_case: `/budget/entry/{entry_id}`, `/budget/file/{file_id}`.
 - Request, query and response fields are `snake_case` (`start_date`, `file_base64`, `id_user`). The client consumes them as they are — no camelCase mapping at the boundary.
@@ -46,7 +46,7 @@ Shared code sits directly in `src/`: `database.py`, `models.py`, `config.py`, `c
 
 ## Environment variables
 
-- Backend: `UPPER_SNAKE` with an `ENV_` prefix — `ENV_DATABASE_URL`, `ENV_JWT_SECRET`, `ENV_JWT_ALG`, `ENV_CORS_ORIGINS`, `ENV_RESEND_API_KEY`. `GOOGLE_CLIENT_ID` has no prefix; it predates the convention. New backend vars get `ENV_`.
+- Backend: `UPPER_SNAKE` with an `ENV_` prefix — `ENV_DATABASE_URL`, `ENV_JWT_SECRET`, `ENV_JWT_ALG`, `ENV_CORS_ORIGINS`. `GOOGLE_CLIENT_ID` has no prefix; it predates the convention. New backend vars get `ENV_`.
 - Frontend: the `VITE_` prefix is required by Vite — `VITE_API_BASE_URL`, `VITE_GOOGLE_CLIENT_ID`. These are **baked in at build time**, so on Railway they must be build variables, not runtime variables.
 - A new var is documented in `CLAUDE.md` § Environment variables in the same change.
 

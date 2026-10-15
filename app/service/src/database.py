@@ -6,6 +6,7 @@ from sqlalchemy import (
     Date,
     Delete,
     ForeignKey,
+    Index,
     Integer,
     LargeBinary,
     MetaData,
@@ -55,10 +56,12 @@ auth_user = Table(
     Column("email_verified", Boolean, nullable=False, server_default="false"),
     Column("id_role", Integer, ForeignKey(
         "mynab.auth_user_role.id")),
-    Column("google_id", String(255), nullable=True, unique=True),
+    Column("google_id", String(255), nullable=True),
     Column("avatar_data", Text, nullable=True),
     Column("created_at", DateTime, server_default=func.now(), nullable=False),
     Column("updated_at", DateTime, server_default=func.now(), onupdate=func.now()),
+    # Unique index (not a constraint) to match migration 7adaa559ed82
+    Index("ix_auth_user_google_id", "google_id", unique=True),
     schema="mynab",
 )
 
@@ -84,24 +87,6 @@ auth_user_activity_log = Table(
     Column("action", String(255)),
     Column("details", JSON),
     Column("timestamp", DateTime, server_default=func.now()),
-    schema="mynab",
-)
-
-# Email verification codes for passwordless authentication
-auth_email_verification = Table(
-    "auth_email_verification",
-    metadata,
-    Column("id", Integer, primary_key=True, autoincrement=True),
-    Column("email", String, nullable=False),
-    Column("verification_code", String(10), nullable=False),  # 6-8 digit code
-    Column("code_type", String(20), nullable=False),  # 'login', 'registration', 'password_reset'
-    Column("attempts", Integer, nullable=False, server_default="0"),  # Track failed attempts
-    Column("max_attempts", Integer, nullable=False, server_default="3"),  # Max attempts allowed
-    Column("expires_at", DateTime, nullable=False),
-    Column("used_at", DateTime, nullable=True),  # When the code was successfully used
-    Column("ip_address", String(45), nullable=True),  # Track IP for security
-    Column("user_agent", String(255), nullable=True),  # Track user agent for security
-    Column("created_at", DateTime, server_default=func.now(), nullable=False),
     schema="mynab",
 )
 

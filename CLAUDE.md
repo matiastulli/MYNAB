@@ -62,7 +62,7 @@ Backend JWT settings live in `app/service/src/auth_user/config.py`.
 
 ### Backend (`app/service/src/`)
 
-**Pattern**: each domain module (`auth_user`, `budget`, `budget_transaction_category`, `mail`) follows the same structure:
+**Pattern**: each domain module (`auth_user`, `budget`, `budget_transaction_category`) follows the same structure:
 - `router.py` — FastAPI route handlers, dependency-injected auth via `require_role([])`
 - `service.py` — business logic, calls database helpers
 - `schemas.py` — Pydantic request/response models (extend `CustomModel` from `models.py`)

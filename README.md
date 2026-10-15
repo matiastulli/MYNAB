@@ -69,7 +69,6 @@ graph TB
             AUTH["/auth — auth_user"]
             BUD["/budget — budget"]
             CAT["/budget-transaction-category"]
-            MAILR["/mail"]
             DBH["database.py<br/>SQLAlchemy Core: fetch_one / fetch_all / execute"]
         end
 
@@ -77,13 +76,11 @@ graph TB
     end
 
     GOOG["Google OAuth<br/>oauth2/v3/userinfo"]
-    RESEND["Resend API"]
 
     SPA -.served by.-> NGX
     APIC -->|HTTPS REST| MW
-    MW --> AUTH & BUD & CAT & MAILR
+    MW --> AUTH & BUD & CAT
     AUTH -->|verify access_token| GOOG
-    MAILR --> RESEND
     AUTH --> DBH
     BUD --> DBH
     CAT --> DBH

@@ -36,7 +36,7 @@ Branch per phase, e.g. `chore/deps-security-patches`, `chore/deps-runtime-images
 | alembic / asyncpg | 1.12.1 / 0.30.0 | 1.20.0 / 0.32.0 | low |
 | pandas / numpy | 2.3.0 / 2.3.1 | 3.0.6 / 2.4.6 | **high**: pandas 3 makes copy-on-write and the `str` dtype defaults; every bank parser goes through it |
 | pillow | 11.2.1 | 12.3.0 | low (avatar upload) |
-| cryptography, google-auth, PyJWT, resend, pdfplumber | minor drift | latest | low |
+| cryptography, google-auth, PyJWT, pdfplumber | minor drift | latest | low |
 
 ### Frontend versions
 
@@ -52,7 +52,7 @@ Branch per phase, e.g. `chore/deps-security-patches`, `chore/deps-runtime-images
 ### Defects and smells found (not version-related)
 
 1. **ICBC parser NaN bug** (`budget/service.py:622-623`): `pd.to_numeric(..., errors="coerce") or 0.0` never falls back, because `NaN` is truthy. A blank Credito/Debito cell yields `NaN`, and the `credito > 0` comparison then silently routes the row to the debit branch with `amount = NaN` when both are blank.
-2. **Pydantic typo** (`auth_user/schemas.py:53`): `from_atributtes = True` is misspelled, so it's silently ignored. Use `model_config = ConfigDict(from_attributes=True)`. The same v1-style `class Config` is in `mail/config.py:21`.
+2. **Pydantic typo** (`auth_user/schemas.py:53`): `from_atributtes = True` is misspelled, so it's silently ignored. Use `model_config = ConfigDict(from_attributes=True)`.
 3. **No CI.** Nothing runs lint, build, tests or audits before Railway deploys `main`.
 4. **Thin tests**: 6 tests in total, and no per-bank parser fixtures. That is the high-risk path for the pandas upgrade.
 5. **Windows-only and transitive pins in `requirements.txt`** (`win32_setctime`, `colorama`, `psycopg2-binary`, which appears unused now that alembic uses `ENV_DATABASE_URL`/asyncpg; verify). Split into direct deps and a lock file.
@@ -92,7 +92,7 @@ Found while implementing phases 0–1 (not fixed yet; each needs its own decisio
 
 ### Phase 3: in-major bumps
 - [ ] Client: react 19.3, router, recharts, radix, tanstack, tailwind 4.3, misc
-- [ ] Service: pydantic, SQLAlchemy 2.0.x latest, alembic, asyncpg, pillow 12, cryptography, google-auth, PyJWT, resend
+- [ ] Service: pydantic, SQLAlchemy 2.0.x latest, alembic, asyncpg, pillow 12, cryptography, google-auth, PyJWT
 
 ### Phase 4: majors, one branch each
 - [ ] Vite 8 + plugin-react 6 + vite-plugin-pwa 2 (rework `manualChunks`; drop the dead cache rule, defect 7)

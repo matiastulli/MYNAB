@@ -1,0 +1,8 @@
+Tipo,Producto,Fecha de inicio,Fecha de finalización,Descripción,Importe,Comisión,Divisa,Estado,Saldo
+Recargas,Actual,2026-06-01 09:15:00,2026-06-01 09:15:05,Payment from ACME Fake Payroll,1200.00,0.00,EUR,COMPLETADO,1200.00
+Pago con tarjeta,Actual,2026-06-02 13:45:10,2026-06-03 08:00:00,"Fake Cafe, Centro",-8.50,0.00,EUR,COMPLETADO,1191.50
+Pago con tarjeta,Actual,2026-06-03 18:20:00,2026-06-04 07:00:00,Fake Airline,-150.00,1.50,EUR,COMPLETADO,1040.00
+Pago con tarjeta,Actual,2026-06-04 10:00:00,,Pending Shop,-20.00,0.00,EUR,PENDIENTE,
+Intercambio,Actual,2026-06-05 11:00:00,2026-06-05 11:00:00,Cambiado a USD,-100.00,0.00,USD,COMPLETADO,0.00
+Recargas,Actual,2026-06-06 12:00:00,2026-06-06 12:00:00,Zero top-up,0.00,,EUR,COMPLETADO,1040.00
+Comisión,Actual,2026-06-07 08:30:00,2026-06-07 08:30:00,Fake Plan Fee,-5.00,,EUR,COMPLETADO,1035.00

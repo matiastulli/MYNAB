@@ -77,6 +77,6 @@ Shared code sits directly in `src/`: `database.py`, `models.py`, `config.py`, `c
 
 ## Files that are not code
 
-- Plans: `docs/plans/YYYY-MM-DD-short-slug.md` — see `.claude/rules/plans.md`.
+- Plans: `docs/plans/YYYYMMDD-short-slug.md` (global `~/.claude/CLAUDE.md` § Docs and plans).
 - Conventions: `docs/conventions/NN-kebab-case.md`.
 - Agents and skills: `.claude/agents/<role>.md`, `.claude/skills/<kebab-name>/SKILL.md`.

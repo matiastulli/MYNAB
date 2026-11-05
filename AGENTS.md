@@ -132,9 +132,17 @@ The backend exposes `GET /healthcheck` (no auth) — useful for uptime monitors 
 
 ---
 
+## Plans
+
+Plans live in `docs/plans/YYYYMMDD-slug.md`, each starting with a `Status: #TODO | #IN_PROGRESS | #DONE | #SHELVED` banner; done or shelved ones move to `docs/plans/archive/`. No index file. `/new-plan` scaffolds one, `/status` lists the open ones, and `.claude/settings.json` points plan mode at `docs/plans`.
+
+## Checks
+
+`cd app/service && python -m unittest discover -s tests` and `cd app/client && npm run lint && npm run build` ([docs/conventions/02-code-style.md](docs/conventions/02-code-style.md)).
+
 ## Constraints
 
-- Default branch is `main`. Plans: `docs/plans/YYYYMMDD-slug.md` with a status banner, done or shelved ones in `docs/plans/archive/`.
+- Default branch is `main`.
 - Every query touching `budget_entry`, `files` or `auth_user` filters by `user_id = jwt_data.id_user` (see [02-code-style.md](docs/conventions/02-code-style.md)).
 - `VITE_*` env vars are baked in at build time; they can't be set at runtime.
 - The JWT lives in `localStorage` and there is no server-side session: designs that assume session state won't work.

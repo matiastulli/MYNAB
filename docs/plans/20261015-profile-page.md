@@ -19,7 +19,7 @@ Replace the profile modal with a page at `/profile`, where the user edits their 
 ## Out of scope
 
 - Any backend change beyond the logout cookie fix in Task 4b. `GET /auth/profile` and `PUT /auth/profile` are enough. No migration.
-- Delete account, data export, editing email, avatar upload (removed on purpose in `2026-10-15-google-avatar.md`). Each needs its own plan.
+- Delete account, data export, editing email, avatar upload (removed on purpose in `20261015-google-avatar.md`). Each needs its own plan.
 - Clearing the TanStack Query cache on sign-out (pre-existing).
 - A warning on unsaved changes when leaving the page. `useBlocker` needs a data router, and the app uses `<BrowserRouter>`.
 - Deleting `components/ui/dialog.jsx`. ProfileDialog is its only user today, but it is a shared primitive, so it stays.

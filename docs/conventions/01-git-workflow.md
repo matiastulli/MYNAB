@@ -16,7 +16,7 @@ git checkout -b <type>/<slug>
 - `slug` — the plan slug from `docs/plans/` when the work has a plan; otherwise kebab-case, ≤ 4 words.
 
 ```
-feat/revolut-parser             # plan: 2026-09-15-revolut-parser.md
+feat/revolut-parser             # plan: 20260915-revolut-parser.md
 feat/profile-avatar-upload
 fix/422-on-empty-date-range     # small fix, no plan
 docs/system-design-diagram
@@ -61,7 +61,7 @@ A schema change is never committed without its Alembic migration in the same com
 
 - Push the branch and open a PR into `main`. Use the main commit subject as the title. `/pr` does commit + push + PR in one step; only Juan runs it.
 - The body links the plan when the branch has one and lists its acceptance criteria, each with how it was verified. Say what was **not** verified.
-- Before opening: run `/review`, and the `security-reviewer` agent when the change adds an endpoint or touches auth, file upload or secrets.
+- Before opening: run `/review`, and the `security` agent when the change adds an endpoint or touches auth, file upload or secrets.
 - If a response shape changes and the client consumes it, deploy the service first.
 - Merge with squash, so `main` reads one commit per feature. Delete the branch after merging.
 - If a PR grows past ~400 changed lines (excluding lockfiles and generated files), split it.
